@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="event">
+      <UniqueIdentifier>{f783e0c9-b6ac-4707-88a0-7f151b6cbff4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core">
+      <UniqueIdentifier>{4992e540-3ba7-4cf0-9cad-b0a88de3a4bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{6a5a0c59-00a0-455b-9e06-3a8432a08512}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="socket">
+      <UniqueIdentifier>{25c824d9-8621-4a8c-8be6-62a4bee728a4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\source\event\event_loop.cc">
+      <Filter>event</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\event\event_status.cc">
+      <Filter>event</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\event\event_pipe.cc">
+      <Filter>event</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\event\event_queue.cc">
+      <Filter>event</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\event\event_base.cc">
+      <Filter>event</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\event\event_share.cc">
+      <Filter>event</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\event\event_loop_thread.cc">
+      <Filter>event</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\event\event_loop_thread_pool.cc">
+      <Filter>event</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\tcp_server.cc">
+      <Filter>socket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\tcp_listen.cc">
+      <Filter>socket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\tcp_socket.cc">
+      <Filter>socket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\tcp_session.cc">
+      <Filter>socket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\tcp_message.cc">
+      <Filter>socket</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\source\include\platform.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\type.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\config.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\event_untlity.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\event_status.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\event_share.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\event_queue.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\event_pipe.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\event_loop_thread.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\event_loop.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\event_base.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\event_loop_thread_pool.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\tcp_server.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\tcp_listen.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\tcp_socket.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\tcp_session.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\buffer.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\tcp_message.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
