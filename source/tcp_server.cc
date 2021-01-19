@@ -17,13 +17,13 @@ namespace Evpp
     TcpServer::TcpServer(EventLoop* loop, const std::shared_ptr<EventShare>& share, const InterfaceAccepts& accepts, const InterfaceDiscons& discons, const InterfaceMessage& message) :
         event_loop(loop),
         event_share(share),
+        socket_accepts(accepts),
+        socket_discons(discons),
+        socket_message(message),
         event_thread_pool(std::make_unique<EventLoopThreadPool>(loop, share, share->GetLoopsSize())),
         tcp_socket(std::make_unique<TcpSocket>()),
         tcp_listen(std::make_unique<TcpListen>(loop, true)),
-        tcp_index(0),
-        socket_accepts(accepts),
-        socket_discons(discons),
-        socket_message(message)
+        tcp_index(0)
     {
 
     }

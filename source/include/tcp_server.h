@@ -49,6 +49,9 @@ namespace Evpp
     private:
         EventLoop*                                                      event_loop;
         std::shared_ptr<EventShare>                                     event_share;
+        InterfaceAccepts                                                socket_accepts;
+        InterfaceDiscons                                                socket_discons;
+        InterfaceMessage                                                socket_message;
         std::unique_ptr<EventLoopThreadPool>                            event_thread_pool;
         std::unique_ptr<TcpSocket>                                      tcp_socket;
         std::unique_ptr<TcpListen>                                      tcp_listen;
@@ -56,10 +59,6 @@ namespace Evpp
         std::unordered_map<u96, std::shared_ptr<TcpSession>>            tcp_session;
         std::priority_queue<u96>									    tcp_index_multiplexing;
         std::mutex													    tcp_mutex;
-    private:
-        InterfaceAccepts                                                socket_accepts;
-        InterfaceDiscons                                                socket_discons;
-        InterfaceMessage                                                socket_message;
     };
 }
 #endif // __TCP_SERVER_H__
