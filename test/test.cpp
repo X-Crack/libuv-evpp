@@ -24,7 +24,7 @@ int main()
     server.AddListenPort("127.0.0.1", 51322).AddListenPort("0.0.0.0", 51333).AddListenPort("::1", 51333);
     server.CreaterServer();
     Evpp::EventTimerVesse timertest(&ev);
-    timertest.AssignTimer(1, 0, 1);
+    timertest.AssignTimer(1, 1000, 3000);
     ev.ExitDispatch();
     Sleep(100000);
     getchar();

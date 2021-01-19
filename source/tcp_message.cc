@@ -4,10 +4,12 @@
 
 namespace Evpp
 {
-    TcpMessage::TcpMessage(EventLoop* loop, const std::shared_ptr<socket_tcp>& client) :
+    TcpMessage::TcpMessage(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const SystemDiscons& discons, const SystemMessage& message) :
         event_loop(loop),
         tcp_socket(client),
-        tcp_buffer(std::make_shared<TcpBuffer>())
+        tcp_buffer(std::make_shared<TcpBuffer>()),
+        system_discons(discons),
+        system_message(message)
     {
         if (nullptr == client->data)
         {
@@ -115,7 +117,7 @@ namespace Evpp
 
     bool TcpMessage::Shutdown(socket_stream* stream, i96 nread)
     {
-        if (nread == UV_EOF || nread == UV_ECONNRESET)
+        if (UV_EOF == nread)
         {
             socket_shutdown* shutdown = new socket_shutdown();
             {
@@ -150,6 +152,11 @@ namespace Evpp
             event_data.shrink_to_fit();
             rsend_data.clear();
             rsend_data.shrink_to_fit();
+        }
+
+        if (nullptr != system_discons)
+        {
+            system_discons();
         }
     }
 
@@ -187,10 +194,19 @@ namespace Evpp
 
     bool TcpMessage::OnMessages(socket_stream* stream, i96 nread, const socket_data* buf)
     {
-        if (nread >= 0)
+        if (nread > 0)
         {
-            tcp_buffer->append(buf->base, nread);
-            return true;
+            if (nullptr != tcp_buffer)
+            {
+                tcp_buffer->append(buf->base, nread);
+                {
+                    if (nullptr != system_message)
+                    {
+                        return system_message(tcp_buffer);
+                    }
+                }
+                return true;
+            }
         }
 
         return Shutdown(stream, nread);
@@ -246,7 +262,17 @@ namespace Evpp
         {
             if (nullptr != watcher)
             {
-                watcher->OnMessages(handler, static_cast<i96>(nread), buf);
+                if (watcher->OnMessages(handler, static_cast<i96>(nread), buf))
+                {
+                    return;
+                }
+
+                if (watcher->Shutdown(handler, UV_EOF))
+                {
+                    return;
+                }
+
+                printf("OnSystemMessage Error\n");
             }
         }
     }

@@ -8,10 +8,13 @@ namespace Evpp
     class EventLoop;
     class EventTimerVesse;
     class TcpMessage;
-    class TcpSession
+    class TcpSession : public std::enable_shared_from_this<TcpSession>
     {
     public:
-        explicit TcpSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client);
+        typedef std::function<void(EventLoop*, const u96)>                                                                          SystemDiscons;
+        typedef std::function<bool(EventLoop*, const std::shared_ptr<TcpSession>&, const std::shared_ptr<TcpBuffer>&, const u96)>   SystemMessage;
+    public:
+        explicit TcpSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const u96 index, const SystemDiscons& discons, const SystemMessage& message);
         virtual ~TcpSession();
     public:
         bool Send(const char* buf, u96 len, u32 nbufs = 1);
@@ -26,10 +29,16 @@ namespace Evpp
         bool ReStarTimer(const u96 index);
         bool ReStarTimerEx(const u96 index, const u64 delay, const u64 repeat);
     private:
+        void OnSystemDiscons();
+        bool OnSystemMessage(const std::shared_ptr<TcpBuffer>& Buffer);
+    private:
         EventLoop*                                                      event_loop;
         std::shared_ptr<socket_tcp>                                     tcp_socket;
         std::unique_ptr<TcpMessage>                                     tcp_message;
         std::unique_ptr<EventTimerVesse>                                event_timer_vesse;
+        u96                                                             self_index;
+        SystemDiscons                                                   system_discons;
+        SystemMessage                                                   system_message;
     };
 }
 #endif // __TCP_SESSION_H__

@@ -7,11 +7,14 @@
 
 namespace Evpp
 {
-    TcpSession::TcpSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client) :
+    TcpSession::TcpSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const u96 index, const SystemDiscons& discons, const SystemMessage& message) :
         event_loop(loop),
         tcp_socket(client),
-        tcp_message(std::make_unique<TcpMessage>(loop, client)),
-        event_timer_vesse(std::make_unique<EventTimerVesse>(loop))
+        tcp_message(std::make_unique<TcpMessage>(loop, client, std::bind(&TcpSession::OnSystemDiscons, this), std::bind(&TcpSession::OnSystemMessage, this, std::placeholders::_1))),
+        event_timer_vesse(std::make_unique<EventTimerVesse>(loop)),
+        self_index(index),
+        system_discons(discons),
+        system_message(message)
     {
 
     }
@@ -100,5 +103,23 @@ namespace Evpp
             return event_timer_vesse->ReStarTimerEx(index, delay, repeat);
         }
         return false;
+    }
+
+    void TcpSession::OnSystemDiscons()
+    {
+        if (nullptr != system_discons)
+        {
+            system_discons(event_loop, self_index);
+        }
+    }
+
+    bool TcpSession::OnSystemMessage(const std::shared_ptr<TcpBuffer>& Buffer)
+    {
+        if (nullptr != system_message)
+        {
+            return system_message(event_loop, shared_from_this(), Buffer, self_index);
+        }
+        return false;
+        
     }
 }

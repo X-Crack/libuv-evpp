@@ -9,13 +9,21 @@
 
 namespace Evpp
 {
-    TcpServer::TcpServer(EventLoop* loop, const std::shared_ptr<EventShare>& share) :
+    TcpServer::TcpServer(EventLoop* loop, const std::shared_ptr<EventShare>& share) : TcpServer(loop, share, InterfaceAccepts(), InterfaceDiscons(), InterfaceMessage())
+    {
+
+    }
+
+    TcpServer::TcpServer(EventLoop* loop, const std::shared_ptr<EventShare>& share, const InterfaceAccepts& accepts, const InterfaceDiscons& discons, const InterfaceMessage& message) :
         event_loop(loop),
         event_share(share),
         event_thread_pool(std::make_unique<EventLoopThreadPool>(loop, share, share->GetLoopsSize())),
         tcp_socket(std::make_unique<TcpSocket>()),
         tcp_listen(std::make_unique<TcpListen>(loop, true)),
-        tcp_index(0)
+        tcp_index(0),
+        socket_accepts(accepts),
+        socket_discons(discons),
+        socket_message(message)
     {
 
     }
@@ -46,13 +54,77 @@ namespace Evpp
         return *this;
     }
 
-    // TODO: tcp_index_multiplexing.emplace()
+    void TcpServer::SetAcceptsCallback(const InterfaceAccepts& accepts)
+    {
+        if (nullptr == socket_accepts)
+        {
+            socket_accepts = accepts;
+        }
+    }
 
-    bool TcpServer::CreaterSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client)
+    void TcpServer::SetDisconsCallback(const InterfaceDiscons& discons)
+    {
+        if (nullptr == socket_discons)
+        {
+            socket_discons = discons;
+        }
+    }
+
+    void TcpServer::SetMessageCallback(const InterfaceMessage& message)
+    {
+        if (nullptr == socket_message)
+        {
+            socket_message = message;
+        }
+    }
+
+    bool TcpServer::CreaterSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const u96 index)
     {
         std::lock_guard<std::mutex> lock(tcp_mutex);
         
-        return tcp_session.emplace(GetPlexingIndex(), std::make_shared<TcpSession>(loop, client)).second;
+        return tcp_session.emplace(index, std::make_shared<TcpSession>(loop, 
+            client, 
+            index, 
+            std::bind(&TcpServer::DefaultDiscons, this, std::placeholders::_1, std::placeholders::_2),
+            std::bind(&TcpServer::DefaultMessage, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4)
+            )).second;
+    }
+
+    bool TcpServer::InitialSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client)
+    {
+        u96 index = GetPlexingIndex();
+        {
+            if (CreaterSession(loop, client, index))
+            {
+                if (nullptr != socket_accepts)
+                {
+                    return socket_accepts(loop, GetSession(index), index);
+                }
+                return true;
+            }
+        }
+    }
+
+    bool TcpServer::DeletedSession(const u96 index)
+    {
+        std::lock_guard<std::mutex> lock(tcp_mutex);
+        if (auto it = tcp_session.find(index); it != std::end(tcp_session))
+        {
+            tcp_session.erase(it);
+            tcp_index_multiplexing.emplace(index);
+            return true;
+        }
+        return false;
+    }
+
+    bool TcpServer::RemovedSession(const u96 index)
+    {
+        return DeletedSession(index);
+    }
+
+    const std::shared_ptr<TcpSession>& TcpServer::GetSession(const u96 index)
+    {
+        return tcp_session[index];
     }
 
     bool TcpServer::DefaultConnection(EventLoop* loop, socket_stream* handler)
@@ -63,7 +135,7 @@ namespace Evpp
             {
                 if (InitTcpSocket(loop, handler, client.get()))
                 {
-                    return CreaterSession(loop, client);
+                    return InitialSession(loop, client);
                 }
             }
         }
@@ -103,6 +175,35 @@ namespace Evpp
         }
     }
 
+    void TcpServer::DefaultDiscons(EventLoop* loop, const u96 index)
+    {
+        if (nullptr != loop)
+        {
+            if (loop->SelftyThread())
+            {
+                if (RemovedSession(index))
+                {
+                    if (nullptr != socket_discons)
+                    {
+                        socket_discons(loop, index);
+                    }
+                }
+                return;
+            }
+
+            loop->RunInLoop(std::bind(&TcpServer::RemovedSession, this, index));
+        }
+    }
+
+    bool TcpServer::DefaultMessage(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const std::shared_ptr<TcpBuffer>& buffer, const u96 index)
+    {
+        if (nullptr != loop && nullptr != socket_message)
+        {
+            return socket_message(loop, session, buffer, index);
+        }
+        return false;
+    }
+
     void TcpServer::DefaultColseEx(event_handle* handler)
     {
         (void)(handler);
@@ -135,6 +236,7 @@ namespace Evpp
 
     const u96 TcpServer::GetPlexingIndex()
     {
+        std::lock_guard<std::mutex> lock(tcp_mutex);
         const u96 index = tcp_index_multiplexing.empty() ? tcp_index.fetch_add(1) : tcp_index_multiplexing.top();
         {
             if (tcp_index_multiplexing.size())

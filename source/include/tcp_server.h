@@ -16,17 +16,29 @@ namespace Evpp
     {
     public:
         explicit TcpServer(EventLoop* loop, const std::shared_ptr<EventShare>& share);
+        explicit TcpServer(EventLoop* loop, const std::shared_ptr<EventShare>& share, const InterfaceAccepts& accepts, const InterfaceDiscons& discons, const InterfaceMessage& message);
         virtual ~TcpServer();
         friend TcpListen;
     public:
         bool CreaterServer();
         TcpServer& AddListenPort(const std::string& server_address, const u16 port);
+    public:
+        void SetAcceptsCallback(const InterfaceAccepts& accepts);
+        void SetDisconsCallback(const InterfaceDiscons& discons);
+        void SetMessageCallback(const InterfaceMessage& message);
     private:
-        bool CreaterSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client);
+        bool CreaterSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const u96 index);
+        bool InitialSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client);
+        bool DeletedSession(const u96 index);
+        bool RemovedSession(const u96 index);
+        const std::shared_ptr<TcpSession>& GetSession(const u96 index);
     private:
         bool DefaultConnection(EventLoop* loop, socket_stream* handler);
         bool DefaultConnection(socket_stream* handler);
         static void DefaultConnection(socket_stream* handler, int status);
+    private:
+        void DefaultDiscons(EventLoop* loop, const u96 index);
+        bool DefaultMessage(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const std::shared_ptr<TcpBuffer>& buffer, const u96 index);
     private:
         void DefaultColseEx(event_handle* handler);
         static void DefaultColse(event_handle* handler);
@@ -44,6 +56,10 @@ namespace Evpp
         std::unordered_map<u96, std::shared_ptr<TcpSession>>            tcp_session;
         std::priority_queue<u96>									    tcp_index_multiplexing;
         std::mutex													    tcp_mutex;
+    private:
+        InterfaceAccepts                                                socket_accepts;
+        InterfaceDiscons                                                socket_discons;
+        InterfaceMessage                                                socket_message;
     };
 }
 #endif // __TCP_SERVER_H__

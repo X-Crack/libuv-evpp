@@ -9,7 +9,10 @@ namespace Evpp
     class TcpMessage
     {
     public:
-        explicit TcpMessage(EventLoop* loop, const std::shared_ptr<socket_tcp>& client);
+        typedef std::function<void()>                                           SystemDiscons;
+        typedef std::function<bool(const std::shared_ptr<TcpBuffer>&)>          SystemMessage;
+    public:
+        explicit TcpMessage(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const SystemDiscons& discons, const SystemMessage& message);
         virtual ~TcpMessage();
     public:
         bool Send(const char* buf, u96 len, u32 nbufs = 1);
@@ -40,6 +43,9 @@ namespace Evpp
         std::shared_ptr<TcpBuffer>                                      tcp_buffer;
         std::vector<char>                                               event_data;
         std::vector<char>                                               rsend_data;
+    private:
+        SystemDiscons                                                   system_discons;
+        SystemMessage                                                   system_message;
     };
 }
 #endif // __tcp_message_H__
