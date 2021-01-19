@@ -1,11 +1,13 @@
 #include <tcp_message.h>
 #include <event_loop.h>
+#include <buffer.h>
 
 namespace Evpp
 {
     TcpMessage::TcpMessage(EventLoop* loop, const std::shared_ptr<socket_tcp>& client) :
         event_loop(loop),
-        tcp_socket(client)
+        tcp_socket(client),
+        tcp_buffer(std::make_shared<TcpBuffer>())
     {
         if (nullptr == client->data)
         {
@@ -84,14 +86,11 @@ namespace Evpp
     {
         if (nullptr != bufs && bufs->len > 0)
         {
-            rsend_data.resize(bufs->len);
+            if (bufs->len > rsend_data.capacity())
             {
-                for (u96 i = 0; i < bufs->len; ++i)
-                {
-                    rsend_data[i] = bufs->base[i];
-                }
+                rsend_data.resize(bufs->len);
             }
-            return new socket_data{ bufs->len, rsend_data.data() };
+            return new socket_data{ bufs->len, std::copy(bufs->base, bufs->base + bufs->len, rsend_data.data()) };
         }
         return nullptr;
     }
@@ -172,22 +171,25 @@ namespace Evpp
         {
             if (uv_is_active(handler))
             {
-                if (event_data.capacity() != 65536)
+                if (event_data.capacity() != suggested_size)
                 {
                     event_data.resize(suggested_size);
                 }
 
-                buf->base = event_data.data();
-                buf->len = event_data.capacity();
+                if (nullptr == buf->base)
+                {
+                    buf->base = event_data.data();
+                    buf->len = event_data.capacity();
+                }
             }
         }
     }
 
     bool TcpMessage::OnMessages(socket_stream* stream, i96 nread, const socket_data* buf)
     {
-        (void)(buf);
         if (nread >= 0)
         {
+            tcp_buffer->append(buf->base, nread);
             return true;
         }
 

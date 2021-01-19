@@ -5,6 +5,7 @@
 namespace Evpp
 {
     class EventLoop;
+    class TcpBuffer;
     class TcpMessage
     {
     public:
@@ -36,6 +37,7 @@ namespace Evpp
     private:
         EventLoop*                                                      event_loop;
         std::shared_ptr<socket_tcp>                                     tcp_socket;
+        std::shared_ptr<TcpBuffer>                                      tcp_buffer;
         std::vector<char>                                               event_data;
         std::vector<char>                                               rsend_data;
     };

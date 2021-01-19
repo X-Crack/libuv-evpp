@@ -1,5 +1,6 @@
 #include <event_loop.h>
 #include <event_queue.h>
+#include <event_timer_vesse.h>
 namespace Evpp
 {
     EventLoop::EventLoop(event_loop* loop, const u96 index) :
@@ -7,6 +8,7 @@ namespace Evpp
         event_index(index),
         event_refer(0),
         event_queue(std::make_unique<EventQueue>(this)),
+        event_timer_vesse(std::make_unique<EventTimerVesse>(this)),
         safe_index(GetCurrentThreadId())
     {
         if (ChangeStatus(NOTYET, INITIALIZING))
@@ -75,6 +77,70 @@ namespace Evpp
     bool EventLoop::RunInLoop(Functor&& function)
     {
         return event_queue->RunInLoop(std::move(function));
+    }
+
+    bool EventLoop::AssignTimer(const u96 index, const u64 delay, const u64 repeat)
+    {
+        if (nullptr != event_timer_vesse)
+        {
+            return event_timer_vesse->AssignTimer(index, delay, repeat);
+        }
+        return false;
+    }
+
+    bool EventLoop::StopedTimer(const u96 index)
+    {
+        if (nullptr != event_timer_vesse)
+        {
+            return event_timer_vesse->StopedTimer(index);
+        }
+        return false;
+    }
+
+    bool EventLoop::KilledTimer(const u96 index)
+    {
+        if (nullptr != event_timer_vesse)
+        {
+            return event_timer_vesse->KilledTimer(index);
+        }
+        return false;
+    }
+
+    void EventLoop::ModiyRepeat(const u96 index, const u64 repeat)
+    {
+        if (nullptr != event_timer_vesse)
+        {
+            return event_timer_vesse->ModiyRepeat(index, repeat);
+        }
+        return;
+    }
+
+    bool EventLoop::ReStarTimer(const u96 index)
+    {
+        if (nullptr != event_timer_vesse)
+        {
+            return event_timer_vesse->ReStarTimer(index);
+        }
+        return false;
+    }
+
+    bool EventLoop::ReStarTimerEx(const u96 index, const u64 delay, const u64 repeat)
+    {
+        if (nullptr != event_timer_vesse)
+        {
+            return event_timer_vesse->ReStarTimerEx(index, delay, repeat);
+        }
+        return false;
+    }
+
+    bool EventLoop::AddContext(const u96 index, const std::any& any)
+    {
+        return event_context.emplace(index, std::make_unique<std::any>(any)).second;
+    }
+
+    const std::unique_ptr<std::any>& EventLoop::GetContext(const u96 index)
+    {
+        return event_context[index];
     }
 
     bool EventLoop::SelftyThread()

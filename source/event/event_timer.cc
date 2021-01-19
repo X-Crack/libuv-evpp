@@ -7,9 +7,15 @@ namespace Evpp
         event_time(new event_timer()),
         timer_index(index)
     {
-        event_time->data = this;
-        // TODO: Test
-        this->InitedTimer();
+        if (nullptr == event_time->data)
+        {
+            event_time->data = this;
+        }
+        
+        if (false == InitedTimer())
+        {
+            // TODO: error;
+        }
     }
 
     EventTimer::~EventTimer()

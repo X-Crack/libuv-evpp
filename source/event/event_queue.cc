@@ -32,19 +32,6 @@ namespace Evpp
         return event_pipe->CreatePipe();
     }
 
-//     bool EventQueue::RunInLoop(Functor function)
-//     {
-//         if (nullptr != event_loop && nullptr != event_pipe)
-//         {
-//             if (event_loop->SelftyThread())
-//             {
-//                 return function();
-//             }
-//             return SendAsyncNotify(std::move(function));
-//         }
-//         return false;
-//     }
-
     bool EventQueue::RunInLoop(const Functor& function)
     {
         if (nullptr != event_loop && nullptr != event_pipe)
@@ -86,5 +73,4 @@ namespace Evpp
             }
         }
     }
-
 }

@@ -56,6 +56,7 @@ namespace Evpp
         }
         return false;
     }
+
     bool TcpSession::StopedTimer(const u96 index)
     {
         if (nullptr != event_timer_vesse)
@@ -64,6 +65,7 @@ namespace Evpp
         }
         return false;
     }
+
     bool TcpSession::KilledTimer(const u96 index)
     {
         if (nullptr != event_timer_vesse)
@@ -72,6 +74,7 @@ namespace Evpp
         }
         return false;
     }
+
     void TcpSession::ModiyRepeat(const u96 index, const u64 repeat)
     {
         if (nullptr != event_timer_vesse)
@@ -80,6 +83,7 @@ namespace Evpp
         }
         return;
     }
+
     bool TcpSession::ReStarTimer(const u96 index)
     {
         if (nullptr != event_timer_vesse)
@@ -88,6 +92,7 @@ namespace Evpp
         }
         return false;
     }
+
     bool TcpSession::ReStarTimerEx(const u96 index, const u64 delay, const u64 repeat)
     {
         if (nullptr != event_timer_vesse)
