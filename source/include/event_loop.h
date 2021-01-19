@@ -20,6 +20,7 @@ namespace Evpp
         bool StopDispatch();
     public:
         bool RunInLoop(const Functor& function);
+        bool RunInLoop(Functor&& function);
     public:
         bool SelftyThread();
         i32  GetCurThread();

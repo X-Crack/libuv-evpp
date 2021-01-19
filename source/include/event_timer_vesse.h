@@ -14,7 +14,15 @@ namespace Evpp
         virtual ~EventTimerVesse();
     public:
         bool AssignTimer(const u96 index, const u64 delay, const u64 repeat);
-        // TODO Close || Sotped;
+    public:
+        bool StopedTimer(const u96 index);
+        bool KilledTimer(const u96 index);
+    public:
+        void ModiyRepeat(const u96 index, const u64 repeat);
+        bool ReStarTimer(const u96 index);
+        bool ReStarTimerEx(const u96 index, const u64 delay, const u64 repeat);
+    public:
+        const u64 GetTimerduein(const u96 index);
     private:
         bool CreateTimer(const u96 index);
     private:

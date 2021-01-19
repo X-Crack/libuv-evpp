@@ -72,6 +72,11 @@ namespace Evpp
         return event_queue->RunInLoop(function);
     }
 
+    bool EventLoop::RunInLoop(Functor&& function)
+    {
+        return event_queue->RunInLoop(std::move(function));
+    }
+
     bool EventLoop::SelftyThread()
     {
         return static_cast<i32>(GetCurrentThreadId()) == this->safe_index;

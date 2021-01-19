@@ -105,6 +105,6 @@ namespace Evpp
 
     void EventTimer::OnNotify()
     {
-        printf("On Timer\n");
+        printf("On Timer %lld\n", GetTimerduein());
     }
 }

@@ -21,8 +21,8 @@ namespace Evpp
     public:
         bool CreateQueue();
     public:
-        //bool RunInLoop(Functor function);
         bool RunInLoop(const Functor& function);
+        bool RunInLoop(Functor&& function);
     private:
         bool SendAsyncNotify(const Functor& function);
         void RecvAsyncNotify();

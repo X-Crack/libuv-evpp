@@ -9,6 +9,9 @@
 #include <tcp_listen.h>
 #include <tcp_server.h>
 
+#include <event_timer.h>
+#include <event_timer_vesse.h>
+
 int main()
 {
     printf("main thread:%d\n", GetCurrentThreadId());
@@ -20,6 +23,8 @@ int main()
     Evpp::TcpServer server(&ev, share);
     server.AddListenPort("127.0.0.1", 51322).AddListenPort("0.0.0.0", 51333).AddListenPort("::1", 51333);
     server.CreaterServer();
+    Evpp::EventTimerVesse timertest(&ev);
+    timertest.AssignTimer(1, 0, 1000);
     ev.ExitDispatch();
     Sleep(100000);
     getchar();

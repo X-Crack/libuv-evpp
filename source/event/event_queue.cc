@@ -58,6 +58,11 @@ namespace Evpp
         return false;
     }
 
+    bool EventQueue::RunInLoop(Functor&& function)
+    {
+        return RunInLoop(function);
+    }
+
     bool EventQueue::SendAsyncNotify(const Functor& function)
     {
         if (nullptr != event_pipe)
