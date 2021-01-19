@@ -1,5 +1,6 @@
 #include <tcp_message.h>
 #include <event_loop.h>
+
 #include <buffer.h>
 
 namespace Evpp
@@ -29,20 +30,27 @@ namespace Evpp
 
     bool TcpMessage::Send(const char* buf, u96 len, u32 nbufs)
     {
-        if (len > 0 && buf)
+        if (event_loop->SelftyThread())
         {
-            return DefaultSend(socket_data{ len, const_cast<char*>(buf) }, nbufs);
+            if (len > 0 && buf)
+            {
+                return DefaultSend(socket_data{ len, const_cast<char*>(buf) }, nbufs);
+            }
         }
-        return false;
+        return event_loop->RunInLoop(std::bind((bool(TcpMessage::*)(const char*, u96, u32)) & TcpMessage::Send, this, buf, len, nbufs));
     }
 
     bool TcpMessage::Send(const std::string& buf, u32 nbufs)
     {
-        if (buf.capacity() > 0 && buf.data())
+        if (event_loop->SelftyThread())
         {
-            return DefaultSend(socket_data{ buf.capacity(), const_cast<char*>(buf.data()) }, nbufs);
+            if (buf.capacity() > 0 && buf.data())
+            {
+                return DefaultSend(socket_data{ buf.capacity(), const_cast<char*>(buf.data()) }, nbufs);
+            }
         }
-        return false;
+
+        return event_loop->RunInLoop(std::bind((bool(TcpMessage::*)(const std::string&, u32))&TcpMessage::Send, this, buf, nbufs));
     }
 
     bool TcpMessage::DefaultSend(const socket_data bufs, u32 nbufs)
@@ -56,45 +64,19 @@ namespace Evpp
 
     bool TcpMessage::DefaultSend(const socket_data* bufs, u32 nbufs)
     {
-        if (event_loop->SelftyThread())
+        socket_write* request = new socket_write();
         {
-            socket_write* request = new socket_write();
+            if (0 == request->data)
             {
-                if (0 == request->data)
-                {
-                    request->data = this;
-                }
-                
-                if (DefaultSend(request, reinterpret_cast<socket_stream*>(tcp_socket.get()), bufs, nbufs))
-                {
-                    if (rsend_data.data() == bufs->base)
-                    {
-                        delete bufs;
-                        bufs = nullptr;
-                    }
-                    return true;
-                }
+                request->data = this;
             }
         }
-        return event_loop->RunInLoop(std::bind((bool(TcpMessage::*)(const socket_data*, unsigned int))&TcpMessage::DefaultSend, this, CopyRequestData(bufs), nbufs));
+        return DefaultSend(request, reinterpret_cast<socket_stream*>(tcp_socket.get()), bufs, nbufs);
     }
 
     bool TcpMessage::DefaultSend(socket_write* request, socket_stream* handler, const socket_data* bufs, unsigned int nbufs)
     {
         return 0 == uv_write(request, handler, bufs, nbufs, &TcpMessage::DefaultSend);
-    }
-
-    socket_data* TcpMessage::CopyRequestData(const socket_data* bufs)
-    {
-        if (nullptr != bufs && bufs->len > 0)
-        {
-            if (bufs->len > rsend_data.capacity())
-            {
-                rsend_data.resize(bufs->len);
-            }
-            return new socket_data{ bufs->len, std::copy(bufs->base, bufs->base + bufs->len, rsend_data.data()) };
-        }
-        return nullptr;
     }
 
     bool TcpMessage::CheckClose(socket_stream* handler)
@@ -150,8 +132,6 @@ namespace Evpp
         {
             event_data.clear();
             event_data.shrink_to_fit();
-            rsend_data.clear();
-            rsend_data.shrink_to_fit();
         }
 
         if (nullptr != system_discons)

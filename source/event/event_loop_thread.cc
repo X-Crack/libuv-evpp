@@ -36,7 +36,7 @@ namespace Evpp
                         }
                     }
                 }
-                return true;
+                return this->Join();
             }
             return event_loop->RunInLoop(std::bind(&EventLoopThread::CreaterEventLoopThread, this, wait));
         }
@@ -85,7 +85,6 @@ namespace Evpp
 
     void EventLoopThread::Run()
     {
-        printf("new loop thread:%d\n", GetCurrentThreadId());
         if (ChangeStatus(NOTYET, INITIALIZING))
         {
             loop.reset(new EventLoop(event_share->EventLoop(event_index), event_index));
