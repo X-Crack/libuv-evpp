@@ -30,27 +30,34 @@ namespace Evpp
 
     bool TcpMessage::Send(const char* buf, u96 len, u32 nbufs)
     {
-        if (event_loop->SelftyThread())
+        if (nullptr != event_loop)
         {
-            if (len > 0 && buf)
+            if (event_loop->SelftyThread())
             {
-                return DefaultSend(socket_data{ len, const_cast<char*>(buf) }, nbufs);
+                if (len > 0 && buf)
+                {
+                    return DefaultSend(socket_data{ len, const_cast<char*>(buf) }, nbufs);
+                }
             }
+            return event_loop->RunInLoop(std::bind((bool(TcpMessage::*)(const char*, u96, u32)) & TcpMessage::Send, this, buf, len, nbufs));
         }
-        return event_loop->RunInLoop(std::bind((bool(TcpMessage::*)(const char*, u96, u32)) & TcpMessage::Send, this, buf, len, nbufs));
+        return false;
     }
 
     bool TcpMessage::Send(const std::string& buf, u32 nbufs)
     {
-        if (event_loop->SelftyThread())
+        if (nullptr != event_loop)
         {
-            if (buf.capacity() > 0 && buf.data())
+            if (event_loop->SelftyThread())
             {
-                return DefaultSend(socket_data{ buf.capacity(), const_cast<char*>(buf.data()) }, nbufs);
+                if (buf.capacity() > 0 && buf.data())
+                {
+                    return DefaultSend(socket_data{ buf.capacity(), const_cast<char*>(buf.data()) }, nbufs);
+                }
             }
+            return event_loop->RunInLoop(std::bind((bool(TcpMessage::*)(const std::string&, u32)) & TcpMessage::Send, this, buf, nbufs));
         }
-
-        return event_loop->RunInLoop(std::bind((bool(TcpMessage::*)(const std::string&, u32))&TcpMessage::Send, this, buf, nbufs));
+        return false;
     }
 
     bool TcpMessage::DefaultSend(const socket_data bufs, u32 nbufs)
