@@ -5,7 +5,7 @@
 #include <thread>
 #include <mutex>
 #include <condition_variable>
-namespace evpp
+namespace Evpp
 {
     class EventLoop;
     class EventShare;

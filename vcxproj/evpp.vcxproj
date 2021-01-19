@@ -27,6 +27,8 @@
     <ClCompile Include="..\source\event\event_queue.cc" />
     <ClCompile Include="..\source\event\event_share.cc" />
     <ClCompile Include="..\source\event\event_status.cc" />
+    <ClCompile Include="..\source\event\event_timer.cc" />
+    <ClCompile Include="..\source\event\event_timer_vesse.cc" />
     <ClCompile Include="..\source\tcp_listen.cc" />
     <ClCompile Include="..\source\tcp_message.cc" />
     <ClCompile Include="..\source\tcp_server.cc" />
@@ -44,6 +46,8 @@
     <ClInclude Include="..\source\include\event_queue.h" />
     <ClInclude Include="..\source\include\event_share.h" />
     <ClInclude Include="..\source\include\event_status.h" />
+    <ClInclude Include="..\source\include\event_timer.h" />
+    <ClInclude Include="..\source\include\event_timer_vesse.h" />
     <ClInclude Include="..\source\include\event_untlity.h" />
     <ClInclude Include="..\source\include\platform.h" />
     <ClInclude Include="..\source\include\tcp_listen.h" />

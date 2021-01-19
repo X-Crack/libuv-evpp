@@ -2,7 +2,7 @@
 #include <regex>
 #include <string>
 #include <sstream>
-namespace evpp
+namespace Evpp
 {
     TcpSocket::TcpSocket()
     {

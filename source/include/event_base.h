@@ -1,6 +1,6 @@
 #ifndef __EVENT_BASE_H__
 #define __EVENT_BASE_H__
-namespace evpp
+namespace Evpp
 {
     class EventBase
     {

@@ -3,7 +3,7 @@
 #include <config.h>
 #include <unordered_map>
 #include <mutex>
-namespace evpp
+namespace Evpp
 {
     class EventShare
     {

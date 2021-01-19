@@ -7,7 +7,7 @@
 #include <event_loop.h>
 #include <event_loop_thread_pool.h>
 
-namespace evpp
+namespace Evpp
 {
     TcpServer::TcpServer(EventLoop* loop, const std::shared_ptr<EventShare>& share) :
         event_loop(loop),
@@ -103,12 +103,12 @@ namespace evpp
         }
     }
 
-    void TcpServer::DefaultColseEx(socket_handle* handler)
+    void TcpServer::DefaultColseEx(event_handle* handler)
     {
         (void)(handler);
     }
 
-    void TcpServer::DefaultColse(socket_handle* handler)
+    void TcpServer::DefaultColse(event_handle* handler)
     {
         TcpServer* watcher = static_cast<TcpServer*>(handler->data);
         {

@@ -1,5 +1,5 @@
 #include <event_status.h>
-namespace evpp
+namespace Evpp
 {
     EventStatus::EventStatus() : status(NOTYET)
     {

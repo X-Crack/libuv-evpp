@@ -6,7 +6,7 @@
 #include <memory>
 #include <any>
 #include <atomic>
-namespace evpp
+namespace Evpp
 {
 	typedef std::function<void()>																															Handler;
 	typedef std::function<bool()>																															Functor;

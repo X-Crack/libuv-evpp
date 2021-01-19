@@ -2,7 +2,7 @@
 #include <event_loop.h>
 #include <event_share.h>
 #include <event_loop_thread.h>
-namespace evpp
+namespace Evpp
 {
     EventLoopThreadPool::EventLoopThreadPool(EventLoop* loop, const std::shared_ptr<EventShare>& share) :
         event_loop(loop),

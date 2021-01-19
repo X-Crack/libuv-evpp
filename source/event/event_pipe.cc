@@ -1,6 +1,6 @@
 #include <event_pipe.h>
 #include <event_loop.h>
-namespace evpp
+namespace Evpp
 {
     EventPipe::EventPipe(EventLoop* loop, const Handler& handler) : 
         event_loop(loop), 

@@ -1,5 +1,5 @@
 #include <event_share.h>
-namespace evpp
+namespace Evpp
 {
     EventShare::EventShare() : event_default(uv_default_loop()), event_size(1)
     {

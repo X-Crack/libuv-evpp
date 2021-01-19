@@ -1,6 +1,6 @@
 #include <event_loop.h>
 #include <event_queue.h>
-namespace evpp
+namespace Evpp
 {
     EventLoop::EventLoop(event_loop* loop, const u96 index) :
         event_base(loop),

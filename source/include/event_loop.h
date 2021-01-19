@@ -5,7 +5,7 @@
 #include <event_status.h>
 #include <memory>
 #include <atomic>
-namespace evpp
+namespace Evpp
 {
     class EventQueue;
     class EventLoop : public EventStatus, public std::enable_shared_from_this<EventLoop>

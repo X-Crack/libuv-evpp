@@ -4,7 +4,7 @@
 #include <memory>
 #include <mutex>
 #include <atomic>
-namespace evpp
+namespace Evpp
 {
     class EventLoop;
     class EventShare;

@@ -5,7 +5,7 @@
 #include <vector>
 #include <assert.h>
 #include <string.h>
-namespace Cry
+namespace Evpp
 {
 	// Copyright 2010, Shuo Chen.  All rights reserved.
 	// http://code.google.com/p/muduo/

@@ -4,7 +4,7 @@
 #include <memory>
 #include <queue>
 #include <mutex>
-namespace evpp
+namespace Evpp
 {
     class EventLoop;
     class EventShare;
@@ -28,8 +28,8 @@ namespace evpp
         bool DefaultConnection(socket_stream* handler);
         static void DefaultConnection(socket_stream* handler, int status);
     private:
-        void DefaultColseEx(socket_handle* handler);
-        static void DefaultColse(socket_handle* handler);
+        void DefaultColseEx(event_handle* handler);
+        static void DefaultColse(event_handle* handler);
     private:
         bool InitTcpSocket(EventLoop* loop, socket_stream* handler, socket_tcp* client);
     private:

@@ -8,7 +8,7 @@ namespace moodycamel
     template<typename T, typename Traits> class ConcurrentQueue;
     template<typename T, typename Traits> class BlockingConcurrentQueue;
 }
-namespace evpp
+namespace Evpp
 {
     struct Traits;
     class EventLoop;

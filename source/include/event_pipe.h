@@ -2,7 +2,7 @@
 #define __EVENT_PIPE_H__
 #include <config.h>
 #include <event_untlity.h>
-namespace evpp
+namespace Evpp
 {
     class EventLoop;
     class EventPipe

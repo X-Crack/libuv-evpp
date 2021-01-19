@@ -3,7 +3,7 @@
 #include <event_pipe.h>
 #include <blockingconcurrentqueue.h>
 #include <concurrentqueue.h>
-namespace evpp
+namespace Evpp
 {
     struct Traits : public moodycamel::ConcurrentQueueDefaultTraits
     {

@@ -2,7 +2,7 @@
 #include <event_loop.h>
 #include <tcp_server.h>
 #include <tcp_socket.h>
-namespace evpp
+namespace Evpp
 {
     TcpListen::TcpListen(EventLoop* loop, const bool proble) :
         event_loop(loop),

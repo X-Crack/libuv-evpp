@@ -1,5 +1,5 @@
 #include <event_base.h>
-namespace evpp
+namespace Evpp
 {
     EventBase::EventBase()
     {

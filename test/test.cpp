@@ -12,12 +12,12 @@
 int main()
 {
     printf("main thread:%d\n", GetCurrentThreadId());
-    std::shared_ptr<evpp::EventShare> share = std::make_shared<evpp::EventShare>(2);
+    std::shared_ptr<Evpp::EventShare> share = std::make_shared<Evpp::EventShare>(2);
     share->CreaterLoops();
-    evpp::EventLoop ev;
+    Evpp::EventLoop ev;
     ev.InitialEvent();
 
-    evpp::TcpServer server(&ev, share);
+    Evpp::TcpServer server(&ev, share);
     server.AddListenPort("127.0.0.1", 51322).AddListenPort("0.0.0.0", 51333).AddListenPort("::1", 51333);
     server.CreaterServer();
     ev.ExitDispatch();

@@ -3,7 +3,7 @@
 #include <config.h>
 #include <string>
 #include <memory>
-namespace evpp
+namespace Evpp
 {
     struct SocketInfo
     {

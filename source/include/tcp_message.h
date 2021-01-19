@@ -2,7 +2,7 @@
 #define __TCP_MESSAGE_H__
 #include <config.h>
 #include <vector>
-namespace evpp
+namespace Evpp
 {
     class EventLoop;
     class TcpMessage
@@ -23,15 +23,15 @@ namespace evpp
         bool Shutdown(socket_stream* stream, i96 nread);
     private:
         void OnSend(socket_write* request, int status);
-        void OnClose(socket_handle* handler);
+        void OnClose(event_handle* handler);
         void OnShutdown(socket_shutdown* shutdown, int status);
-        void OnMallocEx(socket_handle* handler, size_t suggested_size, socket_data* buf);
+        void OnMallocEx(event_handle* handler, size_t suggested_size, socket_data* buf);
         bool OnMessages(socket_stream* stream, i96 nread, const socket_data* buf);
     private:
         static void DefaultSend(socket_write* handler, int status);
-        static void DefaultClose(socket_handle* handler);
+        static void DefaultClose(event_handle* handler);
         static void DefaultShutdown(socket_shutdown* handler, int status);
-        static void DefaultMakesram(socket_handle* handle, size_t suggested_size, socket_data* buf);
+        static void DefaultMakesram(event_handle* handle, size_t suggested_size, socket_data* buf);
         static void DefaultMessages(socket_stream* handler, ssize_t nread, const socket_data* buf);
     private:
         EventLoop*                                                      event_loop;

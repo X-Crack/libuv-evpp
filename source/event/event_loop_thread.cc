@@ -1,6 +1,6 @@
 #include <event_loop_thread.h>
 #include <event_share.h>
-namespace evpp
+namespace Evpp
 {
     EventLoopThread::EventLoopThread(const u96 index) : event_loop(nullptr), event_index(index)
     {

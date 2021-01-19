@@ -1,7 +1,7 @@
 #include <tcp_message.h>
 #include <event_loop.h>
 
-namespace evpp
+namespace Evpp
 {
     TcpMessage::TcpMessage(EventLoop* loop, const std::shared_ptr<socket_tcp>& client) :
         event_loop(loop),
@@ -25,17 +25,25 @@ namespace evpp
 
     bool TcpMessage::Send(const char* buf, u96 len, u32 nbufs)
     {
-        return DefaultSend(socket_data { len, const_cast<char*>(buf) }, nbufs);
+        if (len > 0 && buf)
+        {
+            return DefaultSend(socket_data{ len, const_cast<char*>(buf) }, nbufs);
+        }
+        return false;
     }
 
     bool TcpMessage::Send(const std::string& buf, u32 nbufs)
     {
-        return DefaultSend(socket_data { buf.capacity(), const_cast<char*>(buf.data()) }, nbufs);
+        if (buf.capacity() > 0 && buf.data())
+        {
+            return DefaultSend(socket_data{ buf.capacity(), const_cast<char*>(buf.data()) }, nbufs);
+        }
+        return false;
     }
 
     bool TcpMessage::DefaultSend(const socket_data bufs, u32 nbufs)
     {
-        if (uv_is_active(reinterpret_cast<socket_handle*>(tcp_socket.get())))
+        if (uv_is_active(reinterpret_cast<event_handle*>(tcp_socket.get())))
         {
             return DefaultSend(&bufs, nbufs);
         }
@@ -92,9 +100,9 @@ namespace evpp
     {
         if (nullptr != handler)
         {
-            if (0 == uv_is_active(reinterpret_cast<socket_handle*>(handler)))
+            if (0 == uv_is_active(reinterpret_cast<event_handle*>(handler)))
             {
-                if (0 == uv_is_closing(reinterpret_cast<socket_handle*>(handler)))
+                if (0 == uv_is_closing(reinterpret_cast<event_handle*>(handler)))
                 {
                     if (0 == uv_read_stop(reinterpret_cast<socket_stream*>(handler)))
                     {
@@ -135,7 +143,7 @@ namespace evpp
         }
     }
 
-    void TcpMessage::OnClose(socket_handle* handle)
+    void TcpMessage::OnClose(event_handle* handle)
     {
         if (nullptr != handle)
         {
@@ -150,7 +158,7 @@ namespace evpp
     {
         if (nullptr != shutdown && 0 == status)
         {
-            uv_close(reinterpret_cast<socket_handle*>(shutdown->handle), &TcpMessage::DefaultClose);
+            uv_close(reinterpret_cast<event_handle*>(shutdown->handle), &TcpMessage::DefaultClose);
             {
                 delete shutdown;
                 shutdown = nullptr;
@@ -158,7 +166,7 @@ namespace evpp
         }
     }
 
-    void TcpMessage::OnMallocEx(socket_handle* handler, size_t suggested_size, socket_data* buf)
+    void TcpMessage::OnMallocEx(event_handle* handler, size_t suggested_size, socket_data* buf)
     {
         if (nullptr != handler)
         {
@@ -197,7 +205,7 @@ namespace evpp
         }
     }
 
-    void TcpMessage::DefaultClose(socket_handle* handler)
+    void TcpMessage::DefaultClose(event_handle* handler)
     {
         TcpMessage* watcher = static_cast<TcpMessage*>(handler->data);
         {
@@ -219,7 +227,7 @@ namespace evpp
         }
     }
 
-    void TcpMessage::DefaultMakesram(socket_handle* handler, size_t suggested_size, socket_data* buf)
+    void TcpMessage::DefaultMakesram(event_handle* handler, size_t suggested_size, socket_data* buf)
     {
         TcpMessage* watcher = static_cast<TcpMessage*>(handler->data);
         {

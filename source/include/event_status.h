@@ -2,7 +2,7 @@
 #define __EVENT_STATUS_H__
 #include <type.h>
 #include <atomic>
-namespace evpp
+namespace Evpp
 {
     class EventStatus
     {
