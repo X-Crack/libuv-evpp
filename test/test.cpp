@@ -28,6 +28,9 @@ int main()
     Evpp::EventTimerVesse timertest(&ev);
     timertest.AssignTimer(1, 0, 3000);
 
+    Evpp::EventSignal sn(&ev);
+    sn.InitialSignal();
+    sn.CreaterSignal();
     ev.ExitDispatch();
     printf("error exit\n");
     getchar();

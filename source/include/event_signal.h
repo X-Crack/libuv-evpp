@@ -11,7 +11,7 @@ namespace Evpp
         virtual ~EventSignal();
     public:
         bool InitialSignal();
-        bool CreaterSignal(const i32 signum);
+        bool CreaterSignal(const i32 signum = SIGHUP);
         bool DestroySignal();
     private:
         static void OnNotify(event_signal* handler, int signum);
