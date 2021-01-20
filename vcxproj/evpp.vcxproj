@@ -26,6 +26,7 @@
     <ClCompile Include="..\source\event\event_pipe.cc" />
     <ClCompile Include="..\source\event\event_queue.cc" />
     <ClCompile Include="..\source\event\event_share.cc" />
+    <ClCompile Include="..\source\event\event_signal.cc" />
     <ClCompile Include="..\source\event\event_status.cc" />
     <ClCompile Include="..\source\event\event_timer.cc" />
     <ClCompile Include="..\source\event\event_timer_vesse.cc" />
@@ -45,6 +46,7 @@
     <ClInclude Include="..\source\include\event_pipe.h" />
     <ClInclude Include="..\source\include\event_queue.h" />
     <ClInclude Include="..\source\include\event_share.h" />
+    <ClInclude Include="..\source\include\event_signal.h" />
     <ClInclude Include="..\source\include\event_status.h" />
     <ClInclude Include="..\source\include\event_timer.h" />
     <ClInclude Include="..\source\include\event_timer_vesse.h" />

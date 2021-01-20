@@ -16,12 +16,12 @@ namespace Evpp
         system_discons(discons),
         system_message(message)
     {
-
+        AssignTimer(1, 0, 1000);
     }
 
     TcpSession::~TcpSession()
     {
-
+        printf("delete tcpSession\n");
     }
 
     bool TcpSession::Send(const char* buf, u96 len, u32 nbufs)
@@ -53,29 +53,38 @@ namespace Evpp
 
     bool TcpSession::AssignTimer(const u96 index, const u64 delay, const u64 repeat)
     {
-        if (nullptr != event_timer_vesse)
+        if (event_loop->SelftyThread())
         {
-            return event_timer_vesse->AssignTimer(index, delay, repeat);
+            if (nullptr != event_timer_vesse)
+            {
+                return event_timer_vesse->AssignTimer(index, delay, repeat);
+            }
         }
-        return false;
+        return RunInLoop(std::bind(&TcpSession::AssignTimer, this, index, delay, repeat));
     }
 
     bool TcpSession::StopedTimer(const u96 index)
     {
-        if (nullptr != event_timer_vesse)
+        if (event_loop->SelftyThread())
         {
-            return event_timer_vesse->StopedTimer(index);
+            if (nullptr != event_timer_vesse)
+            {
+                return event_timer_vesse->StopedTimer(index);
+            }
         }
-        return false;
+        return RunInLoop(std::bind(&TcpSession::StopedTimer, this, index));
     }
 
     bool TcpSession::KilledTimer(const u96 index)
     {
-        if (nullptr != event_timer_vesse)
+        if (event_loop->SelftyThread())
         {
-            return event_timer_vesse->KilledTimer(index);
+            if (nullptr != event_timer_vesse)
+            {
+                return event_timer_vesse->KilledTimer(index);
+            }
         }
-        return false;
+        return RunInLoop(std::bind(&TcpSession::KilledTimer, this, index));
     }
 
     void TcpSession::ModiyRepeat(const u96 index, const u64 repeat)
@@ -84,25 +93,31 @@ namespace Evpp
         {
             return event_timer_vesse->ModiyRepeat(index, repeat);
         }
-        return;
     }
 
     bool TcpSession::ReStarTimer(const u96 index)
     {
-        if (nullptr != event_timer_vesse)
+        if (event_loop->SelftyThread())
         {
-            return event_timer_vesse->ReStarTimer(index);
+            if (nullptr != event_timer_vesse)
+            {
+                return event_timer_vesse->ReStarTimer(index);
+            }
         }
-        return false;
+
+        return RunInLoop(std::bind(&TcpSession::ReStarTimer, this, index));
     }
 
     bool TcpSession::ReStarTimerEx(const u96 index, const u64 delay, const u64 repeat)
     {
-        if (nullptr != event_timer_vesse)
+        if (event_loop->SelftyThread())
         {
-            return event_timer_vesse->ReStarTimerEx(index, delay, repeat);
+            if (nullptr != event_timer_vesse)
+            {
+                return event_timer_vesse->ReStarTimerEx(index, delay, repeat);
+            }
         }
-        return false;
+        return RunInLoop(std::bind(&TcpSession::ReStarTimerEx, this, index, delay, repeat));
     }
 
     void TcpSession::OnSystemDiscons()
@@ -120,6 +135,5 @@ namespace Evpp
             return system_message(event_loop, shared_from_this(), Buffer, self_index);
         }
         return false;
-        
     }
 }

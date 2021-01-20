@@ -60,6 +60,9 @@
     <ClCompile Include="..\source\event\event_timer_vesse.cc">
       <Filter>event</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\event\event_signal.cc">
+      <Filter>event</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\include\platform.h">
@@ -120,6 +123,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\source\include\event_timer_vesse.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\event_signal.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

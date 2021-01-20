@@ -12,7 +12,7 @@ namespace Evpp
             event_time->data = this;
         }
         
-        if (false == InitedTimer())
+        if (!InitedTimer())
         {
             // TODO: error;
         }
@@ -20,10 +20,9 @@ namespace Evpp
 
     EventTimer::~EventTimer()
     {
-        if (nullptr != event_time)
+        if (!KilledTimer())
         {
-            delete event_time;
-            event_time = nullptr;
+            printf("killedtimer error\n");
         }
     }
 
@@ -63,7 +62,7 @@ namespace Evpp
         {
             if (0 == uv_is_closing(reinterpret_cast<event_handle*>(event_time)))
             {
-                uv_close(reinterpret_cast<event_handle*>(event_time), 0);
+                uv_close(reinterpret_cast<event_handle*>(event_time), &EventTimer::DefaultClose);
             }
             return true;
         }
@@ -96,6 +95,15 @@ namespace Evpp
     const u64 EventTimer::GetTimerduein()
     {
         return uv_timer_get_due_in(event_time);
+    }
+
+    void EventTimer::DefaultClose(event_handle* handler)
+    {
+        if (nullptr != handler)
+        {
+            delete handler;
+            handler = nullptr;
+        }
     }
 
     void EventTimer::OnNotify(event_timer* handler)

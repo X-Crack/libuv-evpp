@@ -23,6 +23,8 @@ namespace Evpp
         const u64 GetTimerduein();
         const u96 GetTimerIndex() { return timer_index; };
     private:
+        static void DefaultClose(event_handle* handler);
+    private:
         static void OnNotify(event_timer* handler);
         void OnNotify();
     private:

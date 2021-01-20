@@ -40,9 +40,6 @@ namespace Evpp
         void DefaultDiscons(EventLoop* loop, const u96 index);
         bool DefaultMessage(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const std::shared_ptr<TcpBuffer>& buffer, const u96 index);
     private:
-        void DefaultColseEx(event_handle* handler);
-        static void DefaultColse(event_handle* handler);
-    private:
         bool InitTcpSocket(EventLoop* loop, socket_stream* handler, socket_tcp* client);
     private:
         const u96 GetPlexingIndex();

@@ -12,6 +12,8 @@
 #include <event_timer.h>
 #include <event_timer_vesse.h>
 
+#include <event_signal.h>
+
 int main()
 {
     printf("main thread:%d\n", GetCurrentThreadId());
@@ -24,8 +26,9 @@ int main()
     server.AddListenPort("127.0.0.1", 51322).AddListenPort("0.0.0.0", 51333).AddListenPort("::1", 51333);
     server.CreaterServer();
     Evpp::EventTimerVesse timertest(&ev);
-    timertest.AssignTimer(1, 1000, 3000);
+    timertest.AssignTimer(1, 0, 3000);
+
     ev.ExitDispatch();
-    Sleep(100000);
+    printf("error exit\n");
     getchar();
 }

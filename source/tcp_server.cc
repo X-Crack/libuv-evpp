@@ -204,22 +204,6 @@ namespace Evpp
         return false;
     }
 
-    void TcpServer::DefaultColseEx(event_handle* handler)
-    {
-        (void)(handler);
-    }
-
-    void TcpServer::DefaultColse(event_handle* handler)
-    {
-        TcpServer* watcher = static_cast<TcpServer*>(handler->data);
-        {
-            if (nullptr != watcher)
-            {
-                watcher->DefaultColseEx(handler);
-            }
-        }
-    }
-
     bool TcpServer::InitTcpSocket(EventLoop* loop, socket_stream* handler, socket_tcp* client)
     {
         if (nullptr != loop && nullptr != client)
