@@ -21,6 +21,8 @@ namespace Evpp
         bool DefaultSend(const socket_data bufs, u32 nbufs);
         bool DefaultSend(const socket_data* bufs, u32 nbufs);
         bool DefaultSend(socket_write* request, socket_stream* handler, const socket_data* bufs, unsigned int nbufs);
+    public:
+        bool SetSendBlocking(const u32 value = 0);
     private:
         bool CheckClose(socket_stream* handler);
         bool Shutdown(socket_stream* stream, i96 nread);

@@ -42,6 +42,11 @@ namespace Evpp
         return false;
     }
 
+    bool TcpSession::SetSendBlocking(const u32 value)
+    {
+        return tcp_message->SetSendBlocking(value);
+    }
+
     bool TcpSession::RunInLoop(const Functor& function)
     {
         if (nullptr != event_loop)

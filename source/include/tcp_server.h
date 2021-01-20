@@ -33,9 +33,9 @@ namespace Evpp
         bool RemovedSession(const u96 index);
         const std::shared_ptr<TcpSession>& GetSession(const u96 index);
     private:
-        bool DefaultConnection(EventLoop* loop, socket_stream* handler);
-        bool DefaultConnection(socket_stream* handler);
-        static void DefaultConnection(socket_stream* handler, int status);
+        bool DefaultAccepts(EventLoop* loop, socket_stream* handler);
+        bool DefaultAccepts(socket_stream* handler);
+        static void DefaultAccepts(socket_stream* handler, int status);
     private:
         void DefaultDiscons(EventLoop* loop, const u96 index);
         bool DefaultMessage(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const std::shared_ptr<TcpBuffer>& buffer, const u96 index);

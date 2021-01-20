@@ -127,7 +127,7 @@ namespace Evpp
         return tcp_session[index];
     }
 
-    bool TcpServer::DefaultConnection(EventLoop* loop, socket_stream* handler)
+    bool TcpServer::DefaultAccepts(EventLoop* loop, socket_stream* handler)
     {
         std::shared_ptr<socket_tcp> client = std::make_shared<socket_tcp>();
         {
@@ -142,7 +142,7 @@ namespace Evpp
         return false;
     }
 
-    bool TcpServer::DefaultConnection(socket_stream* handler)
+    bool TcpServer::DefaultAccepts(socket_stream* handler)
     {
         EventLoop* loop = event_thread_pool->GetEventLoop();
         {
@@ -150,15 +150,15 @@ namespace Evpp
             {
                 if (loop->SelftyThread())
                 {
-                    return DefaultConnection(loop, handler);
+                    return DefaultAccepts(loop, handler);
                 }
-                return loop->RunInLoop(std::bind((bool(TcpServer::*)(EventLoop*, socket_stream*))&TcpServer::DefaultConnection, this, loop, handler));
+                return loop->RunInLoop(std::bind((bool(TcpServer::*)(EventLoop*, socket_stream*))&TcpServer::DefaultAccepts, this, loop, handler));
             }
         }
         return false;
     }
 
-    void TcpServer::DefaultConnection(socket_stream* handler, int status)
+    void TcpServer::DefaultAccepts(socket_stream* handler, int status)
     {
         if (status < 0)
         {
@@ -170,7 +170,7 @@ namespace Evpp
         {
             if (nullptr != watcher)
             {
-                watcher->DefaultConnection(handler);
+                watcher->DefaultAccepts(handler);
             }
         }
     }

@@ -19,7 +19,16 @@ namespace Evpp
     typedef std::function<void(EventLoop*, const u96)>                                                                                                      InterfaceDiscons;
     typedef std::function<bool(EventLoop*, const std::shared_ptr<TcpSession>&, const u96)>                                                                  InterfaceConnect;
 	typedef std::function<bool(EventLoop*, const std::shared_ptr<TcpSession>&, const std::shared_ptr<TcpBuffer>&, const u96)>                               InterfaceMessage;
-	// InterfaceMessage InterfaceAccepts InterfaceDiscons InterfaceConnect
+	
+	namespace Import
+    {
+		bool DefaultAccepts(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const u96 index);
+
+		void DefaultDiscons(EventLoop* loop, const u96 index);
+
+        bool DefaultMessage(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const std::shared_ptr<TcpBuffer>& buffer, const u96 index);
+	}
+
 	enum EventThreadStatus
 	{
 		None			= 1 << 0,

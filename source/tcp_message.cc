@@ -86,6 +86,11 @@ namespace Evpp
         return 0 == uv_write(request, handler, bufs, nbufs, &TcpMessage::DefaultSend);
     }
 
+    bool TcpMessage::SetSendBlocking(const u32 value)
+    {
+        return 0 == uv_stream_set_blocking(reinterpret_cast<socket_stream*>(tcp_socket.get()), value);
+    }
+
     bool TcpMessage::CheckClose(socket_stream* handler)
     {
         if (nullptr != handler)

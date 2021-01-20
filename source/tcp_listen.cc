@@ -64,6 +64,6 @@ namespace Evpp
 
     bool TcpListen::ListenTcpService(const u96 index)
     {
-        return 0 == uv_listen(reinterpret_cast<socket_stream*>(tcp_server[index].get()), SOMAXCONN, &TcpServer::DefaultConnection);
+        return 0 == uv_listen(reinterpret_cast<socket_stream*>(tcp_server[index].get()), SOMAXCONN, &TcpServer::DefaultAccepts);
     }
 }

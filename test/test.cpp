@@ -24,6 +24,9 @@ int main()
 
     Evpp::TcpServer server(&ev, share);
     server.AddListenPort("127.0.0.1", 51322).AddListenPort("0.0.0.0", 51333).AddListenPort("::1", 51333);
+    server.SetAcceptsCallback(std::bind(&Evpp::Import::DefaultAccepts, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+    server.SetDisconsCallback(std::bind(&Evpp::Import::DefaultDiscons, std::placeholders::_1, std::placeholders::_2));
+    server.SetMessageCallback(std::bind(&Evpp::Import::DefaultMessage, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
     server.CreaterServer();
     Evpp::EventTimerVesse timertest(&ev);
     timertest.AssignTimer(1, 0, 3000);

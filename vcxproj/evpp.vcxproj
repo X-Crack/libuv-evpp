@@ -30,6 +30,7 @@
     <ClCompile Include="..\source\event\event_status.cc" />
     <ClCompile Include="..\source\event\event_timer.cc" />
     <ClCompile Include="..\source\event\event_timer_vesse.cc" />
+    <ClCompile Include="..\source\event\event_untlity.cc" />
     <ClCompile Include="..\source\tcp_listen.cc" />
     <ClCompile Include="..\source\tcp_message.cc" />
     <ClCompile Include="..\source\tcp_server.cc" />

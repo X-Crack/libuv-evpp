@@ -63,6 +63,9 @@
     <ClCompile Include="..\source\event\event_signal.cc">
       <Filter>event</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\event\event_untlity.cc">
+      <Filter>event</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\include\platform.h">
