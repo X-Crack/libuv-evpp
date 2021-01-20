@@ -13,6 +13,12 @@
     <Filter Include="socket">
       <UniqueIdentifier>{25c824d9-8621-4a8c-8be6-62a4bee728a4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="socket\server">
+      <UniqueIdentifier>{fffd8b49-cc08-47a5-8f92-cc39c13c7b3e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="socket\client">
+      <UniqueIdentifier>{18fad710-92c5-4e6d-9092-e9ceef2837c1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\event\event_loop.cc">
@@ -39,15 +45,6 @@
     <ClCompile Include="..\source\event\event_loop_thread_pool.cc">
       <Filter>event</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\tcp_server.cc">
-      <Filter>socket</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\tcp_listen.cc">
-      <Filter>socket</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\tcp_socket.cc">
-      <Filter>socket</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\tcp_session.cc">
       <Filter>socket</Filter>
     </ClCompile>
@@ -65,6 +62,21 @@
     </ClCompile>
     <ClCompile Include="..\source\event\event_untlity.cc">
       <Filter>event</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\tcp_listen.cc">
+      <Filter>socket\server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\tcp_server.cc">
+      <Filter>socket\server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\tcp_socket.cc">
+      <Filter>socket\server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\tcp_client.cc">
+      <Filter>socket\client</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\tcp_connect.cc">
+      <Filter>socket\client</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -129,6 +141,12 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\source\include\event_signal.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\tcp_client.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\tcp_connect.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

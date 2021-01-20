@@ -22,28 +22,31 @@ namespace Evpp
         {
             tcp_server.push_back(std::make_unique<socket_tcp>());
             {
-                if (InitTcpService(i))
+                if (nullptr == tcp_server[i]->data)
                 {
                     tcp_server[i]->data = server;
                     {
-                        uv_tcp_simultaneous_accepts(tcp_server[i].get(), 0);
-                        
-                        if (tcp_proble)
+                        if (InitTcpService(i))
                         {
-                            if (uv_tcp_nodelay(tcp_server[i].get(), 1))
+                            uv_tcp_simultaneous_accepts(tcp_server[i].get(), 0);
+
+                            if (tcp_proble)
                             {
-                                printf("初始化失败\n");
+                                if (uv_tcp_nodelay(tcp_server[i].get(), 1))
+                                {
+                                    printf("初始化失败\n");
+                                }
                             }
-                        }
 
-                        if (false == BindTcpService(i, &socket->GetSocketInfo(i)->addr))
-                        {
-                            return false;
-                        }
+                            if (false == BindTcpService(i, &socket->GetSocketInfo(i)->addr))
+                            {
+                                return false;
+                            }
 
-                        if (false == ListenTcpService(i))
-                        {
-                            return false;
+                            if (false == ListenTcpService(i))
+                            {
+                                return false;
+                            }
                         }
                     }
                 }
