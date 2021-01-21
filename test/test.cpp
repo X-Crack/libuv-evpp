@@ -35,7 +35,7 @@ int main()
     client.SetMessageCallback();
     client.CreaterClient();
     client.SetReconnect(true);
-    ev.ExitDispatch();
+    ev.ExecDispatch();
     getchar();
 
 

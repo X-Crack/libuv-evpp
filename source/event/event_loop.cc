@@ -36,7 +36,7 @@ namespace Evpp
         return event_queue->CreateQueue();
     }
 
-    bool EventLoop::ExitDispatch()
+    bool EventLoop::ExecDispatch()
     {
         if (0 != event_base)
         {

@@ -93,7 +93,7 @@ namespace Evpp
                 {
                     if (loop->InitialEvent())
                     {
-                        if (false == loop->ExitDispatch())
+                        if (false == loop->ExecDispatch())
                         {
                             assert(0);
                             return;

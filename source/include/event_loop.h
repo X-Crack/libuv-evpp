@@ -18,7 +18,7 @@ namespace Evpp
     public:
         bool InitialEvent();
     public:
-        bool ExitDispatch();
+        bool ExecDispatch();
         bool StopDispatch();
     public:
         bool RunInLoop(const Functor& function);
