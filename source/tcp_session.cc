@@ -16,7 +16,7 @@ namespace Evpp
         system_discons(discons),
         system_message(message)
     {
-        AssignTimer(1, 0, 1000);
+        //AssignTimer(1, 0, 1000);
     }
 
     TcpSession::~TcpSession()

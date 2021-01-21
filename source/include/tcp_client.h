@@ -2,9 +2,11 @@
 #define __TCP_CLIENT_H__
 #include <config.h>
 #include <memory>
+#include <atomic>
 namespace Evpp
 {
     class EventLoop;
+    class EventTimer;
     class EventSocket;
     class TcpConnect;
     class TcpSession;
@@ -17,20 +19,39 @@ namespace Evpp
     public:
         bool CreaterClient();
         bool AddListenPort(const std::string& server_address, const u16 port);
+        void SetConnectCallback(const InterfaceConnect& connect);
+        void SetFailureCallback(const InterfaceFailure& failure);
+        void SetDisconsCallback(const InterfaceDiscons& discons);
+        void SetMessageCallback(const InterfaceMessage& message);
     private:
-        void DefaultConnect(socket_connect* request);
-        void DefaultFailure(socket_connect* request, int status);
+        bool InitialSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const u96 index);
+        bool DeletedSession();
+        bool RemovedSession();
+    private:
+        bool ReConnectAfter(const u64 delay, const u64 time);
+        bool ConnectService();
+    private:
+        void DefaultConnect();
+        void DefaultFailure(int status);
         void DefaultDiscons(EventLoop* loop, const u96 index);
         bool DefaultMessage(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const std::shared_ptr<TcpBuffer>& buffer, const u96 index);
+    private:
+        void DefaultTimercb(EventLoop* loop, const std::shared_ptr<EventTimer>& timer, const u96 index);
     private:
         static void DefaultConnect(socket_connect* hanlder, int status);
     private:
         EventLoop*                                          event_loop;
         u96                                                 safe_index;
+        InterfaceConnect                                    socket_connect_;
+        InterfaceFailure                                    socket_failure;
+        InterfaceDiscons                                    socket_discons;
+        InterfaceMessage                                    socket_message;
         std::shared_ptr<socket_tcp>                         tcp_client;
         std::unique_ptr<EventSocket>                        tcp_socket;
         std::unique_ptr<TcpConnect>                         tcp_connect;
         std::shared_ptr<TcpSession>                         tcp_session;
+        std::shared_ptr<EventTimer>                         reconn_timer;
+        std::atomic<bool>                                   connect_mark;
     };
 }
 #endif // __TCP_CLIENT_H__

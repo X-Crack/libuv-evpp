@@ -143,8 +143,12 @@ namespace Evpp
     {
         if (nullptr != handle)
         {
-            event_data.clear();
-            event_data.shrink_to_fit();
+            if (nullptr != tcp_socket->data)
+            {
+                event_data.clear();
+                event_data.shrink_to_fit();
+                tcp_socket->data = nullptr;
+            }
         }
 
         if (nullptr != system_discons)

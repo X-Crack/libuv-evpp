@@ -14,10 +14,11 @@ namespace Evpp
 	class TcpBuffer;
 	typedef std::function<void()>                                                                                                                           Handler;
 	typedef std::function<bool()>                                                                                                                           Functor;
-    typedef std::function<void(EventLoop*, const std::shared_ptr<TcpSession>&, const std::shared_ptr<EventTimer>&, const u96)>                              EventTimerHandler;
+    typedef std::function<void(EventLoop*, const std::shared_ptr<EventTimer>&, const u96)>																	EventTimerHandle;
     typedef std::function<bool(EventLoop*, const std::shared_ptr<TcpSession>&, const u96)>                                                                  InterfaceAccepts;
-    typedef std::function<void(EventLoop*, const u96)>                                                                                                      InterfaceDiscons;
     typedef std::function<bool(EventLoop*, const std::shared_ptr<TcpSession>&, const u96)>                                                                  InterfaceConnect;
+    typedef std::function<bool(EventLoop*, const u96, const i32 status, const String*, const String*)>														InterfaceFailure;
+	typedef std::function<bool(EventLoop*, const u96)>                                                                                                      InterfaceDiscons;
 	typedef std::function<bool(EventLoop*, const std::shared_ptr<TcpSession>&, const std::shared_ptr<TcpBuffer>&, const u96)>                               InterfaceMessage;
 	
 	namespace Import

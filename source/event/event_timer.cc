@@ -2,10 +2,16 @@
 #include <event_loop.h>
 namespace Evpp
 {
-    EventTimer::EventTimer(EventLoop* loop, const u96 index) :
+    EventTimer::EventTimer(EventLoop* loop, const u96 index) : EventTimer(loop, EventTimerHandle(), index)
+    {
+
+    }
+
+    EventTimer::EventTimer(EventLoop* loop, const EventTimerHandle& callback, const u96 index) :
         event_loop(loop),
         event_time(new event_timer()),
-        timer_index(index)
+        safe_index(index),
+        event_callback(callback)
     {
         if (nullptr == event_time->data)
         {
@@ -20,6 +26,11 @@ namespace Evpp
 
     EventTimer::~EventTimer()
     {
+        if (nullptr != event_time->data)
+        {
+            event_time->data = nullptr;
+        }
+
         if (!KilledTimer())
         {
             printf("killedtimer error\n");
@@ -97,6 +108,14 @@ namespace Evpp
         return uv_timer_get_due_in(event_time);
     }
 
+    void EventTimer::SetEventTimerCallback(const EventTimerHandle& callback)
+    {
+        if (nullptr == event_callback)
+        {
+            event_callback = callback;
+        }
+    }
+
     void EventTimer::DefaultClose(event_handle* handler)
     {
         if (nullptr != handler)
@@ -108,17 +127,23 @@ namespace Evpp
 
     void EventTimer::OnNotify(event_timer* handler)
     {
-        EventTimer* watcher = static_cast<EventTimer*>(handler->data);
+        if (nullptr != handler)
         {
-            if (nullptr != watcher)
+            EventTimer* watcher = static_cast<EventTimer*>(handler->data);
             {
-                watcher->OnNotify();
+                if (nullptr != watcher)
+                {
+                    watcher->OnNotify();
+                }
             }
         }
     }
 
     void EventTimer::OnNotify()
     {
-        printf("On Timer %lld\n", GetTimerduein());
+        if (nullptr != event_callback)
+        {
+            event_callback(event_loop, shared_from_this(), safe_index);
+        }
     }
 }

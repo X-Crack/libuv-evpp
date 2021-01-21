@@ -8,7 +8,6 @@ namespace Evpp
         event_loop(loop),
         tcp_client(client),
         tcp_connect(std::make_unique<socket_connect>())
-
     {
 
     }
@@ -18,24 +17,13 @@ namespace Evpp
 
     }
 
-    bool TcpConnect::ConnectServers(const std::unique_ptr<EventSocket>& socket, TcpClient* client)
+    bool TcpConnect::ConnectServers(const std::unique_ptr<EventSocket>& socket, void* client)
     {
-        if (nullptr == tcp_connect->data)
+        if (InitialConnect(client))
         {
-            tcp_connect->data = client;
-            {
-                if (InitTcpService())
-                {
-                    if (uv_tcp_nodelay(tcp_client.get(), 1))
-                    {
-                        printf("初始化失败\n");
-                    }
-
-                    return CreaterConnect(&socket->GetSocketInfo()->addr);
-                }
-            }
+            return ConnectService(socket);
         }
-        return false;
+        return ConnectService(socket);
     }
 
     bool TcpConnect::InitTcpService()
@@ -46,5 +34,29 @@ namespace Evpp
     bool TcpConnect::CreaterConnect(const sockaddr* addr)
     {
         return 0 == uv_tcp_connect(tcp_connect.get(), tcp_client.get(), addr, &TcpClient::DefaultConnect);
+    }
+
+    bool TcpConnect::ConnectService(const std::unique_ptr<EventSocket>& socket)
+    {
+        if (InitTcpService())
+        {
+            if (uv_tcp_nodelay(tcp_client.get(), 1))
+            {
+                printf("初始化失败\n");
+            }
+
+            return CreaterConnect(&socket->GetSocketInfo()->addr);
+        }
+        return false;
+    }
+
+    bool TcpConnect::InitialConnect(void* client)
+    {
+        if (nullptr == tcp_connect->data)
+        {
+            tcp_connect->data = client;
+            return true;
+        }
+        return false;
     }
 }

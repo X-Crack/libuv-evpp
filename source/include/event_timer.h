@@ -4,10 +4,11 @@
 namespace Evpp
 {
     class EventLoop;
-    class EventTimer
+    class EventTimer : public std::enable_shared_from_this<EventTimer>
     {
     public:
         explicit EventTimer(EventLoop* loop, const u96 index = 0);
+        explicit EventTimer(EventLoop* loop, const EventTimerHandle& callback, const u96 index = 0);
         virtual ~EventTimer();
     public:
         bool InitedTimer();
@@ -21,7 +22,9 @@ namespace Evpp
         bool ReStarTimerEx(const u64 delay, const u64 repeat);
     public:
         const u64 GetTimerduein();
-        const u96 GetTimerIndex() { return timer_index; };
+        const u96 GetTimerIndex() { return safe_index; };
+    public:
+        void SetEventTimerCallback(const EventTimerHandle& callback);
     private:
         static void DefaultClose(event_handle* handler);
     private:
@@ -30,7 +33,8 @@ namespace Evpp
     private:
         EventLoop*                                                  event_loop;
         event_timer*                                                event_time;
-        u96                                                         timer_index;
+        u96                                                         safe_index;
+        EventTimerHandle                                            event_callback;
     };
 }
 #endif // __EVENT_TIMER_H__
