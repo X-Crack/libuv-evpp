@@ -1,7 +1,8 @@
 #include <tcp_listen.h>
-#include <event_loop.h>
 #include <tcp_server.h>
-#include <tcp_socket.h>
+#include <event_loop.h>
+#include <event_socket.h>
+#include <event_socket_pool.h>
 namespace Evpp
 {
     TcpListen::TcpListen(EventLoop* loop, const bool proble) :
@@ -16,9 +17,9 @@ namespace Evpp
 
     }
 
-    bool TcpListen::CreaterListenService(const std::unique_ptr<TcpSocket>& socket, TcpServer* server)
+    bool TcpListen::CreaterListenService(const std::unique_ptr<EventSocketPool>& socket, TcpServer* server)
     {
-        for (u96 i = 0; i < socket->GetListeningPortSize(); ++i)
+        for (u96 i = 0; i < socket->GetSocketPoolSize(); ++i)
         {
             tcp_server.push_back(std::make_unique<socket_tcp>());
             {
@@ -38,7 +39,7 @@ namespace Evpp
                                 }
                             }
 
-                            if (false == BindTcpService(i, &socket->GetSocketInfo(i)->addr))
+                            if (false == BindTcpService(i, &socket->GetEventSocket(i)->GetSocketInfo()->addr))
                             {
                                 return false;
                             }

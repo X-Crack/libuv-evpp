@@ -6,15 +6,15 @@
 namespace Evpp
 {
     class EventLoop;
+    class EventSocketPool;
     class TcpServer;
-    class TcpSocket;
     class TcpListen
     {
     public:
         explicit TcpListen(EventLoop* loop, const bool proble = true);
         virtual ~TcpListen();
     public:
-        bool CreaterListenService(const std::unique_ptr<TcpSocket>& socket, TcpServer* server);
+        bool CreaterListenService(const std::unique_ptr<EventSocketPool>& socket, TcpServer* server);
     private:
         bool InitTcpService(const u96 index);
         bool BindTcpService(const u96 index, const struct sockaddr* addr);

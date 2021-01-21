@@ -5,7 +5,8 @@
 #include <event_loop.h>
 #include <event_loop_thread.h>
 #include <event_share.h>
-#include <tcp_socket.h>
+#include <event_socket.h>
+
 #include <tcp_listen.h>
 #include <tcp_server.h>
 
@@ -26,6 +27,7 @@ int main()
 
     Evpp::TcpClient client(&ev);
     client.AddListenPort("127.0.0.1", 60000);
+    client.AddListenPort("127.0.0.1", 60001);
     client.CreaterClient();
 
     ev.ExitDispatch();

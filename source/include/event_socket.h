@@ -17,19 +17,21 @@ namespace Evpp
         };
     };
 
-    class TcpSocket
+    class EventSocket
     {
     public:
-        explicit TcpSocket();
-        virtual ~TcpSocket();
+        explicit EventSocket();
+        virtual ~EventSocket();
     public:
-        bool InitializeTcpSocket();
-        bool AddListenPort(const std::string& server_address, const u16 port);
-        u96  GetListeningPortSize();
-    public:
-        std::unique_ptr<SocketInfo>& GetSocketInfo(const u96 index);
+        bool CreaterSocket(const std::string& server_address, const u16 port);
+        const std::string& GetHostAddress();
+        const u16 GetHostPort();
     private:
-        std::vector<std::unique_ptr<SocketInfo>>                                        socket_info;
+        bool InitialSocket();
+    public:
+        const std::unique_ptr<SocketInfo>& GetSocketInfo();
+    private:
+        std::unique_ptr<SocketInfo>                                        socket_t;
     };
 }
 #endif // __TCP_SOCKET_H__

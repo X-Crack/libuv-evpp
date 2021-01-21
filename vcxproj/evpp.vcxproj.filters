@@ -69,14 +69,14 @@
     <ClCompile Include="..\source\tcp_server.cc">
       <Filter>socket\server</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\tcp_socket.cc">
-      <Filter>socket\server</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\tcp_client.cc">
       <Filter>socket\client</Filter>
     </ClCompile>
     <ClCompile Include="..\source\tcp_connect.cc">
       <Filter>socket\client</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\event_socket.cc">
+      <Filter>event</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -122,9 +122,6 @@
     <ClInclude Include="..\source\include\tcp_listen.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\include\tcp_socket.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\include\tcp_session.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -147,6 +144,15 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\source\include\tcp_connect.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\event_socket.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\event_socket_pool.cc">
+      <Filter>event</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\event_socket_pool.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

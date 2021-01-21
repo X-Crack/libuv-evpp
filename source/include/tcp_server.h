@@ -9,7 +9,7 @@ namespace Evpp
     class EventLoop;
     class EventShare;
     class EventLoopThreadPool;
-    class TcpSocket;
+    class EventSocketPool;
     class TcpListen;
     class TcpSession;
     class TcpServer
@@ -21,7 +21,7 @@ namespace Evpp
         friend TcpListen;
     public:
         bool CreaterServer();
-        TcpServer& AddListenPort(const std::string& server_address, const u16 port);
+        bool AddListenPort(const std::string& server_address, const u16 port);
     public:
         void SetAcceptsCallback(const InterfaceAccepts& accepts);
         void SetDisconsCallback(const InterfaceDiscons& discons);
@@ -50,7 +50,7 @@ namespace Evpp
         InterfaceDiscons                                                socket_discons;
         InterfaceMessage                                                socket_message;
         std::unique_ptr<EventLoopThreadPool>                            event_thread_pool;
-        std::unique_ptr<TcpSocket>                                      tcp_socket;
+        std::unique_ptr<EventSocketPool>                                tcp_socket;
         std::unique_ptr<TcpListen>                                      tcp_listen;
         std::atomic<u96>											    tcp_index;
         std::unordered_map<u96, std::shared_ptr<TcpSession>>            tcp_session;

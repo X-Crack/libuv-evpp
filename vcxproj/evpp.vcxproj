@@ -37,7 +37,7 @@
     <ClCompile Include="..\source\tcp_message.cc" />
     <ClCompile Include="..\source\tcp_server.cc" />
     <ClCompile Include="..\source\tcp_session.cc" />
-    <ClCompile Include="..\source\tcp_socket.cc" />
+    <ClCompile Include="..\source\event_socket.cc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\include\buffer.h" />
@@ -61,8 +61,10 @@
     <ClInclude Include="..\source\include\tcp_message.h" />
     <ClInclude Include="..\source\include\tcp_server.h" />
     <ClInclude Include="..\source\include\tcp_session.h" />
-    <ClInclude Include="..\source\include\tcp_socket.h" />
+    <ClInclude Include="..\source\include\event_socket.h" />
+    <ClInclude Include="..\source\include\event_socket_pool.h" />
     <ClInclude Include="..\source\include\type.h" />
+    <ClInclude Include="..\source\event_socket_pool.cc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

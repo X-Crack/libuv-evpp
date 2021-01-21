@@ -1,69 +1,50 @@
 #include <tcp_connect.h>
-#include <tcp_socket.h>
 #include <tcp_client.h>
+#include <event_socket.h>
 #include <event_loop.h>
 namespace Evpp
 {
-    TcpConnect::TcpConnect(EventLoop* loop) : 
+    TcpConnect::TcpConnect(EventLoop* loop, const std::shared_ptr<socket_tcp>& client) :
         event_loop(loop),
-        tcp_connect(new socket_connect())
+        tcp_client(client),
+        tcp_connect(std::make_unique<socket_connect>())
+
     {
-        if (nullptr != tcp_connect)
-        {
-            if (nullptr == tcp_connect->data)
-            {
-                tcp_connect->data = this;
-            }
-        }
+
     }
 
     TcpConnect::~TcpConnect()
     {
-        if (nullptr != tcp_connect)
-        {
-            delete tcp_connect;
-            tcp_connect = nullptr;
-        }
+
     }
 
-    bool TcpConnect::ConnectServers(const std::unique_ptr<TcpSocket>& socket, TcpClient* client)
+    bool TcpConnect::ConnectServers(const std::unique_ptr<EventSocket>& socket, TcpClient* client)
     {
-        for (u96 i = 0; i < socket->GetListeningPortSize(); ++i) 
+        if (nullptr == tcp_connect->data)
         {
-            tcp_client.push_back(std::make_unique<socket_tcp>());
+            tcp_connect->data = client;
             {
-                if (nullptr == tcp_client[i]->data)
+                if (InitTcpService())
                 {
-                    tcp_client[i]->data = client;
+                    if (uv_tcp_nodelay(tcp_client.get(), 1))
                     {
-                        if (false == InitTcpService(i))
-                        {
-                            break;
-                        }
-
-                        if (uv_tcp_nodelay(tcp_client[i].get(), 1))
-                        {
-                            printf("初始化失败\n");
-                        }
-
-                        if (false == ClasTcpService(i, &socket->GetSocketInfo(i)->addr))
-                        {
-                            break;
-                        }
+                        printf("初始化失败\n");
                     }
+
+                    return CreaterConnect(&socket->GetSocketInfo()->addr);
                 }
             }
         }
         return false;
     }
 
-    bool TcpConnect::InitTcpService(const u96 index)
+    bool TcpConnect::InitTcpService()
     {
-        return 0 == uv_tcp_init(event_loop->EventBasic(), tcp_client[index].get());
+        return 0 == uv_tcp_init(event_loop->EventBasic(), tcp_client.get());
     }
 
-    bool TcpConnect::ClasTcpService(const u96 index, const sockaddr* addr)
+    bool TcpConnect::CreaterConnect(const sockaddr* addr)
     {
-        return 0 == uv_tcp_connect(tcp_connect, tcp_client[index].get(), addr, &TcpClient::DefaultConnect);
+        return 0 == uv_tcp_connect(tcp_connect.get(), tcp_client.get(), addr, &TcpClient::DefaultConnect);
     }
 }

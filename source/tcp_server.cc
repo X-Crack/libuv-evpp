@@ -1,11 +1,12 @@
 #include <tcp_server.h>
 #include <tcp_listen.h>
-#include <tcp_socket.h>
 #include <tcp_session.h>
-
 #include <event_share.h>
+#include <event_socket.h>
+#include <event_socket_pool.h>
 #include <event_loop.h>
 #include <event_loop_thread_pool.h>
+
 
 namespace Evpp
 {
@@ -21,7 +22,7 @@ namespace Evpp
         socket_discons(discons),
         socket_message(message),
         event_thread_pool(std::make_unique<EventLoopThreadPool>(loop, share, share->GetLoopsSize())),
-        tcp_socket(std::make_unique<TcpSocket>()),
+        tcp_socket(std::make_unique<EventSocketPool>()),
         tcp_listen(std::make_unique<TcpListen>(loop, true)),
         tcp_index(0)
     {
@@ -35,7 +36,7 @@ namespace Evpp
 
     bool TcpServer::CreaterServer()
     {
-        if (tcp_socket && tcp_socket->InitializeTcpSocket() && tcp_listen)
+        if (tcp_socket && tcp_listen)
         {
             if (event_thread_pool->CreaterEventThreadPool() && event_thread_pool->InitialEventThreadPool())
             {
@@ -45,13 +46,13 @@ namespace Evpp
         return false;
     }
 
-    TcpServer& TcpServer::AddListenPort(const std::string& server_address, const u16 port)
+    bool TcpServer::AddListenPort(const std::string& server_address, const u16 port)
     {
-        if (false == tcp_socket->AddListenPort(server_address, port))
+        if (nullptr != tcp_socket)
         {
-            printf("server address is not\n");
+            return tcp_socket->AddListenPort(server_address, port);
         }
-        return *this;
+        return false;
     }
 
     void TcpServer::SetAcceptsCallback(const InterfaceAccepts& accepts)
