@@ -5,8 +5,9 @@
 #include <event_loop.h>
 namespace Evpp
 {
-    TcpClient::TcpClient(EventLoop* loop) : 
+    TcpClient::TcpClient(EventLoop* loop, const u96 index) :
         event_loop(loop),
+        safe_index(index),
         tcp_client(std::make_shared<socket_tcp>()),
         tcp_socket(std::make_unique<EventSocket>()),
         tcp_connect(std::make_unique<TcpConnect>(loop, tcp_client))
@@ -39,7 +40,7 @@ namespace Evpp
         tcp_session.reset(new TcpSession(
             event_loop, 
             tcp_client,
-            0,
+            safe_index,
             std::bind(&TcpClient::DefaultDiscons, this, std::placeholders::_1, std::placeholders::_2),
             std::bind(&TcpClient::DefaultMessage, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4)
         ));

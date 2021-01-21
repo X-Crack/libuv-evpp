@@ -11,7 +11,7 @@ namespace Evpp
     class TcpClient
     {
     public:
-        explicit TcpClient(EventLoop* loop);
+        explicit TcpClient(EventLoop* loop, const u96 index = 1);
         virtual ~TcpClient();
         friend TcpConnect;
     public:
@@ -26,6 +26,7 @@ namespace Evpp
         static void DefaultConnect(socket_connect* hanlder, int status);
     private:
         EventLoop*                                          event_loop;
+        u96                                                 safe_index;
         std::shared_ptr<socket_tcp>                         tcp_client;
         std::unique_ptr<EventSocket>                        tcp_socket;
         std::unique_ptr<TcpConnect>                         tcp_connect;

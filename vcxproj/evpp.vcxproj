@@ -27,6 +27,8 @@
     <ClCompile Include="..\source\event\event_queue.cc" />
     <ClCompile Include="..\source\event\event_share.cc" />
     <ClCompile Include="..\source\event\event_signal.cc" />
+    <ClCompile Include="..\source\event\event_socket.cc" />
+    <ClCompile Include="..\source\event\event_socket_pool.cc" />
     <ClCompile Include="..\source\event\event_status.cc" />
     <ClCompile Include="..\source\event\event_timer.cc" />
     <ClCompile Include="..\source\event\event_timer_vesse.cc" />
@@ -37,7 +39,6 @@
     <ClCompile Include="..\source\tcp_message.cc" />
     <ClCompile Include="..\source\tcp_server.cc" />
     <ClCompile Include="..\source\tcp_session.cc" />
-    <ClCompile Include="..\source\event_socket.cc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\include\buffer.h" />
@@ -64,7 +65,6 @@
     <ClInclude Include="..\source\include\event_socket.h" />
     <ClInclude Include="..\source\include\event_socket_pool.h" />
     <ClInclude Include="..\source\include\type.h" />
-    <ClInclude Include="..\source\event_socket_pool.cc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
