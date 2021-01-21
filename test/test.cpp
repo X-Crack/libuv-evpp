@@ -19,6 +19,7 @@
 #include <tcp_client.h>
 
 #include <udp_listen.h>
+#include <udp_server.h>
 
 int main()
 {
@@ -27,10 +28,10 @@ int main()
     std::unique_ptr<Evpp::EventSocketPool> socket = std::make_unique<Evpp::EventSocketPool>();
     Evpp::EventLoop ev;
     ev.InitialEvent();
-    Evpp::UdpListen udp(&ev);
-    socket->AddListenPort("0.0.0.0", 60000);
-    socket->AddListenPort("0.0.0.0", 60001);
-    udp.CreaterListenService(socket);
+    Evpp::UdpServer udp(&ev);
+    udp.AddListenPort("0.0.0.0", 60000);
+    udp.AddListenPort("0.0.0.0", 60001);
+    udp.CreaterServer();
 
 
 
