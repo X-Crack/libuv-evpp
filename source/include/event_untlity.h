@@ -17,7 +17,8 @@ namespace Evpp
     typedef std::function<void(EventLoop*, const std::shared_ptr<EventTimer>&, const u96)>																	EventTimerHandle;
     typedef std::function<bool(EventLoop*, const std::shared_ptr<TcpSession>&, const u96)>                                                                  InterfaceAccepts;
     typedef std::function<bool(EventLoop*, const std::shared_ptr<TcpSession>&, const u96)>                                                                  InterfaceConnect;
-    typedef std::function<bool(EventLoop*, const u96, const i32 status, const String*, const String*)>														InterfaceFailure;
+	typedef std::function<bool(EventLoop*, const std::shared_ptr<TcpSession>&, const u96)>                                                                  InterfaceRestore;
+    typedef std::function<bool(EventLoop*, const u96, const i32, const String*, const String*)>																InterfaceFailure;
 	typedef std::function<bool(EventLoop*, const u96)>                                                                                                      InterfaceDiscons;
 	typedef std::function<bool(EventLoop*, const std::shared_ptr<TcpSession>&, const std::shared_ptr<TcpBuffer>&, const u96)>                               InterfaceMessage;
 	
@@ -25,9 +26,15 @@ namespace Evpp
     {
 		bool DefaultAccepts(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const u96 index);
 
-		void DefaultDiscons(EventLoop* loop, const u96 index);
+		bool DefaultDiscons(EventLoop* loop, const u96 index);
 
         bool DefaultMessage(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const std::shared_ptr<TcpBuffer>& buffer, const u96 index);
+
+		bool DefaultConnect(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const u96 index);
+
+		bool DefaultRestore(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const u96 index);
+
+		bool DefaultFailure(EventLoop* loop, const u96 index, const i32 status, const String* name, const String* msgs);
 	}
 
 	enum EventThreadStatus

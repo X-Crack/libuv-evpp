@@ -13,7 +13,8 @@ namespace Evpp
         tcp_socket(std::make_unique<EventSocket>()),
         tcp_connect(std::make_unique<TcpConnect>(loop, tcp_client)),
         reconn_timer(std::make_shared<EventTimer>(loop, std::bind(&TcpClient::DefaultTimercb, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3))),
-        connect_mark(false)
+        connect_mark(false),
+        connect_tag(false)
     {
         
     }
@@ -46,6 +47,14 @@ namespace Evpp
         if (nullptr == socket_connect_)
         {
             socket_connect_ = connect;
+        }
+    }
+
+    void TcpClient::SetRestoreCallback(const InterfaceRestore& restore)
+    {
+        if (nullptr == socket_restore)
+        {
+            socket_restore = restore;
         }
     }
 
@@ -124,25 +133,43 @@ namespace Evpp
 
     void TcpClient::DefaultConnect()
     {
-        if (InitialSession(event_loop, tcp_client, safe_index))
+        if (nullptr != event_loop)
         {
-            if (nullptr != tcp_session && nullptr != socket_connect_ && nullptr != event_loop)
+            if (InitialSession(event_loop, tcp_client, safe_index))
             {
-                socket_connect_(event_loop, tcp_session, safe_index);
+                if (nullptr != tcp_session)
+                {
+                    if (connect_tag.load())
+                    {
+                        if (nullptr != socket_restore)
+                        {
+                            socket_restore(event_loop, tcp_session, safe_index);
+                        }
+                        return;
+                    }
+
+                    if (nullptr != socket_connect_)
+                    {
+                        socket_connect_(event_loop, tcp_session, safe_index);
+                    }
+                }
             }
         }
     }
 
     void TcpClient::DefaultFailure(int status)
     {
-        String error_msgs[96] = {};
-        String error_name[96] = {};
+        String error_name[96];
+        String error_msgs[96];
         {
             if (nullptr != socket_failure)
             {
-                if (socket_failure(event_loop, safe_index, status, error_name, error_msgs))
+                if (socket_failure(event_loop, safe_index, status, uv_err_name_r(status, error_name, 96), uv_strerror_r(status, error_msgs, 96)))
                 {
-
+                    if (connect_mark.exchange(false))
+                    {
+                        event_loop->RunInLoop(std::bind(&TcpClient::ReConnectAfter, this, 3000, 3000));
+                    }
                 }
             }
         }
@@ -154,13 +181,11 @@ namespace Evpp
         {
             if (socket_discons(loop, index))
             {
-                
+                if (connect_mark.exchange(false))
+                {
+                    loop->RunInLoop(std::bind(&TcpClient::RemovedSession, this));
+                }
             }
-        }
-
-        if (connect_mark.exchange(false))
-        {
-            loop->RunInLoop(std::bind(&TcpClient::RemovedSession, this));
         }
     }
 
@@ -183,11 +208,17 @@ namespace Evpp
                 return;
             }
 
-            if (nullptr == tcp_session)
+            if (nullptr != tcp_session)
             {
-                if (ConnectService())
+                return;
+            }
+
+            if (ConnectService())
+            {
+                if (timer->StopedTimer())
                 {
-                    connect_mark.store(timer->StopedTimer());
+                    connect_tag.compare_exchange_strong(connect_tag._Storage._Value, true);
+                    connect_mark.compare_exchange_strong(connect_mark._Storage._Value,true);
                 }
             }
         }

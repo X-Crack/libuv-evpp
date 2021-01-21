@@ -26,8 +26,13 @@ int main()
 
 
     Evpp::TcpClient client(&ev);
-    client.AddListenPort("127.0.0.1", 60000);
+    //client.AddListenPort("127.0.0.1", 60000);
     client.AddListenPort("127.0.0.1", 60001);
+    client.SetConnectCallback();
+    client.SetRestoreCallback();
+    client.SetFailureCallback();
+    client.SetDisconsCallback();
+    client.SetMessageCallback();
     client.CreaterClient();
 
     ev.ExitDispatch();

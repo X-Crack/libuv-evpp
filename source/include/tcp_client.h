@@ -19,10 +19,11 @@ namespace Evpp
     public:
         bool CreaterClient();
         bool AddListenPort(const std::string& server_address, const u16 port);
-        void SetConnectCallback(const InterfaceConnect& connect);
-        void SetFailureCallback(const InterfaceFailure& failure);
-        void SetDisconsCallback(const InterfaceDiscons& discons);
-        void SetMessageCallback(const InterfaceMessage& message);
+        void SetConnectCallback(const InterfaceConnect& connect = &Evpp::Import::DefaultConnect);
+        void SetRestoreCallback(const InterfaceRestore& restore = &Evpp::Import::DefaultRestore);
+        void SetFailureCallback(const InterfaceFailure& failure = &Evpp::Import::DefaultFailure);
+        void SetDisconsCallback(const InterfaceDiscons& discons = &Evpp::Import::DefaultDiscons);
+        void SetMessageCallback(const InterfaceMessage& message = &Evpp::Import::DefaultMessage);
     private:
         bool InitialSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const u96 index);
         bool DeletedSession();
@@ -43,6 +44,7 @@ namespace Evpp
         EventLoop*                                          event_loop;
         u96                                                 safe_index;
         InterfaceConnect                                    socket_connect_;
+        InterfaceRestore                                    socket_restore;
         InterfaceFailure                                    socket_failure;
         InterfaceDiscons                                    socket_discons;
         InterfaceMessage                                    socket_message;
@@ -52,6 +54,7 @@ namespace Evpp
         std::shared_ptr<TcpSession>                         tcp_session;
         std::shared_ptr<EventTimer>                         reconn_timer;
         std::atomic<bool>                                   connect_mark;
+        std::atomic<bool>                                   connect_tag;
     };
 }
 #endif // __TCP_CLIENT_H__
