@@ -19,11 +19,15 @@ namespace Evpp
 
     bool TcpConnect::ConnectServers(const std::unique_ptr<EventSocket>& socket, void* client)
     {
-        if (InitialConnect(client))
+        if (nullptr != socket && nullptr != client)
         {
+            if (InitialConnect(client))
+            {
+                return ConnectService(socket);
+            }
             return ConnectService(socket);
         }
-        return ConnectService(socket);
+        return false;
     }
 
     bool TcpConnect::InitTcpService()
@@ -38,14 +42,17 @@ namespace Evpp
 
     bool TcpConnect::ConnectService(const std::unique_ptr<EventSocket>& socket)
     {
-        if (InitTcpService())
+        if (nullptr != socket)
         {
-            if (uv_tcp_nodelay(tcp_client.get(), 1))
+            if (InitTcpService())
             {
-                printf("初始化失败\n");
-            }
+                if (uv_tcp_nodelay(tcp_client.get(), 1))
+                {
+                    printf("初始化失败\n");
+                }
 
-            return CreaterConnect(&socket->GetSocketInfo()->addr);
+                return CreaterConnect(&socket->GetSocketInfo()->addr);
+            }
         }
         return false;
     }

@@ -13,12 +13,15 @@ namespace Evpp
     class TcpClient
     {
     public:
-        explicit TcpClient(EventLoop* loop, const u96 index = 1);
+        explicit TcpClient(EventLoop* loop, const u96 index = 1, const u32 reconnect = 0);
         virtual ~TcpClient();
         friend TcpConnect;
     public:
         bool CreaterClient();
         bool AddListenPort(const std::string& server_address, const u16 port);
+        bool SetReconnect(const u32 reconnect);
+        void SetReconnectTimer(const u64 delay, const u64 time);
+    public:
         void SetConnectCallback(const InterfaceConnect& connect = &Evpp::Import::DefaultConnect);
         void SetRestoreCallback(const InterfaceRestore& restore = &Evpp::Import::DefaultRestore);
         void SetFailureCallback(const InterfaceFailure& failure = &Evpp::Import::DefaultFailure);
@@ -55,6 +58,9 @@ namespace Evpp
         std::shared_ptr<EventTimer>                         reconn_timer;
         std::atomic<bool>                                   connect_mark;
         std::atomic<bool>                                   connect_tag;
+        std::atomic<u32>                                    reconnect_after;
+        std::atomic<u64>                                    reconnect_delay;
+        std::atomic<u64>                                    reconnect_time;
     };
 }
 #endif // __TCP_CLIENT_H__

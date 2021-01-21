@@ -6,15 +6,18 @@
 #include <event_timer.h>
 namespace Evpp
 {
-    TcpClient::TcpClient(EventLoop* loop, const u96 index) :
+    TcpClient::TcpClient(EventLoop* loop, const u96 index, const u32 reconnect) :
         event_loop(loop),
         safe_index(index),
         tcp_client(std::make_shared<socket_tcp>()),
         tcp_socket(std::make_unique<EventSocket>()),
         tcp_connect(std::make_unique<TcpConnect>(loop, tcp_client)),
-        reconn_timer(std::make_shared<EventTimer>(loop, std::bind(&TcpClient::DefaultTimercb, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3))),
+        reconn_timer(std::make_shared<EventTimer>(loop, std::bind(&TcpClient::DefaultTimercb, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), index)),
         connect_mark(false),
-        connect_tag(false)
+        connect_tag(false),
+        reconnect_after(reconnect),
+        reconnect_delay(3000),
+        reconnect_time(3000)
     {
         
     }
@@ -40,6 +43,17 @@ namespace Evpp
     bool TcpClient::AddListenPort(const std::string& server_address, const u16 port)
     {
         return tcp_socket->CreaterSocket(server_address, port);
+    }
+
+    bool TcpClient::SetReconnect(const u32 reconnect)
+    {
+        return reconnect_after.compare_exchange_strong(reconnect_after._Storage._Value, reconnect);
+    }
+
+    void TcpClient::SetReconnectTimer(const u64 delay, const u64 time)
+    {
+        reconnect_delay.store(delay);
+        reconnect_time.store(time);
     }
 
     void TcpClient::SetConnectCallback(const InterfaceConnect& connect)
@@ -110,7 +124,7 @@ namespace Evpp
 
     bool TcpClient::RemovedSession()
     {
-        return DeletedSession() && ReConnectAfter(1000, 3000);
+        return DeletedSession() && ReConnectAfter(reconnect_delay.load(), reconnect_time.load());
     }
 
     bool TcpClient::ReConnectAfter(const u64 delay, const u64 time)
@@ -166,9 +180,12 @@ namespace Evpp
             {
                 if (socket_failure(event_loop, safe_index, status, uv_err_name_r(status, error_name, 96), uv_strerror_r(status, error_msgs, 96)))
                 {
-                    if (connect_mark.exchange(false))
+                    if (reconnect_after.load())
                     {
-                        event_loop->RunInLoop(std::bind(&TcpClient::ReConnectAfter, this, 3000, 3000));
+                        if (connect_mark.exchange(false))
+                        {
+                            event_loop->RunInLoop(std::bind(&TcpClient::ReConnectAfter, this, reconnect_delay.load(), reconnect_time.load()));
+                        }
                     }
                 }
             }
@@ -181,9 +198,12 @@ namespace Evpp
         {
             if (socket_discons(loop, index))
             {
-                if (connect_mark.exchange(false))
+                if (reconnect_after.load())
                 {
-                    loop->RunInLoop(std::bind(&TcpClient::RemovedSession, this));
+                    if (connect_mark.exchange(false))
+                    {
+                        loop->RunInLoop(std::bind(&TcpClient::RemovedSession, this));
+                    }
                 }
             }
         }
@@ -200,25 +220,27 @@ namespace Evpp
 
     void TcpClient::DefaultTimercb(EventLoop* loop, const std::shared_ptr<EventTimer>& timer, const u96 index)
     {
-        (void)index;
         if (nullptr != loop)
         {
-            if (connect_mark.load())
+            if (index == safe_index)
             {
-                return;
-            }
-
-            if (nullptr != tcp_session)
-            {
-                return;
-            }
-
-            if (ConnectService())
-            {
-                if (timer->StopedTimer())
+                if (connect_mark.load())
                 {
-                    connect_tag.compare_exchange_strong(connect_tag._Storage._Value, true);
-                    connect_mark.compare_exchange_strong(connect_mark._Storage._Value,true);
+                    return;
+                }
+
+                if (nullptr != tcp_session)
+                {
+                    return;
+                }
+
+                if (ConnectService())
+                {
+                    if (timer->StopedTimer())
+                    {
+                        connect_tag.compare_exchange_strong(connect_tag._Storage._Value, true);
+                        connect_mark.compare_exchange_strong(connect_mark._Storage._Value, true);
+                    }
                 }
             }
         }
@@ -232,7 +254,7 @@ namespace Evpp
             {
                 if (nullptr != watcher)
                 {
-                    status ? watcher->DefaultFailure(status)  : watcher->DefaultConnect();
+                    status ? watcher->DefaultFailure(status) : watcher->DefaultConnect();
                 }
             }
         }

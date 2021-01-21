@@ -34,7 +34,7 @@ int main()
     client.SetDisconsCallback();
     client.SetMessageCallback();
     client.CreaterClient();
-
+    client.SetReconnect(true);
     ev.ExitDispatch();
     getchar();
 
