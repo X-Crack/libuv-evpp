@@ -48,7 +48,7 @@ namespace Evpp
         std::unique_ptr<EventQueue>                             event_queue;
         std::unique_ptr<EventTimerVesse>                        event_timer_vesse;
         std::unordered_map<u96, std::unique_ptr<std::any>>      event_context;
-        i32                                                     safe_index;
+        i32                                                     self_index;
     };
 }
 #endif // __EVENT_LOOP_H__

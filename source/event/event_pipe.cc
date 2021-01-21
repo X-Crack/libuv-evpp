@@ -39,11 +39,14 @@ namespace Evpp
 
     void EventPipe::OnNotify(event_async* handler)
     {
-        EventPipe* watcher = static_cast<EventPipe*>(handler->data);
+        if (nullptr != handler)
         {
-            if (nullptr != watcher)
+            EventPipe* watcher = static_cast<EventPipe*>(handler->data);
             {
-                watcher->OnNotify();
+                if (nullptr != watcher)
+                {
+                    watcher->OnNotify();
+                }
             }
         }
     }

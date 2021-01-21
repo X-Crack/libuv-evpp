@@ -13,11 +13,20 @@
     <Filter Include="socket">
       <UniqueIdentifier>{25c824d9-8621-4a8c-8be6-62a4bee728a4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="socket\server">
+    <Filter Include="socket\tcp">
+      <UniqueIdentifier>{de674b0b-65e3-4b38-a5b1-0c3527d0a3c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="socket\tcp\server">
       <UniqueIdentifier>{fffd8b49-cc08-47a5-8f92-cc39c13c7b3e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="socket\client">
+    <Filter Include="socket\tcp\client">
       <UniqueIdentifier>{18fad710-92c5-4e6d-9092-e9ceef2837c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="socket\udp">
+      <UniqueIdentifier>{eb4fa0cc-9826-4624-8848-c38e01aa0a8c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="socket\udp\server">
+      <UniqueIdentifier>{54513ff4-94b4-4a1b-93a7-aa96dc001532}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -45,12 +54,6 @@
     <ClCompile Include="..\source\event\event_loop_thread_pool.cc">
       <Filter>event</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\tcp_session.cc">
-      <Filter>socket</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\tcp_message.cc">
-      <Filter>socket</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\event\event_timer.cc">
       <Filter>event</Filter>
     </ClCompile>
@@ -64,22 +67,40 @@
       <Filter>event</Filter>
     </ClCompile>
     <ClCompile Include="..\source\tcp_listen.cc">
-      <Filter>socket\server</Filter>
+      <Filter>socket\tcp\server</Filter>
     </ClCompile>
     <ClCompile Include="..\source\tcp_server.cc">
-      <Filter>socket\server</Filter>
+      <Filter>socket\tcp\server</Filter>
     </ClCompile>
     <ClCompile Include="..\source\tcp_client.cc">
-      <Filter>socket\client</Filter>
+      <Filter>socket\tcp\client</Filter>
     </ClCompile>
     <ClCompile Include="..\source\tcp_connect.cc">
-      <Filter>socket\client</Filter>
+      <Filter>socket\tcp\client</Filter>
     </ClCompile>
     <ClCompile Include="..\source\event\event_socket.cc">
       <Filter>event</Filter>
     </ClCompile>
     <ClCompile Include="..\source\event\event_socket_pool.cc">
       <Filter>event</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\tcp_message.cc">
+      <Filter>socket\tcp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\tcp_session.cc">
+      <Filter>socket\tcp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\udp_listen.cc">
+      <Filter>socket\udp\server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\udp_server.cc">
+      <Filter>socket\udp\server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\udp_session.cc">
+      <Filter>socket\udp\server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\udp_message.cc">
+      <Filter>socket\udp\server</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -122,9 +143,6 @@
     <ClInclude Include="..\source\include\tcp_server.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\include\tcp_listen.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\include\tcp_session.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -153,6 +171,21 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\source\include\event_socket_pool.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\udp_listen.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\tcp_listen.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\udp_message.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\udp_session.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\udp_server.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

@@ -6,6 +6,7 @@
 #include <event_loop_thread.h>
 #include <event_share.h>
 #include <event_socket.h>
+#include <event_socket_pool.h>
 
 #include <tcp_listen.h>
 #include <tcp_server.h>
@@ -17,26 +18,41 @@
 
 #include <tcp_client.h>
 
+#include <udp_listen.h>
+
 int main()
 {
     printf("main thread:%d\n", GetCurrentThreadId());
 
+    std::unique_ptr<Evpp::EventSocketPool> socket = std::make_unique<Evpp::EventSocketPool>();
     Evpp::EventLoop ev;
     ev.InitialEvent();
+    Evpp::UdpListen udp(&ev);
+    socket->AddListenPort("0.0.0.0", 60000);
+    socket->AddListenPort("0.0.0.0", 60001);
+    udp.CreaterListenService(socket);
 
 
-    Evpp::TcpClient client(&ev);
-    //client.AddListenPort("127.0.0.1", 60000);
-    client.AddListenPort("127.0.0.1", 60001);
-    client.SetConnectCallback();
-    client.SetRestoreCallback();
-    client.SetFailureCallback();
-    client.SetDisconsCallback();
-    client.SetMessageCallback();
-    client.CreaterClient();
-    client.SetReconnect(true);
+
     ev.ExecDispatch();
     getchar();
+
+//     Evpp::EventLoop ev;
+//     ev.InitialEvent();
+// 
+// 
+//     Evpp::TcpClient client(&ev);
+//     //client.AddListenPort("127.0.0.1", 60000);
+//     client.AddListenPort("127.0.0.1", 60001);
+//     client.SetConnectCallback();
+//     client.SetRestoreCallback();
+//     client.SetFailureCallback();
+//     client.SetDisconsCallback();
+//     client.SetMessageCallback();
+//     client.CreaterClient();
+//     client.SetReconnect(true);
+//     ev.ExecDispatch();
+//     getchar();
 
 
 

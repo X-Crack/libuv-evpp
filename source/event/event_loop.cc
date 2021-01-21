@@ -9,7 +9,7 @@ namespace Evpp
         event_refer(0),
         event_queue(std::make_unique<EventQueue>(this)),
         event_timer_vesse(std::make_unique<EventTimerVesse>(this)),
-        safe_index(GetCurrentThreadId())
+        self_index(GetCurrentThreadId())
     {
         if (ChangeStatus(NOTYET, INITIALIZING))
         {
@@ -145,12 +145,12 @@ namespace Evpp
 
     bool EventLoop::SelftyThread()
     {
-        return static_cast<i32>(GetCurrentThreadId()) == this->safe_index;
+        return static_cast<i32>(GetCurrentThreadId()) == this->self_index;
     }
 
     i32 EventLoop::GetCurThread()
     {
-        return safe_index;
+        return self_index;
     }
 
     EventLoop* EventLoop::AddRefer()
