@@ -17,6 +17,8 @@ namespace Evpp
     public:
         bool Send(const char* buf, u96 len, u32 nbufs = 1);
         bool Send(const std::string& buf, u32 nbufs = 1);
+    public:
+        bool Close();
     private:
         bool DefaultSend(const socket_data bufs, u32 nbufs);
         bool DefaultSend(const socket_data* bufs, u32 nbufs);

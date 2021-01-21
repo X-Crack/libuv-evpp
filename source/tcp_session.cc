@@ -42,6 +42,15 @@ namespace Evpp
         return false;
     }
 
+    bool TcpSession::Close()
+    {
+        if (nullptr != tcp_message)
+        {
+            return tcp_message->Close();
+        }
+        return false;
+    }
+
     bool TcpSession::SetSendBlocking(const u32 value)
     {
         return tcp_message->SetSendBlocking(value);

@@ -20,6 +20,8 @@ namespace Evpp
         bool Send(const char* buf, u96 len, u32 nbufs = 1);
         bool Send(const std::string& buf, u32 nbufs = 1);
     public:
+        bool Close();
+    public:
         bool SetSendBlocking(const u32 value = 0);
     public:
         bool RunInLoop(const Functor& function);

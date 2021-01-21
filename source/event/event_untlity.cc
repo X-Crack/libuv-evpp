@@ -1,4 +1,5 @@
 #include <event_untlity.h>
+#include <tcp_session.h>
 #include <config.h>
 #include <buffer.h>
 namespace Evpp

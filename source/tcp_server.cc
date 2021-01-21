@@ -55,6 +55,34 @@ namespace Evpp
         return false;
     }
 
+    bool TcpServer::Send(const u96 index, const char* buf, u96 len, u32 nbufs)
+    {
+        if (tcp_session.empty())
+        {
+            return false;
+        }
+        return GetSession(index)->Send(buf, len, nbufs);
+    }
+
+    bool TcpServer::Send(const u96 index, const std::string& buf, u32 nbufs)
+    {
+        if (tcp_session.empty())
+        {
+            return false;
+        }
+        return GetSession(index)->Send(buf, nbufs);
+    }
+
+    bool TcpServer::Close(const u96 index)
+    {
+        if (tcp_session.empty())
+        {
+            return false;
+        }
+
+        return GetSession(index)->Close();
+    }
+
     void TcpServer::SetAcceptsCallback(const InterfaceAccepts& accepts)
     {
         if (nullptr == socket_accepts)

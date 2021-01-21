@@ -22,6 +22,9 @@ namespace Evpp
     public:
         bool CreaterServer();
         bool AddListenPort(const std::string& server_address, const u16 port);
+        bool Send(const u96 index, const char* buf, u96 len, u32 nbufs = 1);
+        bool Send(const u96 index, const std::string& buf, u32 nbufs = 1);
+        bool Close(const u96 index);
     public:
         void SetAcceptsCallback(const InterfaceAccepts& accepts);
         void SetDisconsCallback(const InterfaceDiscons& discons);

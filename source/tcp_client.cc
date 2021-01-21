@@ -96,6 +96,15 @@ namespace Evpp
         }
     }
 
+    bool TcpClient::Close()
+    {
+        if (nullptr != tcp_session)
+        {
+            return tcp_session->Close();
+        }
+        return false;
+    }
+
     bool TcpClient::InitialSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const u96 index)
     {
         if (nullptr == tcp_session)

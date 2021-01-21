@@ -27,6 +27,8 @@ namespace Evpp
         void SetFailureCallback(const InterfaceFailure& failure = &Evpp::Import::DefaultFailure);
         void SetDisconsCallback(const InterfaceDiscons& discons = &Evpp::Import::DefaultDiscons);
         void SetMessageCallback(const InterfaceMessage& message = &Evpp::Import::DefaultMessage);
+    public:
+        bool Close();
     private:
         bool InitialSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const u96 index);
         bool DeletedSession();
