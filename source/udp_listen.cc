@@ -15,40 +15,17 @@ namespace Evpp
 
     }
 
-    static void alloc_cb(uv_handle_t* handle, size_t suggested_size, uv_buf_t* buf)
-    {
-        static char slab[65536];
-        buf->base = slab;
-        buf->len = sizeof(slab);
-    }
-
-
-    void recv_cb(uv_udp_t* handle, ssize_t nread, const uv_buf_t* rcvbuf, const struct sockaddr* addr, unsigned flags) 
-    {
-        SocketInfo* socketinfo = reinterpret_cast<SocketInfo*>(const_cast<sockaddr*>(addr));
-        socketinfo->SocketHash();
-        // TODO; 计算 sockaddr hash 来判断是否为新连接
-        if (nread < 0)
-        {
-            printf("?");
-        }
-        else if (nread == 0)
-        {
-            /* Returning unused buffer */
-            printf("?");
-        }
-        else
-        {
-            printf("?");
-        }
-    }
-
     bool UdpListen::CreaterListenService(const std::unique_ptr<EventSocketPool>& socket)
     {
         for (u96 i = 0; i < socket->GetSocketPoolSize(); ++i)
         {
             udp_server.push_back(std::make_unique<socket_udp>());
             {
+                if (nullptr == udp_server[i]->data)
+                {
+                    udp_server[i]->data = this;
+                }
+
                 if (InitUdpService(i))
                 {
                     if (BindUdpService(i, &socket->GetEventSocket(i)->GetSocketInfo()->addr))
@@ -57,7 +34,11 @@ namespace Evpp
                         {
                             return false;
                         }
-                        uv_udp_recv_start(udp_server[i].get(), alloc_cb, recv_cb);
+                        
+                        if (!ListenUdpService(i))
+                        {
+                            return false;
+                        }
                     }
                 }
             }
@@ -75,8 +56,58 @@ namespace Evpp
         return 0 == uv_udp_bind(udp_server[index].get(), addr, 0);
     }
 
+    bool UdpListen::ListenUdpService(const u96 index)
+    {
+        return 0 == uv_udp_recv_start(udp_server[index].get(), alloc, &UdpListen::ReceiveService);
+    }
+
     bool UdpListen::SetMulticastInterface(const u96 index, const String* addr)
     {
         return 0 == uv_udp_set_multicast_interface(udp_server[index].get(), addr);
+    }
+
+    bool UdpListen::AddClientObject(SocketInfo* socket, const u96 hash)
+    {
+        return udp_client.emplace(hash, std::make_unique<SocketInfo>(std::move(*socket))).second;
+    }
+
+    bool UdpListen::GetClientObject(const u96 hash)
+    {
+        return udp_client.end() == udp_client.find(hash);
+    }
+
+    void UdpListen::ReceiveService(socket_udp* handler, u96 nread, const socket_data* rcvbuf, SocketInfo* addr, u96 hash, u32 flags)
+    {
+        if (GetClientObject(hash))
+        {
+            // 新用户进入
+            if (AddClientObject(addr, hash))
+            {
+                // TODO: true;
+            }
+            // TODO: false;
+            return;
+        }
+
+        if (nread > 0)
+        {
+            // 新消息
+            return;
+        }
+        // Close
+    }
+
+    void UdpListen::ReceiveService(socket_udp* handler, ssize_t nread, const socket_data* rcvbuf, const sockaddr* addr, u32 flags)
+    {
+        if (nullptr != handler)
+        {
+            UdpListen* watcher = static_cast<UdpListen*>(handler->data);
+            {
+                if (nullptr != watcher)
+                {
+                    watcher->ReceiveService(handler, nread, rcvbuf, reinterpret_cast<SocketInfo*>(const_cast<sockaddr*>(addr)), reinterpret_cast<SocketInfo*>(const_cast<sockaddr*>(addr))->SocketHash(), flags);
+                }
+            }
+        }
     }
 }

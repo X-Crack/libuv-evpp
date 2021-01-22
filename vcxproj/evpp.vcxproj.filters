@@ -102,6 +102,9 @@
     <ClCompile Include="..\source\udp_message.cc">
       <Filter>socket\udp\server</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\udp_accept.cc">
+      <Filter>socket\udp\server</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\include\platform.h">
@@ -187,6 +190,9 @@
     </ClInclude>
     <ClInclude Include="..\source\include\udp_server.h">
       <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\udp_accept.h">
+      <Filter>socket\udp\server</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
