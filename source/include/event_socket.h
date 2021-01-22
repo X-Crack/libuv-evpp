@@ -15,7 +15,7 @@ namespace Evpp
             sockaddr_in         addr4;
             sockaddr_in6        addr6;
         };
-
+    public:
         std::string             host;
         u16                     port;
     public:
@@ -25,18 +25,18 @@ namespace Evpp
 
         constexpr const sockaddr_in6* Addr6() { return &addr6; };
 
-        constexpr const u96 SocketHash(u96 hash_mask)
+        constexpr const u96 SocketHash(const char* hash, u96 hash_mask, u32 i, u96 size)
         {
-            for (u32 i = 0; i < SocketSize(); ++i)
+            if (i != size)
             {
-                hash_mask = 16777619U * hash_mask ^ reinterpret_cast<const char*>(Addr())[i];
+                return SocketHash(++hash, hash_mask ^ (((i & 1) == 0) ? ((hash_mask << 7) ^ (*hash) * (hash_mask >> 3)) : (~((hash_mask << 11) + ((*hash) ^ (hash_mask >> 5))))), i, size);
             }
             return hash_mask;
         }
 
         const u96 SocketHash()
         {
-            return SocketHash(2654435761U);
+            return SocketHash(reinterpret_cast<const char*>(Addr()), 2654435761U, 0, SocketSize());
         }
 
         constexpr const u32 SocketSize()
