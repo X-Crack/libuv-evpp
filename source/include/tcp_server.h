@@ -37,15 +37,23 @@ namespace Evpp
         const std::shared_ptr<TcpSession>& GetSession(const u96 index);
     private:
         bool DefaultAccepts(EventLoop* loop, socket_stream* handler);
-        bool DefaultAccepts(socket_stream* handler);
-        static void DefaultAccepts(socket_stream* handler, int status);
+        bool DefaultAccepts(socket_stream* handler, i32 status);
+        static void OnDefaultAccepts(socket_stream* handler, int status);
     private:
         void DefaultDiscons(EventLoop* loop, const u96 index);
         bool DefaultMessage(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const std::shared_ptr<TcpBuffer>& buffer, const u96 index);
     private:
         bool InitTcpSocket(EventLoop* loop, socket_stream* handler, socket_tcp* client);
     private:
+        bool CheckClose(socket_stream* handler);
+        bool SystemClose(socket_stream* stream);
+        bool SystemShutdown(socket_stream* stream);
         const u96 GetPlexingIndex(u96 index = ~0);
+    private:
+        void DefaultClose(event_handle* handler);
+    private:
+        static void OnDefaultClose(event_handle* handler);
+        static void OnDefaultShutdown(socket_shutdown* request, int status);
     private:
         EventLoop*                                                      event_loop;
         std::shared_ptr<EventShare>                                     event_share;

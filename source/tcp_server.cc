@@ -123,7 +123,7 @@ namespace Evpp
     {
         u96 index = GetPlexingIndex();
         {
-            if (CreaterSession(loop, client, index))
+            if (!CreaterSession(loop, client, index))
             {
                 if (nullptr != socket_accepts)
                 {
@@ -132,6 +132,7 @@ namespace Evpp
                 return true;
             }
         }
+        return SystemShutdown(reinterpret_cast<socket_stream*>(client.get()));
     }
 
     bool TcpServer::DeletedSession(const u96 index)
@@ -167,40 +168,47 @@ namespace Evpp
                 {
                     return InitialSession(loop, client);
                 }
-            }
-        }
-        return false;
-    }
-
-    bool TcpServer::DefaultAccepts(socket_stream* handler)
-    {
-        EventLoop* loop = event_thread_pool->GetEventLoop();
-        {
-            if (nullptr != loop)
-            {
-                if (loop->SelftyThread())
+                else
                 {
-                    return DefaultAccepts(loop, handler);
+                    return SystemClose(handler);
                 }
-                return loop->RunInLoop(std::bind((bool(TcpServer::*)(EventLoop*, socket_stream*))&TcpServer::DefaultAccepts, this, loop, handler));
             }
         }
         return false;
     }
 
-    void TcpServer::DefaultAccepts(socket_stream* handler, int status)
+    bool TcpServer::DefaultAccepts(socket_stream* handler, i32 status)
     {
-        if (status < 0)
+        if (0 == status)
         {
-            printf(" new connection error\n");
-            return;
-        }
-
-        TcpServer* watcher = static_cast<TcpServer*>(handler->data);
-        {
-            if (nullptr != watcher)
+            EventLoop* loop = event_thread_pool->GetEventLoop();
             {
-                watcher->DefaultAccepts(handler);
+                if (nullptr != loop)
+                {
+                    if (loop->SelftyThread())
+                    {
+                        return DefaultAccepts(loop, handler);
+                    }
+                    return loop->RunInLoop(std::bind((bool(TcpServer::*)(EventLoop*, socket_stream*))&TcpServer::DefaultAccepts, this, loop, handler));
+                }
+            }
+        }
+        return false;
+    }
+
+    void TcpServer::OnDefaultAccepts(socket_stream* handler, int status)
+    {
+        if (nullptr != handler)
+        {
+            TcpServer* watcher = static_cast<TcpServer*>(handler->data);
+            {
+                if (nullptr != watcher)
+                {
+                    if (!watcher->DefaultAccepts(handler, status))
+                    {
+                        
+                    }
+                }
             }
         }
     }
@@ -238,12 +246,58 @@ namespace Evpp
     {
         if (nullptr != loop && nullptr != client)
         {
-            if (0 == uv_tcp_init(loop->EventBasic(), client) && 0 == uv_accept(handler, reinterpret_cast<socket_stream*>(client)))
+            if (0 == uv_tcp_init(loop->EventBasic(), client))
             {
-                return true;
+                if (0 == uv_accept(handler, reinterpret_cast<socket_stream*>(client)))
+                {
+                    return true;
+                }
+                else
+                {
+                    return SystemShutdown(reinterpret_cast<socket_stream*>(client));
+                }
             }
+        }
+        return false;
+    }
 
-            uv_close(reinterpret_cast<uv_handle_t*>(handler), 0);
+
+    bool TcpServer::CheckClose(socket_stream* handler)
+    {
+        if (nullptr != handler)
+        {
+            if (uv_is_active(reinterpret_cast<event_handle*>(handler)))
+            {
+                return 0 == uv_is_closing(reinterpret_cast<event_handle*>(handler));
+            }
+            return true;
+        }
+        return false;
+    }
+
+    bool TcpServer::SystemClose(socket_stream* stream)
+    {
+        if (CheckClose(stream))
+        {
+            uv_close(reinterpret_cast<uv_handle_t*>(stream), &TcpServer::OnDefaultClose);
+            return true;
+        }
+        return false;
+    }
+
+    bool TcpServer::SystemShutdown(socket_stream* stream)
+    {
+        if (CheckClose(stream))
+        {
+            socket_shutdown* shutdown = new socket_shutdown();
+            {
+                if (nullptr == shutdown->data)
+                {
+                    shutdown->data = this;
+                }
+
+                return 0 == uv_shutdown(shutdown, stream, &TcpServer::OnDefaultShutdown);
+            }
         }
         return false;
     }
@@ -263,5 +317,47 @@ namespace Evpp
         }
 
         return index;
+    }
+
+    void TcpServer::DefaultClose(event_handle* handler)
+    {
+        if (nullptr != handler->data)
+        {
+            handler->data = nullptr;
+        }
+    }
+
+    void TcpServer::OnDefaultClose(event_handle* handler)
+    {
+        if (nullptr != handler)
+        {
+            TcpServer* watcher = static_cast<TcpServer*>(handler->data);
+            {
+                if (nullptr != watcher)
+                {
+                    watcher->DefaultClose(handler);
+                }
+            }
+        }
+    }
+
+    void TcpServer::OnDefaultShutdown(socket_shutdown* request, int status)
+    {
+        if (0 == status)
+        {
+            if (nullptr != request)
+            {
+                if (nullptr != request->handle)
+                {
+                    uv_close(reinterpret_cast<uv_handle_t*>(request->handle), &TcpServer::OnDefaultClose);
+                }
+
+                if (nullptr != request)
+                {
+                    delete request;
+                    request = nullptr;
+                }
+            }
+        }
     }
 }

@@ -130,15 +130,15 @@ namespace Evpp
     {
         if (UV_EOF == nread)
         {
-            socket_shutdown* shutdown = new socket_shutdown();
+            if (CheckClose(stream))
             {
-                if (nullptr == shutdown->data)
+                socket_shutdown* shutdown = new socket_shutdown();
                 {
-                    shutdown->data = this;
-                }
+                    if (nullptr == shutdown->data)
+                    {
+                        shutdown->data = this;
+                    }
 
-                if (CheckClose(stream))
-                {
                     return 0 == uv_shutdown(shutdown, stream, &TcpMessage::DefaultShutdown);
                 }
             }
@@ -175,12 +175,20 @@ namespace Evpp
 
     void TcpMessage::OnShutdown(socket_shutdown* shutdown, int status)
     {
-        if (nullptr != shutdown && 0 == status)
+        if (0 == status)
         {
-            uv_close(reinterpret_cast<event_handle*>(shutdown->handle), &TcpMessage::DefaultClose);
+            if (nullptr != shutdown)
             {
-                delete shutdown;
-                shutdown = nullptr;
+                if (nullptr != shutdown->handle)
+                {
+                    uv_close(reinterpret_cast<event_handle*>(shutdown->handle), &TcpMessage::DefaultClose);
+                }
+
+                if (nullptr != shutdown)
+                {
+                    delete shutdown;
+                    shutdown = nullptr;
+                }
             }
         }
     }
