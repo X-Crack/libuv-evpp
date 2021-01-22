@@ -33,6 +33,7 @@
     <ClCompile Include="..\source\event\event_timer.cc" />
     <ClCompile Include="..\source\event\event_timer_vesse.cc" />
     <ClCompile Include="..\source\event\event_untlity.cc" />
+    <ClCompile Include="..\source\event\tcp_server_service.cc" />
     <ClCompile Include="..\source\tcp_client.cc" />
     <ClCompile Include="..\source\tcp_connect.cc" />
     <ClCompile Include="..\source\tcp_listen.cc" />
@@ -61,6 +62,7 @@
     <ClInclude Include="..\source\include\tcp_listen.h" />
     <ClInclude Include="..\source\include\tcp_message.h" />
     <ClInclude Include="..\source\include\tcp_server.h" />
+    <ClInclude Include="..\source\include\tcp_server_service.h" />
     <ClInclude Include="..\source\include\tcp_session.h" />
     <ClInclude Include="..\source\include\event_socket.h" />
     <ClInclude Include="..\source\include\event_socket_pool.h" />

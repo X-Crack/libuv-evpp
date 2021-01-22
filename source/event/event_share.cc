@@ -1,4 +1,5 @@
 #include <event_share.h>
+#include <event_loop.h>
 namespace Evpp
 {
     EventShare::EventShare() : event_default(uv_default_loop()), event_size(1)
@@ -6,7 +7,7 @@ namespace Evpp
 
     }
 
-    EventShare::EventShare(const u96 size) : event_default(nullptr), event_size(size)
+    EventShare::EventShare(const u96 size) : event_default(uv_default_loop()), event_size(size)
     {
         
     }
@@ -17,6 +18,18 @@ namespace Evpp
         {
             this->DestroyLoops();
         }
+    }
+
+    bool EventShare::CreaterLoops(const u96 size)
+    {
+        for (u96 i = 0; i < size; ++i)
+        {
+            std::unique_lock<std::mutex> lock(event_mutex);
+            {
+                event_loops.emplace(i, CreaterDefaultEventLoop());
+            }
+        }
+        return nullptr != event_default;
     }
 
     bool EventShare::CreaterLoops()
@@ -71,10 +84,6 @@ namespace Evpp
 
     event_loop* EventShare::CreaterDefaultEventLoop()
     {
-//         if (nullptr == event_default)
-//         {
-//             return event_default = uv_default_loop();
-//         }
         return new event_loop();
     }
 }

@@ -84,6 +84,9 @@
     <ClCompile Include="..\source\tcp_session.cc">
       <Filter>socket\tcp</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\event\tcp_server_service.cc">
+      <Filter>socket\tcp\server</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\include\platform.h">
@@ -156,6 +159,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\source\include\tcp_listen.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\tcp_server_service.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
