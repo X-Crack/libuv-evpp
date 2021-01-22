@@ -45,7 +45,7 @@ namespace Evpp
     private:
         bool InitTcpSocket(EventLoop* loop, socket_stream* handler, socket_tcp* client);
     private:
-        const u96 GetPlexingIndex();
+        const u96 GetPlexingIndex(u96 index = ~0);
     private:
         EventLoop*                                                      event_loop;
         std::shared_ptr<EventShare>                                     event_share;
@@ -58,7 +58,7 @@ namespace Evpp
         std::atomic<u96>											    tcp_index;
         std::unordered_map<u96, std::shared_ptr<TcpSession>>            tcp_session;
         std::priority_queue<u96>									    tcp_index_multiplexing;
-        std::mutex													    tcp_mutex;
+        std::recursive_mutex                                            tcp_recursive_mutex;
     };
 }
 #endif // __TCP_SERVER_H__

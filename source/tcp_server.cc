@@ -109,7 +109,7 @@ namespace Evpp
 
     bool TcpServer::CreaterSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const u96 index)
     {
-        std::lock_guard<std::mutex> lock(tcp_mutex);
+        std::lock_guard<std::recursive_mutex> lock(tcp_recursive_mutex);
         
         return tcp_session.emplace(index, std::make_shared<TcpSession>(loop, 
             client, 
@@ -136,7 +136,7 @@ namespace Evpp
 
     bool TcpServer::DeletedSession(const u96 index)
     {
-        std::lock_guard<std::mutex> lock(tcp_mutex);
+        std::lock_guard<std::recursive_mutex> lock(tcp_recursive_mutex);
         if (auto it = tcp_session.find(index); it != std::end(tcp_session))
         {
             tcp_session.erase(it);
@@ -153,6 +153,7 @@ namespace Evpp
 
     const std::shared_ptr<TcpSession>& TcpServer::GetSession(const u96 index)
     {
+        std::lock_guard<std::recursive_mutex> lock(tcp_recursive_mutex);
         return tcp_session[index];
     }
 
@@ -247,16 +248,20 @@ namespace Evpp
         return false;
     }
 
-    const u96 TcpServer::GetPlexingIndex()
+    const u96 TcpServer::GetPlexingIndex(u96 index)
     {
-        std::lock_guard<std::mutex> lock(tcp_mutex);
-        const u96 index = tcp_index_multiplexing.empty() ? tcp_index.fetch_add(1) : tcp_index_multiplexing.top();
+        std::lock_guard<std::recursive_mutex> lock(tcp_recursive_mutex);
+
+        if (index == ~0U)
         {
-            if (tcp_index_multiplexing.size())
-            {
-                tcp_index_multiplexing.pop();
-            }
+            return GetPlexingIndex(tcp_index_multiplexing.empty() ? tcp_index.fetch_add(1) : tcp_index_multiplexing.top());
         }
+
+        if (tcp_index_multiplexing.size())
+        {
+            tcp_index_multiplexing.pop();
+        }
+
         return index;
     }
 }

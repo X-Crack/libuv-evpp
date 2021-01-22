@@ -39,11 +39,6 @@
     <ClCompile Include="..\source\tcp_message.cc" />
     <ClCompile Include="..\source\tcp_server.cc" />
     <ClCompile Include="..\source\tcp_session.cc" />
-    <ClCompile Include="..\source\udp_accept.cc" />
-    <ClCompile Include="..\source\udp_listen.cc" />
-    <ClCompile Include="..\source\udp_message.cc" />
-    <ClCompile Include="..\source\udp_server.cc" />
-    <ClCompile Include="..\source\udp_session.cc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\include\buffer.h" />
@@ -70,11 +65,6 @@
     <ClInclude Include="..\source\include\event_socket.h" />
     <ClInclude Include="..\source\include\event_socket_pool.h" />
     <ClInclude Include="..\source\include\type.h" />
-    <ClInclude Include="..\source\include\udp_accept.h" />
-    <ClInclude Include="..\source\include\udp_listen.h" />
-    <ClInclude Include="..\source\include\udp_message.h" />
-    <ClInclude Include="..\source\include\udp_server.h" />
-    <ClInclude Include="..\source\include\udp_session.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

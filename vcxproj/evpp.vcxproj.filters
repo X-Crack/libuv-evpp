@@ -22,12 +22,6 @@
     <Filter Include="socket\tcp\client">
       <UniqueIdentifier>{18fad710-92c5-4e6d-9092-e9ceef2837c1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="socket\udp">
-      <UniqueIdentifier>{eb4fa0cc-9826-4624-8848-c38e01aa0a8c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="socket\udp\server">
-      <UniqueIdentifier>{54513ff4-94b4-4a1b-93a7-aa96dc001532}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\event\event_loop.cc">
@@ -89,21 +83,6 @@
     </ClCompile>
     <ClCompile Include="..\source\tcp_session.cc">
       <Filter>socket\tcp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\udp_listen.cc">
-      <Filter>socket\udp\server</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\udp_server.cc">
-      <Filter>socket\udp\server</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\udp_session.cc">
-      <Filter>socket\udp\server</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\udp_message.cc">
-      <Filter>socket\udp\server</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\udp_accept.cc">
-      <Filter>socket\udp\server</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -176,23 +155,8 @@
     <ClInclude Include="..\source\include\event_socket_pool.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\include\udp_listen.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\include\tcp_listen.h">
       <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\include\udp_message.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\include\udp_session.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\include\udp_server.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\include\udp_accept.h">
-      <Filter>socket\udp\server</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
