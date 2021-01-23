@@ -29,15 +29,15 @@ namespace Evpp
                     {
                         if (InitTcpService(i))
                         {
-//                             uv_tcp_simultaneous_accepts(tcp_server[i].get(), 0);
-// 
-//                             if (tcp_proble)
-//                             {
-//                                 if (uv_tcp_nodelay(tcp_server[i].get(), 1))
-//                                 {
-//                                     printf("³õÊ¼»¯Ê§°Ü\n");
-//                                 }
-//                             }
+                            uv_tcp_simultaneous_accepts(tcp_server[i].get(), 0);
+
+                            if (tcp_proble)
+                            {
+                                if (uv_tcp_nodelay(tcp_server[i].get(), 1))
+                                {
+                                    printf("³õÊ¼»¯Ê§°Ü\n");
+                                }
+                            }
 
                             if (false == BindTcpService(i, &socket->GetEventSocket(i)->GetSocketInfo()->addr))
                             {

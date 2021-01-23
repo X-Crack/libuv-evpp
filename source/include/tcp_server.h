@@ -51,7 +51,7 @@ namespace Evpp
         bool CheckClose(socket_stream* handler);
         bool SystemClose(socket_stream* stream);
         bool SystemShutdown(socket_stream* stream);
-        const u96 GetPlexingIndex(u96 index = ~0);
+        const u96 GetPlexingIndex(u96 index = 0);
     private:
         void DefaultClose(event_handle* handler);
     private:

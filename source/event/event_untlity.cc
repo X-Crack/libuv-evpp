@@ -6,10 +6,11 @@ namespace Evpp
 {
     namespace Import
     {
+        std::string send_data = "test";
         bool DefaultAccepts(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const u96 index)
         {
             (void)loop, session, index;
-            //printf("用户进入 %d\n", index);
+            printf("用户进入 %d\n", index);
             return true;
         }
 
@@ -25,6 +26,7 @@ namespace Evpp
             (void)loop, session, buffer, index;
             //printf("用户消息 %d 消息长度：%d\n", index, buffer->readableBytes());
             //buffer->retrieve(buffer->readableBytes());
+            session->Send(send_data);
             return true;
         }
 

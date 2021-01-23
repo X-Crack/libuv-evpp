@@ -155,7 +155,7 @@ namespace Evpp
     {
         if (nullptr != system_message)
         {
-            return system_message(event_loop, shared_from_this(), Buffer, self_index);
+            return system_message(event_loop, std::weak_ptr<TcpSession>(shared_from_this()).lock(), Buffer, self_index);
         }
         return false;
     }

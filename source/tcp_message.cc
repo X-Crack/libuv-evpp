@@ -34,7 +34,7 @@ namespace Evpp
 
     }
 
-    bool TcpMessage::Send(const char* buf, u96 len, u32 nbufs)
+    bool TcpMessage::Send(const char* buf, u32 len, u32 nbufs)
     {
         if (nullptr != event_loop)
         {
@@ -45,7 +45,7 @@ namespace Evpp
                     return DefaultSend(socket_data{ len, const_cast<char*>(buf) }, nbufs);
                 }
             }
-            return event_loop->RunInLoop(std::bind((bool(TcpMessage::*)(const char*, u96, u32))&TcpMessage::Send, this, buf, len, nbufs));
+            return event_loop->RunInLoop(std::bind((bool(TcpMessage::*)(const char*, u32, u32))&TcpMessage::Send, this, buf, len, nbufs));
         }
         return false;
     }
@@ -58,7 +58,7 @@ namespace Evpp
             {
                 if (buf.capacity() > 0 && buf.data())
                 {
-                    return DefaultSend(socket_data{ buf.capacity(), const_cast<char*>(buf.data()) }, nbufs);
+                    return DefaultSend(socket_data{ static_cast<u32>(buf.capacity()), const_cast<char*>(buf.data()) }, nbufs);
                 }
             }
             return event_loop->RunInLoop(std::bind((bool(TcpMessage::*)(const std::string&, u32))&TcpMessage::Send, this, buf, nbufs));
@@ -202,7 +202,7 @@ namespace Evpp
                 if (nullptr == buf->base)
                 {
                     buf->base = event_data.data();
-                    buf->len = event_data.capacity();
+                    buf->len = static_cast<u32>(event_data.capacity());
                 }
             }
         }
@@ -218,7 +218,7 @@ namespace Evpp
                 {
                     if (nullptr != system_message)
                     {
-                        return system_message(tcp_buffer);
+                        return system_message(std::weak_ptr<TcpBuffer>(tcp_buffer).lock());
                     }
                 }
                 return true;

@@ -15,7 +15,7 @@ namespace Evpp
         explicit TcpMessage(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const SystemDiscons& discons, const SystemMessage& message);
         virtual ~TcpMessage();
     public:
-        bool Send(const char* buf, u96 len, u32 nbufs = 1);
+        bool Send(const char* buf, u32 len, u32 nbufs = 1);
         bool Send(const std::string& buf, u32 nbufs = 1);
     public:
         bool Close();
