@@ -231,19 +231,19 @@ namespace Evpp
     {
         if (nullptr != loop)
         {
-            if (event_loop->SelftyThread())
-            {
-                if (RemovedSession(index))
-                {
-                    if (nullptr != socket_discons)
-                    {
-                        socket_discons(loop, index);
-                    }
-                }
-                return;
-            }
+//             if (loop->SelftyThread())
+//             {
+//                 if (RemovedSession(index))
+//                 {
+//                     if (nullptr != socket_discons)
+//                     {
+//                         socket_discons(loop, index);
+//                     }
+//                 }
+//                 return;
+//             }
 
-            RunInLoopEx(std::bind(&TcpServer::DefaultDiscons, this, loop, index));
+            loop->RunInLoopEx(std::bind(&TcpServer::RemovedSession, this, index));
         }
     }
 

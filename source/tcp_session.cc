@@ -21,7 +21,7 @@ namespace Evpp
 
     TcpSession::~TcpSession()
     {
-        printf("delete tcpSession\n");
+       //printf("delete tcpSession\n");
     }
 
     bool TcpSession::Send(const char* buf, u96 len, u32 nbufs)

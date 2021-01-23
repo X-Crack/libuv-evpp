@@ -10,14 +10,14 @@ namespace Evpp
         bool DefaultAccepts(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const u96 index)
         {
             (void)loop, session, index;
-            printf("用户进入 %d\n", index);
-            return true;
+            //printf("用户进入 %d\n", index);
+            return true; 
         }
 
         bool DefaultDiscons(EventLoop* loop, const u96 index)
         {
             (void)loop, index;
-            printf("用户离开 %d\n", index);
+            //printf("用户离开 %d\n", index);
             return true;
         }
 
