@@ -22,6 +22,9 @@
     <Filter Include="socket\tcp\client">
       <UniqueIdentifier>{18fad710-92c5-4e6d-9092-e9ceef2837c1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="socket\dns">
+      <UniqueIdentifier>{82c3d07b-9863-4aa8-8560-49cd75af84f4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\event\event_loop.cc">
@@ -84,8 +87,11 @@
     <ClCompile Include="..\source\tcp_session.cc">
       <Filter>socket\tcp</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\event\tcp_server_service.cc">
+    <ClCompile Include="..\source\tcp_server_service.cc">
       <Filter>socket\tcp\server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\event\event_resolve.cc">
+      <Filter>event</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -162,6 +168,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\source\include\tcp_server_service.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\event_resolve.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

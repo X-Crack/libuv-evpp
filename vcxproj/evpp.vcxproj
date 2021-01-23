@@ -25,6 +25,7 @@
     <ClCompile Include="..\source\event\event_loop_thread_pool.cc" />
     <ClCompile Include="..\source\event\event_pipe.cc" />
     <ClCompile Include="..\source\event\event_queue.cc" />
+    <ClCompile Include="..\source\event\event_resolve.cc" />
     <ClCompile Include="..\source\event\event_share.cc" />
     <ClCompile Include="..\source\event\event_signal.cc" />
     <ClCompile Include="..\source\event\event_socket.cc" />
@@ -33,12 +34,12 @@
     <ClCompile Include="..\source\event\event_timer.cc" />
     <ClCompile Include="..\source\event\event_timer_vesse.cc" />
     <ClCompile Include="..\source\event\event_untlity.cc" />
-    <ClCompile Include="..\source\event\tcp_server_service.cc" />
     <ClCompile Include="..\source\tcp_client.cc" />
     <ClCompile Include="..\source\tcp_connect.cc" />
     <ClCompile Include="..\source\tcp_listen.cc" />
     <ClCompile Include="..\source\tcp_message.cc" />
     <ClCompile Include="..\source\tcp_server.cc" />
+    <ClCompile Include="..\source\tcp_server_service.cc" />
     <ClCompile Include="..\source\tcp_session.cc" />
   </ItemGroup>
   <ItemGroup>
@@ -50,6 +51,7 @@
     <ClInclude Include="..\source\include\event_loop_thread_pool.h" />
     <ClInclude Include="..\source\include\event_pipe.h" />
     <ClInclude Include="..\source\include\event_queue.h" />
+    <ClInclude Include="..\source\include\event_resolve.h" />
     <ClInclude Include="..\source\include\event_share.h" />
     <ClInclude Include="..\source\include\event_signal.h" />
     <ClInclude Include="..\source\include\event_status.h" />

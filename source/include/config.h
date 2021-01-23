@@ -41,5 +41,6 @@ using socket_shutdown = uv_shutdown_t;
 using socket_write = uv_write_t;
 using socket_connect = uv_connect_t;
 using socket_udp = uv_udp_t;
+using socket_getaddrinfo = uv_getaddrinfo_t;
 
 #endif // __CONFIG_H__
