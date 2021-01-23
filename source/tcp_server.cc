@@ -123,7 +123,7 @@ namespace Evpp
     {
         u96 index = GetPlexingIndex();
         {
-            if (!CreaterSession(loop, client, index))
+            if (CreaterSession(loop, client, index))
             {
                 if (nullptr != socket_accepts)
                 {

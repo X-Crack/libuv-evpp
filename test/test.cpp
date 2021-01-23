@@ -17,18 +17,27 @@
 #include <event_signal.h>
 
 #include <tcp_client.h>
-
+#include <tcp_server_service.h>
 #include "cpps/cpps.h"
 
 
 
 int main()
 {
-    using namespace cpps;
-    C* c = cpps::create();
-    _CPPS_TRY
-     cpps::dofile(c, "./src.cpp");
-    _CPPS_CATCH;
+    using namespace Evpp;
+    TcpServerService tcp;
+    tcp.AddListenPort("0.0.0.0", 5555);
+    tcp.SetAcceptsCallback(Import::DefaultAccepts);
+    tcp.SetDisconsCallback(Import::DefaultDiscons);
+    tcp.SetMessageCallback(Import::DefaultMessage);
+    tcp.CreaterServer(64);
+    tcp.ExecDispatch();
+    printf("异常退出\n");
+//     using namespace cpps;
+//     C* c = cpps::create();
+//     _CPPS_TRY
+//      cpps::dofile(c, "./src.cpp");
+//     _CPPS_CATCH;
     //cpps::close(c);
     getchar();
 }
