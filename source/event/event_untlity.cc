@@ -23,8 +23,8 @@ namespace Evpp
         bool DefaultMessage(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const std::shared_ptr<TcpBuffer>& buffer, const u96 index)
         {
             (void)loop, session, buffer, index;
-            printf("用户消息 %d 消息长度：%d\n", index, buffer->readableBytes());
-            buffer->retrieve(buffer->readableBytes());
+            //printf("用户消息 %d 消息长度：%d\n", index, buffer->readableBytes());
+            //buffer->retrieve(buffer->readableBytes());
             return true;
         }
 

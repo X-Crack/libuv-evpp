@@ -107,6 +107,24 @@ namespace Evpp
         }
     }
 
+    bool TcpServer::RunInLoop(const Functor& function)
+    {
+        if (nullptr != event_loop)
+        {
+            return event_loop->RunInLoop(function);
+        }
+        return false;
+    }
+
+    bool TcpServer::RunInLoopEx(const Handler& function)
+    {
+        if (nullptr != event_loop)
+        {
+            return event_loop->RunInLoopEx(function);
+        }
+        return false;
+    }
+
     bool TcpServer::CreaterSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const u96 index)
     {
         std::lock_guard<std::recursive_mutex> lock(tcp_recursive_mutex);
@@ -217,7 +235,7 @@ namespace Evpp
     {
         if (nullptr != loop)
         {
-            if (loop->SelftyThread())
+            if (event_loop->SelftyThread())
             {
                 if (RemovedSession(index))
                 {
@@ -229,7 +247,7 @@ namespace Evpp
                 return;
             }
 
-            loop->RunInLoop(std::bind(&TcpServer::RemovedSession, this, index));
+            event_loop->RunInLoop(std::bind(&TcpServer::RemovedSession, this, index));
         }
     }
 

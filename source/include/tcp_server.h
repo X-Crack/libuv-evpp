@@ -29,6 +29,9 @@ namespace Evpp
         void SetAcceptsCallback(const InterfaceAccepts& accepts);
         void SetDisconsCallback(const InterfaceDiscons& discons);
         void SetMessageCallback(const InterfaceMessage& message);
+    public:
+        bool RunInLoop(const Functor& function);
+        bool RunInLoopEx(const Handler& function);
     private:
         bool CreaterSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const u96 index);
         bool InitialSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client);
