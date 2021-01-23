@@ -31,7 +31,7 @@ namespace Evpp
 
     bool EventQueue::CreateQueue()
     {
-        return event_pipe->CreatePipe();
+        return event_pipe->CreatePipe() && event_pipe_ex->CreatePipe();
     }
 
     bool EventQueue::RunInLoop(const Functor& function)
@@ -105,7 +105,7 @@ namespace Evpp
     {
         Handler function;
 
-        while (event_async->try_dequeue(function))
+        while (event_async_ex->try_dequeue(function))
         {
             function();
         }

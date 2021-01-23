@@ -247,7 +247,7 @@ namespace Evpp
                 return;
             }
 
-            event_loop->RunInLoop(std::bind(&TcpServer::RemovedSession, this, index));
+            RunInLoopEx(std::bind(&TcpServer::RemovedSession, this, index));
         }
     }
 
