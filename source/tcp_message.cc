@@ -9,12 +9,18 @@ namespace Evpp
         event_loop(loop),
         tcp_socket(client),
         tcp_buffer(std::make_shared<TcpBuffer>()),
+        event_shutdown(std::make_unique<socket_shutdown>()),
         system_discons(discons),
         system_message(message)
     {
         if (nullptr == client->data)
         {
             client->data = this;
+        }
+
+        if (nullptr == event_shutdown->data)
+        {
+            event_shutdown->data = this;
         }
 
         if (uv_read_start(reinterpret_cast<socket_stream*>(client.get()), &TcpMessage::DefaultMakesram, &TcpMessage::DefaultMessages))
@@ -68,7 +74,7 @@ namespace Evpp
             {
                 if (nullptr != tcp_socket)
                 {
-                    return Shutdown(reinterpret_cast<socket_stream*>(tcp_socket.get()), UV_EOF);
+                    return Shutdown(reinterpret_cast<socket_stream*>(tcp_socket.get()));
                 }
                 return false;
             }
@@ -126,22 +132,11 @@ namespace Evpp
         return false;
     }
 
-    bool TcpMessage::Shutdown(socket_stream* stream, i96 nread)
+    bool TcpMessage::Shutdown(socket_stream* stream)
     {
-        if (UV_EOF == nread)
+        if (CheckClose(stream))
         {
-            if (CheckClose(stream))
-            {
-                socket_shutdown* shutdown = new socket_shutdown();
-                {
-                    if (nullptr == shutdown->data)
-                    {
-                        shutdown->data = this;
-                    }
-
-                    return 0 == uv_shutdown(shutdown, stream, &TcpMessage::DefaultShutdown);
-                }
-            }
+            return 0 == uv_shutdown(event_shutdown.get(), stream, &TcpMessage::DefaultShutdown);
         }
         return false;
     }
@@ -181,15 +176,15 @@ namespace Evpp
             {
                 if (nullptr != shutdown->handle)
                 {
-                    uv_close(reinterpret_cast<event_handle*>(shutdown->handle), &TcpMessage::DefaultClose);
+                    uv_close(reinterpret_cast<event_handle*>(tcp_socket.get()), &TcpMessage::DefaultClose);
                 }
-
-                if (nullptr != shutdown)
-                {
-                    delete shutdown;
-                    shutdown = nullptr;
-                }
+                return;
             }
+        }
+
+        if (nullptr != system_discons)
+        {
+            system_discons();
         }
     }
 
@@ -215,7 +210,7 @@ namespace Evpp
 
     bool TcpMessage::OnMessages(socket_stream* stream, i96 nread, const socket_data* buf)
     {
-        if (nread > 0)
+        if (nread >= 0)
         {
             if (nullptr != tcp_buffer)
             {
@@ -230,7 +225,7 @@ namespace Evpp
             }
         }
 
-        return Shutdown(stream, nread);
+        return Shutdown(stream);
     }
 
     void TcpMessage::DefaultSend(socket_write* handler, int status)
@@ -246,54 +241,66 @@ namespace Evpp
 
     void TcpMessage::DefaultClose(event_handle* handler)
     {
-        TcpMessage* watcher = static_cast<TcpMessage*>(handler->data);
+        if (nullptr != handler)
         {
-            if (nullptr != watcher)
+            TcpMessage* watcher = static_cast<TcpMessage*>(handler->data);
             {
-                watcher->OnClose(handler);
+                if (nullptr != watcher)
+                {
+                    watcher->OnClose(handler);
+                }
             }
         }
     }
 
     void TcpMessage::DefaultShutdown(socket_shutdown* handler, int status)
     {
-        TcpMessage* watcher = static_cast<TcpMessage*>(handler->data);
+        if (nullptr != handler)
         {
-            if (nullptr != watcher)
+            TcpMessage* watcher = static_cast<TcpMessage*>(handler->data);
             {
-                watcher->OnShutdown(handler, status);
+                if (nullptr != watcher)
+                {
+                    watcher->OnShutdown(handler, status);
+                }
             }
         }
     }
 
     void TcpMessage::DefaultMakesram(event_handle* handler, size_t suggested_size, socket_data* buf)
     {
-        TcpMessage* watcher = static_cast<TcpMessage*>(handler->data);
+        if (nullptr != handler)
         {
-            if (nullptr != watcher && 0 != suggested_size)
+            TcpMessage* watcher = static_cast<TcpMessage*>(handler->data);
             {
-                watcher->OnMallocEx(handler, suggested_size, buf);
+                if (nullptr != watcher && 0 != suggested_size)
+                {
+                    watcher->OnMallocEx(handler, suggested_size, buf);
+                }
             }
         }
     }
 
     void TcpMessage::DefaultMessages(socket_stream* handler, ssize_t nread, const socket_data* buf)
     {
-        TcpMessage* watcher = static_cast<TcpMessage*>(handler->data);
+        if (nullptr != handler)
         {
-            if (nullptr != watcher)
+            TcpMessage* watcher = static_cast<TcpMessage*>(handler->data);
             {
-                if (watcher->OnMessages(handler, static_cast<i96>(nread), buf))
+                if (nullptr != watcher)
                 {
-                    return;
-                }
+                    if (watcher->OnMessages(handler, static_cast<i96>(nread), buf))
+                    {
+                        return;
+                    }
 
-                if (watcher->Shutdown(handler, UV_EOF))
-                {
-                    return;
-                }
+                    if (watcher->Shutdown(handler))
+                    {
+                        return;
+                    }
 
-                printf("OnSystemMessage Error\n");
+                    printf("OnSystemMessage Error\n");
+                }
             }
         }
     }

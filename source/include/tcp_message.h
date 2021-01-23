@@ -27,7 +27,7 @@ namespace Evpp
         bool SetSendBlocking(const u32 value = 0);
     private:
         bool CheckClose(socket_stream* handler);
-        bool Shutdown(socket_stream* stream, i96 nread);
+        bool Shutdown(socket_stream* stream);
     private:
         void OnSend(socket_write* request, int status);
         void OnClose(event_handle* handler);
@@ -44,6 +44,7 @@ namespace Evpp
         EventLoop*                                                      event_loop;
         std::shared_ptr<socket_tcp>                                     tcp_socket;
         std::shared_ptr<TcpBuffer>                                      tcp_buffer;
+        std::unique_ptr<socket_shutdown>                                event_shutdown;
         std::vector<char>                                               event_data;
     private:
         SystemDiscons                                                   system_discons;

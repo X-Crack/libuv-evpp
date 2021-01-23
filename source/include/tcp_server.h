@@ -69,6 +69,7 @@ namespace Evpp
         std::atomic<u96>											    tcp_index;
         std::unordered_map<u96, std::shared_ptr<TcpSession>>            tcp_session;
         std::priority_queue<u96>									    tcp_index_multiplexing;
+        std::mutex                                                      tcp_mutex;
         std::recursive_mutex                                            tcp_recursive_mutex;
     };
 }
