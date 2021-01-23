@@ -25,6 +25,7 @@ namespace Evpp
         bool SetSendBlocking(const u32 value = 0);
     public:
         bool RunInLoop(const Functor& function);
+        bool RunInLoopEx(const Handler& function);
     public:
         bool AssignTimer(const u96 index, const u64 delay, const u64 repeat);
         bool StopedTimer(const u96 index);

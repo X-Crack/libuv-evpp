@@ -23,6 +23,8 @@ namespace Evpp
     public:
         bool RunInLoop(const Functor& function);
         bool RunInLoop(Functor&& function);
+        bool RunInLoopEx(const Handler& function);
+        bool RunInLoopEx(Handler&& function);
     public:
         bool AssignTimer(const u96 index, const u64 delay, const u64 repeat);
         bool StopedTimer(const u96 index);

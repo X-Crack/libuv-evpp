@@ -65,6 +65,15 @@ namespace Evpp
         return false;
     }
 
+    bool TcpSession::RunInLoopEx(const Handler& function)
+    {
+        if (nullptr != event_loop)
+        {
+            return event_loop->RunInLoopEx(function);
+        }
+        return false;
+    }
+
     bool TcpSession::AssignTimer(const u96 index, const u64 delay, const u64 repeat)
     {
         if (event_loop->SelftyThread())

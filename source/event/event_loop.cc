@@ -79,6 +79,20 @@ namespace Evpp
         return event_queue->RunInLoop(std::move(function));
     }
 
+    bool EventLoop::RunInLoopEx(const Handler& function)
+    {
+        if (nullptr == event_queue)
+        {
+            return false;
+        }
+        return event_queue->RunInLoopEx(function);
+    }
+
+    bool EventLoop::RunInLoopEx(Handler&& function)
+    {
+        return event_queue->RunInLoopEx(std::move(function));
+    }
+
     bool EventLoop::AssignTimer(const u96 index, const u64 delay, const u64 repeat)
     {
         if (nullptr != event_timer_vesse)

@@ -14,12 +14,14 @@ namespace Evpp
         static const std::uint32_t EXPLICIT_CONSUMER_CONSUMPTION_QUOTA_BEFORE_ROTATE = 1024;
     };
 
-    EventQueue::EventQueue(EventLoop* loop) : 
-        event_loop(loop), 
+    EventQueue::EventQueue(EventLoop* loop) :
+        event_loop(loop),
         event_pipe(std::make_unique<EventPipe>(loop, std::bind(&EventQueue::RecvAsyncNotify, this))),
-        event_async(std::make_unique<moodycamel::ConcurrentQueue<Functor, Traits>>())
+        event_pipe_ex(std::make_unique<EventPipe>(loop, std::bind(&EventQueue::RecvAsyncNotifyEx, this))),
+        event_async(std::make_unique<moodycamel::ConcurrentQueue<Functor, Traits>>()),
+        event_async_ex(std::make_unique<moodycamel::ConcurrentQueue<Handler, Traits>>())
     {
-        
+
     }
 
     EventQueue::~EventQueue()
@@ -50,6 +52,20 @@ namespace Evpp
         return RunInLoop(function);
     }
 
+    bool EventQueue::RunInLoopEx(const Handler& function)
+    {
+        if (nullptr != event_loop && nullptr != event_pipe)
+        {
+            return SendAsyncNotifyEx(function);
+        }
+        return false;
+    }
+
+    bool EventQueue::RunInLoopEx(Handler&& function)
+    {
+        return RunInLoopEx(function);
+    }
+
     bool EventQueue::SendAsyncNotify(const Functor& function)
     {
         if (nullptr != event_pipe)
@@ -71,6 +87,27 @@ namespace Evpp
             {
                 printf("AsyncDeQueue Error\n");
             }
+        }
+    }
+
+    bool EventQueue::SendAsyncNotifyEx(const Handler& function)
+    {
+        if (nullptr != event_pipe_ex)
+        {
+            while (false == event_async_ex->try_enqueue(function));
+
+            return event_pipe_ex->ExecNotify();
+        }
+        return false;
+    }
+
+    void EventQueue::RecvAsyncNotifyEx()
+    {
+        Handler function;
+
+        while (event_async->try_dequeue(function))
+        {
+            function();
         }
     }
 }

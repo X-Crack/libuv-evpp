@@ -23,13 +23,19 @@ namespace Evpp
     public:
         bool RunInLoop(const Functor& function);
         bool RunInLoop(Functor&& function);
+        bool RunInLoopEx(const Handler& function);
+        bool RunInLoopEx(Handler&& function);
     private:
         bool SendAsyncNotify(const Functor& function);
         void RecvAsyncNotify();
+        bool SendAsyncNotifyEx(const Handler& function);
+        void RecvAsyncNotifyEx();
     private:
         EventLoop*                                                                                          event_loop;
         std::unique_ptr<EventPipe>                                                                          event_pipe;
+        std::unique_ptr<EventPipe>                                                                          event_pipe_ex;
         std::unique_ptr<moodycamel::ConcurrentQueue<Functor, Traits>>                                       event_async;
+        std::unique_ptr<moodycamel::ConcurrentQueue<Handler, Traits>>                                       event_async_ex;
     };
 }
 #endif // __event_queue_H__
