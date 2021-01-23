@@ -91,8 +91,7 @@ namespace Evpp
             {
                 return event_loop;
             }
-            u96 i = index % event_pool.size();
-            return event_pool[i]->GetEventLoop();
+            return event_pool[index % event_pool.size()]->GetEventLoop();
         }
     }
 

@@ -9,8 +9,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "uv_a", "..\libuv\vsprojects
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test", "test\test.vcxproj", "{1E3DC267-98F0-45EA-BC60-FAD4EC543893}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libcpps", "..\cpps\vsprojects\src\libcpps.vcxproj", "{5DDA75C1-1203-3168-9A17-47F33F14469F}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -69,16 +67,6 @@ Global
 		{1E3DC267-98F0-45EA-BC60-FAD4EC543893}.RelWithDebInfo|x64.Build.0 = Release|x64
 		{1E3DC267-98F0-45EA-BC60-FAD4EC543893}.RelWithDebInfo|x86.ActiveCfg = Release|Win32
 		{1E3DC267-98F0-45EA-BC60-FAD4EC543893}.RelWithDebInfo|x86.Build.0 = Release|Win32
-		{5DDA75C1-1203-3168-9A17-47F33F14469F}.Debug|x64.ActiveCfg = Debug|Win32
-		{5DDA75C1-1203-3168-9A17-47F33F14469F}.Debug|x86.ActiveCfg = Debug|Win32
-		{5DDA75C1-1203-3168-9A17-47F33F14469F}.Debug|x86.Build.0 = Debug|Win32
-		{5DDA75C1-1203-3168-9A17-47F33F14469F}.MinSizeRel|x64.ActiveCfg = Release|Win32
-		{5DDA75C1-1203-3168-9A17-47F33F14469F}.MinSizeRel|x86.ActiveCfg = Release|Win32
-		{5DDA75C1-1203-3168-9A17-47F33F14469F}.Release|x64.ActiveCfg = Release|Win32
-		{5DDA75C1-1203-3168-9A17-47F33F14469F}.Release|x86.ActiveCfg = Release|Win32
-		{5DDA75C1-1203-3168-9A17-47F33F14469F}.Release|x86.Build.0 = Release|Win32
-		{5DDA75C1-1203-3168-9A17-47F33F14469F}.RelWithDebInfo|x64.ActiveCfg = Release|Win32
-		{5DDA75C1-1203-3168-9A17-47F33F14469F}.RelWithDebInfo|x86.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
