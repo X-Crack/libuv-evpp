@@ -22,9 +22,6 @@
     <Filter Include="socket\tcp\client">
       <UniqueIdentifier>{18fad710-92c5-4e6d-9092-e9ceef2837c1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="socket\dns">
-      <UniqueIdentifier>{82c3d07b-9863-4aa8-8560-49cd75af84f4}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\event\event_loop.cc">
