@@ -205,7 +205,6 @@ namespace Evpp
     {
         if (0 == status)
         {
-            //printf("AcceptÏß³Ì£º%d\n", GetCurrentThreadId());
             return DefaultAccepts(event_thread_pool->GetEventLoop(), handler);
         }
         return false;
