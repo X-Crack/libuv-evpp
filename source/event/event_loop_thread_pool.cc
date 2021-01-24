@@ -4,9 +4,7 @@
 #include <event_loop_thread.h>
 namespace Evpp
 {
-    EventLoopThreadPool::EventLoopThreadPool(EventLoop* loop, const std::shared_ptr<EventShare>& share) :
-        event_loop(loop),
-        event_share(share)
+    EventLoopThreadPool::EventLoopThreadPool(EventLoop* loop, const std::shared_ptr<EventShare>& share) : EventLoopThreadPool(loop, share, 0)
     {
 
     }
@@ -97,6 +95,7 @@ namespace Evpp
 
     std::unique_ptr<EventLoopThread>& EventLoopThreadPool::GetEventLoopThread(const u96 index)
     {
+        std::unique_lock<std::mutex> lock(event_pool_lock);
         return event_pool[index];
     }
 }

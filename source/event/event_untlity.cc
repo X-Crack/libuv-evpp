@@ -10,21 +10,21 @@ namespace Evpp
         bool DefaultAccepts(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const u96 index)
         {
             (void)loop, session, index;
-            //printf("用户进入 %d\n", index);
+            printf("用户进入：%d 线程：%d\n", index, GetCurrentThreadId());
             return true; 
         }
 
         bool DefaultDiscons(EventLoop* loop, const u96 index)
         {
             (void)loop, index;
-            //printf("用户离开 %d\n", index);
+            printf("用户离开：%d 线程：%d\n", index, GetCurrentThreadId());
             return true;
         }
 
         bool DefaultMessage(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const std::shared_ptr<TcpBuffer>& buffer, const u96 index)
         {
             (void)loop, session, buffer, index;
-            //printf("用户消息 %d 消息长度：%d\n", index, buffer->readableBytes());
+            printf("用户消息：%d 消息长度：%d 线程：%d\n", index, buffer->readableBytes(), GetCurrentThreadId());
             //buffer->retrieve(buffer->readableBytes());
             session->Send(send_data);
             return true;

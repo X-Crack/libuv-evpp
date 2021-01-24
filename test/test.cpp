@@ -24,6 +24,7 @@
 
 int main()
 {
+    printf("主线程：%d\n", GetCurrentThreadId());
     using namespace Evpp;
     TcpServerService tcp;
     tcp.AddListenPort("0.0.0.0", 5555);

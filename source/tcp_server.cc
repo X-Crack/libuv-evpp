@@ -21,7 +21,7 @@ namespace Evpp
         socket_accepts(accepts),
         socket_discons(discons),
         socket_message(message),
-        event_thread_pool(std::make_unique<EventLoopThreadPool>(loop, share, share->GetLoopsSize())),
+        event_thread_pool(std::make_unique<EventLoopThreadPool>(loop, share)),
         tcp_socket(std::make_unique<EventSocketPool>()),
         tcp_listen(std::make_unique<TcpListen>(loop, true)),
         tcp_index(0)
@@ -34,11 +34,11 @@ namespace Evpp
 
     }
 
-    bool TcpServer::CreaterServer()
+    bool TcpServer::CreaterServer(const u96 thread_size)
     {
         if (tcp_socket && tcp_listen)
         {
-            if (event_thread_pool->CreaterEventThreadPool() && event_thread_pool->InitialEventThreadPool())
+            if (event_thread_pool->CreaterEventThreadPool(thread_size) && event_thread_pool->InitialEventThreadPool())
             {
                 return tcp_listen->CreaterListenService(tcp_socket, this);
             }
@@ -231,17 +231,10 @@ namespace Evpp
     {
         if (nullptr != loop)
         {
-//             if (loop->SelftyThread())
-//             {
-//                 if (RemovedSession(index))
-//                 {
-//                     if (nullptr != socket_discons)
-//                     {
-//                         socket_discons(loop, index);
-//                     }
-//                 }
-//                 return;
-//             }
+            if (nullptr != socket_discons)
+            {
+                socket_discons(loop, index);
+            }
 
             loop->RunInLoopEx(std::bind(&TcpServer::RemovedSession, this, index));
         }

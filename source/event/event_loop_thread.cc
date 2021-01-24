@@ -29,7 +29,7 @@ namespace Evpp
                     {
                         std::unique_lock<std::mutex> lock(cv_mutex);
                         {
-                            if (cv_signal.wait_for(lock, std::chrono::milliseconds(8), std::bind(&EventLoopThread::AvailableEvent, this)))
+                            if (cv_signal.wait_for(lock, std::chrono::milliseconds(64), std::bind(&EventLoopThread::AvailableEvent, this)))
                             {
                                 return this->Join();
                             }
