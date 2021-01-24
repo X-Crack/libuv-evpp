@@ -18,13 +18,13 @@
 
 #include <tcp_client.h>
 #include <tcp_server_service.h>
-//#include "cpps/cpps.h"
+#include "cpps/cpps.h"
 
 
 
 int main()
 {
-    printf("主线程：%d\n", GetCurrentThreadId());
+    
     using namespace Evpp;
     TcpServerService tcp;
     tcp.AddListenPort("0.0.0.0", 5555);
@@ -34,7 +34,6 @@ int main()
     tcp.SetDisconsCallback(Import::DefaultDiscons);
     tcp.SetMessageCallback(Import::DefaultMessage);
 
-
     //  bool DefaultMessage(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const std::shared_ptr<TcpBuffer>& buffer, const u96 index)
     //tcp.SetMessageCallback(std::bind(Import::DefaultMessage, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
 
@@ -42,11 +41,11 @@ int main()
     tcp.CreaterServer(16);
     tcp.ExecDispatch();
     printf("异常退出\n");
-//     using namespace cpps;
-//     C* c = cpps::create();
-//     _CPPS_TRY
-//         cpps::dofile(c, "./src.cpp");
-//     _CPPS_CATCH;
-//     cpps::close(c);
+    using namespace cpps;
+    C* c = cpps::create();
+    _CPPS_TRY
+        cpps::dofile(c, "./src.cpp");
+    _CPPS_CATCH;
+    cpps::close(c);
     getchar();
 }

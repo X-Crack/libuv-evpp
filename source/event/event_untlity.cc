@@ -6,7 +6,7 @@ namespace Evpp
 {
     namespace Import
     {
-        std::string send_data = "test";
+        std::string send_data = "hello";
         bool DefaultAccepts(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const u96 index)
         {
             (void)loop, session, index;
@@ -26,7 +26,9 @@ namespace Evpp
             (void)loop, session, buffer, index;
             printf("用户消息：%d 消息长度：%d 线程：%d\n", index, buffer->readableBytes(), GetCurrentThreadId());
             //buffer->retrieve(buffer->readableBytes());
-            session->Send(send_data);
+            //thread_local std::string send_str = send_data + std::to_string(index) + "\n";
+
+            session->Send(send_data + std::to_string(index) + "\n" + char(10));
             return true;
         }
 

@@ -34,6 +34,7 @@ namespace Evpp
             {
                 if (event_loop->InitialEvent())
                 {
+                    printf("主线程：%d Loop线程：%d\n", GetCurrentThreadId(), event_loop->GetCurThread());
                     return tcp_server->CreaterServer(thread_size);
                 }
             }

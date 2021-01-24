@@ -1,13 +1,17 @@
 #include <tcp_listen.h>
 #include <tcp_server.h>
+#include <event_share.h>
 #include <event_loop.h>
+#include <event_loop_thread_pool.h>
 #include <event_socket.h>
 #include <event_socket_pool.h>
 namespace Evpp
 {
     TcpListen::TcpListen(EventLoop* loop, const bool proble) :
         event_loop(loop),
-        tcp_proble(proble)
+        tcp_proble(proble),
+        event_share(std::make_shared<EventShare>()),
+        event_thread_pool(std::make_unique<EventLoopThreadPool>(loop, event_share))
     {
 
     }
@@ -19,18 +23,26 @@ namespace Evpp
 
     bool TcpListen::CreaterListenService(const std::unique_ptr<EventSocketPool>& socket, TcpServer* server)
     {
-        for (u96 i = 0; i < socket->GetSocketPoolSize(); ++i)
+        if (nullptr == socket || nullptr == server)
         {
-            tcp_server.push_back(std::make_unique<socket_tcp>());
-            {
-                if (nullptr == tcp_server[i]->data)
-                {
-                    tcp_server[i]->data = server;
-                    {
-                        if (InitTcpService(i))
-                        {
-                            uv_tcp_simultaneous_accepts(tcp_server[i].get(), 0);
+            return false;
+        }
 
+        if (CreaterListenService(socket->GetSocketPoolSize()))
+        {
+            for (u96 i = 0; i < socket->GetSocketPoolSize(); ++i)
+            {
+                tcp_server.push_back(std::make_unique<socket_tcp>());
+                {
+                    if (nullptr == tcp_server[i]->data)
+                    {
+                        tcp_server[i]->data = server;
+                    }
+
+                    if (InitTcpService(i))
+                    {
+                        if (0 == uv_tcp_simultaneous_accepts(tcp_server[i].get(), 0))
+                        {
                             if (tcp_proble)
                             {
                                 if (uv_tcp_nodelay(tcp_server[i].get(), 1))
@@ -52,13 +64,26 @@ namespace Evpp
                     }
                 }
             }
+            return true;
         }
-        return true;
+        return false;
+    }
+
+    bool TcpListen::CreaterListenService(const u96 size)
+    {
+        if (nullptr != event_share && nullptr != event_thread_pool)
+        {
+            if (event_share->CreaterLoops(size))
+            {
+                return event_thread_pool->CreaterEventThreadPool(size) && event_thread_pool->InitialEventThreadPool();
+            }
+        }
+        return false;
     }
 
     bool TcpListen::InitTcpService(const u96 index)
     {
-        return 0 == uv_tcp_init(event_loop->EventBasic(), tcp_server[index].get());
+        return 0 == uv_tcp_init(event_thread_pool->GetEventLoop(index)->EventBasic(), tcp_server[index].get());
     }
 
     bool TcpListen::BindTcpService(const u96 index, const struct sockaddr* addr)

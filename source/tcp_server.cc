@@ -194,7 +194,7 @@ namespace Evpp
                 }
                 else
                 {
-                    return SystemClose(handler);
+                    return SystemClose(reinterpret_cast<socket_stream*>(client.get()));
                 }
             }
         }
@@ -205,6 +205,7 @@ namespace Evpp
     {
         if (0 == status)
         {
+            //printf("AcceptÏß³Ì£º%d\n", GetCurrentThreadId());
             return DefaultAccepts(event_thread_pool->GetEventLoop(), handler);
         }
         return false;
