@@ -27,10 +27,14 @@ namespace Evpp
         {
             return false;
         }
+        return CreaterListenService(socket, socket->GetSocketPoolSize(), server);
+    }
 
-        if (CreaterListenService(socket->GetSocketPoolSize()))
+    bool TcpListen::CreaterListenService(const std::unique_ptr<EventSocketPool>& socket, const u96 size, TcpServer* server)
+    {
+        if (InitialListenService(size))
         {
-            for (u96 i = 0; i < socket->GetSocketPoolSize(); ++i)
+            for (u96 i = 0; i < size; ++i)
             {
                 tcp_server.push_back(std::make_unique<socket_tcp>());
                 {
@@ -69,7 +73,7 @@ namespace Evpp
         return false;
     }
 
-    bool TcpListen::CreaterListenService(const u96 size)
+    bool TcpListen::InitialListenService(const u96 size)
     {
         if (nullptr != event_share && nullptr != event_thread_pool)
         {
