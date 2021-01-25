@@ -1,5 +1,5 @@
-#ifndef __EVENT_PIPE_H__
-#define __EVENT_PIPE_H__
+#ifndef __EVENT_ASYNC_H__
+#define __EVENT_ASYNC_H__
 #include <config.h>
 #include <event_untlity.h>
 namespace Evpp
@@ -22,4 +22,4 @@ namespace Evpp
         Handler                                         cv_handler;
     };
 }
-#endif // __EVENT_PIPE_H__
+#endif // __EVENT_ASYNC_H__

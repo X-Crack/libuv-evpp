@@ -1,5 +1,5 @@
-#ifndef __EVENT_QUEUE_H__
-#define __EVENT_QUEUE_H__
+#ifndef __EVENT_WATCHER_H__
+#define __EVENT_WATCHER_H__
 #include <config.h>
 #include <memory>
 namespace moodycamel
@@ -38,4 +38,4 @@ namespace Evpp
         std::unique_ptr<moodycamel::ConcurrentQueue<Handler, Traits>>                                       nolock_queue_ex;
     };
 }
-#endif // __event_queue_H__
+#endif // __EVENT_WATCHER_H__

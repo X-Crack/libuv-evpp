@@ -15,9 +15,10 @@
 #include <event_timer_vesse.h>
 
 #include <event_signal.h>
-
+#include <event_loop.h>
 #include <tcp_client.h>
 #include <tcp_server_service.h>
+#include <event_queue.h>
 //#include "cpps/cpps.h"
 
 #include <stdio.h>
@@ -63,21 +64,14 @@ void after_fib(uv_work_t* req, int status)
 int main()
 {
     
-    loop = uv_default_loop();
-
-    int data[FIB_UNTIL];
-    uv_work_t req[FIB_UNTIL];
-    int i;
-    for (i = 0; i < FIB_UNTIL; i++)
-    {
-        data[i] = i;
-        req[i].data = (void*)&data[i];
-        uv_queue_work(loop, &req[i], fib, after_fib);
-    }
-
-    return uv_run(loop, UV_RUN_DEFAULT);
-
     using namespace Evpp;
+    EventLoop ev;
+
+    EventQueue queue(&ev);
+    //queue.AssignWorkQueue();
+    queue.AssignWorkQueue(&ev);
+    ev.ExecDispatch();
+    
     TcpServerService tcp;
     tcp.AddListenPort("0.0.0.0", 6666);
 //     tcp.AddListenPort("0.0.0.0", 6666);
