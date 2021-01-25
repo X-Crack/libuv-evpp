@@ -6,7 +6,6 @@ namespace Evpp
     class EventLoop;
     class EventShare;
     class EventStatus;
-    class EventWorkQueue;
     class EventLoopThread : public EventStatus
     {
     public:

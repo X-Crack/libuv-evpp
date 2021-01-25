@@ -28,9 +28,9 @@ namespace Evpp
         return CreaterEventThreadPool(event_size);
     }
 
-    bool EventLoopThreadPool::CreaterEventThreadPool(const u96 size)
+    bool EventLoopThreadPool::CreaterEventThreadPool(const u96 size, const bool use_thread_ex)
     {
-        if (event_base && event_pool.empty())
+        if (nullptr != event_base && (event_pool.empty() && event_pool_ex.empty()))
         {
             if (event_base->EventThread())
             {
@@ -38,12 +38,19 @@ namespace Evpp
                 {
                     std::unique_lock<std::mutex> lock(event_pool_lock);
                     {
-                        event_pool.emplace(i, std::make_unique<EventLoopThread>(event_base, event_share, i));
+                        if (use_thread_ex)
+                        {
+                            event_pool_ex.emplace(i, std::make_unique<EventLoopThreadEx>(event_base, event_share, i));
+                        }
+                        else
+                        {
+                            event_pool.emplace(i, std::make_unique<EventLoopThread>(event_base, event_share, i));
+                        }
                     }
                 }
                 return true;
             }
-            return event_base->RunInLoop(std::bind((bool(EventLoopThreadPool::*)(const u96)) & EventLoopThreadPool::CreaterEventThreadPool, this, size));
+            return event_base->RunInLoop(std::bind((bool(EventLoopThreadPool::*)(const u96, const bool))&EventLoopThreadPool::CreaterEventThreadPool, this, size, use_thread_ex));
         }
         return false;
     }
@@ -56,10 +63,11 @@ namespace Evpp
             {
                 for (u96 i = 0; i < event_pool.size(); ++i)
                 {
-                    if (false == event_pool[i]->CreaterThread(true))
+                    if (event_pool[i]->CreaterThread(true))
                     {
-                        printf("创建线程失败\n");
+                        continue;
                     }
+                    return false;
                 }
                 return true;
             }
@@ -73,14 +81,9 @@ namespace Evpp
         return true;
     }
 
-    u32 EventLoopThreadPool::MemoryUsageSize()
-    {
-        return (event_pool.size() * sizeof(EventLoopThread)) * 1024;
-    }
-
     EventLoop* EventLoopThreadPool::GetEventLoop()
     {
-        if (event_pool.empty())
+        if (event_pool.empty() && event_pool_ex.empty())
         {
             return event_base;
         }
@@ -91,12 +94,22 @@ namespace Evpp
     {
         std::unique_lock<std::mutex> lock(event_pool_lock);
         {
-            if (event_pool.empty())
+            if (event_pool.empty() && event_pool_ex.empty())
             {
                 return event_base;
             }
-            return event_pool[index % event_pool.size()]->GetEventLoop();
+
+            if (event_pool.size())
+            {
+                return event_pool[index % event_pool.size()]->GetEventLoop();
+            }
+
+            if (event_pool_ex.size())
+            {
+                return event_pool_ex[index % event_pool.size()]->GetEventLoop();
+            }
         }
+        return nullptr;
     }
 
     std::unique_ptr<EventLoopThread>& EventLoopThreadPool::GetEventLoopThread(const u96 index)

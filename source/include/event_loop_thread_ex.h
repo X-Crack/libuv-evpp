@@ -1,6 +1,5 @@
 #ifndef __EVENT_LOOP_THREAD_EX_H__
 #define __EVENT_LOOP_THREAD_EX_H__
-#include <event_loop.h>
 #include <functional>
 #include <thread>
 #include <mutex>
@@ -9,6 +8,7 @@ namespace Evpp
 {
     class EventLoop;
     class EventShare;
+    class EventStatus;
     class EventLoopThreadEx : public EventStatus
     {
     public:

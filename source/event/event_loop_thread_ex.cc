@@ -1,3 +1,5 @@
+#include <event_status.h>
+#include <event_loop.h>
 #include <event_loop_thread_ex.h>
 #include <event_share.h>
 namespace Evpp
@@ -14,7 +16,10 @@ namespace Evpp
 
     EventLoopThreadEx::~EventLoopThreadEx()
     {
-        loop_thread.reset();
+        if (Join())
+        {
+            loop_thread.reset();
+        }
     }
 
     bool EventLoopThreadEx::CreaterThread(bool wait)
@@ -36,7 +41,7 @@ namespace Evpp
                         }
                     }
                 }
-                return this->Join();
+                return true;
             }
             return event_base->RunInLoop(std::bind(&EventLoopThreadEx::CreaterThread, this, wait));
         }
