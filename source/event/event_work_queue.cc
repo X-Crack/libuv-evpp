@@ -18,7 +18,7 @@ namespace Evpp
         printf("AssignWorkQueue ID£º%d\n", event_base->EventThreadId());
         if (nullptr != event_base)
         {
-           return 0 == uv_queue_work(loop->EventBasic(), new event_work({ this }), &EventWorkQueue::DefaultWorkNotify, &EventWorkQueue::DefaultAfterWorkNotify);
+            return 0 == uv_queue_work(loop->EventBasic(), new event_work({ this }), &EventWorkQueue::OnCreaterNotify, &EventWorkQueue::OnDestroyNotify);
         }
         return false;
     }
@@ -28,46 +28,46 @@ namespace Evpp
         printf("AssignWorkQueue ID£º%d\n", event_base->EventThreadId());
         if (nullptr != event_base)
         {
-            return 0 == uv_queue_work(event_base->EventBasic(), new event_work({ this }), &EventWorkQueue::DefaultWorkNotify, &EventWorkQueue::DefaultAfterWorkNotify);
+            return 0 == uv_queue_work(event_base->EventBasic(), new event_work({ this }), &EventWorkQueue::OnCreaterNotify, &EventWorkQueue::OnDestroyNotify);
         }
         return false;
     }
 
-    void EventWorkQueue::SetWorkCallback(const Handler& function)
+    void EventWorkQueue::SetCreaterCallback(const CreaterWorkHandler& function)
     {
-        if (nullptr == work_callback)
+        if (nullptr == creater_callback)
         {
-            work_callback = function;
+            creater_callback = function;
         }
     }
 
-    void EventWorkQueue::SetAfterWorkCallback(const Handler& function)
+    void EventWorkQueue::SetDestroyCallback(const DestroyWorkHandler& function)
     {
-        if (nullptr == afterwork_callback)
+        if (nullptr == destroy_callback)
         {
-            afterwork_callback = function;
+            destroy_callback = function;
         }
     }
 
-    void EventWorkQueue::OnWorkNotify(event_work* handler)
+    void EventWorkQueue::OnCreaterNotify()
     {
         printf("OnWorkNotify ID£º%d\n", event_base->EventThreadId());
-        if (nullptr != work_callback)
+        if (nullptr != creater_callback)
         {
-            work_callback();
+            creater_callback(event_base);
         }
     }
 
-    void EventWorkQueue::OnAfterWorkNotify(event_work* handler, int status)
+    void EventWorkQueue::OnDestroyNotify(int status)
     {
         printf("OnAfterWorkNotify ID£º%d\n", event_base->EventThreadId());
-        if (nullptr != afterwork_callback)
+        if (nullptr != destroy_callback)
         {
-            afterwork_callback();
+            destroy_callback(event_base, status);
         }
     }
 
-    void EventWorkQueue::DefaultWorkNotify(event_work* handler)
+    void EventWorkQueue::OnCreaterNotify(event_work* handler)
     {
         if (nullptr != handler)
         {
@@ -75,13 +75,13 @@ namespace Evpp
             {
                 if (nullptr != watcher)
                 {
-                    watcher->OnWorkNotify(handler);
+                    return watcher->OnCreaterNotify();
                 }
             }
         }
     }
 
-    void EventWorkQueue::DefaultAfterWorkNotify(event_work* handler, int status)
+    void EventWorkQueue::OnDestroyNotify(event_work* handler, int status)
     {
         if (nullptr != handler)
         {
@@ -89,10 +89,9 @@ namespace Evpp
             {
                 if (nullptr != watcher)
                 {
-                    watcher->OnAfterWorkNotify(handler, status);
-
                     delete handler;
                     handler = nullptr;
+                    return watcher->OnDestroyNotify(status);
                 }
             }
         }

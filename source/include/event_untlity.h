@@ -14,6 +14,8 @@ namespace Evpp
 	class TcpBuffer;
 	typedef std::function<void()>                                                                                                                           Handler;
 	typedef std::function<bool()>                                                                                                                           Functor;
+	typedef std::function<void(EventLoop*)>                                                                                                                 CreaterWorkHandler;
+	typedef std::function<void(EventLoop*, i32)>                                                                                                            DestroyWorkHandler;
     typedef std::function<void(EventLoop*, const std::shared_ptr<EventTimer>&, const u96)>																	EventTimerHandle;
     typedef std::function<bool(EventLoop*, const std::shared_ptr<TcpSession>&, const u96)>                                                                  InterfaceAccepts;
     typedef std::function<bool(EventLoop*, const std::shared_ptr<TcpSession>&, const u96)>                                                                  InterfaceConnect;
