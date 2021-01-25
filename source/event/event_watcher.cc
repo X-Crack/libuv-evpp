@@ -1,6 +1,6 @@
 #include <event_watcher.h>
 #include <event_loop.h>
-#include <event_pipe.h>
+#include <event_async.h>
 #include <blockingconcurrentqueue.h>
 #include <concurrentqueue.h>
 namespace Evpp
@@ -15,11 +15,11 @@ namespace Evpp
     };
 
     EventWatcher::EventWatcher(EventLoop* loop) :
-        event_loop(loop),
-        event_pipe(std::make_unique<EventPipe>(loop, std::bind(&EventWatcher::RecvAsyncNotify, this))),
-        event_pipe_ex(std::make_unique<EventPipe>(loop, std::bind(&EventWatcher::RecvAsyncNotifyEx, this))),
-        event_async(std::make_unique<moodycamel::ConcurrentQueue<Functor, Traits>>()),
-        event_async_ex(std::make_unique<moodycamel::ConcurrentQueue<Handler, Traits>>())
+        event_base(loop),
+        event_async_(std::make_unique<EventAsync>(loop, std::bind(&EventWatcher::RecvAsyncNotify, this))),
+        event_async_ex_(std::make_unique<EventAsync>(loop, std::bind(&EventWatcher::RecvAsyncNotifyEx, this))),
+        nolock_queue(std::make_unique<moodycamel::ConcurrentQueue<Functor, Traits>>()),
+        nolock_queue_ex(std::make_unique<moodycamel::ConcurrentQueue<Handler, Traits>>())
     {
 
     }
@@ -31,14 +31,14 @@ namespace Evpp
 
     bool EventWatcher::CreateQueue()
     {
-        return event_pipe->CreatePipe() && event_pipe_ex->CreatePipe();
+        return event_async_->CreatePipe() && event_async_ex_->CreatePipe();
     }
 
     bool EventWatcher::RunInLoop(const Functor& function)
     {
-        if (nullptr != event_loop && nullptr != event_pipe)
+        if (nullptr != event_base && nullptr != event_async_)
         {
-            if (event_loop->EventThread())
+            if (event_base->EventThread())
             {
                 return function();
             }
@@ -54,7 +54,7 @@ namespace Evpp
 
     bool EventWatcher::RunInLoopEx(const Handler& function)
     {
-        if (nullptr != event_loop && nullptr != event_pipe)
+        if (nullptr != event_base && nullptr != event_async_)
         {
             return SendAsyncNotifyEx(function);
         }
@@ -68,11 +68,11 @@ namespace Evpp
 
     bool EventWatcher::SendAsyncNotify(const Functor& function)
     {
-        if (nullptr != event_pipe)
+        if (nullptr != event_async_)
         {
-            while (false == event_async->try_enqueue(function));
+            while (false == nolock_queue->try_enqueue(function));
 
-            return event_pipe->ExecNotify();
+            return event_async_->ExecNotify();
         }
         return false;
     }
@@ -81,7 +81,7 @@ namespace Evpp
     {
         Functor function;
 
-        while (event_async->try_dequeue(function))
+        while (nolock_queue->try_dequeue(function))
         {
             if (!function())
             {
@@ -92,11 +92,11 @@ namespace Evpp
 
     bool EventWatcher::SendAsyncNotifyEx(const Handler& function)
     {
-        if (nullptr != event_pipe_ex)
+        if (nullptr != event_async_ex_)
         {
-            while (false == event_async_ex->try_enqueue(function));
+            while (false == nolock_queue_ex->try_enqueue(function));
 
-            return event_pipe_ex->ExecNotify();
+            return event_async_ex_->ExecNotify();
         }
         return false;
     }
@@ -105,7 +105,7 @@ namespace Evpp
     {
         Handler function;
 
-        while (event_async_ex->try_dequeue(function))
+        while (nolock_queue_ex->try_dequeue(function))
         {
             function();
         }

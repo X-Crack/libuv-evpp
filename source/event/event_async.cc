@@ -1,0 +1,63 @@
+#include <event_async.h>
+#include <event_loop.h>
+namespace Evpp
+{
+    EventAsync::EventAsync(EventLoop* loop, const Handler& handler) :
+        event_loop(loop), 
+        event_async_(new uv_async_t()),
+        cv_handler(handler)
+    {
+        if (nullptr == event_async_->data)
+        {
+            event_async_->data = this;
+        }
+    }
+
+    EventAsync::~EventAsync()
+    {
+        if (event_async_)
+        {
+            delete event_async_;
+            event_async_ = nullptr;
+        }
+    }
+
+    bool EventAsync::CreatePipe()
+    {
+        if (nullptr != event_loop && nullptr != event_async_)
+        {
+            return 0 == uv_async_init(event_loop->EventBasic(), event_async_, &EventAsync::OnNotify);
+        }
+        return false;
+    }
+
+    bool EventAsync::ExecNotify()
+    {
+        if (nullptr != event_async_ && nullptr != event_async_->data)
+        {
+            return 0 == uv_async_send(event_async_);
+        }
+        return false;
+    }
+
+    void EventAsync::OnNotify(event_async* handler)
+    {
+        if (nullptr != handler)
+        {
+            EventAsync* watcher = static_cast<EventAsync*>(handler->data);
+            {
+                if (nullptr != watcher)
+                {
+                    watcher->OnNotify();
+                }
+            }
+        }
+    }
+    void EventAsync::OnNotify()
+    {
+        if (nullptr != cv_handler)
+        {
+            cv_handler();
+        }
+    }
+}

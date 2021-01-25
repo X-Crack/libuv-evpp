@@ -30,9 +30,6 @@
     <ClCompile Include="..\source\event\event_status.cc">
       <Filter>event</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\event\event_pipe.cc">
-      <Filter>event</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\event\event_base.cc">
       <Filter>event</Filter>
     </ClCompile>
@@ -90,6 +87,9 @@
     <ClCompile Include="..\source\event\event_watcher.cc">
       <Filter>event</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\event\event_async.cc">
+      <Filter>event</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\include\platform.h">
@@ -108,9 +108,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\source\include\event_share.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\include\event_pipe.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\source\include\event_loop_thread.h">
@@ -168,6 +165,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\source\include\event_watcher.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\event_async.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

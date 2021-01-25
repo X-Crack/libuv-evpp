@@ -5,11 +5,11 @@
 namespace Evpp
 {
     class EventLoop;
-    class EventPipe
+    class EventAsync
     {
     public:
-        explicit EventPipe(EventLoop* loop, const Handler& handler);
-        virtual ~EventPipe();
+        explicit EventAsync(EventLoop* loop, const Handler& handler);
+        virtual ~EventAsync();
     public:
         bool CreatePipe();
         bool ExecNotify();
@@ -18,7 +18,7 @@ namespace Evpp
         void OnNotify();
     private:
         EventLoop*                                      event_loop;
-        event_async*                                    event_pipe;
+        event_async*                                    event_async_;
         Handler                                         cv_handler;
     };
 }

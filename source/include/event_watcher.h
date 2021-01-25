@@ -12,7 +12,7 @@ namespace Evpp
 {
     struct Traits;
     class EventLoop;
-    class EventPipe;
+    class EventAsync;
     class EventWatcher
     {
     public:
@@ -31,11 +31,11 @@ namespace Evpp
         bool SendAsyncNotifyEx(const Handler& function);
         void RecvAsyncNotifyEx();
     private:
-        EventLoop*                                                                                          event_loop;
-        std::unique_ptr<EventPipe>                                                                          event_pipe;
-        std::unique_ptr<EventPipe>                                                                          event_pipe_ex;
-        std::unique_ptr<moodycamel::ConcurrentQueue<Functor, Traits>>                                       event_async;
-        std::unique_ptr<moodycamel::ConcurrentQueue<Handler, Traits>>                                       event_async_ex;
+        EventLoop*                                                                                          event_base;
+        std::unique_ptr<EventAsync>                                                                         event_async_;
+        std::unique_ptr<EventAsync>                                                                         event_async_ex_;
+        std::unique_ptr<moodycamel::ConcurrentQueue<Functor, Traits>>                                       nolock_queue;
+        std::unique_ptr<moodycamel::ConcurrentQueue<Handler, Traits>>                                       nolock_queue_ex;
     };
 }
 #endif // __event_queue_H__
