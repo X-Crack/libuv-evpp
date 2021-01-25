@@ -31,14 +31,36 @@ namespace Evpp
         return false;
     }
 
+    void EventQueue::SetWorkCallback(const Handler& function)
+    {
+        if (nullptr == work_callback)
+        {
+            work_callback = function;
+        }
+    }
+
+    void EventQueue::SetAfterWorkCallback(const Handler& function)
+    {
+        if (nullptr == afterwork_callback)
+        {
+            afterwork_callback = function;
+        }
+    }
+
     void EventQueue::OnWorkNotify(event_work* handler)
     {
-        
+        if (nullptr != work_callback)
+        {
+            work_callback();
+        }
     }
 
     void EventQueue::OnAfterWorkNotify(event_work* handler, int status)
     {
-        
+        if (nullptr != afterwork_callback)
+        {
+            afterwork_callback();
+        }
     }
 
     void EventQueue::DefaultWorkNotify(event_work* handler)
