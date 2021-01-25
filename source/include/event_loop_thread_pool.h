@@ -18,8 +18,9 @@ namespace Evpp
         virtual ~EventLoopThreadPool();
     public:
         bool CreaterEventThreadPool();
-        bool CreaterEventThreadPool(const u96 size, const bool use_thread_ex = false);
-        bool InitialEventThreadPool();
+        bool CreaterEventThreadPool(const u96 size, const bool use_thread_ex = true);
+    private:
+        bool InitialEventThreadPool(const u96 size, const bool use_thread_ex);
         bool SetThreadMaxNum(const u32 size);
     public:
         u96  GetEventThreadLoopSize() { return event_pool.size(); };

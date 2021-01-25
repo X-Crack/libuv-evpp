@@ -38,7 +38,7 @@ namespace Evpp
     {
         if (tcp_socket && tcp_listen)
         {
-            if (event_thread_pool->CreaterEventThreadPool(thread_size) && event_thread_pool->InitialEventThreadPool())
+            if (event_thread_pool->CreaterEventThreadPool(thread_size))
             {
                 return tcp_listen->CreaterListenService(tcp_socket, this);
             }

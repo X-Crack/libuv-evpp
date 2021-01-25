@@ -48,32 +48,35 @@ namespace Evpp
                         }
                     }
                 }
-                return true;
+                return InitialEventThreadPool(size, use_thread_ex);
             }
             return event_base->RunInLoop(std::bind((bool(EventLoopThreadPool::*)(const u96, const bool))&EventLoopThreadPool::CreaterEventThreadPool, this, size, use_thread_ex));
         }
         return false;
     }
 
-    bool EventLoopThreadPool::InitialEventThreadPool()
+    bool EventLoopThreadPool::InitialEventThreadPool(const u96 size, const bool use_thread_ex)
     {
-        if (event_base && event_pool.size())
+        for (u96 i = 0; i < size; ++i)
         {
-            if (event_base->EventThread())
+            if (use_thread_ex)
             {
-                for (u96 i = 0; i < event_pool.size(); ++i)
+                if (event_pool_ex[i]->CreaterSubThread())
                 {
-                    if (event_pool[i]->CreaterThread(true))
-                    {
-                        continue;
-                    }
-                    return false;
+                    continue;
                 }
-                return true;
+
+                return false;
             }
-            return event_base->RunInLoop(std::bind(&EventLoopThreadPool::InitialEventThreadPool, this));
+
+            if (event_pool[i]->CreaterSubThread())
+            {
+                continue;
+            }
+
+            return false;
         }
-        return false;
+        return true;
     }
 
     bool EventLoopThreadPool::SetThreadMaxNum(const u32 size)
@@ -106,7 +109,7 @@ namespace Evpp
 
             if (event_pool_ex.size())
             {
-                return event_pool_ex[index % event_pool.size()]->GetEventLoop();
+                return event_pool_ex[index % event_pool_ex.size()]->GetEventLoop();
             }
         }
         return nullptr;

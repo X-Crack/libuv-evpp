@@ -22,7 +22,7 @@ namespace Evpp
         }
     }
 
-    bool EventLoopThreadEx::CreaterThread(bool wait)
+    bool EventLoopThreadEx::CreaterSubThread(bool wait)
     {
         if (nullptr == loop_thread && event_base)
         {
@@ -43,7 +43,7 @@ namespace Evpp
                 }
                 return true;
             }
-            return event_base->RunInLoop(std::bind(&EventLoopThreadEx::CreaterThread, this, wait));
+            return event_base->RunInLoop(std::bind(&EventLoopThreadEx::CreaterSubThread, this, wait));
         }
         return false;
     }

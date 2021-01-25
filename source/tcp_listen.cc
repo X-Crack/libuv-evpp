@@ -79,7 +79,7 @@ namespace Evpp
         {
             if (event_share->CreaterLoops(size))
             {
-                return event_thread_pool->CreaterEventThreadPool(size) && event_thread_pool->InitialEventThreadPool();
+                return event_thread_pool->CreaterEventThreadPool(size);
             }
         }
         return false;

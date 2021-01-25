@@ -23,7 +23,7 @@ namespace Evpp
         DestroyThread();
     }
 
-    bool EventLoopThread::CreaterThread(bool wait)
+    bool EventLoopThread::CreaterSubThread(bool wait)
     {
         if (nullptr != event_base)
         {
