@@ -6,11 +6,11 @@
 namespace Evpp
 {
     class EventLoop;
-    class EventQueue
+    class EventWorkQueue
     {
     public:
-        explicit EventQueue(EventLoop* loop = nullptr);
-        virtual ~EventQueue();
+        explicit EventWorkQueue(EventLoop* loop = nullptr);
+        virtual ~EventWorkQueue();
     public:
         bool AssignWorkQueue(EventLoop* loop);
         bool AssignWorkQueue();

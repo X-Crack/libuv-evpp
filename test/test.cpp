@@ -18,7 +18,7 @@
 #include <event_loop.h>
 #include <tcp_client.h>
 #include <tcp_server_service.h>
-#include <event_queue.h>
+#include <event_work_queue.h>
 //#include "cpps/cpps.h"
 
 #include <stdio.h>
@@ -67,7 +67,7 @@ int main()
     using namespace Evpp;
     EventLoop ev;
 
-    EventQueue queue(&ev);
+    EventWorkQueue queue(&ev);
     //queue.AssignWorkQueue();
     queue.AssignWorkQueue(&ev);
     ev.ExecDispatch();
