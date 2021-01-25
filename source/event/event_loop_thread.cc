@@ -2,6 +2,9 @@
 #include <event_loop.h>
 #include <event_share.h>
 #include <event_loop_thread.h>
+#include <event_work_queue.h>
+#include <future>
+#include <thread>
 namespace Evpp
 {
     EventLoopThread::EventLoopThread(const u96 index) : event_base(nullptr), event_index(index)
@@ -9,57 +12,45 @@ namespace Evpp
 
     }
 
-    EventLoopThread::EventLoopThread(EventLoop* loop, const std::shared_ptr<EventShare>& share, const u96 index) : event_base(loop), event_share(share), event_index(index)
+    EventLoopThread::EventLoopThread(EventLoop* loop, const std::shared_ptr<EventShare>& share, const u96 index) : 
+        event_base(loop), 
+        event_share(share), 
+        event_index(index),
+        event_thread(std::make_unique<uv_thread_t>())
     {
         
     }
 
     EventLoopThread::~EventLoopThread()
     {
-        loop_thread.reset();
+        DestroyThread();
     }
 
-    bool EventLoopThread::CreaterEventLoopThread(bool wait)
+    bool EventLoopThread::CreaterThread(bool wait)
     {
-        if (nullptr == loop_thread && event_base)
+        if (nullptr != event_base)
         {
             if (event_base->EventThread())
             {
-                loop_thread.reset(new std::thread(std::bind(&EventLoopThread::Run, this)));
+                if (this->CreaterThread())
                 {
                     if (wait)
                     {
-                        std::unique_lock<std::mutex> lock(cv_mutex);
-                        {
-                            if (cv_signal.wait_for(lock, std::chrono::milliseconds(64), std::bind(&EventLoopThread::AvailableEvent, this)))
-                            {
-                                return this->Join();
-                            }
-                        }
+                        return DestroyThread();
                     }
+                    return true;
                 }
-                return this->Join();
             }
-            return event_base->RunInLoop(std::bind(&EventLoopThread::CreaterEventLoopThread, this, wait));
-        }
-        return false;
-    }
-
-    bool EventLoopThread::Join()
-    {
-        if (loop_thread && loop_thread->joinable())
-        {
-            loop_thread->detach();
-            return true;
+            return event_base->RunInLoop(std::bind((bool(EventLoopThread::*)(bool))&EventLoopThread::CreaterThread, this, wait));
         }
         return false;
     }
 
     EventLoop* EventLoopThread::GetEventLoop()
     {
-        if (nullptr != loop)
+        if (nullptr != loops_base)
         {
-            return loop.get();
+            return loops_base.get();
         }
 
         if (nullptr != event_base)
@@ -70,32 +61,27 @@ namespace Evpp
         return nullptr;
     }
 
-    bool EventLoopThread::AvailableEvent()
+    bool EventLoopThread::CreaterThread()
     {
-        if (nullptr == loop)
-        {
-            return false;
-        }
-
-        if (ExistsStarts(INITIALIZED))
-        {
-            return 0 == loop->EventBasic()->stop_flag;
-        }
-
-        return false;
+        return 0 == uv_thread_create(event_thread.get(), &EventLoopThread::ThreadRun, this);
     }
 
-    void EventLoopThread::Run()
+    bool EventLoopThread::DestroyThread()
+    {
+        return 0 == uv_thread_join(event_thread.get());
+    }
+
+    void EventLoopThread::ThreadRun()
     {
         if (ChangeStatus(NOTYET, INITIALIZING))
         {
-            loop.reset(new EventLoop(event_share->EventLoop(event_index), event_index));
+            loops_base.reset(new EventLoop(event_share->EventLoop(event_index), event_index));
             {
                 if (ChangeStatus(INITIALIZING, INITIALIZED))
                 {
-                    if (loop->InitialEvent())
+                    if (loops_base->InitialEvent())
                     {
-                        if (false == loop->ExecDispatch())
+                        if (false == loops_base->ExecDispatch())
                         {
                             assert(0);
                             return;
@@ -103,9 +89,23 @@ namespace Evpp
 
                         if (ChangeStatus(INITIALIZED, STOPPED))
                         {
-                            assert(loop->ExistsStoped());
+                            assert(loops_base->ExistsStoped());
                         }
                     }
+                }
+            }
+        }
+    }
+
+    void EventLoopThread::ThreadRun(void* handler)
+    {
+        if (nullptr != handler)
+        {
+            EventLoopThread* watcher = static_cast<EventLoopThread*>(handler);
+            {
+                if (nullptr != watcher)
+                {
+                    watcher->ThreadRun();
                 }
             }
         }

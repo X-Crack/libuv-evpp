@@ -34,6 +34,7 @@ using event_async = uv_async_t;
 using event_timer = uv_timer_t;
 using event_handle = uv_handle_t;
 using event_signal = uv_signal_t;
+using event_thread = uv_thread_t;
 using event_work = uv_work_t;
 using socket_tcp = uv_tcp_t;
 using socket_stream = uv_stream_t;

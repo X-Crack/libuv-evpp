@@ -60,18 +60,23 @@ void after_fib(uv_work_t* req, int status)
        fprintf(stderr, "Done calculating %dth fibonacci\n", *(int *) req->data);
 }
 
+static void crcallback(Evpp::EventLoop* loop)
+{
+    printf("11111\n");
+}
 
 int main()
 {
     
     using namespace Evpp;
-    EventLoop ev;
+//     EventLoop ev;
+//     EventWorkQueue qe(&ev);
+//     qe.SetCreaterCallback(crcallback);
+//     qe.AssignWorkQueue();
+//     
+//     ev.ExecDispatch();
+//    return 0;
 
-    EventWorkQueue queue(&ev);
-    //queue.AssignWorkQueue();
-    queue.AssignWorkQueue(&ev);
-    ev.ExecDispatch();
-    
     TcpServerService tcp;
     tcp.AddListenPort("0.0.0.0", 6666);
 //     tcp.AddListenPort("0.0.0.0", 6666);

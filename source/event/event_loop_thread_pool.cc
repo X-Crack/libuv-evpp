@@ -42,7 +42,7 @@ namespace Evpp
                 }
                 return true;
             }
-            return event_base->RunInLoop(std::bind((bool(EventLoopThreadPool::*)(const u96))&EventLoopThreadPool::CreaterEventThreadPool, this, size));
+            return event_base->RunInLoop(std::bind((bool(EventLoopThreadPool::*)(const u96)) & EventLoopThreadPool::CreaterEventThreadPool, this, size));
         }
         return false;
     }
@@ -55,7 +55,7 @@ namespace Evpp
             {
                 for (u96 i = 0; i < event_pool.size(); ++i)
                 {
-                    if (false == event_pool[i]->CreaterEventLoopThread(true))
+                    if (false == event_pool[i]->CreaterThread(false))
                     {
                         printf("创建线程失败\n");
                     }
@@ -65,6 +65,11 @@ namespace Evpp
             return event_base->RunInLoop(std::bind(&EventLoopThreadPool::InitialEventThreadPool, this));
         }
         return false;
+    }
+
+    bool EventLoopThreadPool::SetThreadMaxNum(const u32 size)
+    {
+        return true;
     }
 
     u32 EventLoopThreadPool::MemoryUsageSize()

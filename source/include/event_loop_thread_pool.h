@@ -19,6 +19,7 @@ namespace Evpp
         bool CreaterEventThreadPool();
         bool CreaterEventThreadPool(const u96 size);
         bool InitialEventThreadPool();
+        bool SetThreadMaxNum(const u32 size);
     public:
         u96  GetEventThreadLoopSize() { return event_pool.size(); };
     public:

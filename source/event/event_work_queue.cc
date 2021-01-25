@@ -1,5 +1,8 @@
 #include <event_work_queue.h>
 #include <event_loop.h>
+#include <stdlib.h>
+#include <cstdlib>
+#include <windows.h>
 namespace Evpp
 {
     EventWorkQueue::EventWorkQueue(EventLoop* loop) :
@@ -12,10 +15,9 @@ namespace Evpp
     {
 
     }
-
+    // UV_THREADPOOL_SIZE = 1024
     bool EventWorkQueue::AssignWorkQueue(EventLoop* loop)
     {
-        printf("AssignWorkQueue ID£º%d\n", event_base->EventThreadId());
         if (nullptr != event_base)
         {
             return 0 == uv_queue_work(loop->EventBasic(), new event_work({ this }), &EventWorkQueue::OnCreaterNotify, &EventWorkQueue::OnDestroyNotify);
@@ -25,7 +27,6 @@ namespace Evpp
 
     bool EventWorkQueue::AssignWorkQueue()
     {
-        printf("AssignWorkQueue ID£º%d\n", event_base->EventThreadId());
         if (nullptr != event_base)
         {
             return 0 == uv_queue_work(event_base->EventBasic(), new event_work({ this }), &EventWorkQueue::OnCreaterNotify, &EventWorkQueue::OnDestroyNotify);
@@ -51,7 +52,6 @@ namespace Evpp
 
     void EventWorkQueue::OnCreaterNotify()
     {
-        printf("OnWorkNotify ID£º%d\n", event_base->EventThreadId());
         if (nullptr != creater_callback)
         {
             creater_callback(event_base);
@@ -60,7 +60,6 @@ namespace Evpp
 
     void EventWorkQueue::OnDestroyNotify(int status)
     {
-        printf("OnAfterWorkNotify ID£º%d\n", event_base->EventThreadId());
         if (nullptr != destroy_callback)
         {
             destroy_callback(event_base, status);

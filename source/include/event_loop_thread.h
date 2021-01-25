@@ -2,14 +2,12 @@
 #define __EVENT_LOOP_THREAD_H__
 #include <config.h>
 #include <functional>
-#include <thread>
-#include <mutex>
-#include <condition_variable>
 namespace Evpp
 {
     class EventLoop;
     class EventShare;
     class EventStatus;
+    class EventWorkQueue;
     class EventLoopThread : public EventStatus
     {
     public:
@@ -17,20 +15,21 @@ namespace Evpp
         explicit EventLoopThread(EventLoop* loop, const std::shared_ptr<EventShare>& share, const u96 index);
         virtual ~EventLoopThread();
     public:
-        bool CreaterEventLoopThread(bool wait = true);
-        bool Join();
+        bool CreaterThread(bool wait);
         EventLoop* GetEventLoop();
     private:
-        bool AvailableEvent();
-        void Run();
+        bool CreaterThread();
+        bool DestroyThread();
+    private:
+        void ThreadRun();
+    private:
+        static void ThreadRun(void* handler);
     private:
         EventLoop*                                      event_base;
         std::shared_ptr<EventShare>                     event_share;
+        std::unique_ptr<event_thread>                   event_thread;
         u96                                             event_index;
-        std::shared_ptr<EventLoop>                      loop;
-        std::unique_ptr<std::thread>                    loop_thread;
-        std::condition_variable							cv_signal;
-        std::mutex										cv_mutex;
+        std::shared_ptr<EventLoop>                      loops_base;
     };
 }
 #endif // __EVENT_LOOP_THREAD_H__
