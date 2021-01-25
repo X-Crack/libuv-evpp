@@ -9,7 +9,7 @@
 namespace Evpp
 {
     class EventTimerVesse;
-    class EventQueue;
+    class EventWatcher;
     class EventLoop : public EventStatus, public std::enable_shared_from_this<EventLoop>
     {
     public:
@@ -48,7 +48,7 @@ namespace Evpp
         event_loop*                                             event_base;
         u96                                                     event_index;
         std::atomic<u32>                                        event_refer;        // 当前 Loop session 个数 -> 用于动态线程判断分配新的线程使用
-        std::unique_ptr<EventQueue>                             event_queue;
+        std::unique_ptr<EventWatcher>                           event_watcher;
         std::unique_ptr<EventTimerVesse>                        event_timer_vesse;
         std::unordered_map<u96, std::unique_ptr<std::any>>      event_context;
         u32                                                     event_thread;

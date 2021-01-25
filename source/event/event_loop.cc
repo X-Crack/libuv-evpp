@@ -1,5 +1,5 @@
 #include <event_loop.h>
-#include <event_queue.h>
+#include <event_watcher.h>
 #include <event_timer_vesse.h>
 namespace Evpp
 {
@@ -7,7 +7,7 @@ namespace Evpp
         event_base(loop),
         event_index(index),
         event_refer(0),
-        event_queue(std::make_unique<EventQueue>(this)),
+        event_watcher(std::make_unique<EventWatcher>(this)),
         event_timer_vesse(std::make_unique<EventTimerVesse>(this)),
         event_thread(EventThreadId())
     {
@@ -33,7 +33,7 @@ namespace Evpp
 
     bool EventLoop::InitialEvent()
     {
-        return event_queue->CreateQueue();
+        return event_watcher->CreateQueue();
     }
 
     bool EventLoop::ExecDispatch()
@@ -67,30 +67,30 @@ namespace Evpp
 
     bool EventLoop::RunInLoop(const Functor& function)
     {
-        if (nullptr == event_queue)
+        if (nullptr == event_watcher)
         {
             return false;
         }
-        return event_queue->RunInLoop(function);
+        return event_watcher->RunInLoop(function);
     }
 
     bool EventLoop::RunInLoop(Functor&& function)
     {
-        return event_queue->RunInLoop(std::move(function));
+        return event_watcher->RunInLoop(std::move(function));
     }
 
     bool EventLoop::RunInLoopEx(const Handler& function)
     {
-        if (nullptr == event_queue)
+        if (nullptr == event_watcher)
         {
             return false;
         }
-        return event_queue->RunInLoopEx(function);
+        return event_watcher->RunInLoopEx(function);
     }
 
     bool EventLoop::RunInLoopEx(Handler&& function)
     {
-        return event_queue->RunInLoopEx(std::move(function));
+        return event_watcher->RunInLoopEx(std::move(function));
     }
 
     bool EventLoop::AssignTimer(const u96 index, const u64 delay, const u64 repeat)

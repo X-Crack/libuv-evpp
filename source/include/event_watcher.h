@@ -13,11 +13,11 @@ namespace Evpp
     struct Traits;
     class EventLoop;
     class EventPipe;
-    class EventQueue
+    class EventWatcher
     {
     public:
-        explicit EventQueue(EventLoop* loop);
-        virtual ~EventQueue();
+        explicit EventWatcher(EventLoop* loop);
+        virtual ~EventWatcher();
     public:
         bool CreateQueue();
     public:

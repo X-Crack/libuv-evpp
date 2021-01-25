@@ -1,4 +1,4 @@
-#include <event_queue.h>
+#include <event_watcher.h>
 #include <event_loop.h>
 #include <event_pipe.h>
 #include <blockingconcurrentqueue.h>
@@ -14,27 +14,27 @@ namespace Evpp
         static const std::uint32_t EXPLICIT_CONSUMER_CONSUMPTION_QUOTA_BEFORE_ROTATE = 1024;
     };
 
-    EventQueue::EventQueue(EventLoop* loop) :
+    EventWatcher::EventWatcher(EventLoop* loop) :
         event_loop(loop),
-        event_pipe(std::make_unique<EventPipe>(loop, std::bind(&EventQueue::RecvAsyncNotify, this))),
-        event_pipe_ex(std::make_unique<EventPipe>(loop, std::bind(&EventQueue::RecvAsyncNotifyEx, this))),
+        event_pipe(std::make_unique<EventPipe>(loop, std::bind(&EventWatcher::RecvAsyncNotify, this))),
+        event_pipe_ex(std::make_unique<EventPipe>(loop, std::bind(&EventWatcher::RecvAsyncNotifyEx, this))),
         event_async(std::make_unique<moodycamel::ConcurrentQueue<Functor, Traits>>()),
         event_async_ex(std::make_unique<moodycamel::ConcurrentQueue<Handler, Traits>>())
     {
 
     }
 
-    EventQueue::~EventQueue()
+    EventWatcher::~EventWatcher()
     {
 
     }
 
-    bool EventQueue::CreateQueue()
+    bool EventWatcher::CreateQueue()
     {
         return event_pipe->CreatePipe() && event_pipe_ex->CreatePipe();
     }
 
-    bool EventQueue::RunInLoop(const Functor& function)
+    bool EventWatcher::RunInLoop(const Functor& function)
     {
         if (nullptr != event_loop && nullptr != event_pipe)
         {
@@ -47,12 +47,12 @@ namespace Evpp
         return false;
     }
 
-    bool EventQueue::RunInLoop(Functor&& function)
+    bool EventWatcher::RunInLoop(Functor&& function)
     {
         return RunInLoop(function);
     }
 
-    bool EventQueue::RunInLoopEx(const Handler& function)
+    bool EventWatcher::RunInLoopEx(const Handler& function)
     {
         if (nullptr != event_loop && nullptr != event_pipe)
         {
@@ -61,12 +61,12 @@ namespace Evpp
         return false;
     }
 
-    bool EventQueue::RunInLoopEx(Handler&& function)
+    bool EventWatcher::RunInLoopEx(Handler&& function)
     {
         return RunInLoopEx(function);
     }
 
-    bool EventQueue::SendAsyncNotify(const Functor& function)
+    bool EventWatcher::SendAsyncNotify(const Functor& function)
     {
         if (nullptr != event_pipe)
         {
@@ -77,7 +77,7 @@ namespace Evpp
         return false;
     }
 
-    void EventQueue::RecvAsyncNotify()
+    void EventWatcher::RecvAsyncNotify()
     {
         Functor function;
 
@@ -90,7 +90,7 @@ namespace Evpp
         }
     }
 
-    bool EventQueue::SendAsyncNotifyEx(const Handler& function)
+    bool EventWatcher::SendAsyncNotifyEx(const Handler& function)
     {
         if (nullptr != event_pipe_ex)
         {
@@ -101,7 +101,7 @@ namespace Evpp
         return false;
     }
 
-    void EventQueue::RecvAsyncNotifyEx()
+    void EventWatcher::RecvAsyncNotifyEx()
     {
         Handler function;
 
