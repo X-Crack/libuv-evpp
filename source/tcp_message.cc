@@ -38,7 +38,7 @@ namespace Evpp
     {
         if (nullptr != event_loop)
         {
-            if (event_loop->SelftyThread())
+            if (event_loop->EventThread())
             {
                 if (len > 0 && buf)
                 {
@@ -54,7 +54,7 @@ namespace Evpp
     {
         if (nullptr != event_loop)
         {
-            if (event_loop->SelftyThread())
+            if (event_loop->EventThread())
             {
                 if (buf.capacity() > 0 && buf.data())
                 {
@@ -70,7 +70,7 @@ namespace Evpp
     {
         if (nullptr != event_loop)
         {
-            if (event_loop->SelftyThread())
+            if (event_loop->EventThread())
             {
                 if (nullptr != tcp_socket)
                 {

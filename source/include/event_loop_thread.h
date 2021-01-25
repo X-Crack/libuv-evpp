@@ -1,6 +1,6 @@
 #ifndef __EVENT_LOOP_THREAD_H__
 #define __EVENT_LOOP_THREAD_H__
-#include <event_loop.h>
+#include <config.h>
 #include <functional>
 #include <thread>
 #include <mutex>
@@ -9,6 +9,7 @@ namespace Evpp
 {
     class EventLoop;
     class EventShare;
+    class EventStatus;
     class EventLoopThread : public EventStatus
     {
     public:
@@ -23,7 +24,7 @@ namespace Evpp
         bool AvailableEvent();
         void Run();
     private:
-        EventLoop*                                      event_loop;
+        EventLoop*                                      event_base;
         std::shared_ptr<EventShare>                     event_share;
         u96                                             event_index;
         std::shared_ptr<EventLoop>                      loop;

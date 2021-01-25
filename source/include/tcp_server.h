@@ -63,7 +63,7 @@ namespace Evpp
         InterfaceAccepts                                                socket_accepts;
         InterfaceDiscons                                                socket_discons;
         InterfaceMessage                                                socket_message;
-        std::unique_ptr<EventLoopThreadPool>                            event_thread_pool;
+        std::shared_ptr<EventLoopThreadPool>                            event_thread_pool;
         std::unique_ptr<EventSocketPool>                                tcp_socket;
         std::unique_ptr<TcpListen>                                      tcp_listen;
         std::atomic<u96>											    tcp_index;

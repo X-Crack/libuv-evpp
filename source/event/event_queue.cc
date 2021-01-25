@@ -38,7 +38,7 @@ namespace Evpp
     {
         if (nullptr != event_loop && nullptr != event_pipe)
         {
-            if (event_loop->SelftyThread())
+            if (event_loop->EventThread())
             {
                 return function();
             }

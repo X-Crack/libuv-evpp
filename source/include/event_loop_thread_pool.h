@@ -20,13 +20,15 @@ namespace Evpp
         bool CreaterEventThreadPool(const u96 size);
         bool InitialEventThreadPool();
     public:
+        u96  GetEventThreadLoopSize() { return event_pool.size(); };
+    public:
         u32  MemoryUsageSize();
     public:
         EventLoop* GetEventLoop();
         EventLoop* GetEventLoop(const u96 index);
         std::unique_ptr<EventLoopThread>& GetEventLoopThread(const u96 index);
     private:
-        EventLoop*                                                                              event_loop;
+        EventLoop*                                                                              event_base;
         std::shared_ptr<EventShare>                                                             event_share;
         u96                                                                                     event_size;
         std::unordered_map<u96, std::unique_ptr<EventLoopThread>>                               event_pool;

@@ -36,8 +36,9 @@ namespace Evpp
         bool AddContext(const u96 index, const std::any& any);
         const std::unique_ptr<std::any>& GetContext(const u96 index = 0);
     public:
-        bool SelftyThread();
-        i32  GetCurThread();
+        bool EventThread();
+        u32  EventThreadId();
+        u32  EventThreadSelf();
     public:
         event_loop* EventBasic() { return event_base; };
     public:
@@ -50,7 +51,7 @@ namespace Evpp
         std::unique_ptr<EventQueue>                             event_queue;
         std::unique_ptr<EventTimerVesse>                        event_timer_vesse;
         std::unordered_map<u96, std::unique_ptr<std::any>>      event_context;
-        i32                                                     self_index;
+        u32                                                     event_thread;
     };
 }
 #endif // __EVENT_LOOP_H__

@@ -76,7 +76,7 @@ namespace Evpp
 
     bool TcpSession::AssignTimer(const u96 index, const u64 delay, const u64 repeat)
     {
-        if (event_loop->SelftyThread())
+        if (event_loop->EventThread())
         {
             if (nullptr != event_timer_vesse)
             {
@@ -88,7 +88,7 @@ namespace Evpp
 
     bool TcpSession::StopedTimer(const u96 index)
     {
-        if (event_loop->SelftyThread())
+        if (event_loop->EventThread())
         {
             if (nullptr != event_timer_vesse)
             {
@@ -100,7 +100,7 @@ namespace Evpp
 
     bool TcpSession::KilledTimer(const u96 index)
     {
-        if (event_loop->SelftyThread())
+        if (event_loop->EventThread())
         {
             if (nullptr != event_timer_vesse)
             {
@@ -120,7 +120,7 @@ namespace Evpp
 
     bool TcpSession::ReStarTimer(const u96 index)
     {
-        if (event_loop->SelftyThread())
+        if (event_loop->EventThread())
         {
             if (nullptr != event_timer_vesse)
             {
@@ -133,7 +133,7 @@ namespace Evpp
 
     bool TcpSession::ReStarTimerEx(const u96 index, const u64 delay, const u64 repeat)
     {
-        if (event_loop->SelftyThread())
+        if (event_loop->EventThread())
         {
             if (nullptr != event_timer_vesse)
             {

@@ -185,12 +185,12 @@ namespace Evpp
             {
                 if (InitTcpSocket(loop, handler, client.get()))
                 {
-                    if (loop->SelftyThread())
+                    if (loop->EventThread())
                     {
                         return InitialSession(loop, client);
                     }
-                    return loop->RunInLoopEx(std::bind(&TcpServer::InitialSession, this, loop, client));
-                    
+
+                    return loop->RunInLoopEx(std::bind(&TcpServer::InitialSession, this, loop, client)); 
                 }
                 else
                 {

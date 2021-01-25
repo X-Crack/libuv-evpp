@@ -1,13 +1,15 @@
-#include <event_loop_thread.h>
+#include <event_status.h>
+#include <event_loop.h>
 #include <event_share.h>
+#include <event_loop_thread.h>
 namespace Evpp
 {
-    EventLoopThread::EventLoopThread(const u96 index) : event_loop(nullptr), event_index(index)
+    EventLoopThread::EventLoopThread(const u96 index) : event_base(nullptr), event_index(index)
     {
 
     }
 
-    EventLoopThread::EventLoopThread(EventLoop* loop, const std::shared_ptr<EventShare>& share, const u96 index) : event_loop(loop), event_share(share), event_index(index)
+    EventLoopThread::EventLoopThread(EventLoop* loop, const std::shared_ptr<EventShare>& share, const u96 index) : event_base(loop), event_share(share), event_index(index)
     {
         
     }
@@ -19,9 +21,9 @@ namespace Evpp
 
     bool EventLoopThread::CreaterEventLoopThread(bool wait)
     {
-        if (nullptr == loop_thread && event_loop)
+        if (nullptr == loop_thread && event_base)
         {
-            if (event_loop->SelftyThread())
+            if (event_base->EventThread())
             {
                 loop_thread.reset(new std::thread(std::bind(&EventLoopThread::Run, this)));
                 {
@@ -38,7 +40,7 @@ namespace Evpp
                 }
                 return this->Join();
             }
-            return event_loop->RunInLoop(std::bind(&EventLoopThread::CreaterEventLoopThread, this, wait));
+            return event_base->RunInLoop(std::bind(&EventLoopThread::CreaterEventLoopThread, this, wait));
         }
         return false;
     }
@@ -60,9 +62,9 @@ namespace Evpp
             return loop.get();
         }
 
-        if (nullptr != event_loop)
+        if (nullptr != event_base)
         {
-            return event_loop;
+            return event_base;
         }
 
         return nullptr;

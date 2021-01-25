@@ -9,7 +9,7 @@ namespace Evpp
         event_refer(0),
         event_queue(std::make_unique<EventQueue>(this)),
         event_timer_vesse(std::make_unique<EventTimerVesse>(this)),
-        self_index(GetCurrentThreadId())
+        event_thread(EventThreadId())
     {
         if (ChangeStatus(NOTYET, INITIALIZING))
         {
@@ -53,7 +53,7 @@ namespace Evpp
 
     bool EventLoop::StopDispatch()
     {
-        if (this->SelftyThread())
+        if (this->EventThread())
         {
             if (0 == event_base->stop_flag)
             {
@@ -157,14 +157,23 @@ namespace Evpp
         return event_context[index];
     }
 
-    bool EventLoop::SelftyThread()
+    bool EventLoop::EventThread()
     {
-        return static_cast<i32>(GetCurrentThreadId()) == this->self_index;
+        return EventThreadId() == this->event_thread;
     }
 
-    i32 EventLoop::GetCurThread()
+    u32 EventLoop::EventThreadId()
     {
-        return self_index;
+#ifdef H_OS_WINDOWS
+        return GetCurrentThreadId();
+#else
+        return reinterpret_cast<u32>(uv_thread_self());
+#endif
+    }
+
+    u32 EventLoop::EventThreadSelf()
+    {
+        return event_thread;
     }
 
     EventLoop* EventLoop::AddRefer()

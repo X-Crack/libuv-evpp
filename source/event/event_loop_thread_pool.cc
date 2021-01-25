@@ -10,7 +10,7 @@ namespace Evpp
     }
 
     EventLoopThreadPool::EventLoopThreadPool(EventLoop* loop, const std::shared_ptr<EventShare>& share, const u96 size) :
-        event_loop(loop),
+        event_base(loop),
         event_share(share),
         event_size(size)
     {
@@ -29,29 +29,29 @@ namespace Evpp
 
     bool EventLoopThreadPool::CreaterEventThreadPool(const u96 size)
     {
-        if (event_loop && event_pool.empty())
+        if (event_base && event_pool.empty())
         {
-            if (event_loop->SelftyThread())
+            if (event_base->EventThread())
             {
                 for (u96 i = 0; i < size; ++i)
                 {
                     std::unique_lock<std::mutex> lock(event_pool_lock);
                     {
-                        event_pool.emplace(i, std::make_unique<EventLoopThread>(event_loop, event_share, i));
+                        event_pool.emplace(i, std::make_unique<EventLoopThread>(event_base, event_share, i));
                     }
                 }
                 return true;
             }
-            return event_loop->RunInLoop(std::bind((bool(EventLoopThreadPool::*)(const u96))&EventLoopThreadPool::CreaterEventThreadPool, this, size));
+            return event_base->RunInLoop(std::bind((bool(EventLoopThreadPool::*)(const u96))&EventLoopThreadPool::CreaterEventThreadPool, this, size));
         }
         return false;
     }
 
     bool EventLoopThreadPool::InitialEventThreadPool()
     {
-        if (event_loop && event_pool.size())
+        if (event_base && event_pool.size())
         {
-            if (event_loop->SelftyThread())
+            if (event_base->EventThread())
             {
                 for (u96 i = 0; i < event_pool.size(); ++i)
                 {
@@ -62,7 +62,7 @@ namespace Evpp
                 }
                 return true;
             }
-            return event_loop->RunInLoop(std::bind(&EventLoopThreadPool::InitialEventThreadPool, this));
+            return event_base->RunInLoop(std::bind(&EventLoopThreadPool::InitialEventThreadPool, this));
         }
         return false;
     }
@@ -76,7 +76,7 @@ namespace Evpp
     {
         if (event_pool.empty())
         {
-            return event_loop;
+            return event_base;
         }
         return GetEventLoop(event_loop_thread_next.fetch_add(1));
     }
@@ -87,7 +87,7 @@ namespace Evpp
         {
             if (event_pool.empty())
             {
-                return event_loop;
+                return event_base;
             }
             return event_pool[index % event_pool.size()]->GetEventLoop();
         }
