@@ -5,7 +5,7 @@
 namespace Evpp
 {
     TcpConnect::TcpConnect(EventLoop* loop, const std::shared_ptr<socket_tcp>& client) :
-        event_loop(loop),
+        event_base(loop),
         tcp_client(client),
         tcp_connect(std::make_unique<socket_connect>())
     {
@@ -32,7 +32,7 @@ namespace Evpp
 
     bool TcpConnect::InitTcpService()
     {
-        return 0 == uv_tcp_init(event_loop->EventBasic(), tcp_client.get());
+        return 0 == uv_tcp_init(event_base->EventBasic(), tcp_client.get());
     }
 
     bool TcpConnect::CreaterConnect(const sockaddr* addr)

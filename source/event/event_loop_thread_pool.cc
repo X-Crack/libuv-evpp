@@ -28,7 +28,7 @@ namespace Evpp
         return CreaterEventThreadPool(event_size);
     }
 
-    bool EventLoopThreadPool::CreaterEventThreadPool(const u96 size, const bool use_thread_ex)
+    bool  EventLoopThreadPool::CreaterEventThreadPool(const u96 size, const bool use_thread_ex)
     {
         if (nullptr != event_base && (event_pool.empty() && event_pool_ex.empty()))
         {
@@ -119,5 +119,11 @@ namespace Evpp
     {
         std::unique_lock<std::mutex> lock(event_pool_lock);
         return event_pool[index];
+    }
+
+    std::unique_ptr<EventLoopThreadEx>& EventLoopThreadPool::GetEventLoopThreadEx(const u96 index)
+    {
+        std::unique_lock<std::mutex> lock(event_pool_lock);
+        return event_pool_ex[index];
     }
 }

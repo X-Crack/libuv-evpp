@@ -6,7 +6,7 @@
 namespace Evpp
 {
     TcpMessage::TcpMessage(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const SystemDiscons& discons, const SystemMessage& message) :
-        event_loop(loop),
+        event_base(loop),
         tcp_socket(client),
         tcp_buffer(std::make_shared<TcpBuffer>()),
         event_shutdown(std::make_unique<socket_shutdown>()),
@@ -36,41 +36,41 @@ namespace Evpp
 
     bool TcpMessage::Send(const char* buf, u32 len, u32 nbufs)
     {
-        if (nullptr != event_loop)
+        if (nullptr != event_base)
         {
-            if (event_loop->EventThread())
+            if (event_base->EventThread())
             {
                 if (len > 0 && buf)
                 {
                     return DefaultSend(socket_data{ len, const_cast<char*>(buf) }, nbufs);
                 }
             }
-            return event_loop->RunInLoop(std::bind((bool(TcpMessage::*)(const char*, u32, u32))&TcpMessage::Send, this, buf, len, nbufs));
+            return event_base->RunInLoop(std::bind((bool(TcpMessage::*)(const char*, u32, u32))&TcpMessage::Send, this, buf, len, nbufs));
         }
         return false;
     }
 
     bool TcpMessage::Send(const std::string& buf, u32 nbufs)
     {
-        if (nullptr != event_loop)
+        if (nullptr != event_base)
         {
-            if (event_loop->EventThread())
+            if (event_base->EventThread())
             {
                 if (buf.capacity() > 0 && buf.data())
                 {
                     return DefaultSend(socket_data{ static_cast<u32>(buf.capacity()), const_cast<char*>(buf.data()) }, nbufs);
                 }
             }
-            return event_loop->RunInLoop(std::bind((bool(TcpMessage::*)(const std::string&, u32))&TcpMessage::Send, this, buf, nbufs));
+            return event_base->RunInLoop(std::bind((bool(TcpMessage::*)(const std::string&, u32))&TcpMessage::Send, this, buf, nbufs));
         }
         return false;
     }
 
     bool TcpMessage::Close()
     {
-        if (nullptr != event_loop)
+        if (nullptr != event_base)
         {
-            if (event_loop->EventThread())
+            if (event_base->EventThread())
             {
                 if (nullptr != tcp_socket)
                 {
@@ -79,7 +79,7 @@ namespace Evpp
                 return false;
             }
         }
-        return event_loop->RunInLoop(std::bind(&TcpMessage::Close, this));
+        return event_base->RunInLoop(std::bind(&TcpMessage::Close, this));
     }
 
     bool TcpMessage::DefaultSend(const socket_data bufs, u32 nbufs)
@@ -150,16 +150,19 @@ namespace Evpp
         }
     }
 
-    void TcpMessage::OnClose(event_handle* handle)
+    void TcpMessage::OnClose(event_handle* handler)
     {
-        if (nullptr != handle)
+        if (nullptr != handler)
         {
+            while (!uv_is_closing(reinterpret_cast<event_handle*>(handler)));
+
             if (nullptr != tcp_socket->data)
             {
                 event_data.clear();
                 event_data.shrink_to_fit();
                 tcp_socket->data = nullptr;
             }
+
         }
 
         if (nullptr != system_discons)

@@ -18,7 +18,11 @@ namespace Evpp
         virtual ~EventLoopThreadPool();
     public:
         bool CreaterEventThreadPool();
+#ifdef H_OS_WINDOWS 
         bool CreaterEventThreadPool(const u96 size, const bool use_thread_ex = true);
+#else 
+        bool CreaterEventThreadPool(const u96 size, const bool use_thread_ex = false);
+#endif
     private:
         bool InitialEventThreadPool(const u96 size, const bool use_thread_ex);
         bool SetThreadMaxNum(const u32 size);
@@ -28,6 +32,7 @@ namespace Evpp
         EventLoop* GetEventLoop();
         EventLoop* GetEventLoop(const u96 index);
         std::unique_ptr<EventLoopThread>& GetEventLoopThread(const u96 index);
+        std::unique_ptr<EventLoopThreadEx>& GetEventLoopThreadEx(const u96 index);
     private:
         EventLoop*                                                                              event_base;
         std::shared_ptr<EventShare>                                                             event_share;

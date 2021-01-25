@@ -58,7 +58,7 @@ namespace Evpp
         static void OnDefaultClose(event_handle* handler);
         static void OnDefaultShutdown(socket_shutdown* request, int status);
     private:
-        EventLoop*                                                      event_loop;
+        EventLoop*                                                      event_base;
         std::shared_ptr<EventShare>                                     event_share;
         InterfaceAccepts                                                socket_accepts;
         InterfaceDiscons                                                socket_discons;

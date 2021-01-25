@@ -41,7 +41,7 @@ namespace Evpp
         static void DefaultMakesram(event_handle* handle, size_t suggested_size, socket_data* buf);
         static void DefaultMessages(socket_stream* handler, ssize_t nread, const socket_data* buf);
     private:
-        EventLoop*                                                      event_loop;
+        EventLoop*                                                      event_base;
         std::shared_ptr<socket_tcp>                                     tcp_socket;
         std::shared_ptr<TcpBuffer>                                      tcp_buffer;
         std::unique_ptr<socket_shutdown>                                event_shutdown;

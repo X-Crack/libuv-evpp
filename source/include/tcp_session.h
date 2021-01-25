@@ -37,7 +37,7 @@ namespace Evpp
         void OnSystemDiscons();
         bool OnSystemMessage(const std::shared_ptr<TcpBuffer>& Buffer);
     private:
-        EventLoop*                                                      event_loop;
+        EventLoop*                                                      event_base;
         std::shared_ptr<socket_tcp>                                     tcp_socket;
         std::unique_ptr<TcpMessage>                                     tcp_message;
         std::unique_ptr<EventTimerVesse>                                event_timer_vesse;

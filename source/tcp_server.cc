@@ -16,7 +16,7 @@ namespace Evpp
     }
 
     TcpServer::TcpServer(EventLoop* loop, const std::shared_ptr<EventShare>& share, const InterfaceAccepts& accepts, const InterfaceDiscons& discons, const InterfaceMessage& message) :
-        event_loop(loop),
+        event_base(loop),
         event_share(share),
         socket_accepts(accepts),
         socket_discons(discons),
@@ -109,18 +109,18 @@ namespace Evpp
 
     bool TcpServer::RunInLoop(const Functor& function)
     {
-        if (nullptr != event_loop)
+        if (nullptr != event_base)
         {
-            return event_loop->RunInLoop(function);
+            return event_base->RunInLoop(function);
         }
         return false;
     }
 
     bool TcpServer::RunInLoopEx(const Handler& function)
     {
-        if (nullptr != event_loop)
+        if (nullptr != event_base)
         {
-            return event_loop->RunInLoopEx(function);
+            return event_base->RunInLoopEx(function);
         }
         return false;
     }

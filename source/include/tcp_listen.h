@@ -24,7 +24,7 @@ namespace Evpp
         bool BindTcpService(const u96 index, const struct sockaddr* addr);
         bool ListenTcpService(const u96 index);
     private:
-        EventLoop*                                      event_loop;
+        EventLoop*                                      event_base;
         std::shared_ptr<EventShare>                     event_share;
         std::unique_ptr<EventLoopThreadPool>            event_thread_pool;
         bool                                            tcp_proble;

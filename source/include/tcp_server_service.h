@@ -27,7 +27,7 @@ namespace Evpp
         void SetMessageCallback(const InterfaceMessage& message);
     private:
         std::shared_ptr<EventShare>                                     event_share;
-        std::shared_ptr<EventLoop>                                      event_loop;
+        std::shared_ptr<EventLoop>                                      event_base;
         std::unique_ptr<TcpServer>                                      tcp_server;
     };
 }

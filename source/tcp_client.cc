@@ -7,7 +7,7 @@
 namespace Evpp
 {
     TcpClient::TcpClient(EventLoop* loop, const u96 index, const u32 reconnect) :
-        event_loop(loop),
+        event_base(loop),
         self_index(index),
         tcp_client(std::make_shared<socket_tcp>()),
         tcp_socket(std::make_unique<EventSocket>()),
@@ -156,9 +156,9 @@ namespace Evpp
 
     void TcpClient::DefaultConnect()
     {
-        if (nullptr != event_loop)
+        if (nullptr != event_base)
         {
-            if (InitialSession(event_loop, tcp_client, self_index))
+            if (InitialSession(event_base, tcp_client, self_index))
             {
                 if (nullptr != tcp_session)
                 {
@@ -166,14 +166,14 @@ namespace Evpp
                     {
                         if (nullptr != socket_restore)
                         {
-                            socket_restore(event_loop, tcp_session, self_index);
+                            socket_restore(event_base, tcp_session, self_index);
                         }
                         return;
                     }
 
                     if (nullptr != socket_connect_)
                     {
-                        socket_connect_(event_loop, tcp_session, self_index);
+                        socket_connect_(event_base, tcp_session, self_index);
                     }
                 }
             }
@@ -187,13 +187,13 @@ namespace Evpp
         {
             if (nullptr != socket_failure)
             {
-                if (socket_failure(event_loop, self_index, status, uv_err_name_r(status, error_name, 96), uv_strerror_r(status, error_msgs, 96)))
+                if (socket_failure(event_base, self_index, status, uv_err_name_r(status, error_name, 96), uv_strerror_r(status, error_msgs, 96)))
                 {
                     if (reconnect_after.load())
                     {
                         if (connect_mark.exchange(false))
                         {
-                            event_loop->RunInLoop(std::bind(&TcpClient::ReConnectAfter, this, reconnect_delay.load(), reconnect_time.load()));
+                            event_base->RunInLoop(std::bind(&TcpClient::ReConnectAfter, this, reconnect_delay.load(), reconnect_time.load()));
                         }
                     }
                 }

@@ -6,8 +6,8 @@ namespace Evpp
 {
     TcpServerService::TcpServerService() : 
         event_share(std::make_shared<EventShare>()),
-        event_loop(std::make_shared<EventLoop>(event_share->DefaultEventLoop())),
-        tcp_server(std::make_unique<TcpServer>(event_loop.get(), event_share))
+        event_base(std::make_shared<EventLoop>(event_share->DefaultEventLoop())),
+        tcp_server(std::make_unique<TcpServer>(event_base.get(), event_share))
     {
 
     }
@@ -28,11 +28,11 @@ namespace Evpp
 
     bool TcpServerService::CreaterServer(const u96 thread_size)
     {
-        if (nullptr != event_share && nullptr != event_loop && nullptr != tcp_server)
+        if (nullptr != event_share && nullptr != event_base && nullptr != tcp_server)
         {
             if (event_share->CreaterLoops(thread_size))
             {
-                if (event_loop->InitialEvent())
+                if (event_base->InitialEvent())
                 {
                     return tcp_server->CreaterServer(thread_size);
                 }
@@ -43,9 +43,9 @@ namespace Evpp
 
     bool TcpServerService::ExecDispatch()
     {
-        if (nullptr != event_loop)
+        if (nullptr != event_base)
         {
-            return event_loop->ExecDispatch();
+            return event_base->ExecDispatch();
         }
         return false;
     }

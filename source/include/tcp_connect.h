@@ -20,7 +20,7 @@ namespace Evpp
         bool ConnectService(const std::unique_ptr<EventSocket>& socket);
         bool InitialConnect(void* client);
     private:
-        EventLoop*                                              event_loop;
+        EventLoop*                                              event_base;
         std::shared_ptr<socket_tcp>                             tcp_client;
         std::unique_ptr<socket_connect>                         tcp_connect;
     };

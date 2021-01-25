@@ -8,7 +8,7 @@
 namespace Evpp
 {
     TcpSession::TcpSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const u96 index, const SystemDiscons& discons, const SystemMessage& message) :
-        event_loop(loop),
+        event_base(loop),
         tcp_socket(client),
         tcp_message(std::make_unique<TcpMessage>(loop, client, std::bind(&TcpSession::OnSystemDiscons, this), std::bind(&TcpSession::OnSystemMessage, this, std::placeholders::_1))),
         event_timer_vesse(std::make_unique<EventTimerVesse>(loop)),
@@ -58,25 +58,25 @@ namespace Evpp
 
     bool TcpSession::RunInLoop(const Functor& function)
     {
-        if (nullptr != event_loop)
+        if (nullptr != event_base)
         {
-            return event_loop->RunInLoop(function);
+            return event_base->RunInLoop(function);
         }
         return false;
     }
 
     bool TcpSession::RunInLoopEx(const Handler& function)
     {
-        if (nullptr != event_loop)
+        if (nullptr != event_base)
         {
-            return event_loop->RunInLoopEx(function);
+            return event_base->RunInLoopEx(function);
         }
         return false;
     }
 
     bool TcpSession::AssignTimer(const u96 index, const u64 delay, const u64 repeat)
     {
-        if (event_loop->EventThread())
+        if (event_base->EventThread())
         {
             if (nullptr != event_timer_vesse)
             {
@@ -88,7 +88,7 @@ namespace Evpp
 
     bool TcpSession::StopedTimer(const u96 index)
     {
-        if (event_loop->EventThread())
+        if (event_base->EventThread())
         {
             if (nullptr != event_timer_vesse)
             {
@@ -100,7 +100,7 @@ namespace Evpp
 
     bool TcpSession::KilledTimer(const u96 index)
     {
-        if (event_loop->EventThread())
+        if (event_base->EventThread())
         {
             if (nullptr != event_timer_vesse)
             {
@@ -120,7 +120,7 @@ namespace Evpp
 
     bool TcpSession::ReStarTimer(const u96 index)
     {
-        if (event_loop->EventThread())
+        if (event_base->EventThread())
         {
             if (nullptr != event_timer_vesse)
             {
@@ -133,7 +133,7 @@ namespace Evpp
 
     bool TcpSession::ReStarTimerEx(const u96 index, const u64 delay, const u64 repeat)
     {
-        if (event_loop->EventThread())
+        if (event_base->EventThread())
         {
             if (nullptr != event_timer_vesse)
             {
@@ -147,7 +147,7 @@ namespace Evpp
     {
         if (nullptr != system_discons)
         {
-            system_discons(event_loop, self_index);
+            system_discons(event_base, self_index);
         }
     }
 
@@ -155,7 +155,7 @@ namespace Evpp
     {
         if (nullptr != system_message)
         {
-            return system_message(event_loop, std::weak_ptr<TcpSession>(shared_from_this()).lock(), Buffer, self_index);
+            return system_message(event_base, std::weak_ptr<TcpSession>(shared_from_this()).lock(), Buffer, self_index);
         }
         return false;
     }

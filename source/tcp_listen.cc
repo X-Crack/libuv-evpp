@@ -8,7 +8,7 @@
 namespace Evpp
 {
     TcpListen::TcpListen(EventLoop* loop, const bool proble) :
-        event_loop(loop),
+        event_base(loop),
         tcp_proble(proble),
         event_share(std::make_shared<EventShare>()),
         event_thread_pool(std::make_unique<EventLoopThreadPool>(loop, event_share))
