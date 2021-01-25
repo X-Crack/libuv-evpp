@@ -22,6 +22,7 @@
     <ClCompile Include="..\source\event\event_base.cc" />
     <ClCompile Include="..\source\event\event_loop.cc" />
     <ClCompile Include="..\source\event\event_loop_thread.cc" />
+    <ClCompile Include="..\source\event\event_loop_thread_ex.cc" />
     <ClCompile Include="..\source\event\event_loop_thread_pool.cc" />
     <ClCompile Include="..\source\event\event_async.cc" />
     <ClCompile Include="..\source\event\event_work_queue.cc" />
@@ -48,7 +49,7 @@
     <ClInclude Include="..\source\include\config.h" />
     <ClInclude Include="..\source\include\event_base.h" />
     <ClInclude Include="..\source\include\event_loop.h" />
-    <ClInclude Include="..\source\include\event_loop_thread.h" />
+    <ClInclude Include="..\source\include\event_loop_thread_ex.h" />
     <ClInclude Include="..\source\include\event_loop_thread_pool.h" />
     <ClInclude Include="..\source\include\event_async.h" />
     <ClInclude Include="..\source\include\event_work_queue.h" />

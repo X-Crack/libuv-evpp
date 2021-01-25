@@ -2,9 +2,6 @@
 #include <event_loop.h>
 #include <event_share.h>
 #include <event_loop_thread.h>
-#include <event_work_queue.h>
-#include <future>
-#include <thread>
 namespace Evpp
 {
     EventLoopThread::EventLoopThread(const u96 index) : event_base(nullptr), event_index(index)

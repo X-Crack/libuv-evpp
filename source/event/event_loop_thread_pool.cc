@@ -2,6 +2,7 @@
 #include <event_loop.h>
 #include <event_share.h>
 #include <event_loop_thread.h>
+#include <event_loop_thread_ex.h>
 namespace Evpp
 {
     EventLoopThreadPool::EventLoopThreadPool(EventLoop* loop, const std::shared_ptr<EventShare>& share) : EventLoopThreadPool(loop, share, 0)
@@ -55,7 +56,7 @@ namespace Evpp
             {
                 for (u96 i = 0; i < event_pool.size(); ++i)
                 {
-                    if (false == event_pool[i]->CreaterThread(false))
+                    if (false == event_pool[i]->CreaterThread(true))
                     {
                         printf("创建线程失败\n");
                     }

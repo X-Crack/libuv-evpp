@@ -9,6 +9,7 @@ namespace Evpp
     class EventLoop;
     class EventShare;
     class EventLoopThread;
+    class EventLoopThreadEx;
     class EventLoopThreadPool
     {
     public:
@@ -33,6 +34,7 @@ namespace Evpp
         std::shared_ptr<EventShare>                                                             event_share;
         u96                                                                                     event_size;
         std::unordered_map<u96, std::unique_ptr<EventLoopThread>>                               event_pool;
+        std::unordered_map<u96, std::unique_ptr<EventLoopThreadEx>>                             event_pool_ex;
         // 线程池高级实现，逐渐开发。
         std::atomic<u32>                                                                        event_pool_min;         // 最小线程
         std::atomic<u32>                                                                        event_pool_max;         // 最大线程
