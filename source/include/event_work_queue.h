@@ -25,8 +25,6 @@ namespace Evpp
         static void OnDestroyNotify(event_work* handler, int status);
     private:
         EventLoop*                                                              event_base;
-        std::unordered_map<u96, std::unique_ptr<event_work>>                    event_work_pool;
-        std::unique_ptr<event_work>                                             event_work_;
         CreaterWorkHandler                                                      creater_callback;
         DestroyWorkHandler                                                      destroy_callback;
     };
