@@ -127,12 +127,9 @@ namespace Evpp
         {
             if (uv_is_active(reinterpret_cast<event_handle*>(handler)))
             {
-                if (0 == uv_is_closing(reinterpret_cast<event_handle*>(handler)))
+                if (uv_is_closing(reinterpret_cast<event_handle*>(handler)))
                 {
-                    if (0 == uv_read_stop(reinterpret_cast<socket_stream*>(handler)))
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
             return 0 == uv_read_stop(reinterpret_cast<socket_stream*>(handler));

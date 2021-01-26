@@ -22,12 +22,13 @@ namespace Evpp
     public:
         bool CreaterListenService(EventSocketPool* socket, TcpServer* server);
     private:
-        bool InitialListenService(EventSocketPool* socket, const u96 size, TcpServer* server);
+        bool InitialListenService(EventSocketPool* socket, TcpServer* server, const u96 size);
+        bool InitEventThreadPools(const u96 size);
+        bool ExecuteListenService(EventLoop* loop, socket_tcp* server, const sockaddr* addr);
     private:
-        bool InitialListenService(const u96 size);
-        bool InitTcpService(EventLoop* loop,const u96 index);
-        bool BindTcpService(const u96 index, const struct sockaddr* addr);
-        bool ListenTcpService(const u96 index);
+        bool InitTcpService(EventLoop* loop, socket_tcp* server);
+        bool BindTcpService(socket_tcp* server, const sockaddr* addr);
+        bool ListenTcpService(socket_tcp* server);
     private:
         EventLoop*                                      event_base;
 #ifdef H_OS_WINDOWS
@@ -35,7 +36,7 @@ namespace Evpp
 #endif
         std::shared_ptr<EventLoopThreadPool>            event_thread_pool;
         bool                                            tcp_proble;
-        std::vector<std::unique_ptr<socket_tcp>>        tcp_server;
+        std::vector<std::shared_ptr<socket_tcp>>        tcp_server;
     };
 }
 #endif // __TCP_LISTEN_H__

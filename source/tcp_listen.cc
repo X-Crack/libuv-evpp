@@ -36,56 +36,29 @@ namespace Evpp
         {
             return false;
         }
-        return InitialListenService(socket, socket->GetSocketPoolSize(), server);
+        return InitialListenService(socket, server, socket->GetSocketPoolSize());
     }
 
-    bool TcpListen::InitialListenService(EventSocketPool* socket, const u96 size, TcpServer* server)
+    bool TcpListen::InitialListenService(EventSocketPool* socket, TcpServer* server, const u96 size)
     {
-        // 存在bug 休息两天 打打LOL 在重写逻辑。
-        if (InitialListenService(size))
+        if (nullptr != socket && nullptr != server)
         {
+#ifdef H_OS_WINDOWS
+            if (!InitEventThreadPools(size))
+            {
+                return false;
+            }
+#endif
             for (u96 i = 0; i < size; ++i)
             {
-                EventLoop* loop = event_thread_pool->GetEventLoop(i);
+                tcp_server.emplace(tcp_server.begin() + i, std::make_shared<socket_tcp>(socket_tcp{ server }));
                 {
-                    if (!loop->EventThread())
+                    if (ExecuteListenService(event_thread_pool->GetEventLoop(i), tcp_server[i].get(), &socket->GetEventSocket(i)->GetSocketInfo()->addr))
                     {
-                        return loop->RunInLoopEx(std::bind(&TcpListen::CreaterListenService, this, socket, server));
+                        continue;
                     }
 
-                    tcp_server.emplace(tcp_server.begin() + i, std::make_unique<socket_tcp>());
-                    {
-                        if (nullptr == tcp_server[i]->data)
-                        {
-                            tcp_server[i]->data = server;
-                        }
-
-
-
-                        if (InitTcpService(loop, i))
-                        {
-                            if (0 == uv_tcp_simultaneous_accepts(tcp_server[i].get(), 0))
-                            {
-                                if (tcp_proble)
-                                {
-                                    if (uv_tcp_nodelay(tcp_server[i].get(), 1))
-                                    {
-                                        printf("初始化失败\n");
-                                    }
-                                }
-
-                                if (false == BindTcpService(i, &socket->GetEventSocket(i)->GetSocketInfo()->addr))
-                                {
-                                    return false;
-                                }
-
-                                if (false == ListenTcpService(i))
-                                {
-                                    return false;
-                                }
-                            }
-                        }
-                    }
+                    return false;
                 }
             }
             return true;
@@ -93,9 +66,8 @@ namespace Evpp
         return false;
     }
 
-    bool TcpListen::InitialListenService(const u96 size)
+    bool TcpListen::InitEventThreadPools(const u96 size)
     {
-#ifdef H_OS_WINDOWS
         if (nullptr != event_share && nullptr != event_thread_pool)
         {
             if (event_share->CreaterLoops(size))
@@ -104,23 +76,54 @@ namespace Evpp
             }
         }
         return false;
-#else
-        return true;
-#endif
     }
 
-    bool TcpListen::InitTcpService(EventLoop* loop, const u96 index)
+
+    bool TcpListen::ExecuteListenService(EventLoop* loop, socket_tcp* server, const sockaddr* addr)
     {
-        return 0 == uv_tcp_init(loop->EventBasic(), tcp_server[index].get());
+        if (loop->EventThread())
+        {
+            if (InitTcpService(loop, server))
+            {
+                if (0 == uv_tcp_simultaneous_accepts(server, 0))
+                {
+                    if (tcp_proble)
+                    {
+                        if (uv_tcp_nodelay(server, 1))
+                        {
+                            printf("初始化失败\n");
+                        }
+                    }
+
+                    if (false == BindTcpService(server, addr))
+                    {
+                        return false;
+                    }
+
+                    if (false == ListenTcpService(server))
+                    {
+                        return false;
+                    }
+                    return true;
+                }
+            }
+            return false;
+        }
+        return loop->RunInLoopEx(std::bind(&TcpListen::ExecuteListenService, this, loop, server, addr));
     }
 
-    bool TcpListen::BindTcpService(const u96 index, const struct sockaddr* addr)
+    bool TcpListen::InitTcpService(EventLoop* loop, socket_tcp* server)
     {
-        return 0 == uv_tcp_bind(tcp_server[index].get(), addr, 0);
+        return 0 == uv_tcp_init(loop->EventBasic(), server);
     }
 
-    bool TcpListen::ListenTcpService(const u96 index)
+    bool TcpListen::BindTcpService(socket_tcp* server, const sockaddr* addr)
     {
-        return 0 == uv_listen(reinterpret_cast<socket_stream*>(tcp_server[index].get()), SOMAXCONN, &TcpServer::OnDefaultAccepts);
+        return 0 == uv_tcp_bind(server, addr, 0);
+    }
+
+    bool TcpListen::ListenTcpService(socket_tcp* server)
+    {
+        return 0 == uv_listen(reinterpret_cast<socket_stream*>(server), SOMAXCONN, &TcpServer::OnDefaultAccepts);
     }
 }
