@@ -13,7 +13,7 @@ namespace Evpp
         event_base(loop), 
         event_share(share), 
         event_index(index),
-        event_thread(std::make_unique<uv_thread_t>())
+        event_thread_(std::make_unique<uv_thread_t>())
     {
         
     }
@@ -60,12 +60,12 @@ namespace Evpp
 
     bool EventLoopThread::CreaterThread()
     {
-        return 0 == uv_thread_create(event_thread.get(), &EventLoopThread::ThreadRun, this);
+        return 0 == uv_thread_create(event_thread_.get(), &EventLoopThread::ThreadRun, this);
     }
 
     bool EventLoopThread::DestroyThread()
     {
-        return 0 == uv_thread_join(event_thread.get());
+        return 0 == uv_thread_join(event_thread_.get());
     }
 
     void EventLoopThread::ThreadRun()

@@ -152,6 +152,15 @@ namespace Evpp
         return SystemShutdown(reinterpret_cast<socket_stream*>(client.get()));
     }
 
+    bool TcpServer::InitialSessionEx(EventLoop* loop, const std::shared_ptr<socket_tcp>& client)
+    {
+        if (loop->EventThread())
+        {
+            return InitialSession(loop, client);
+        }
+        return loop->RunInLoopEx(std::bind(&TcpServer::InitialSessionEx, this, loop, client));
+    }
+
     bool TcpServer::DeletedSession(const u96 index)
     {
         std::lock_guard<std::recursive_mutex> lock(tcp_recursive_mutex);
@@ -177,35 +186,28 @@ namespace Evpp
         return tcp_session[index];
     }
 
-    bool TcpServer::DefaultAccepts(EventLoop* loop, socket_stream* handler)
+    bool TcpServer::DefaultAccepts(EventLoop* loop, socket_stream* server)
     {
-        std::shared_ptr<socket_tcp> client = std::make_shared<socket_tcp>();
+        if (nullptr != event_thread_pool && nullptr != loop && nullptr != server)
         {
-            if (nullptr != event_thread_pool)
+            std::shared_ptr<socket_tcp> client = std::make_shared<socket_tcp>();
             {
-                if (InitTcpSocket(loop, handler, client.get()))
+                if (InitTcpSocket(loop, server, client.get()))
                 {
-                    if (loop->EventThread())
-                    {
-                        return InitialSession(loop, client);
-                    }
-
-                    return loop->RunInLoopEx(std::bind(&TcpServer::InitialSession, this, loop, client)); 
-                }
-                else
-                {
-                    return SystemClose(reinterpret_cast<socket_stream*>(client.get()));
+                    return InitialSessionEx(loop, client);
                 }
             }
+
+            SystemClose(reinterpret_cast<socket_stream*>(client.get()));
         }
         return false;
     }
 
-    bool TcpServer::DefaultAccepts(socket_stream* handler, i32 status)
+    bool TcpServer::DefaultAccepts(socket_stream* server, i32 status)
     {
         if (0 == status)
         {
-            return DefaultAccepts(event_thread_pool->GetEventLoop(), handler);
+            return DefaultAccepts(event_thread_pool->GetEventLoop(), server);
         }
         return false;
     }
@@ -231,12 +233,22 @@ namespace Evpp
     {
         if (nullptr != loop)
         {
-            if (nullptr != socket_discons)
+            if (loop->EventThread())
             {
-                socket_discons(loop, index);
+                if (nullptr != socket_discons)
+                {
+                    socket_discons(loop, index);
+                }
+
+                while (!RemovedSession(index));
+
+                return;
             }
 
-            loop->RunInLoopEx(std::bind(&TcpServer::RemovedSession, this, index));
+            if (!loop->RunInLoopEx(std::bind(&TcpServer::DefaultDiscons, this, loop, index)))
+            {
+                printf("DefaultDiscons RunLoop Error\n");
+            }
         }
     }
 
@@ -282,14 +294,13 @@ namespace Evpp
         return false;
     }
 
-    bool TcpServer::SystemClose(socket_stream* stream)
+    void TcpServer::SystemClose(socket_stream* stream)
     {
         if (CheckClose(stream))
         {
-            uv_close(reinterpret_cast<uv_handle_t*>(stream), &TcpServer::OnDefaultClose);
-            return true;
+            return uv_close(reinterpret_cast<uv_handle_t*>(stream), &TcpServer::OnDefaultClose);
         }
-        return false;
+        return;
     }
 
     bool TcpServer::SystemShutdown(socket_stream* stream)

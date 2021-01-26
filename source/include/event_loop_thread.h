@@ -25,7 +25,7 @@ namespace Evpp
     private:
         EventLoop*                                      event_base;
         std::shared_ptr<EventShare>                     event_share;
-        std::unique_ptr<event_thread>                   event_thread;
+        std::unique_ptr<event_thread>                   event_thread_;
         u96                                             event_index;
         std::shared_ptr<EventLoop>                      loops_base;
     };

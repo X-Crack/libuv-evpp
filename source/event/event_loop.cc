@@ -167,7 +167,7 @@ namespace Evpp
 #ifdef H_OS_WINDOWS
         return GetCurrentThreadId();
 #else
-        return reinterpret_cast<u32>(uv_thread_self());
+        return static_cast<u32>(uv_thread_self());
 #endif
     }
 

@@ -42,7 +42,11 @@ namespace Evpp
             {
                 if (len > 0 && buf)
                 {
+#ifdef H_OS_WINDOWS
                     return DefaultSend(socket_data{ len, const_cast<char*>(buf) }, nbufs);
+#else
+                    return DefaultSend(socket_data{ const_cast<char*>(buf), len }, nbufs);
+#endif
                 }
             }
             return event_base->RunInLoop(std::bind((bool(TcpMessage::*)(const char*, u32, u32))&TcpMessage::Send, this, buf, len, nbufs));
@@ -58,7 +62,11 @@ namespace Evpp
             {
                 if (buf.capacity() > 0 && buf.data())
                 {
+#ifdef H_OS_WINDOWS
                     return DefaultSend(socket_data{ static_cast<u32>(buf.capacity()), const_cast<char*>(buf.data()) }, nbufs);
+#else
+                    return DefaultSend(socket_data{ const_cast<char*>(buf.data()), static_cast<u32>(buf.capacity()) }, nbufs);
+#endif
                 }
             }
             return event_base->RunInLoop(std::bind((bool(TcpMessage::*)(const std::string&, u32))&TcpMessage::Send, this, buf, nbufs));

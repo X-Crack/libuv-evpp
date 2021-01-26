@@ -35,12 +35,13 @@ namespace Evpp
     private:
         bool CreaterSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const u96 index);
         bool InitialSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client);
+        bool InitialSessionEx(EventLoop* loop, const std::shared_ptr<socket_tcp>& client);
         bool DeletedSession(const u96 index);
         bool RemovedSession(const u96 index);
         const std::shared_ptr<TcpSession>& GetSession(const u96 index);
     private:
-        bool DefaultAccepts(EventLoop* loop, socket_stream* handler);
-        bool DefaultAccepts(socket_stream* handler, i32 status);
+        bool DefaultAccepts(EventLoop* loop, socket_stream* server);
+        bool DefaultAccepts(socket_stream* server, i32 status);
         static void OnDefaultAccepts(socket_stream* handler, int status);
     private:
         void DefaultDiscons(EventLoop* loop, const u96 index);
@@ -49,7 +50,7 @@ namespace Evpp
         bool InitTcpSocket(EventLoop* loop, socket_stream* handler, socket_tcp* client);
     private:
         bool CheckClose(socket_stream* handler);
-        bool SystemClose(socket_stream* stream);
+        void SystemClose(socket_stream* stream);
         bool SystemShutdown(socket_stream* stream);
         const u96 GetPlexingIndex(u96 index = 0);
     private:
