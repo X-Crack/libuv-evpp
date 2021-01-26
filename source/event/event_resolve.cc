@@ -13,7 +13,6 @@ namespace Evpp
         #endif
     }
 
-
     EventResolve::EventResolve(EventLoop* loop) : 
         event_base(loop),
         socket_resolve(new socket_getaddrinfo()), 
@@ -27,7 +26,11 @@ namespace Evpp
 
     EventResolve::~EventResolve()
     {
-
+        if (nullptr != socket_resolve)
+        {
+            delete socket_resolve;
+            socket_resolve = nullptr;
+        }
     }
 
     bool EventResolve::GetAddressInfo(const std::string& hostname, const std::string& service)
