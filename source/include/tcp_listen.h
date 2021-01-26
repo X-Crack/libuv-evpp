@@ -13,20 +13,27 @@ namespace Evpp
     class TcpListen
     {
     public:
+#ifdef H_OS_WINDOWS
         explicit TcpListen(EventLoop* loop, const bool proble = true);
+#else
+        explicit TcpListen(EventLoop* loop, const std::shared_ptr<EventLoopThreadPool>& thread_pool, const bool proble = true);
+#endif
         virtual ~TcpListen();
     public:
-        bool CreaterListenService(const std::unique_ptr<EventSocketPool>& socket, TcpServer* server);
+        bool CreaterListenService(EventSocketPool* socket, TcpServer* server);
     private:
-        bool CreaterListenService(const std::unique_ptr<EventSocketPool>& socket, const u96 size, TcpServer* server);
+        bool InitialListenService(EventSocketPool* socket, const u96 size, TcpServer* server);
+    private:
         bool InitialListenService(const u96 size);
         bool InitTcpService(EventLoop* loop,const u96 index);
         bool BindTcpService(const u96 index, const struct sockaddr* addr);
         bool ListenTcpService(const u96 index);
     private:
         EventLoop*                                      event_base;
+#ifdef H_OS_WINDOWS
         std::shared_ptr<EventShare>                     event_share;
-        std::unique_ptr<EventLoopThreadPool>            event_thread_pool;
+#endif
+        std::shared_ptr<EventLoopThreadPool>            event_thread_pool;
         bool                                            tcp_proble;
         std::vector<std::unique_ptr<socket_tcp>>        tcp_server;
     };

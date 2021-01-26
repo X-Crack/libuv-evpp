@@ -21,9 +21,13 @@ namespace Evpp
         socket_accepts(accepts),
         socket_discons(discons),
         socket_message(message),
-        event_thread_pool(std::make_unique<EventLoopThreadPool>(loop, share)),
+        event_thread_pool(std::make_shared<EventLoopThreadPool>(loop, share)),
         tcp_socket(std::make_unique<EventSocketPool>()),
+#ifdef H_OS_WINDOWS
         tcp_listen(std::make_unique<TcpListen>(loop, true)),
+#else
+        tcp_listen(std::make_unique<TcpListen>(loop, event_thread_pool, true)),
+#endif
         tcp_index(0)
     {
 
@@ -38,9 +42,13 @@ namespace Evpp
     {
         if (tcp_socket && tcp_listen)
         {
+#ifdef H_OS_WINDOWS
             if (event_thread_pool->CreaterEventThreadPool(thread_size))
+#else
+            if (event_thread_pool->CreaterEventThreadPool(tcp_socket->GetSocketPoolSize()))
+#endif
             {
-                return tcp_listen->CreaterListenService(tcp_socket, this);
+                return tcp_listen->CreaterListenService(tcp_socket.get(), this);
             }
         }
         return false;

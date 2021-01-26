@@ -7,62 +7,81 @@
 #include <event_socket_pool.h>
 namespace Evpp
 {
+#ifdef H_OS_WINDOWS
     TcpListen::TcpListen(EventLoop* loop, const bool proble) :
         event_base(loop),
         tcp_proble(proble),
         event_share(std::make_shared<EventShare>()),
-        event_thread_pool(std::make_unique<EventLoopThreadPool>(loop, event_share))
+        event_thread_pool(std::make_shared<EventLoopThreadPool>(loop, event_share))
     {
 
     }
+#else
+    TcpListen::TcpListen(EventLoop* loop, const std::shared_ptr<EventLoopThreadPool>& thread_pool, const bool proble) :
+        event_base(loop),
+        tcp_proble(proble),
+        event_thread_pool(thread_pool)
+    {
 
+    }
+#endif
     TcpListen::~TcpListen()
     {
 
     }
 
-    bool TcpListen::CreaterListenService(const std::unique_ptr<EventSocketPool>& socket, TcpServer* server)
+    bool TcpListen::CreaterListenService(EventSocketPool* socket, TcpServer* server)
     {
         if (nullptr == socket || nullptr == server)
         {
             return false;
         }
-        return CreaterListenService(socket, socket->GetSocketPoolSize(), server);
+        return InitialListenService(socket, socket->GetSocketPoolSize(), server);
     }
 
-    bool TcpListen::CreaterListenService(const std::unique_ptr<EventSocketPool>& socket, const u96 size, TcpServer* server)
+    bool TcpListen::InitialListenService(EventSocketPool* socket, const u96 size, TcpServer* server)
     {
         if (InitialListenService(size))
         {
             for (u96 i = 0; i < size; ++i)
             {
-                tcp_server.push_back(std::make_unique<socket_tcp>());
+                EventLoop* loop = event_thread_pool->GetEventLoop(i);
                 {
-                    if (nullptr == tcp_server[i]->data)
+                    if (!loop->EventThread())
                     {
-                        tcp_server[i]->data = server;
+                        return loop->RunInLoopEx(std::bind(&TcpListen::CreaterListenService, this, socket, server));
                     }
 
-                    if (InitTcpService(event_thread_pool->GetEventLoop(i), i))
+                    tcp_server.emplace(tcp_server.begin() + i, std::make_unique<socket_tcp>());
                     {
-                        if (0 == uv_tcp_simultaneous_accepts(tcp_server[i].get(), 0))
+                        if (nullptr == tcp_server[i]->data)
                         {
-                            if (tcp_proble)
+                            tcp_server[i]->data = server;
+                        }
+
+
+
+                        if (InitTcpService(loop, i))
+                        {
+                            if (0 == uv_tcp_simultaneous_accepts(tcp_server[i].get(), 0))
                             {
-                                if (uv_tcp_nodelay(tcp_server[i].get(), 1))
+                                if (tcp_proble)
                                 {
-                                    printf("初始化失败\n");
+                                    if (uv_tcp_nodelay(tcp_server[i].get(), 1))
+                                    {
+                                        printf("初始化失败\n");
+                                    }
                                 }
-                            }
 
-                            if (false == BindTcpService(i, &socket->GetEventSocket(i)->GetSocketInfo()->addr))
-                            {
-                                return false;
-                            }
+                                if (false == BindTcpService(i, &socket->GetEventSocket(i)->GetSocketInfo()->addr))
+                                {
+                                    return false;
+                                }
 
-                            if (false == ListenTcpService(i))
-                            {
-                                return false;
+                                if (false == ListenTcpService(i))
+                                {
+                                    return false;
+                                }
                             }
                         }
                     }
@@ -75,6 +94,7 @@ namespace Evpp
 
     bool TcpListen::InitialListenService(const u96 size)
     {
+#ifdef H_OS_WINDOWS
         if (nullptr != event_share && nullptr != event_thread_pool)
         {
             if (event_share->CreaterLoops(size))
@@ -83,6 +103,9 @@ namespace Evpp
             }
         }
         return false;
+#else
+        return true;
+#endif
     }
 
     bool TcpListen::InitTcpService(EventLoop* loop, const u96 index)
