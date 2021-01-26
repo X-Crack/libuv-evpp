@@ -93,8 +93,6 @@ namespace Evpp
         return GetEventLoop(event_loop_thread_next.fetch_add(1));
     }
 
-    // event_loop
-
     EventLoop* EventLoopThreadPool::GetEventLoop(const u96 index)
     {
         std::unique_lock<std::mutex> lock(event_pool_lock);

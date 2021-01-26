@@ -190,7 +190,6 @@ namespace Evpp
         return loop->RunInLoopEx(std::bind(&TcpServer::InitialSession, this, loop, client));
     }
 
-
     bool TcpServer::InitTcpSocket(EventLoop* loop, socket_stream* handler, socket_tcp* client)
     {
         if (nullptr != loop && nullptr != client)
@@ -201,9 +200,8 @@ namespace Evpp
                 {
                     return true;
                 }
-
-                return SystemShutdown(reinterpret_cast<socket_stream*>(client));
             }
+            return SystemShutdown(reinterpret_cast<socket_stream*>(client));
         }
         return false;
     }
@@ -229,7 +227,7 @@ namespace Evpp
     {
         if (nullptr != loop)
         {
-            return loop->RunInLoopEx(std::bind((bool(TcpServer::*)(EventLoop*, socket_stream*)) & TcpServer::DefaultAccepts, this, loop, server));
+            return loop->RunInLoopEx(std::bind((bool(TcpServer::*)(EventLoop*, socket_stream*))&TcpServer::DefaultAccepts, this, loop, server));
         }
         return false;
     }
