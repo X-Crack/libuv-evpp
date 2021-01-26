@@ -147,11 +147,6 @@ namespace Evpp
         return false;
     }
 
-    bool TcpServer::RemovedSession(const u96 index)
-    {
-        return DeletedSession(index);
-    }
-
     const std::shared_ptr<TcpSession>& TcpServer::GetSession(const u96 index)
     {
         std::lock_guard<std::recursive_mutex> lock(tcp_recursive_mutex);
@@ -162,12 +157,19 @@ namespace Evpp
     bool TcpServer::CreaterSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const u96 index)
     {
         std::lock_guard<std::recursive_mutex> lock(tcp_recursive_mutex);
-        return tcp_session.emplace(index, std::make_shared<TcpSession>(loop,
+        return tcp_session.emplace
+        (
+            index, 
+
+            std::make_shared<TcpSession>
+            (
+            loop,
             client,
             index,
             std::bind(&TcpServer::DefaultDiscons, this, std::placeholders::_1, std::placeholders::_2),
             std::bind(&TcpServer::DefaultMessage, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4)
-            )).second;
+            )
+        ).second;
     }
 
     bool TcpServer::InitialSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client)
@@ -273,7 +275,7 @@ namespace Evpp
                     socket_discons(loop, index);
                 }
 
-                while (!RemovedSession(index));
+                while (!DeletedSession(index));
 
                 return;
             }
