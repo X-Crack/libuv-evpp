@@ -25,8 +25,10 @@
 
 #ifdef H_OS_WINDOWS
 #define FORCEINLINE __forceinline
+#define AIPROTOCOL IPPROTO_IPV4
 #else
 #define FORCEINLINE __attribute__((always_inline))
+#define AIPROTOCOL IPPROTO_IPIP
 #endif
 
 #ifdef H_OS_WINDOWS

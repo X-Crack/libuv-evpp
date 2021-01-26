@@ -26,7 +26,7 @@ namespace Evpp
     private:
         bool CreateTimer(const u96 index);
     private:
-        EventLoop*                                                      event_loop;
+        EventLoop*                                                      event_base;
         std::unordered_map<u96, std::shared_ptr<EventTimer>>            event_timer;
     };
 }

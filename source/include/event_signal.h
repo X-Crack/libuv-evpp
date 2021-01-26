@@ -17,7 +17,7 @@ namespace Evpp
         static void OnNotify(event_signal* handler, int signum);
         void OnNotify();
     private:
-        EventLoop*                                                              event_loop;
+        EventLoop*                                                              event_base;
         event_signal*                                                           event_signaler;
     };
 }

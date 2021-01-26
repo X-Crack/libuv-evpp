@@ -4,7 +4,7 @@
 
 namespace Evpp
 {
-    EventTimerVesse::EventTimerVesse(EventLoop* loop) : event_loop(loop)
+    EventTimerVesse::EventTimerVesse(EventLoop* loop) : event_base(loop)
     {
 
     }
@@ -55,6 +55,6 @@ namespace Evpp
 
     bool EventTimerVesse::CreateTimer(const u96 index)
     {
-        return event_timer.emplace(index, std::make_shared<EventTimer>(event_loop, index)).second;
+        return event_timer.emplace(index, std::make_shared<EventTimer>(event_base, index)).second;
     }
 }

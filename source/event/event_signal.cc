@@ -2,7 +2,7 @@
 #include <event_loop.h>
 namespace Evpp
 {
-    EventSignal::EventSignal(EventLoop* loop) : event_loop(loop), event_signaler(new event_signal())
+    EventSignal::EventSignal(EventLoop* loop) : event_base(loop), event_signaler(new event_signal())
     {
         if (nullptr == event_signaler->data)
         {
@@ -17,16 +17,16 @@ namespace Evpp
 
     bool EventSignal::InitialSignal()
     {
-        if (nullptr != event_loop && nullptr != event_signaler)
+        if (nullptr != event_base && nullptr != event_signaler)
         {
-            return 0 == uv_signal_init(event_loop->EventBasic(), event_signaler);
+            return 0 == uv_signal_init(event_base->EventBasic(), event_signaler);
         }
         return false;
     }
 
     bool EventSignal::CreaterSignal(const i32 signum)
     {
-        if (nullptr != event_loop && nullptr != event_signaler)
+        if (nullptr != event_base && nullptr != event_signaler)
         {
             return 0 == uv_signal_start(event_signaler, &EventSignal::OnNotify, signum);
         }
@@ -35,7 +35,7 @@ namespace Evpp
 
     bool EventSignal::DestroySignal()
     {
-        if (nullptr != event_loop && nullptr != event_signaler)
+        if (nullptr != event_base && nullptr != event_signaler)
         {
             return 0 == uv_signal_stop(event_signaler);
         }

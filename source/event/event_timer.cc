@@ -8,7 +8,7 @@ namespace Evpp
     }
 
     EventTimer::EventTimer(EventLoop* loop, const EventTimerHandle& callback, const u96 index) :
-        event_loop(loop),
+        event_base(loop),
         event_time(new event_timer()),
         safe_index(index),
         event_callback(callback)
@@ -39,16 +39,16 @@ namespace Evpp
 
     bool EventTimer::InitedTimer()
     {
-        if (nullptr != event_loop && nullptr != event_time)
+        if (nullptr != event_base && nullptr != event_time)
         {
-            return 0 == uv_timer_init(event_loop->EventBasic(), event_time);
+            return 0 == uv_timer_init(event_base->EventBasic(), event_time);
         }
         return false;
     }
 
     bool EventTimer::AssignTimer(const u64 delay, const u64 repeat)
     {
-        if (nullptr != event_loop && nullptr != event_time)
+        if (nullptr != event_base && nullptr != event_time)
         {
             return 0 == uv_timer_start(event_time, &EventTimer::OnNotify, delay, repeat);
         }
@@ -57,7 +57,7 @@ namespace Evpp
 
     bool EventTimer::StopedTimer()
     {
-        if (nullptr != event_loop && nullptr != event_time)
+        if (nullptr != event_base && nullptr != event_time)
         {
             if (uv_is_active(reinterpret_cast<event_handle*>(event_time)))
             {
@@ -87,7 +87,7 @@ namespace Evpp
 
     bool EventTimer::ReStarTimer()
     {
-        if (nullptr != event_loop && nullptr != event_time)
+        if (nullptr != event_base && nullptr != event_time)
         {
             return 0 == uv_timer_again(event_time);
         }
@@ -143,7 +143,7 @@ namespace Evpp
     {
         if (nullptr != event_callback)
         {
-            event_callback(event_loop, shared_from_this(), safe_index);
+            event_callback(event_base, shared_from_this(), safe_index);
         }
     }
 }

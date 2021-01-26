@@ -2,7 +2,7 @@
 #include <event_loop.h>
 namespace Evpp
 {
-    EventShare::EventShare() : event_default(uv_default_loop())
+    EventShare::EventShare() : event_base(uv_default_loop())
     {
 
     }
@@ -23,7 +23,7 @@ namespace Evpp
                 event_loops.emplace(i, CreaterDefaultEventLoop());
             }
         }
-        return nullptr != event_default;
+        return nullptr != event_base;
     }
 
     bool EventShare::DestroyLoops()
@@ -61,7 +61,7 @@ namespace Evpp
 
     event_loop* EventShare::DefaultEventLoop()
     {
-        return event_default;
+        return event_base;
     }
 
     event_loop* EventShare::CreaterDefaultEventLoop()

@@ -3,7 +3,7 @@
 namespace Evpp
 {
     EventAsync::EventAsync(EventLoop* loop, const Handler& handler) :
-        event_loop(loop), 
+        event_base(loop),
         event_async_(new uv_async_t()),
         cv_handler(handler)
     {
@@ -24,9 +24,9 @@ namespace Evpp
 
     bool EventAsync::CreatePipe()
     {
-        if (nullptr != event_loop && nullptr != event_async_)
+        if (nullptr != event_base && nullptr != event_async_)
         {
-            return 0 == uv_async_init(event_loop->EventBasic(), event_async_, &EventAsync::OnNotify);
+            return 0 == uv_async_init(event_base->EventBasic(), event_async_, &EventAsync::OnNotify);
         }
         return false;
     }

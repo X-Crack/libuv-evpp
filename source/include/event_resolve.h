@@ -13,10 +13,10 @@ namespace Evpp
     public:
         bool GetAddressInfo(const std::string& hostname, const std::string& service);
     private:
-        void DefaultGetaddrInfo(socket_getaddrinfo* request, struct addrinfo* hints);
+        void DefaultGetaddrInfo(struct addrinfo* hints);
         static void DefaultGetaddrInfo(socket_getaddrinfo* request, int status, struct addrinfo* hints);
     private:
-        EventLoop*                                                                  event_loop;
+        EventLoop*                                                                  event_base;
         socket_getaddrinfo*                                                         socket_resolve;
         addrinfo                                                                    socket_hints;
     };

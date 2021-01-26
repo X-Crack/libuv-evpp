@@ -31,7 +31,7 @@ namespace Evpp
         static void OnNotify(event_timer* handler);
         void OnNotify();
     private:
-        EventLoop*                                                  event_loop;
+        EventLoop*                                                  event_base;
         event_timer*                                                event_time;
         u96                                                         safe_index;
         EventTimerHandle                                            event_callback;
