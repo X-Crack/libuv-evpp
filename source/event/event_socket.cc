@@ -1,7 +1,4 @@
 #include <event_socket.h>
-#include <regex>
-#include <string>
-#include <sstream>
 namespace Evpp
 {
     EventSocket::EventSocket() : socket_t(std::make_unique<SocketInfo>())

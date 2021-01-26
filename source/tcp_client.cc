@@ -47,7 +47,7 @@ namespace Evpp
 
     bool TcpClient::SetReconnect(const u32 reconnect)
     {
-        return reconnect_after.compare_exchange_strong(reconnect_after._Storage._Value, reconnect);
+        return reconnect_after.exchange(reconnect);
     }
 
     void TcpClient::SetReconnectTimer(const u64 delay, const u64 time)
@@ -247,8 +247,8 @@ namespace Evpp
                 {
                     if (timer->StopedTimer())
                     {
-                        connect_tag.compare_exchange_strong(connect_tag._Storage._Value, true);
-                        connect_mark.compare_exchange_strong(connect_mark._Storage._Value, true);
+                        connect_tag.store(true);
+                        connect_mark.store(true);
                     }
                 }
             }

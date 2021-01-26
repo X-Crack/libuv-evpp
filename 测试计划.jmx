@@ -32,7 +32,7 @@
         </ConstantTimer>
         <hashTree/>
         <TCPSampler guiclass="TCPSamplerGui" testclass="TCPSampler" testname="TCP取样器" enabled="true">
-          <stringProp name="TCPSampler.server">192.168.1.74</stringProp>
+          <stringProp name="TCPSampler.server">127.0.0.1</stringProp>
           <boolProp name="TCPSampler.reUseConnection">true</boolProp>
           <stringProp name="TCPSampler.port">7777</stringProp>
           <boolProp name="TCPSampler.nodelay">false</boolProp>

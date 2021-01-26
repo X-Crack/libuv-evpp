@@ -1,8 +1,5 @@
 #include <event_work_queue.h>
 #include <event_loop.h>
-#include <stdlib.h>
-#include <cstdlib>
-#include <windows.h>
 namespace Evpp
 {
     EventWorkQueue::EventWorkQueue(EventLoop* loop) :

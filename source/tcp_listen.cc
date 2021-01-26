@@ -43,7 +43,7 @@ namespace Evpp
                         tcp_server[i]->data = server;
                     }
 
-                    if (InitTcpService(i))
+                    if (InitTcpService(event_thread_pool->GetEventLoop(i), i))
                     {
                         if (0 == uv_tcp_simultaneous_accepts(tcp_server[i].get(), 0))
                         {
@@ -85,9 +85,9 @@ namespace Evpp
         return false;
     }
 
-    bool TcpListen::InitTcpService(const u96 index)
+    bool TcpListen::InitTcpService(EventLoop* loop, const u96 index)
     {
-        return 0 == uv_tcp_init(event_thread_pool->GetEventLoop(index)->EventBasic(), tcp_server[index].get());
+        return 0 == uv_tcp_init(loop->EventBasic(), tcp_server[index].get());
     }
 
     bool TcpListen::BindTcpService(const u96 index, const struct sockaddr* addr)

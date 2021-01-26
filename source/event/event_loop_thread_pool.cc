@@ -93,6 +93,8 @@ namespace Evpp
         return GetEventLoop(event_loop_thread_next.fetch_add(1));
     }
 
+    // event_loop
+
     EventLoop* EventLoopThreadPool::GetEventLoop(const u96 index)
     {
         std::unique_lock<std::mutex> lock(event_pool_lock);
@@ -112,6 +114,33 @@ namespace Evpp
                 return event_pool_ex[index % event_pool_ex.size()]->GetEventLoop();
             }
         }
+        return nullptr;
+    }
+
+    EventLoop* EventLoopThreadPool::GetEventLoopEx(event_loop* loop)
+    {
+        for (u96 i = 0; i < event_pool.size(); ++i)
+        {
+            std::unique_lock<std::mutex> lock(event_pool_lock);
+            {
+                if (loop == event_pool[i]->GetEventLoop()->EventBasic())
+                {
+                    return event_pool[i]->GetEventLoop();
+                }
+            }
+        }
+
+        for (u96 i = 0; i < event_pool_ex.size(); ++i)
+        {
+            std::unique_lock<std::mutex> lock(event_pool_lock);
+            {
+                if (loop == event_pool_ex[i]->GetEventLoop()->EventBasic())
+                {
+                    return event_pool_ex[i]->GetEventLoop();
+                }
+            }
+        }
+
         return nullptr;
     }
 

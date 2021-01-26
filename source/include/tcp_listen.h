@@ -20,7 +20,7 @@ namespace Evpp
     private:
         bool CreaterListenService(const std::unique_ptr<EventSocketPool>& socket, const u96 size, TcpServer* server);
         bool InitialListenService(const u96 size);
-        bool InitTcpService(const u96 index);
+        bool InitTcpService(EventLoop* loop,const u96 index);
         bool BindTcpService(const u96 index, const struct sockaddr* addr);
         bool ListenTcpService(const u96 index);
     private:

@@ -7,7 +7,6 @@ namespace Evpp
 {
     struct SocketInfo
     {
-    public:
         union
         {
             u16                 family;
@@ -15,49 +14,8 @@ namespace Evpp
             sockaddr_in         addr4;
             sockaddr_in6        addr6;
         };
-    public:
         std::string             host;
         u16                     port;
-    public:
-        constexpr const sockaddr* Addr() const  { return &addr; };
-
-        constexpr const sockaddr_in* Addr4() { return &addr4; };
-
-        constexpr const sockaddr_in6* Addr6() { return &addr6; };
-
-        constexpr const u96 SocketHash(const char* hash, const u96 size, const u96 hash_mask, u32 i) const
-        {
-            if (i != size)
-            {
-                return SocketHash(++hash, size, ~hash_mask ^ (!(i & 1) ? ((hash_mask << 7) ^ (*hash) * (hash_mask >> 3)) : (~((hash_mask << 11) + ((*hash) ^ (hash_mask >> 5))))), ++i);
-            }
-            return hash_mask ^ 0x7ffffff;
-        }
-
-        const u96 SocketHash()
-        {
-            return SocketHash(reinterpret_cast<const char*>(Addr()), SocketSize(), 2654435761U, 0);
-        }
-
-        const u96 SocketHash() const
-        {
-            return SocketHash(reinterpret_cast<const char*>(Addr()), SocketSize(), 2654435761U, 0);
-        }
-
-        constexpr const u32 SocketSize() const
-        {
-            return SocketSize(family);
-        }
-
-        bool EqualTo(const SocketInfo* other) const
-        {
-            return memcmp(this, other, SocketSize());
-        }
-    private:
-        constexpr const u32 SocketSize(const u16 other) const
-        {
-            return other == AF_INET ? offsetof(sockaddr_in, sin_zero) : sizeof(sockaddr_in6);
-        }
     };
 
     class EventSocket
