@@ -225,6 +225,15 @@ namespace Evpp
         return false;
     }
 
+    bool TcpServer::AsyncAccepts(EventLoop* loop, socket_stream* server)
+    {
+        if (nullptr != loop)
+        {
+            return loop->RunInLoopEx(std::bind((bool(TcpServer::*)(EventLoop*, socket_stream*)) & TcpServer::DefaultAccepts, this, loop, server));
+        }
+        return false;
+    }
+
     bool TcpServer::DefaultAccepts(socket_stream* server, i32 status)
     {
         if (0 == status && nullptr != server)
@@ -232,7 +241,7 @@ namespace Evpp
 #ifdef H_OS_WINDOWS
             return DefaultAccepts(event_thread_pool->GetEventLoop(), server);
 #else
-            return DefaultAccepts(event_thread_pool->GetEventLoopEx(server->loop), server);
+            return AsyncAccepts(event_thread_pool->GetEventLoopEx(server->loop), server);
 #endif
         }
         return false;

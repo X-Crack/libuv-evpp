@@ -229,13 +229,12 @@ namespace Evpp
                 {
                     if (nullptr != system_message)
                     {
-                        return system_message(std::weak_ptr<TcpBuffer>(tcp_buffer).lock());
+                        return event_base->RunInLoopEx(std::bind(system_message, std::weak_ptr<TcpBuffer>(tcp_buffer).lock()));
                     }
                 }
                 return true;
             }
         }
-
         return Shutdown(stream);
     }
 

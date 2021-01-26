@@ -40,6 +40,7 @@ namespace Evpp
         const std::shared_ptr<TcpSession>& GetSession(const u96 index);
     private:
         bool DefaultAccepts(EventLoop* loop, socket_stream* server);
+        bool AsyncAccepts(EventLoop* loop, socket_stream* server);
         bool DefaultAccepts(socket_stream* server, i32 status);
         static void OnDefaultAccepts(socket_stream* handler, int status);
     private:
