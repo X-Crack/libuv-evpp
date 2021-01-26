@@ -45,4 +45,6 @@ using socket_connect = uv_connect_t;
 using socket_udp = uv_udp_t;
 using socket_getaddrinfo = uv_getaddrinfo_t;
 
+// curl ¿ª·¢ÎÄµµ https://blog.csdn.net/lijinqi1987/article/details/53996129
+
 #endif // __CONFIG_H__

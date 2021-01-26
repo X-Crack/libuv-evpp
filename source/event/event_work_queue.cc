@@ -15,7 +15,7 @@ namespace Evpp
     {
 
     }
-    // UV_THREADPOOL_SIZE = 1024
+
     bool EventWorkQueue::AssignWorkQueue(EventLoop* loop)
     {
         if (nullptr != event_base)
