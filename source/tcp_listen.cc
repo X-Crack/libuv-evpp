@@ -41,6 +41,7 @@ namespace Evpp
 
     bool TcpListen::InitialListenService(EventSocketPool* socket, const u96 size, TcpServer* server)
     {
+        // 存在bug 休息两天 打打LOL 在重写逻辑。
         if (InitialListenService(size))
         {
             for (u96 i = 0; i < size; ++i)
