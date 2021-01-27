@@ -96,6 +96,9 @@
     <ClCompile Include="..\source\event\event_loop_thread.cc">
       <Filter>event</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\event\event_coroutine.cc">
+      <Filter>event</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\include\platform.h">
@@ -177,6 +180,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\source\include\event_loop_thread_ex.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\event_coroutine.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

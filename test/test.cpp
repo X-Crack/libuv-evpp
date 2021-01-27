@@ -21,40 +21,6 @@
 #include <event_work_queue.h>
 //#include "cpps/cpps.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-
-#define FIB_UNTIL 10
-uv_loop_t* loop;
-
-long fib_(long t)
-{
-    if (t == 0 || t == 1)
-        return 1;
-    else
-        return fib_(t - 1) + fib_(t - 2);
-}
-
-void fib(uv_work_t* req)
-{
-    int n = *(int*)req->data;
-    fprintf(stderr, "%dth fibonacci\n", n);
-    int i = 0;
-    if (rand() % 2)
-    {
-        i = 5;
-        Sleep(5);
-    }
-    else
-    {
-        i = 10;
-        Sleep(10);
-    }
-
-    long fib = fib_(n);
-    fprintf(stderr, "%dth fibonacci is %lu---costTime %ds\n", n, fib, i);
-}
-
 int main()
 {
     

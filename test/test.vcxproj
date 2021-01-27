@@ -19,12 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="test.cpp" />
+    <ClCompile Include="cotest.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\cpps\vsprojects\src\libcpps.vcxproj">
-      <Project>{5dda75c1-1203-3168-9a17-47f33f14469f}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\..\libuv\vsprojects\uv_a.vcxproj">
       <Project>{271f0c53-971b-3471-a1f8-1c2a3209445c}</Project>
     </ProjectReference>
@@ -113,7 +110,8 @@
       <AdditionalIncludeDirectories>../source/include;../../../common/libuv/include;../../../common/cpps/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalOptions>/await %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -131,8 +129,9 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>../source/include;../../../common/libuv/include;../../../common/cpps/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <AdditionalOptions>/await %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

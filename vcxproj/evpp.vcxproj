@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\event\event_base.cc" />
+    <ClCompile Include="..\source\event\event_coroutine.cc" />
     <ClCompile Include="..\source\event\event_loop.cc" />
     <ClCompile Include="..\source\event\event_loop_thread.cc" />
     <ClCompile Include="..\source\event\event_loop_thread_ex.cc" />
@@ -48,6 +49,7 @@
     <ClInclude Include="..\source\include\buffer.h" />
     <ClInclude Include="..\source\include\config.h" />
     <ClInclude Include="..\source\include\event_base.h" />
+    <ClInclude Include="..\source\include\event_coroutine.h" />
     <ClInclude Include="..\source\include\event_loop.h" />
     <ClInclude Include="..\source\include\event_loop_thread_ex.h" />
     <ClInclude Include="..\source\include\event_loop_thread_pool.h" />
@@ -157,8 +159,9 @@
       <AdditionalIncludeDirectories>../source/include;../../../common/libuv/include;../../../common/queue/concurrent;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalOptions>/await %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>
