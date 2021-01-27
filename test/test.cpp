@@ -45,7 +45,7 @@ int main()
     //tcp.SetMessageCallback(std::bind(Import::DefaultMessage, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
     //uv_queue_work();
 
-    tcp.CreaterServer(16);
+    tcp.CreaterServer(1);
     tcp.ExecDispatch();
     printf("异常退出\n");
 //     using namespace cpps; 

@@ -4,11 +4,44 @@
 #include <thread>
 #include <mutex>
 #include <condition_variable>
+#ifdef __cpp_coroutines
+#include <event_coroutine.h>
+#endif
 namespace Evpp
 {
     class EventLoop;
     class EventShare;
     class EventStatus;
+#ifdef __cpp_coroutines
+    //class EventCoroutine;
+    class EventCoroutineTask;
+    class EventLoopThreadEx final : public EventStatus
+    {
+    public:
+        explicit EventLoopThreadEx(const u96 index);
+        explicit EventLoopThreadEx(EventLoop* loop, const std::shared_ptr<EventShare>& share, const u96 index);
+        virtual ~EventLoopThreadEx();
+    public:
+        bool CreaterSubThread(bool wait = true);
+        EventLoop* GetEventLoop();
+    private:
+        void CoroutineInThread();
+        void CoroutineDispatch();
+    private:
+        bool AvailableEvent();
+        bool Join();
+    private:
+        EventLoop*                                      event_base;
+        std::shared_ptr<EventShare>                     event_share;
+        u96                                             event_index;
+        EventCoroutine                                  event_coroutine;
+        EventCoroutineTask*                             event_coroutine_task;
+        std::shared_ptr<EventLoop>                      loop;
+        std::unique_ptr<std::thread>                    loop_thread;
+        std::condition_variable							cv_signal;
+        std::mutex										cv_mutex;
+    };
+#else
     class EventLoopThreadEx final : public EventStatus
     {
     public:
@@ -30,6 +63,7 @@ namespace Evpp
         std::unique_ptr<std::thread>                    loop_thread;
         std::condition_variable							cv_signal;
         std::mutex										cv_mutex;
-    };
+};
+#endif
 }
 #endif // __EVENT_LOOP_THREAD_EX_H__

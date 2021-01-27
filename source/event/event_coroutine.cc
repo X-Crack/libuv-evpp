@@ -9,10 +9,7 @@ namespace Evpp
 
     EventCoroutine::~EventCoroutine()
     {
-        if (nullptr != task_data && nullptr != task_data->handler)
-        {
-            task_data->handler.destroy();
-        }
+
     }
 
     EventCoroutine EventCoroutine::promise_type::get_return_object_on_allocation_failure()
@@ -52,7 +49,7 @@ namespace Evpp
             if (task_base->reflock.load())
             {
                 task_base->reflock.store(0);
-                task_base->handler = nullptr;
+                task_base->handler.destroy();
             }
         }
     }
@@ -63,9 +60,10 @@ namespace Evpp
         {
             if (nullptr != data)
             {
-                data->function();
                 task_base->handler = std::experimental::coroutine_handle<promise_type>::from_promise(*this);
+                task_base->function = data->function;
                 task_base->reflock.store(1);
+                data->function();
                 data = task_base.get();
             }
         }
@@ -95,6 +93,16 @@ namespace Evpp
         co_return;
     }
 
+    bool EventCoroutine::ResumeTask()
+    {
+        if (nullptr != task_data && nullptr != task_data->handler)
+        {
+            task_data->handler.resume();
+            return true;
+        }
+        return false;
+    }
+
     bool EventCoroutine::SubmitTask()
     {
         if (AwaitReady())
@@ -102,12 +110,7 @@ namespace Evpp
             return true;
         }
 
-        if (nullptr != task_data && nullptr != task_data->handler)
-        {
-            task_data->handler.resume();
-            return true;
-        }
-        return false;
+        return ResumeTask();
     }
 
     bool EventCoroutine::CancelTask()
@@ -117,12 +120,7 @@ namespace Evpp
             return true;
         }
 
-        if (nullptr != task_data && nullptr != task_data->handler)
-        {
-            task_data->handler.resume();
-            return true;
-        }
-        return false;
+        return ResumeTask();
     }
 
     bool EventCoroutine::SubmitTaskEx()

@@ -1,7 +1,6 @@
 #ifndef __EVENT_COROUTINE_H__
 #define __EVENT_COROUTINE_H__
 #include <config.h>
-#include <event_status.h>
 #include <memory>
 #include <atomic>
 #include <functional>
@@ -10,7 +9,6 @@
 namespace Evpp
 {
 #ifdef __cpp_coroutines
-    class EventStatus;
     class EventCoroutineTask;
     class EventCoroutine final
     {
@@ -20,10 +18,12 @@ namespace Evpp
     public:
         bool AwaitReady() noexcept;
         EventCoroutine JoinInTask();
-        EventCoroutine JoinInTask(EventCoroutineTask* task) noexcept;
+        static EventCoroutine JoinInTask(EventCoroutineTask* task) noexcept;
+        bool ResumeTask();
         bool SubmitTask();
         bool CancelTask();
         bool SubmitTaskEx();
+        EventCoroutineTask* Task() { return task_data; }
     private:
         EventCoroutine& operator++(i32) = delete;
         EventCoroutine& operator++();
@@ -51,14 +51,13 @@ namespace Evpp
         };
     private:
         EventCoroutineTask*                                                                         task_data;
-        std::atomic<u32>                                                                            exit_loop;
     };
 
-    class EventCoroutineTask : public EventStatus
+    class EventCoroutineTask
     {
     public:
         explicit EventCoroutineTask() : function(nullptr), reflock(0) {};
-        explicit EventCoroutineTask(const std::function<void()>& callback) : function(callback), reflock(0) {};
+        explicit EventCoroutineTask(std::function<void()> callback) : function(callback), reflock(0) {};
     public:
         bool DestroyTask();
         EventCoroutineTask* GetHandlerInstance();

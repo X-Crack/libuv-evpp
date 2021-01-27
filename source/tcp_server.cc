@@ -43,12 +43,12 @@ namespace Evpp
         if (tcp_socket && tcp_listen)
         {
 #ifdef H_OS_WINDOWS
-            if (event_thread_pool->CreaterEventThreadPool(thread_size))
+            if (tcp_listen->CreaterListenService(tcp_socket.get(), this))
 #else
             if (event_thread_pool->CreaterEventThreadPool(tcp_socket->GetSocketPoolSize()))
 #endif
             {
-                return tcp_listen->CreaterListenService(tcp_socket.get(), this);
+                return event_thread_pool->CreaterEventThreadPool(thread_size);
             }
         }
         return false;

@@ -19,15 +19,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="cotest.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\libuv\vsprojects\uv_a.vcxproj">
       <Project>{271f0c53-971b-3471-a1f8-1c2a3209445c}</Project>
     </ProjectReference>
     <ProjectReference Include="..\vcxproj\evpp.vcxproj">
       <Project>{2af40e9d-5653-4eb4-94c9-d2235733ddae}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="test.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
