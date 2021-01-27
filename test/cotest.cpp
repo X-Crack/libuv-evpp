@@ -34,7 +34,7 @@ void myprintf() noexcept
 int main(int argc, char* argv[])
 {
     Evpp::EventCoroutine co;
-    auto ptr = new Evpp::EventCoroutineMiddle(std::bind(myprintf));
+    auto ptr = new Evpp::EventCoroutineTask(std::bind(myprintf));
     auto oldptr = ptr;
     auto p = co.JoinInTask(ptr);
     p.SubmitTask();

@@ -9,18 +9,16 @@
 namespace Evpp
 {
 #ifdef __cpp_coroutines
-    class EventCoroutineMiddle;
+    class EventCoroutineTask;
     class EventCoroutine final
     {
     public:
-        explicit EventCoroutine(EventCoroutineMiddle* middle = nullptr);
+        explicit EventCoroutine(EventCoroutineTask* task = nullptr);
         virtual ~EventCoroutine();
     public:
         bool AwaitReady() noexcept;
-    public:
-        bool GetTaskSuccess();
         EventCoroutine JoinInTask();
-        EventCoroutine JoinInTask(EventCoroutineMiddle* Middle) noexcept;
+        EventCoroutine JoinInTask(EventCoroutineTask* task) noexcept;
         bool SubmitTask();
         bool CancelTask();
         bool SubmitTaskEx();
@@ -31,13 +29,13 @@ namespace Evpp
         bool operator!=(const EventCoroutine& rhs);
         bool operator==(EventCoroutine* rhs);
         bool operator!=(EventCoroutine* rhs);
-        EventCoroutineMiddle* operator->();
-        EventCoroutineMiddle* operator*();
+        EventCoroutineTask* operator->();
+        EventCoroutineTask* operator*();
     public:
         class promise_type
         {
         public:
-            explicit promise_type() : middle_refer(std::make_unique<EventCoroutineMiddle>()) { printf("middle_refer:%p\n", middle_refer.get()); }
+            explicit promise_type() : task_base(std::make_unique<EventCoroutineTask>()) { }
         public:
             static EventCoroutine get_return_object_on_allocation_failure();
             EventCoroutine get_return_object();
@@ -45,24 +43,23 @@ namespace Evpp
             std::experimental::suspend_always final_suspend();
             void unhandled_exception();
             void return_void();
-            std::experimental::suspend_always yield_value(EventCoroutineMiddle* data);
+            std::experimental::suspend_always yield_value(EventCoroutineTask* data);
         public:
-            std::unique_ptr<EventCoroutineMiddle>                                                   middle_refer;
+            std::unique_ptr<EventCoroutineTask>                                                     task_base;
         };
     private:
-        EventCoroutineMiddle*                                                                       middle_data;
+        EventCoroutineTask*                                                                         task_data;
         std::atomic<u32>                                                                            exit_loop;
     };
 
-    class EventCoroutineMiddle
+    class EventCoroutineTask
     {
     public:
-        explicit EventCoroutineMiddle() : function(nullptr), reflock(0) {};
-        explicit EventCoroutineMiddle(const std::function<void()>& callback) : function(callback), reflock(0) {};
+        explicit EventCoroutineTask() : function(nullptr), reflock(0) {};
+        explicit EventCoroutineTask(const std::function<void()>& callback) : function(callback), reflock(0) {};
     public:
         bool DestroyTask();
-        EventCoroutineMiddle* GetHandlerInstance();
-        bool StoptheTask();
+        EventCoroutineTask* GetHandlerInstance();
     private:
         virtual void EventCoroutineMiddleCallback() { return; };
     public:

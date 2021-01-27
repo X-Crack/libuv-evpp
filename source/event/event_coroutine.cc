@@ -2,16 +2,16 @@
 namespace Evpp
 {
 #ifdef __cpp_coroutines
-    EventCoroutine::EventCoroutine(EventCoroutineMiddle* middle) : middle_data(middle)
+    EventCoroutine::EventCoroutine(EventCoroutineTask* middle) : task_data(middle)
     {
 
     }
 
     EventCoroutine::~EventCoroutine()
     {
-        if (nullptr != middle_data && nullptr != middle_data->handler)
+        if (nullptr != task_data && nullptr != task_data->handler)
         {
-            middle_data->handler.destroy();
+            task_data->handler.destroy();
         }
     }
 
@@ -22,14 +22,14 @@ namespace Evpp
 
     EventCoroutine EventCoroutine::promise_type::get_return_object()
     {
-        return EventCoroutine(middle_refer.get());
+        return EventCoroutine(task_base.get());
     };
 
     std::experimental::suspend_always EventCoroutine::promise_type::initial_suspend()
     {
-        if (nullptr == middle_refer->handler)
+        if (nullptr == task_base->handler)
         {
-            middle_refer->handler = std::experimental::coroutine_handle<promise_type>::from_promise(*this);
+            task_base->handler = std::experimental::coroutine_handle<promise_type>::from_promise(*this);
         }
         return std::experimental::suspend_always();
     }
@@ -47,52 +47,43 @@ namespace Evpp
 
     void EventCoroutine::promise_type::return_void()
     {
-        if (nullptr != middle_refer && nullptr != middle_refer->handler)
+        if (nullptr != task_base && nullptr != task_base->handler)
         {
-            if (middle_refer->reflock.load(std::memory_order_release))
+            if (task_base->reflock.load(std::memory_order_release))
             {
-                middle_refer->reflock.store(0);
-                middle_refer->handler = nullptr;
+                task_base->reflock.store(0);
+                task_base->handler = nullptr;
             }
         }
     }
 
-    std::experimental::suspend_always EventCoroutine::promise_type::yield_value(EventCoroutineMiddle* data)
+    std::experimental::suspend_always EventCoroutine::promise_type::yield_value(EventCoroutineTask* data)
     {
-        if (nullptr != middle_refer)
+        if (nullptr != task_base)
         {
             data->function();
-            middle_refer->handler = std::experimental::coroutine_handle<promise_type>::from_promise(*this);
-            middle_refer->reflock.store(1);
-            data = middle_refer.get();
+            task_base->handler = std::experimental::coroutine_handle<promise_type>::from_promise(*this);
+            task_base->reflock.store(1);
+            data = task_base.get();
         }
         return std::experimental::suspend_always();
     }
 
     bool EventCoroutine::AwaitReady() noexcept
     {
-        if (nullptr != middle_data && nullptr != middle_data->handler)
+        if (nullptr != task_data && nullptr != task_data->handler)
         {
-            return middle_data->handler.done();
+            return task_data->handler.done();
         }
         return false;
     }
 
-    bool EventCoroutine::GetTaskSuccess()
-    {
-        if (middle_data && middle_data->handler)
-        {
-            return 1 == middle_data->reflock;
-        }
-        return true;
-    }
-
     EventCoroutine EventCoroutine::JoinInTask()
     {
-        return JoinInTask(middle_data);
+        return JoinInTask(task_data);
     }
 
-    EventCoroutine EventCoroutine::JoinInTask(EventCoroutineMiddle* middle) noexcept
+    EventCoroutine EventCoroutine::JoinInTask(EventCoroutineTask* middle) noexcept
     {
         if (nullptr != middle && nullptr != middle->function)
         {
@@ -108,9 +99,9 @@ namespace Evpp
             return true;
         }
 
-        if (nullptr != middle_data && nullptr != middle_data->handler)
+        if (nullptr != task_data && nullptr != task_data->handler)
         {
-            middle_data->handler.resume();
+            task_data->handler.resume();
             return true;
         }
         return false;
@@ -123,9 +114,9 @@ namespace Evpp
             return true;
         }
 
-        if (nullptr != middle_data && nullptr != middle_data->handler)
+        if (nullptr != task_data && nullptr != task_data->handler)
         {
-            middle_data->handler.resume();
+            task_data->handler.resume();
             return true;
         }
         return false;
@@ -138,15 +129,15 @@ namespace Evpp
 
     EventCoroutine& EventCoroutine::operator++()
     {
-        if (nullptr != middle_data && nullptr != middle_data->handler)
+        if (nullptr != task_data && nullptr != task_data->handler)
         {
-            if (middle_data->handler.done())
+            if (task_data->handler.done())
             {
-                middle_data->handler = nullptr;
+                task_data->handler = nullptr;
             }
             else
             {
-                middle_data->handler.resume();
+                task_data->handler.resume();
             }
         }
         return *this;
@@ -154,7 +145,7 @@ namespace Evpp
 
     bool EventCoroutine::operator==(const EventCoroutine& rhs)
     {
-        return middle_data == rhs.middle_data;
+        return task_data == rhs.task_data;
     }
 
     bool EventCoroutine::operator!=(const EventCoroutine& rhs)
@@ -164,7 +155,7 @@ namespace Evpp
 
     bool EventCoroutine::operator==(EventCoroutine* rhs)
     {
-        return middle_data == rhs->middle_data;
+        return task_data == rhs->task_data;
     }
 
     bool EventCoroutine::operator!=(EventCoroutine* rhs)
@@ -172,41 +163,33 @@ namespace Evpp
         return !(this == rhs);
     }
 
-    EventCoroutineMiddle* EventCoroutine::operator->()
+    EventCoroutineTask* EventCoroutine::operator->()
     {
-        if (nullptr != middle_data && nullptr != middle_data->handler)
+        if (nullptr != task_data && nullptr != task_data->handler)
         {
-            return middle_data->handler.promise().middle_refer.get();
+            return task_data->handler.promise().task_base.get();
         }
         return nullptr;
     }
 
-    EventCoroutineMiddle* EventCoroutine::operator*()
+    EventCoroutineTask* EventCoroutine::operator*()
     {
         return operator->();
     }
 
-    bool EventCoroutineMiddle::DestroyTask()
+    bool EventCoroutineTask::DestroyTask()
     {
         if (nullptr != handler)
         {
-            if (StoptheTask())
-            {
-                handler.destroy();
-                return true;
-            }
+            handler.destroy();
+            return true;
         }
         return false;
     }
 
-    EventCoroutineMiddle* EventCoroutineMiddle::GetHandlerInstance()
+    EventCoroutineTask* EventCoroutineTask::GetHandlerInstance()
     {
-        return static_cast<EventCoroutineMiddle*>(handler.address());
-    }
-
-    bool EventCoroutineMiddle::StoptheTask()
-    {
-        return 0 == reflock.load(std::memory_order_release);
+        return static_cast<EventCoroutineTask*>(handler.address());
     }
 #endif
 }
