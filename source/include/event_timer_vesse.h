@@ -7,7 +7,7 @@ namespace Evpp
 {
     class EventLoop;
     class EventTimer;
-    class EventTimerVesse
+    class EventTimerVesse final
     {
     public:
         explicit EventTimerVesse(EventLoop* loop);

@@ -49,7 +49,7 @@ namespace Evpp
     {
         if (nullptr != task_base && nullptr != task_base->handler)
         {
-            if (task_base->reflock.load(std::memory_order_release))
+            if (task_base->reflock.load())
             {
                 task_base->reflock.store(0);
                 task_base->handler = nullptr;
@@ -61,10 +61,13 @@ namespace Evpp
     {
         if (nullptr != task_base)
         {
-            data->function();
-            task_base->handler = std::experimental::coroutine_handle<promise_type>::from_promise(*this);
-            task_base->reflock.store(1);
-            data = task_base.get();
+            if (nullptr != data)
+            {
+                data->function();
+                task_base->handler = std::experimental::coroutine_handle<promise_type>::from_promise(*this);
+                task_base->reflock.store(1);
+                data = task_base.get();
+            }
         }
         return std::experimental::suspend_always();
     }

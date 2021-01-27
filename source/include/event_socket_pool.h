@@ -6,7 +6,7 @@
 namespace Evpp
 {
     class EventSocket;
-    class EventSocketPool
+    class EventSocketPool final
     {
     public:
         explicit EventSocketPool();

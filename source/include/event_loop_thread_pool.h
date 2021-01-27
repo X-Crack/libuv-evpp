@@ -10,7 +10,7 @@ namespace Evpp
     class EventShare;
     class EventLoopThread;
     class EventLoopThreadEx;
-    class EventLoopThreadPool
+    class EventLoopThreadPool final
     {
     public:
         explicit EventLoopThreadPool(EventLoop* loop, const std::shared_ptr<EventShare>& share);

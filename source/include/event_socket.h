@@ -5,7 +5,7 @@
 #include <memory>
 namespace Evpp
 {
-    struct SocketInfo
+    struct SocketInfo final
     {
         union
         {
@@ -18,7 +18,7 @@ namespace Evpp
         u16                     port;
     };
 
-    class EventSocket
+    class EventSocket final
     {
     public:
         explicit EventSocket();

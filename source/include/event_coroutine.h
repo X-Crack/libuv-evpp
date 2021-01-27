@@ -1,6 +1,7 @@
 #ifndef __EVENT_COROUTINE_H__
 #define __EVENT_COROUTINE_H__
 #include <config.h>
+#include <event_status.h>
 #include <memory>
 #include <atomic>
 #include <functional>
@@ -9,6 +10,7 @@
 namespace Evpp
 {
 #ifdef __cpp_coroutines
+    class EventStatus;
     class EventCoroutineTask;
     class EventCoroutine final
     {
@@ -52,7 +54,7 @@ namespace Evpp
         std::atomic<u32>                                                                            exit_loop;
     };
 
-    class EventCoroutineTask
+    class EventCoroutineTask : public EventStatus
     {
     public:
         explicit EventCoroutineTask() : function(nullptr), reflock(0) {};
@@ -60,8 +62,8 @@ namespace Evpp
     public:
         bool DestroyTask();
         EventCoroutineTask* GetHandlerInstance();
-    private:
-        virtual void EventCoroutineMiddleCallback() { return; };
+    protected:
+        virtual void EventCoroutineTaskCallback() { return; };
     public:
         std::function<void()>                                                                       function;
         std::atomic<u32>                                                                            reflock;

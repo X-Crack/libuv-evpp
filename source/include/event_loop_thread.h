@@ -6,7 +6,7 @@ namespace Evpp
     class EventLoop;
     class EventShare;
     class EventStatus;
-    class EventLoopThread : public EventStatus
+    class EventLoopThread final : public EventStatus
     {
     public:
         explicit EventLoopThread(const u96 index);
