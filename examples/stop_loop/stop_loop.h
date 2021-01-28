@@ -6,7 +6,7 @@
 namespace Evpp
 {
     class EventLoop;
-    class EventTimer;
+    class EventSignal;
     class StopLoop
     {
     public:
@@ -20,9 +20,13 @@ namespace Evpp
         // Examples 2
         void RunExamples2();
         void EchoLoopCallback(EventLoop* loop);
+        // Examples 3
+        void RunExamples3();
+        void EchoLoopCallback3(EventLoop* loop);
+        void EchoSignalCallback();
     private:
         std::shared_ptr<EventLoop>              event_base;
-        std::shared_ptr<EventTimer>             event_timer;
+        std::shared_ptr<EventSignal>            event_signal_;
         std::atomic<u32>                        exit_tag;
     };
 }

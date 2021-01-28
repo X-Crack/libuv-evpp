@@ -6,10 +6,10 @@
 int main()
 {
     using namespace Evpp;
-    EchoServer echo_server;
-    echo_server.RunExamples();
+//     EchoServer echo_server;
+//     echo_server.RunExamples();
 
     StopLoop stop_loop;
-    stop_loop.RunExamples2();
+    stop_loop.RunExamples3();
     return 0;
 }

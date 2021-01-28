@@ -2,7 +2,9 @@
 #include <event_loop.h>
 namespace Evpp
 {
-    EventSignal::EventSignal(EventLoop* loop) : event_base(loop), event_signaler(new event_signal())
+    EventSignal::EventSignal(EventLoop* loop, const Handler& function) : 
+        event_base(loop), 
+        event_signaler(new event_signal())
     {
         if (nullptr == event_signaler->data)
         {
@@ -12,7 +14,11 @@ namespace Evpp
 
     EventSignal::~EventSignal()
     {
-
+        if (nullptr != event_signaler)
+        {
+            delete event_signaler;
+            event_signaler = nullptr;
+        }
     }
 
     bool EventSignal::InitialSignal()
@@ -42,6 +48,14 @@ namespace Evpp
         return false;
     }
 
+    void EventSignal::SetSignalCallback(const Handler& function)
+    {
+        if (nullptr == event_callback)
+        {
+            event_callback = function;
+        }
+    }
+
     void EventSignal::OnNotify(event_signal* handler, int signum)
     {
         if (signum > 0)
@@ -58,6 +72,9 @@ namespace Evpp
 
     void EventSignal::OnNotify()
     {
-        printf("On Signal\n");
+        if (nullptr != event_callback)
+        {
+            event_callback();
+        }
     }
 }
