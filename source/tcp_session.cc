@@ -16,12 +16,12 @@ namespace Evpp
         system_discons(discons),
         system_message(message)
     {
-        //AssignTimer(1, 0, 1000);
+
     }
 
     TcpSession::~TcpSession()
     {
-       //printf("delete tcpSession\n");
+
     }
 
     bool TcpSession::Send(const char* buf, u96 len, u32 nbufs)

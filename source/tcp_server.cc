@@ -28,7 +28,8 @@ namespace Evpp
 #else
         tcp_listen(std::make_unique<TcpListen>(loop, event_thread_pool, true)),
 #endif
-        tcp_index(0)
+        tcp_index(0),
+        tcp_keepalive(30)
     {
 
     }
@@ -89,6 +90,11 @@ namespace Evpp
         }
 
         return GetSession(index)->Close();
+    }
+
+    void TcpServer::SetKeepaLive(const u32 time)
+    {
+        tcp_keepalive.store(time);
     }
 
     void TcpServer::SetAcceptsCallback(const InterfaceAccepts& accepts)
@@ -200,7 +206,7 @@ namespace Evpp
             {
                 if (0 == uv_accept(handler, reinterpret_cast<socket_stream*>(client)))
                 {
-                    return true;
+                    return 0 == uv_tcp_keepalive(client, 1, tcp_keepalive.load());
                 }
             }
             return SystemShutdown(reinterpret_cast<socket_stream*>(client));

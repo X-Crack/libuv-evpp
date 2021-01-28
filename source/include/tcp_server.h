@@ -25,6 +25,7 @@ namespace Evpp
         bool Send(const u96 index, const char* buf, u96 len, u32 nbufs = 1);
         bool Send(const u96 index, const std::string& buf, u32 nbufs = 1);
         bool Close(const u96 index);
+        void SetKeepaLive(const u32 time);
     public:
         void SetAcceptsCallback(const InterfaceAccepts& accepts);
         void SetDisconsCallback(const InterfaceDiscons& discons);
@@ -68,6 +69,7 @@ namespace Evpp
         std::unique_ptr<EventSocketPool>                                tcp_socket;
         std::unique_ptr<TcpListen>                                      tcp_listen;
         std::atomic<u96>											    tcp_index;
+        std::atomic<u32>                                                tcp_keepalive;
         std::unordered_map<u96, std::shared_ptr<TcpSession>>            tcp_session;
         std::priority_queue<u96>									    tcp_index_multiplexing;
         std::mutex                                                      tcp_mutex;
