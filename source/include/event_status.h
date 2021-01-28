@@ -9,14 +9,10 @@ namespace Evpp
     public:
         enum Status
         {
-            NOTYET = 0 << 0,
-            INITIALIZING = 1 << 1,
-            INITIALIZED = 2 << 2,
-            STARTING = 3 << 3,
-            RUNNING = 4 << 4,
-            PAUSE = 5 << 5,
-            STOPPED = 6 << 6,
-            DESTROYED = 7 << 7
+            None = 1 << 0,
+            Init = 1 << 1,
+            Exec = 1 << 2,
+            Stop = 1 << 3,
         };
     public:
         explicit EventStatus();

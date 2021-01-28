@@ -93,11 +93,11 @@ namespace Evpp
 
     void EventLoopThreadEx::CoroutineInThread()
     {
-        if (ChangeStatus(NOTYET, INITIALIZING))
+        if (ChangeStatus(None, Init))
         {
             loop.reset(new EventLoop(event_share->EventLoop(event_index), event_index));
             {
-                if (ChangeStatus(INITIALIZING, INITIALIZED))
+                if (ChangeStatus(Init, Exec))
                 {
                     if (loop->InitialEvent())
                     {
@@ -114,7 +114,12 @@ namespace Evpp
                             break;
                         }
 
-                        if (ChangeStatus(INITIALIZED, STOPPED))
+                        if (0 || UV_EBUSY == uv_loop_close(loop->EventBasic()))
+                        {
+                            printf("Delete EventLoop Ok\n");
+                        }
+
+                        if (ChangeStatus(Exec, Stop))
                         {
                             assert(!loop->ExistsStoped());
                         }
@@ -145,7 +150,7 @@ namespace Evpp
             return false;
         }
 
-        if (ExistsStarts(INITIALIZED))
+        if (ExistsRuning())
         {
             return 0 == loop->EventBasic()->stop_flag;
         }

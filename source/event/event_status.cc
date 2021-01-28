@@ -1,7 +1,7 @@
 #include <event_status.h>
 namespace Evpp
 {
-    EventStatus::EventStatus() : status(NOTYET)
+    EventStatus::EventStatus() : status(None)
     {
 
     }
@@ -23,11 +23,11 @@ namespace Evpp
 
     bool EventStatus::ExistsRuning()
     {
-        return RUNNING == status;
+        return Exec == status;
     }
 
     bool EventStatus::ExistsStoped()
     {
-        return STOPPED == status;
+        return Stop == status;
     }
 }

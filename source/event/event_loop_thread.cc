@@ -79,11 +79,11 @@ namespace Evpp
 
     void EventLoopThread::ThreadRun()
     {
-        if (ChangeStatus(NOTYET, INITIALIZING))
+        if (ChangeStatus(None, Init))
         {
             loop.reset(new EventLoop(event_share->EventLoop(event_index), event_index));
             {
-                if (ChangeStatus(INITIALIZING, INITIALIZED))
+                if (ChangeStatus(Init, Exec))
                 {
                     if (loop->InitialEvent())
                     {
@@ -93,7 +93,7 @@ namespace Evpp
                             return;
                         }
 
-                        if (ChangeStatus(INITIALIZED, STOPPED))
+                        if (ChangeStatus(Exec, Stop))
                         {
                             assert(loop->ExistsStoped());
                         }

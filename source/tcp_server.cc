@@ -43,13 +43,22 @@ namespace Evpp
     {
         if (tcp_socket && tcp_listen)
         {
-#ifdef H_OS_WINDOWS
-            if (event_thread_pool->CreaterEventThreadPool(thread_size))
-#else
-            if (event_thread_pool->CreaterEventThreadPool(tcp_socket->GetSocketPoolSize()))
-#endif
+            if (ExistsStarts(None))
             {
-                return tcp_listen->CreaterListenService(tcp_socket.get(), this);
+                if (ChangeStatus(None, Init))
+                {
+#ifdef H_OS_WINDOWS
+                    if (event_thread_pool->CreaterEventThreadPool(thread_size))
+#else
+                    if (event_thread_pool->CreaterEventThreadPool(tcp_socket->GetSocketPoolSize()))
+#endif
+                    {
+                        if (ChangeStatus(Init, Exec))
+                        {
+                            return tcp_listen->CreaterListenService(tcp_socket.get(), this);
+                        }
+                    }
+                }
             }
         }
         return false;
@@ -61,26 +70,28 @@ namespace Evpp
         {
             if (event_base->EventThread())
             {
-                if (tcp_listen->DestroyListenService())
+                if (ChangeStatus(Exec, Stop))
                 {
+                    if (tcp_listen->DestroyListenService())
                     {
-                        std::lock_guard<std::recursive_mutex> lock(tcp_recursive_mutex);
                         for (auto& [index, session] : tcp_session)
                         {
-                            if (event_thread_pool->GetEventLoop(index)->RunInLoopEx(std::bind(&TcpServer::Close, this, index)))
+                            if (Close(index))
                             {
                                 continue;
                             }
                             return false;
                         }
-                    }
 
-                    while (!tcp_session.empty())
-                    {
-                        Sleep(0);
-                    }
+                        while (!tcp_session.empty())
+                        {
+                            Sleep(0);
+                        }
 
-                    return event_thread_pool->DestroyEventThreadPool();
+                        printf("DestroyServer OK\n");
+
+                        return event_thread_pool->DestroyEventThreadPool();
+                    }
                 }
                 return false;
             }
@@ -91,9 +102,12 @@ namespace Evpp
 
     bool TcpServer::AddListenPort(const std::string& server_address, const u16 port)
     {
-        if (nullptr != tcp_socket)
+        if (ExistsStarts(None))
         {
-            return tcp_socket->AddListenPort(server_address, port);
+            if (nullptr != tcp_socket)
+            {
+                return tcp_socket->AddListenPort(server_address, port);
+            }
         }
         return false;
     }
@@ -277,9 +291,9 @@ namespace Evpp
         return false;
     }
 
-    bool TcpServer::DefaultAccepts(socket_stream* server, i32 status)
+    bool TcpServer::DefaultAccepts(socket_stream* server, i32 status_)
     {
-        if (0 == status && nullptr != server)
+        if (0 == status_ && nullptr != server)
         {
 #ifdef H_OS_WINDOWS
             return DefaultAccepts(event_thread_pool->GetEventLoop(), server);

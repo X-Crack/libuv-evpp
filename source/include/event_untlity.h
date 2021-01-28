@@ -38,14 +38,6 @@ namespace Evpp
 
 		bool DefaultFailure(EventLoop* loop, const u96 index, const i32 status, const String* name, const String* msgs);
 	}
-
-	enum EventThreadStatus
-	{
-		None			= 1 << 0,
-		Init			= 1 << 1,
-		Exec			= 1 << 2,
-		Stop			= 1 << 3,
-	};
 }
 
 #endif // __EVENT_UNTILITY_H__

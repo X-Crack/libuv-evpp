@@ -29,9 +29,14 @@ namespace Evpp
 
     }
 
-    bool EventWatcher::CreateQueue()
+    bool EventWatcher::CreaterQueue()
     {
         return event_async_->CreatePipe() && event_async_ex_->CreatePipe();
+    }
+
+    bool EventWatcher::DestroyQueue()
+    {
+        return nolock_queue->size_approx() || nolock_queue_ex->size_approx();
     }
 
     bool EventWatcher::RunInLoop(const Functor& function)

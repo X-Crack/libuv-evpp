@@ -6,6 +6,7 @@ namespace Evpp
 {
     class EventShare;
     class EventLoop;
+    class EventTimer;
     class TcpServer;
     class TcpServerService
     {
@@ -17,6 +18,7 @@ namespace Evpp
     public:
         bool CreaterServer(const u96 thread_size);
         bool DestroyServer();
+        bool DestroyServerEx();
         bool ExecDispatch();
         bool ExecDispatch(const u32 mode);
     public:
@@ -29,9 +31,12 @@ namespace Evpp
         void SetMessageCallback(const InterfaceMessage& message);
         void SetEventThreadId(const u32 id);
     private:
+        void TimerCallback(EventLoop* loop, const std::shared_ptr<EventTimer>& timer, const u96 index);
+    private:
         std::shared_ptr<EventShare>                                     event_share;
         std::shared_ptr<EventLoop>                                      event_base;
         std::unique_ptr<TcpServer>                                      tcp_server;
+        std::shared_ptr<EventTimer>                                     event_timer;
     };
 }
 #endif // __TCP_SERVER_SERVICE_H__

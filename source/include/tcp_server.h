@@ -1,6 +1,7 @@
 #ifndef __TCP_SERVER_H__
 #define __TCP_SERVER_H__
 #include <config.h>
+#include <event_status.h>
 #include <memory>
 #include <queue>
 #include <mutex>
@@ -12,7 +13,7 @@ namespace Evpp
     class EventSocketPool;
     class TcpListen;
     class TcpSession;
-    class TcpServer
+    class TcpServer : public EventStatus
     {
     public:
         explicit TcpServer(EventLoop* loop, const std::shared_ptr<EventShare>& share);
@@ -42,7 +43,7 @@ namespace Evpp
     private:
         bool DefaultAccepts(EventLoop* loop, socket_stream* server);
         bool AsyncAccepts(EventLoop* loop, socket_stream* server);
-        bool DefaultAccepts(socket_stream* server, i32 status);
+        bool DefaultAccepts(socket_stream* server, i32 status_);
         static void OnDefaultAccepts(socket_stream* handler, int status);
     private:
         void DefaultDiscons(EventLoop* loop, const u96 index);

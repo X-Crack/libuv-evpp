@@ -19,7 +19,8 @@ namespace Evpp
         explicit EventWatcher(EventLoop* loop);
         virtual ~EventWatcher();
     public:
-        bool CreateQueue();
+        bool CreaterQueue();
+        bool DestroyQueue();
     public:
         bool RunInLoop(const Functor& function);
         bool RunInLoop(Functor&& function);

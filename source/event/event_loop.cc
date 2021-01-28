@@ -11,16 +11,13 @@ namespace Evpp
         event_timer_vesse(std::make_unique<EventTimerVesse>(this)),
         event_thread(EventThreadId())
     {
-        if (ChangeStatus(NOTYET, INITIALIZING))
+        if (ChangeStatus(None, Init))
         {
             if (0 == uv_loop_init(event_base))
             {
-                if (ChangeStatus(INITIALIZING, INITIALIZED))
+                if (event_base)
                 {
-                    if (event_base)
-                    {
-                        uv_loop_set_data(event_base, this);
-                    }
+                    uv_loop_set_data(event_base, this);
                 }
             }
         }
@@ -28,23 +25,23 @@ namespace Evpp
 
     EventLoop::~EventLoop()
     {
-        uv_loop_close(event_base);
+
     }
 
     bool EventLoop::InitialEvent()
     {
-        return event_watcher->CreateQueue();
+        return event_watcher->CreaterQueue();
     }
 
     bool EventLoop::ExecDispatch()
     {
         if (0 != event_base)
         {
-            if (ChangeStatus(INITIALIZED, RUNNING))
+            if (ChangeStatus(Init, Exec))
             {
                 if (0 == uv_run(event_base, UV_RUN_DEFAULT))
                 {
-                    return ChangeStatus(RUNNING, STOPPED);
+                    return ChangeStatus(Exec, Stop);
                 }
             }
         }
@@ -66,6 +63,10 @@ namespace Evpp
         {
             if (0 == event_base->stop_flag)
             {
+                while (event_watcher->DestroyQueue())
+                {
+                    Sleep(1);
+                }
                 uv_stop(event_base);
                 return true;
             }

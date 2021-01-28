@@ -23,16 +23,18 @@
 
 #include <future>
 using namespace Evpp;
-TcpServerService Tcp;
+
 void Run()
 {
+    TcpServerService Tcp;
 
     Tcp.AddListenPort("0.0.0.0", 8888);
     Tcp.SetAcceptsCallback(Import::DefaultAccepts);
     Tcp.SetDisconsCallback(Import::DefaultDiscons);
     Tcp.SetMessageCallback(Import::DefaultMessage);
-    Tcp.SetEventThreadId(GetCurrentThreadId());
+    //Tcp.SetEventThreadId(GetCurrentThreadId());
     Tcp.CreaterServer(16);
+    //Tcp.DestroyServer();
     Tcp.ExecDispatch();
     printf("exit thread\n");
 }
@@ -50,15 +52,15 @@ int main()
 //    return 0;
     std::unique_ptr<std::thread> thread = std::make_unique<std::thread>(std::bind(Run));
     thread->detach();
-    Sleep(5000);
-    if (Tcp.DestroyServer())
-    {
-        printf("服务器停止成功\n");
-    }
-    else
-    {
-        printf("服务器停止失败\n");
-    }
+//     Sleep(10000);
+//     if (Tcp.DestroyServer())
+//     {
+//         printf("服务器停止成功\n");
+//     }
+//     else
+//     {
+//         printf("服务器停止失败\n");
+//     }
     //printf("异常退出\n");
 //     using namespace cpps; 
 //     C* c = cpps::create();
