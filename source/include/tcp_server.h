@@ -21,6 +21,7 @@ namespace Evpp
         friend TcpListen;
     public:
         bool CreaterServer(const u96 thread_size);
+        bool DestroyServer();
         bool AddListenPort(const std::string& server_address, const u16 port);
         bool Send(const u96 index, const char* buf, u96 len, u32 nbufs = 1);
         bool Send(const u96 index, const std::string& buf, u32 nbufs = 1);

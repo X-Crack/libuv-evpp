@@ -21,10 +21,26 @@
 #include <event_work_queue.h>
 //#include "cpps/cpps.h"
 
+#include <future>
+using namespace Evpp;
+TcpServerService Tcp;
+void Run()
+{
+
+    Tcp.AddListenPort("0.0.0.0", 8888);
+    Tcp.SetAcceptsCallback(Import::DefaultAccepts);
+    Tcp.SetDisconsCallback(Import::DefaultDiscons);
+    Tcp.SetMessageCallback(Import::DefaultMessage);
+    Tcp.SetEventThreadId(GetCurrentThreadId());
+    Tcp.CreaterServer(16);
+    Tcp.ExecDispatch();
+    printf("exit thread\n");
+}
+
 int main()
 {
     
-    using namespace Evpp;
+    
 //     EventLoop ev;
 //     EventWorkQueue qe(&ev);
 //     qe.SetCreaterCallback(crcallback);
@@ -32,22 +48,18 @@ int main()
 //     
 //     ev.ExecDispatch();
 //    return 0;
-
-    TcpServerService tcp;
-    tcp.AddListenPort("0.0.0.0", 8888);
-//     tcp.AddListenPort("0.0.0.0", 6666);
-//     tcp.AddListenPort("0.0.0.0", 7777);
-    tcp.SetAcceptsCallback(Import::DefaultAccepts);
-    tcp.SetDisconsCallback(Import::DefaultDiscons);
-    tcp.SetMessageCallback(Import::DefaultMessage);
-
-    //  bool DefaultMessage(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const std::shared_ptr<TcpBuffer>& buffer, const u96 index)
-    //tcp.SetMessageCallback(std::bind(Import::DefaultMessage, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
-    //uv_queue_work();
-
-    tcp.CreaterServer(16);
-    tcp.ExecDispatch();
-    printf("异常退出\n");
+    std::unique_ptr<std::thread> thread = std::make_unique<std::thread>(std::bind(Run));
+    thread->detach();
+    Sleep(5000);
+    if (Tcp.DestroyServer())
+    {
+        printf("服务器停止成功\n");
+    }
+    else
+    {
+        printf("服务器停止失败\n");
+    }
+    //printf("异常退出\n");
 //     using namespace cpps; 
 //     C* c = cpps::create();
 //     _CPPS_TRY

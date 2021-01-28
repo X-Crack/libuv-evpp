@@ -24,7 +24,7 @@ namespace Evpp
         bool CancelTask();
         bool SubmitTaskEx();
         EventCoroutineTask* Task() { return task_data; }
-    private:
+    public:
         EventCoroutine& operator++(i32) = delete;
         EventCoroutine& operator++();
         bool operator==(const EventCoroutine& rhs);

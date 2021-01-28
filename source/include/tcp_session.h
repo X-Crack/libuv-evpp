@@ -33,6 +33,7 @@ namespace Evpp
         void ModiyRepeat(const u96 index, const u64 repeat);
         bool ReStarTimer(const u96 index);
         bool ReStarTimerEx(const u96 index, const u64 delay, const u64 repeat);
+        u96  GetSelfIndex() { return self_index; };
     private:
         void OnSystemDiscons();
         bool OnSystemMessage(const std::shared_ptr<TcpBuffer>& Buffer);

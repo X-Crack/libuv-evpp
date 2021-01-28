@@ -55,6 +55,40 @@ namespace Evpp
         return false;
     }
 
+    bool TcpServer::DestroyServer()
+    {
+        if (nullptr != event_base)
+        {
+            if (event_base->EventThread())
+            {
+                if (tcp_listen->DestroyListenService())
+                {
+                    {
+                        std::lock_guard<std::recursive_mutex> lock(tcp_recursive_mutex);
+                        for (auto& [index, session] : tcp_session)
+                        {
+                            if (event_thread_pool->GetEventLoop(index)->RunInLoopEx(std::bind(&TcpServer::Close, this, index)))
+                            {
+                                continue;
+                            }
+                            return false;
+                        }
+                    }
+
+                    while (!tcp_session.empty())
+                    {
+                        Sleep(0);
+                    }
+
+                    return event_thread_pool->DestroyEventThreadPool();
+                }
+                return false;
+            }
+            return RunInLoopEx(std::bind(&TcpServer::DestroyServer, this));
+        }
+        return false;
+    }
+
     bool TcpServer::AddListenPort(const std::string& server_address, const u16 port)
     {
         if (nullptr != tcp_socket)
@@ -145,8 +179,11 @@ namespace Evpp
         {
             if (auto it = tcp_session.find(index); it != std::end(tcp_session))
             {
-                tcp_session.erase(it);
-                tcp_index_multiplexing.emplace(index);
+                if (!tcp_session.empty())
+                {
+                    tcp_session.erase(it);
+                    tcp_index_multiplexing.emplace(index);
+                }
                 return true;
             }
         }

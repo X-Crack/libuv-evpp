@@ -55,6 +55,42 @@ namespace Evpp
         return false;
     }
 
+    bool EventLoopThreadPool::DestroyEventThreadPool(const bool use_thread_ex)
+    {
+        for (u96 i = 0; i < (use_thread_ex ? event_pool_ex.size() : event_pool.size()); ++i)
+        {
+            std::unique_lock<std::mutex> lock(event_pool_lock);
+            {
+                if (use_thread_ex)
+                {
+                    if (event_pool_ex[i]->DestroyThread())
+                    {
+                        continue;
+                    }
+                    return false;
+                }
+                else
+                {
+                    if (event_pool[i]->DestroyThread())
+                    {
+                        continue;
+                    }
+                    return false;
+                }
+            }
+        }
+
+        if (use_thread_ex)
+        {
+            event_pool_ex.clear();
+        }
+        else
+        {
+            event_pool.clear();
+        }
+        return true;
+    }
+
     bool EventLoopThreadPool::InitialEventThreadPool(const u96 size, const bool use_thread_ex)
     {
         for (u96 i = 0; i < size; ++i)

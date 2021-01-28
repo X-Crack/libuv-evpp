@@ -41,11 +41,29 @@ namespace Evpp
         return false;
     }
 
+    bool TcpServerService::DestroyServer()
+    {
+        if (nullptr != tcp_server)
+        {
+            return tcp_server->DestroyServer();
+        }
+        return false;
+    }
+
     bool TcpServerService::ExecDispatch()
     {
         if (nullptr != event_base)
         {
             return event_base->ExecDispatch();
+        }
+        return false;
+    }
+
+    bool TcpServerService::ExecDispatch(const u32 mode)
+    {
+        if (nullptr != event_base)
+        {
+            return event_base->ExecDispatch(mode);
         }
         return false;
     }
@@ -99,5 +117,10 @@ namespace Evpp
         {
             return tcp_server->SetMessageCallback(message);
         }
+    }
+
+    void TcpServerService::SetEventThreadId(const u32 id)
+    {
+        event_base->SetEventThreadId(id);
     }
 }

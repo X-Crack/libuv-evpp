@@ -100,12 +100,12 @@ namespace Evpp
             {
                 if (nullptr != tcp_socket)
                 {
-                    return SystemShutdown(reinterpret_cast<socket_stream*>(tcp_socket.get()));
+                    return SystemClose(reinterpret_cast<socket_stream*>(tcp_socket.get()));
                 }
                 return false;
             }
         }
-        return event_base->RunInLoop(std::bind(&TcpMessage::Close, this));
+        return RunInLoopEx(std::bind(&TcpMessage::Close, this));
     }
 
     bool TcpMessage::DefaultSend(const socket_data bufs, u32 nbufs)

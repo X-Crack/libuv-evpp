@@ -20,7 +20,7 @@ namespace Evpp
 
     EventLoopThread::~EventLoopThread()
     {
-        DestroyThread();
+        Join();
     }
 
     bool EventLoopThread::CreaterSubThread(bool wait)
@@ -33,7 +33,7 @@ namespace Evpp
                 {
                     if (wait)
                     {
-                        return DestroyThread();
+                        return Join();
                     }
                     return true;
                 }
@@ -43,11 +43,20 @@ namespace Evpp
         return false;
     }
 
+    bool EventLoopThread::DestroyThread()
+    {
+        if(uv_loop_alive(loop->EventBasic()))
+        {
+            return loop->StopDispatch();
+        }
+        return false;
+    }
+
     EventLoop* EventLoopThread::GetEventLoop()
     {
-        if (nullptr != loops_base)
+        if (nullptr != loop)
         {
-            return loops_base.get();
+            return loop.get();
         }
 
         if (nullptr != event_base)
@@ -63,7 +72,7 @@ namespace Evpp
         return 0 == uv_thread_create(event_thread_.get(), &EventLoopThread::ThreadRun, this);
     }
 
-    bool EventLoopThread::DestroyThread()
+    bool EventLoopThread::Join()
     {
         return 0 == uv_thread_join(event_thread_.get());
     }
@@ -72,13 +81,13 @@ namespace Evpp
     {
         if (ChangeStatus(NOTYET, INITIALIZING))
         {
-            loops_base.reset(new EventLoop(event_share->EventLoop(event_index), event_index));
+            loop.reset(new EventLoop(event_share->EventLoop(event_index), event_index));
             {
                 if (ChangeStatus(INITIALIZING, INITIALIZED))
                 {
-                    if (loops_base->InitialEvent())
+                    if (loop->InitialEvent())
                     {
-                        if (false == loops_base->ExecDispatch())
+                        if (false == loop->ExecDispatch())
                         {
                             assert(0);
                             return;
@@ -86,7 +95,7 @@ namespace Evpp
 
                         if (ChangeStatus(INITIALIZED, STOPPED))
                         {
-                            assert(loops_base->ExistsStoped());
+                            assert(loop->ExistsStoped());
                         }
                     }
                 }

@@ -51,7 +51,7 @@ namespace Evpp
         return false;
     }
 
-    bool EventLoop::ExecDispatchEx(u32 mode)
+    bool EventLoop::ExecDispatch(u32 mode)
     {
         if (0 != event_base)
         {
@@ -183,6 +183,11 @@ namespace Evpp
     u32 EventLoop::EventThreadSelf()
     {
         return event_thread;
+    }
+
+    void EventLoop::SetEventThreadId(const u32 id)
+    {
+        event_thread = id;
     }
 
     EventLoop* EventLoop::AddRefer()

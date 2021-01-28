@@ -16,14 +16,18 @@ namespace Evpp
         event_base(loop), 
         event_share(share), 
         event_index(index),
-        event_coroutine_task(std::make_unique<EventCoroutineTask>(std::bind(&EventLoopThreadEx::CoroutineDispatch, this))/* new EventCoroutineTask(std::bind(&EventLoopThreadEx::CoroutineDispatch, this))*/)
+        event_coroutine_task(std::make_unique<EventCoroutineTask>(std::bind(&EventLoopThreadEx::CoroutineDispatch, this))/* new EventCoroutineTask(std::bind(&EventLoopThreadEx::CoroutineDispatch, this))*/),
+        loop_exit(0)
     {
 
     }
 
     EventLoopThreadEx::~EventLoopThreadEx()
     {
+        if (Join())
+        {
 
+        }
     }
 
     bool EventLoopThreadEx::CreaterSubThread(bool wait)
@@ -42,7 +46,7 @@ namespace Evpp
                             {
                                 if (cv_signal.wait_for(lock, std::chrono::milliseconds(64), std::bind(&EventLoopThreadEx::AvailableEvent, this)))
                                 {
-                                    return this->Join();
+                                    return Join();
                                 }
                             }
                         }
@@ -55,6 +59,23 @@ namespace Evpp
         }
         return false;
     }
+
+    bool EventLoopThreadEx::DestroyThread()
+    {
+        if (nullptr != loop)
+        {
+            if (uv_loop_alive(loop->EventBasic()))
+            {
+                if (0 == loop_exit)
+                {
+                    loop_exit.store(1);
+                }
+                return loop->StopDispatch();
+            }
+        }
+        return false;
+    }
+
     EventLoop* EventLoopThreadEx::GetEventLoop()
     {
         if (nullptr != loop)
@@ -80,11 +101,22 @@ namespace Evpp
                 {
                     if (loop->InitialEvent())
                     {
-                        while (EventCoroutine::JoinInTask(event_coroutine_task.get()).SubmitTaskEx());
+                        while (!loop_exit.load())
+                        {
+                            if (uv_loop_alive(loop->EventBasic()))
+                            {
+                                if (EventCoroutine::JoinInTask(event_coroutine_task.get()).SubmitTaskEx())
+                                {
+                                    continue;
+                                }
+                            }
+                            
+                            break;
+                        }
 
                         if (ChangeStatus(INITIALIZED, STOPPED))
                         {
-                            assert(loop->ExistsStoped());
+                            assert(!loop->ExistsStoped());
                         }
                     }
                 }
@@ -98,7 +130,7 @@ namespace Evpp
         {
             if (uv_loop_alive(loop->EventBasic()))
             {
-                if (loop->ExecDispatchEx(UV_RUN_ONCE))
+                if (loop->ExecDispatch(UV_RUN_ONCE))
                 {
                     printf("ExecDispatchEx Error\n");
                 }
@@ -125,7 +157,7 @@ namespace Evpp
     {
         if (loop_thread && loop_thread->joinable())
         {
-            loop_thread->detach();
+            loop_thread->join();
             return true;
         }
         return false;

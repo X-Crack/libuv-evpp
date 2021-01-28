@@ -39,6 +39,34 @@ namespace Evpp
         return InitialListenService(socket, server, socket->GetSocketPoolSize());
     }
 
+    bool TcpListen::DestroyListenService()
+    {
+        for (u96 i = 0; i < tcp_server.size(); ++i)
+        {
+            if (DestroyListenService(event_thread_pool->GetEventLoop(i), reinterpret_cast<event_handle*>(tcp_server[i].get())))
+            {
+                continue;
+            }
+            return false;
+        }
+
+        return event_thread_pool->DestroyEventThreadPool();
+    }
+
+    bool TcpListen::DestroyListenService(EventLoop* loop, event_handle* server)
+    {
+        if (nullptr != loop)
+        {
+            if (loop->EventThread())
+            {
+                uv_close(server, 0);
+                return true;
+            }
+            return loop->RunInLoopEx(std::bind((bool(TcpListen::*)(EventLoop*, event_handle*))&TcpListen::DestroyListenService, this, loop, server));
+        }
+        return false;
+    }
+
     bool TcpListen::InitialListenService(EventSocketPool* socket, TcpServer* server, const u96 size)
     {
         if (nullptr != socket && nullptr != server)

@@ -21,6 +21,8 @@ namespace Evpp
         virtual ~TcpListen();
     public:
         bool CreaterListenService(EventSocketPool* socket, TcpServer* server);
+        bool DestroyListenService();
+        bool DestroyListenService(EventLoop* loop, event_handle* server);
     private:
         bool InitialListenService(EventSocketPool* socket, TcpServer* server, const u96 size);
         bool InitEventThreadPools(const u96 size);

@@ -19,7 +19,7 @@ namespace Evpp
         bool InitialEvent();
     public:
         bool ExecDispatch();
-        bool ExecDispatchEx(u32 mode = UV_RUN_DEFAULT);
+        bool ExecDispatch(u32 mode);
         bool StopDispatch();
     public:
         bool RunInLoop(const Functor& function);
@@ -40,6 +40,7 @@ namespace Evpp
         bool EventThread();
         u32  EventThreadId();
         u32  EventThreadSelf();
+        void SetEventThreadId(const u32 id);
     public:
         event_loop* EventBasic() { return event_base; };
     public:

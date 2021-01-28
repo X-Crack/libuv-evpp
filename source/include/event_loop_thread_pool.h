@@ -20,6 +20,7 @@ namespace Evpp
         bool CreaterEventThreadPool();
 #ifdef H_OS_WINDOWS 
         bool CreaterEventThreadPool(const u96 size, const bool use_thread_ex = true);
+        bool DestroyEventThreadPool(const bool use_thread_ex = true);
 #else 
         bool CreaterEventThreadPool(const u96 size, const bool use_thread_ex = false);
 #endif

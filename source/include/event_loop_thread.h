@@ -14,10 +14,11 @@ namespace Evpp
         virtual ~EventLoopThread();
     public:
         bool CreaterSubThread(bool wait = false);
+        bool DestroyThread();
         EventLoop* GetEventLoop();
     private:
         bool CreaterThread();
-        bool DestroyThread();
+        bool Join();
     private:
         void ThreadRun();
     private:
@@ -27,7 +28,7 @@ namespace Evpp
         std::shared_ptr<EventShare>                     event_share;
         std::unique_ptr<event_thread>                   event_thread_;
         u96                                             event_index;
-        std::shared_ptr<EventLoop>                      loops_base;
+        std::shared_ptr<EventLoop>                      loop;
     };
 }
 #endif // __EVENT_LOOP_THREAD_H__

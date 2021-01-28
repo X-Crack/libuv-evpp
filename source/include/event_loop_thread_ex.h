@@ -22,7 +22,8 @@ namespace Evpp
         explicit EventLoopThreadEx(EventLoop* loop, const std::shared_ptr<EventShare>& share, const u96 index);
         virtual ~EventLoopThreadEx();
     public:
-        bool CreaterSubThread(bool wait = true);
+        bool CreaterSubThread(bool wait = false);
+        bool DestroyThread();
         EventLoop* GetEventLoop();
     private:
         void CoroutineInThread();
@@ -38,6 +39,7 @@ namespace Evpp
         std::unique_ptr<EventCoroutineTask>             event_coroutine_task;
         std::shared_ptr<EventLoop>                      loop;
         std::unique_ptr<std::thread>                    loop_thread;
+        std::atomic<u32>                                loop_exit;
         std::condition_variable							cv_signal;
         std::mutex										cv_mutex;
     };
