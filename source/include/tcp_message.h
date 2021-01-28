@@ -18,6 +18,9 @@ namespace Evpp
         bool Send(const char* buf, u32 len, u32 nbufs = 1);
         bool Send(const std::string& buf, u32 nbufs = 1);
     public:
+        bool RunInLoop(const Functor& function);
+        bool RunInLoopEx(const Handler& function);
+    public:
         bool Close();
     private:
         bool DefaultSend(const socket_data bufs, u32 nbufs);
@@ -27,7 +30,8 @@ namespace Evpp
         bool SetSendBlocking(const u32 value = 0);
     private:
         bool CheckClose(socket_stream* handler);
-        bool Shutdown(socket_stream* stream);
+        bool SystemShutdown(socket_stream* stream);
+        bool SystemClose(socket_stream* stream);
     private:
         void OnSend(socket_write* request, int status);
         void OnClose(event_handle* handler);

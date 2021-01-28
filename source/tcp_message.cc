@@ -74,6 +74,24 @@ namespace Evpp
         return false;
     }
 
+    bool TcpMessage::RunInLoop(const Functor& function)
+    {
+        if (nullptr != event_base)
+        {
+            return event_base->RunInLoop(function);
+        }
+        return false;
+    }
+
+    bool TcpMessage::RunInLoopEx(const Handler& function)
+    {
+        if (nullptr != event_base)
+        {
+            return event_base->RunInLoopEx(function);
+        }
+        return false;
+    }
+
     bool TcpMessage::Close()
     {
         if (nullptr != event_base)
@@ -82,7 +100,7 @@ namespace Evpp
             {
                 if (nullptr != tcp_socket)
                 {
-                    return Shutdown(reinterpret_cast<socket_stream*>(tcp_socket.get()));
+                    return SystemShutdown(reinterpret_cast<socket_stream*>(tcp_socket.get()));
                 }
                 return false;
             }
@@ -137,11 +155,21 @@ namespace Evpp
         return false;
     }
 
-    bool TcpMessage::Shutdown(socket_stream* stream)
+    bool TcpMessage::SystemShutdown(socket_stream* stream)
     {
         if (CheckClose(stream))
         {
             return 0 == uv_shutdown(event_shutdown.get(), stream, &TcpMessage::DefaultShutdown);
+        }
+        return false;
+    }
+
+    bool TcpMessage::SystemClose(socket_stream* stream)
+    {
+        if (CheckClose(stream))
+        {
+            uv_close(reinterpret_cast<event_handle*>(stream), &TcpMessage::DefaultClose);
+            return true;
         }
         return false;
     }
@@ -159,20 +187,18 @@ namespace Evpp
     {
         if (nullptr != handler)
         {
-            while (!uv_is_closing(reinterpret_cast<event_handle*>(handler)));
-
-            if (nullptr != tcp_socket->data)
+            if (nullptr != system_discons)
             {
-                event_data.clear();
-                event_data.shrink_to_fit();
-                tcp_socket->data = nullptr;
+                if (RunInLoopEx(std::bind(system_discons)))
+                {
+                    if (nullptr != tcp_socket->data)
+                    {
+                        event_data.clear();
+                        event_data.shrink_to_fit();
+                        tcp_socket->data = nullptr;
+                    }
+                }
             }
-
-        }
-
-        if (nullptr != system_discons)
-        {
-            system_discons();
         }
     }
 
@@ -184,15 +210,15 @@ namespace Evpp
             {
                 if (nullptr != shutdown->handle)
                 {
-                    uv_close(reinterpret_cast<event_handle*>(tcp_socket.get()), &TcpMessage::DefaultClose);
+                    if (nullptr != system_discons)
+                    {
+                        if (RunInLoopEx(std::bind(system_discons)))
+                        {
+                            uv_close(reinterpret_cast<event_handle*>(tcp_socket.get()), &TcpMessage::DefaultClose);
+                        }
+                    }
                 }
-                return;
             }
-        }
-
-        if (nullptr != system_discons)
-        {
-            system_discons();
         }
     }
 
@@ -226,13 +252,17 @@ namespace Evpp
                 {
                     if (nullptr != system_message)
                     {
-                        return event_base->RunInLoopEx(std::bind(system_message, std::weak_ptr<TcpBuffer>(tcp_buffer).lock()));
+                        return RunInLoopEx(std::bind(system_message, std::weak_ptr<TcpBuffer>(tcp_buffer).lock()));
                     }
                 }
                 return true;
             }
         }
-        return Shutdown(stream);
+        if (UV_EOF == nread || UV_ECONNRESET == nread)
+        {
+            return SystemClose(stream);
+        }
+        return false;
     }
 
     void TcpMessage::DefaultSend(socket_write* handler, int status)
@@ -300,12 +330,6 @@ namespace Evpp
                     {
                         return;
                     }
-
-                    if (watcher->Shutdown(handler))
-                    {
-                        return;
-                    }
-
                     printf("OnSystemMessage Error\n");
                 }
             }

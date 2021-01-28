@@ -16,7 +16,7 @@ namespace Evpp
         event_base(loop), 
         event_share(share), 
         event_index(index),
-        event_coroutine_task(new EventCoroutineTask(std::bind(&EventLoopThreadEx::CoroutineDispatch, this)))
+        event_coroutine_task(std::make_unique<EventCoroutineTask>(std::bind(&EventLoopThreadEx::CoroutineDispatch, this))/* new EventCoroutineTask(std::bind(&EventLoopThreadEx::CoroutineDispatch, this))*/)
     {
 
     }
@@ -80,14 +80,7 @@ namespace Evpp
                 {
                     if (loop->InitialEvent())
                     {
-                        for (;;)
-                        {
-                            if (EventCoroutine::JoinInTask(event_coroutine_task).SubmitTaskEx())
-                            {
-                                continue;
-                            }
-                            break;
-                        }
+                        while (EventCoroutine::JoinInTask(event_coroutine_task.get()).SubmitTaskEx());
 
                         if (ChangeStatus(INITIALIZED, STOPPED))
                         {
@@ -112,6 +105,7 @@ namespace Evpp
             }
         }
     }
+
     bool EventLoopThreadEx::AvailableEvent()
     {
         if (nullptr == loop)

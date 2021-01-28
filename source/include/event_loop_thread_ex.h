@@ -35,7 +35,7 @@ namespace Evpp
         std::shared_ptr<EventShare>                     event_share;
         u96                                             event_index;
         EventCoroutine                                  event_coroutine;
-        EventCoroutineTask*                             event_coroutine_task;
+        std::unique_ptr<EventCoroutineTask>             event_coroutine_task;
         std::shared_ptr<EventLoop>                      loop;
         std::unique_ptr<std::thread>                    loop_thread;
         std::condition_variable							cv_signal;

@@ -60,11 +60,10 @@ namespace Evpp
         {
             if (nullptr != data)
             {
-                task_base->handler = std::experimental::coroutine_handle<promise_type>::from_promise(*this);
                 task_base->function = data->function;
                 task_base->reflock.store(1);
-                data->function();
-                data = task_base.get();
+                task_base->handler = std::experimental::coroutine_handle<promise_type>::from_promise(*this);
+                task_base->function();
             }
         }
         return std::experimental::suspend_always();
