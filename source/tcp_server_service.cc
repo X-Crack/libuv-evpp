@@ -8,10 +8,9 @@ namespace Evpp
     TcpServerService::TcpServerService() : 
         event_share(std::make_shared<EventShare>()),
         event_base(std::make_shared<EventLoop>(event_share->DefaultEventLoop())),
-        tcp_server(std::make_unique<TcpServer>(event_base.get(), event_share)),
-        event_timer(std::make_shared<EventTimer>(event_base.get()))
+        tcp_server(std::make_unique<TcpServer>(event_base.get(), event_share))
     {
-        event_timer->SetEventTimerCallback(std::bind(&TcpServerService::TimerCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+        
     }
 
     TcpServerService::~TcpServerService()
@@ -129,10 +128,5 @@ namespace Evpp
     void TcpServerService::SetEventThreadId(const u32 id)
     {
         event_base->SetEventThreadId(id);
-    }
-
-    void TcpServerService::TimerCallback(EventLoop* loop, const std::shared_ptr<EventTimer>& timer, const u96 index)
-    {
-        
     }
 }
