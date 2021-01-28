@@ -57,7 +57,7 @@ namespace Evpp
         return false;
     }
 
-    bool EventLoop::ExecDispatch(const Handler& function, u32 mode)
+    bool EventLoop::ExecDispatch(const EventLoopHandler& function, u32 mode)
     {
         if (0 != event_base)
         {
@@ -65,7 +65,7 @@ namespace Evpp
             {
                 if (nullptr != function)
                 {
-                    function();
+                    function(this);
                 }
             }
         }

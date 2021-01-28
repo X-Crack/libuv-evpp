@@ -66,17 +66,17 @@ namespace Evpp
 
         if (event_base->InitialEvent())
         {
-            event_base->ExecDispatch(std::bind(&StopLoop::EchoLoopCallback, this), UV_RUN_NOWAIT);
+            event_base->ExecDispatch(std::bind(&StopLoop::EchoLoopCallback, this, std::placeholders::_1), UV_RUN_NOWAIT);
         }
 
         std::cout << "EventLoop Exit" << std::endl;
     }
 
-    void StopLoop::EchoLoopCallback()
+    void StopLoop::EchoLoopCallback(EventLoop* loop)
     {
         if (++exit_tag > 9)
         {
-            event_base->StopDispatch();
+            loop->StopDispatch();
         }
 
         std::cout << "Hello EventLoop: " << exit_tag << std::endl;

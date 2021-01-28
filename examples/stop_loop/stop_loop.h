@@ -19,7 +19,7 @@ namespace Evpp
         void SetExitTag();
         // Examples 2
         void RunExamples2();
-        void EchoLoopCallback();
+        void EchoLoopCallback(EventLoop* loop);
     private:
         std::shared_ptr<EventLoop>              event_base;
         std::shared_ptr<EventTimer>             event_timer;
