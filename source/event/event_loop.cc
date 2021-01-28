@@ -68,6 +68,7 @@ namespace Evpp
                     function(this);
                 }
             }
+            return 1 == event_base->stop_flag;
         }
         return false;
     }
