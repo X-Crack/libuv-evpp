@@ -16,8 +16,8 @@ namespace Evpp
     EchoServer::EchoServer()
     {
         event_share.reset(new EventShare());
-        event_loop.reset(new EventLoop(event_share->DefaultEventLoop()));
-        tcp_server.reset(new TcpServer(event_loop.get(), event_share));
+        event_base.reset(new EventLoop(event_share->DefaultEventLoop()));
+        tcp_server.reset(new TcpServer(event_base.get(), event_share));
     }
 
     EchoServer::~EchoServer()
@@ -29,7 +29,7 @@ namespace Evpp
     {
         event_share->CreaterLoops(8);
 
-        event_loop->InitialEvent();
+        event_base->InitialEvent();
 
 
         tcp_server->AddListenPort("0.0.0.0", 5555);
@@ -44,22 +44,26 @@ namespace Evpp
 
         tcp_server->CreaterServer(event_share->GetLoopsSize());
 
-        event_loop->ExecDispatch();
+        event_base->ExecDispatch();
 
     }
 
     bool EchoServer::OnAccepts(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const u96 index)
     {
+        std::cout << "进入离开: " << index << std::endl;
         return true;
     }
 
     bool EchoServer::OnDiscons(EventLoop* loop, const u96 index)
     {
+        std::cout << "用户离开: " << index << std::endl;
         return true;
     }
 
     bool EchoServer::OnMessage(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const std::shared_ptr<TcpBuffer>& buffer, const u96 index)
     {
+        std::cout << "用户消息: " << index << "消息长度: %d" << buffer->readableBytes() << std::endl;
+        buffer->retrieve(buffer->readableBytes());
         return true;
     }
 }

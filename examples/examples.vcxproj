@@ -162,6 +162,7 @@
   <ItemGroup>
     <ClCompile Include="echo_server\echo_server.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="stop_loop\stop_loop.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\libuv\vsprojects\uv_a.vcxproj">
@@ -173,6 +174,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="echo_server\echo_server.h" />
+    <ClInclude Include="stop_loop\stop_loop.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

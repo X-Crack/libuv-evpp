@@ -57,6 +57,21 @@ namespace Evpp
         return false;
     }
 
+    bool EventLoop::ExecDispatch(const Handler& function, u32 mode)
+    {
+        if (0 != event_base)
+        {
+            for (; 0 == event_base->stop_flag && 1 == uv_run(event_base, static_cast<uv_run_mode>(mode));)
+            {
+                if (nullptr != function)
+                {
+                    function();
+                }
+            }
+        }
+        return false;
+    }
+
     bool EventLoop::StopDispatch()
     {
         if (this->EventThread())

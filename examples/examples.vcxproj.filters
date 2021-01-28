@@ -16,6 +16,9 @@
     <Filter Include="echo_server">
       <UniqueIdentifier>{e02aae52-7857-4f26-84ee-d3131afe356d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="stop_loop">
+      <UniqueIdentifier>{35686650-b054-45b1-ab5f-bbd61695102e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -24,10 +27,16 @@
     <ClCompile Include="echo_server\echo_server.cpp">
       <Filter>echo_server</Filter>
     </ClCompile>
+    <ClCompile Include="stop_loop\stop_loop.cpp">
+      <Filter>stop_loop</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="echo_server\echo_server.h">
       <Filter>echo_server</Filter>
+    </ClInclude>
+    <ClInclude Include="stop_loop\stop_loop.h">
+      <Filter>stop_loop</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

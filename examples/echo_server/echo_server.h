@@ -23,7 +23,7 @@ namespace Evpp
         bool OnMessage(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const std::shared_ptr<TcpBuffer>& buffer, const u96 index);
     private:
         std::shared_ptr<EventShare>                 event_share;
-        std::shared_ptr<EventLoop>                  event_loop;
+        std::shared_ptr<EventLoop>                  event_base;
         std::unique_ptr<TcpServer>                  tcp_server;
     };
 }
