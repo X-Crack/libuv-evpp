@@ -14,9 +14,9 @@ namespace Evpp
 
     EventLoopThreadEx::EventLoopThreadEx(EventLoop* loop, const std::shared_ptr<EventShare>& share, const u96 index) : 
         event_base(loop), 
-        event_share(share), 
+        event_share(share),
         event_index(index),
-        event_coroutine_task(std::make_unique<EventCoroutineTask>(std::bind(&EventLoopThreadEx::CoroutineDispatch, this))/* new EventCoroutineTask(std::bind(&EventLoopThreadEx::CoroutineDispatch, this))*/),
+        event_coroutine_task(std::make_unique<EventCoroutineTask>(std::bind(&EventLoopThreadEx::CoroutineDispatch, this))),
         loop(std::make_shared<EventLoop>(event_share->EventLoop(event_index), event_index)),
         loop_exit(0)
     {
@@ -117,7 +117,7 @@ namespace Evpp
 
                         if (0 || UV_EBUSY == uv_loop_close(loop->EventBasic()))
                         {
-                            printf("Delete EventLoop Ok\n");
+                            printf("Delete EventLoop Ok %d\n", event_index);
                         }
 
                         if (ChangeStatus(Status::Exec, Status::Stop))
