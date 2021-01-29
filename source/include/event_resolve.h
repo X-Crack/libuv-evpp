@@ -11,7 +11,7 @@ namespace Evpp
         explicit EventResolve(EventLoop* loop);
         virtual ~EventResolve();
     public:
-        bool GetAddressInfo(const std::string& hostname, const std::string& service);
+        bool GetAddressInfo(const std::string& hostname, const std::string& service = std::string());
         void SetGetaddrInfoCallback(const EventResolveHandler& callback);
         void SetGetaddrInfoExCallback(const EventResolveExHandler& callback);
     private:
