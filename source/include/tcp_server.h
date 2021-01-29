@@ -68,11 +68,11 @@ namespace Evpp
     private:
         EventLoop*                                                      event_base;
         std::shared_ptr<EventShare>                                     event_share;
+        std::atomic<u32>                                                event_close_flag;
         std::shared_ptr<EventLoopThreadPool>                            event_thread_pool;
         InterfaceAccepts                                                socket_accepts;
         InterfaceDiscons                                                socket_discons;
         InterfaceMessage                                                socket_message;
-        std::atomic<u32>                                                zero_flag;
         std::unique_ptr<EventSocketPool>                                tcp_socket;
         std::unique_ptr<TcpListen>                                      tcp_listen;
         std::atomic<u96>											    tcp_index;

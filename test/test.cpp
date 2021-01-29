@@ -27,7 +27,7 @@ using namespace Evpp;
 
 void exitserver(TcpServerService* Tcp)
 {
-    Sleep(5000);
+    Sleep(3000);
     Tcp->DestroyServer();
     
     while (1)
@@ -73,8 +73,8 @@ void Run()
     TcpServerService Tcp;
 
     Tcp.AddListenPort("0.0.0.0", 8888);
-    Tcp.AddListenPort("0.0.0.0", 7777);
-    Tcp.AddListenPort("0.0.0.0", 9999);
+//     Tcp.AddListenPort("0.0.0.0", 7777);
+//     Tcp.AddListenPort("0.0.0.0", 9999);
     Tcp.SetAcceptsCallback(Import::DefaultAccepts);
     Tcp.SetDisconsCallback(Import::DefaultDiscons);
     Tcp.SetMessageCallback(Import::DefaultMessage);

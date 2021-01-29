@@ -40,6 +40,7 @@ namespace Evpp
     private:
         EventLoop*                                                      event_base;
         std::atomic<u32>                                                event_close_flag;
+        std::atomic<u32>                                                event_close_flag_ex;
 #ifdef H_OS_WINDOWS
         std::shared_ptr<EventShare>                                     event_share;
 #endif

@@ -17,11 +17,11 @@ namespace Evpp
     TcpServer::TcpServer(EventLoop* loop, const std::shared_ptr<EventShare>& share, const InterfaceAccepts& accepts, const InterfaceDiscons& discons, const InterfaceMessage& message) :
         event_base(loop),
         event_share(share),
+        event_close_flag(0),
         event_thread_pool(std::make_shared<EventLoopThreadPool>(loop, share)),
         socket_accepts(accepts),
         socket_discons(discons),
         socket_message(message),
-        zero_flag(0),
         tcp_socket(std::make_unique<EventSocketPool>()),
 #ifdef H_OS_WINDOWS
         tcp_listen(std::make_unique<TcpListen>(loop, true)),
@@ -183,8 +183,8 @@ namespace Evpp
     {
         if (tcp_session.size())
         {
-            std::lock_guard<std::recursive_mutex> lock(tcp_recursive_mutex);
             {
+                std::lock_guard<std::recursive_mutex> lock(tcp_recursive_mutex);
                 tcp_session.erase(index);
                 tcp_index_multiplexing.emplace(index);
             }
@@ -192,7 +192,8 @@ namespace Evpp
 
         if (tcp_session.empty())
         {
-            zero_flag.store(1, std::memory_order_release);
+            event_close_flag.store(1, std::memory_order_release);
+            std::atomic_notify_one(&event_close_flag);
         }
     }
 
@@ -200,20 +201,20 @@ namespace Evpp
     {
         if (tcp_session.size())
         {
-            std::lock_guard<std::recursive_mutex> lock(tcp_recursive_mutex);
-            for (auto & [index, session] : tcp_session)
             {
-                if (Close(index))
+                std::lock_guard<std::recursive_mutex> lock(tcp_recursive_mutex);
+                for (auto& [index, session] : tcp_session)
                 {
-                    continue;
+                    if (Close(index))
+                    {
+                        continue;
+                    }
+                    return false;
                 }
-                return false;
             }
+
+            std::atomic_wait_explicit(&event_close_flag, 0, std::memory_order_relaxed);
         }
-
-        // TODO: Timer out ?
-        while (1 == zero_flag.load(std::memory_order_acquire) || tcp_session.size());
-
         return tcp_session.empty();
     }
 
@@ -226,9 +227,10 @@ namespace Evpp
 
     bool TcpServer::CreaterSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const u96 index)
     {
-        if (zero_flag.load())
+        // 防止在停止服务器时触发新用户加入
+        if (event_close_flag.load())
         {
-            zero_flag.store(0, std::memory_order_release);
+            event_close_flag.store(0, std::memory_order_release);
         }
 
         std::lock_guard<std::recursive_mutex> lock(tcp_recursive_mutex);
