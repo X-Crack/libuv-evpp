@@ -41,6 +41,7 @@ namespace Evpp
                 {
                     std::unique_lock<std::mutex> lock(cv_mutex);
                     {
+                        // 启动线程需要慢启动，因为初始化数据过多，否则会导致RunInLoop异步安全初始化失败。
                         if (cv_signal.wait_for(lock, std::chrono::milliseconds(64), std::bind(&EventLoopThreadEx::AvailableEvent, this)))
                         {
                             return true;
