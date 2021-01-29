@@ -27,7 +27,7 @@ namespace Evpp
 
     void EchoServer::RunExamples()
     {
-        event_share->CreaterLoops(8);
+        event_share->CreaterLoops(EventShare::GetHardwareThreads());
 
         event_base->InitialEvent();
 
