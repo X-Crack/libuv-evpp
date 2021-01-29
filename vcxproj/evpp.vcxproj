@@ -51,6 +51,7 @@
     <ClInclude Include="..\source\include\event_base.h" />
     <ClInclude Include="..\source\include\event_coroutine.h" />
     <ClInclude Include="..\source\include\event_loop.h" />
+    <ClInclude Include="..\source\include\event_loop_thread.h" />
     <ClInclude Include="..\source\include\event_loop_thread_ex.h" />
     <ClInclude Include="..\source\include\event_loop_thread_pool.h" />
     <ClInclude Include="..\source\include\event_async.h" />

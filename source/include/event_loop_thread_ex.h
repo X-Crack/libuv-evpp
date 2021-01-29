@@ -13,8 +13,6 @@ namespace Evpp
     class EventShare;
     class EventStatus;
 #ifdef __cpp_coroutines
-    //class EventCoroutine;
-    class EventCoroutineTask;
     class EventLoopThreadEx final : public EventStatus
     {
     public:
@@ -22,12 +20,12 @@ namespace Evpp
         explicit EventLoopThreadEx(EventLoop* loop, const std::shared_ptr<EventShare>& share, const u96 index);
         virtual ~EventLoopThreadEx();
     public:
-        bool CreaterSubThread(bool wait = false);
+        bool CreaterSubThread();
         bool DestroyThread();
         EventLoop* GetEventLoop();
     private:
         void CoroutineInThread();
-        void CoroutineDispatch();
+        bool CoroutineDispatch();
     private:
         bool AvailableEvent();
         bool Join();
@@ -35,9 +33,7 @@ namespace Evpp
         EventLoop*                                      event_base;
         std::shared_ptr<EventShare>                     event_share;
         u96                                             event_index;
-        EventCoroutine                                  event_coroutine;
-        std::unique_ptr<EventCoroutineTask>             event_coroutine_task;
-        std::shared_ptr<EventLoop>                      loop;
+        std::shared_ptr<EventLoop>                      event_loop;
         std::unique_ptr<std::thread>                    loop_thread;
         std::atomic<u32>                                loop_exit;
         std::condition_variable							cv_signal;

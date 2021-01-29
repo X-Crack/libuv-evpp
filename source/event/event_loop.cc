@@ -109,6 +109,10 @@ namespace Evpp
 
     bool EventLoop::RunInLoop(Functor&& function)
     {
+        if (nullptr == event_watcher)
+        {
+            return false;
+        }
         return event_watcher->RunInLoop(std::move(function));
     }
 
@@ -123,6 +127,10 @@ namespace Evpp
 
     bool EventLoop::RunInLoopEx(Handler&& function)
     {
+        if (nullptr == event_watcher)
+        {
+            return false;
+        }
         return event_watcher->RunInLoopEx(std::move(function));
     }
 

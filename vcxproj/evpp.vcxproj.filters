@@ -185,5 +185,8 @@
     <ClInclude Include="..\source\include\event_timer_pool.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\source\include\event_loop_thread.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

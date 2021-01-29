@@ -9,64 +9,51 @@
 namespace Evpp
 {
 #ifdef __cpp_coroutines
-    class EventCoroutineTask;
-    class EventCoroutine final
+    struct EventCoroutineTask;
+    struct EventCoroutine
     {
-    public:
-        explicit EventCoroutine(EventCoroutineTask* task = nullptr);
-        virtual ~EventCoroutine();
-    public:
-        bool AwaitReady() noexcept;
-        EventCoroutine JoinInTask();
-        static EventCoroutine JoinInTask(EventCoroutineTask* task) noexcept;
-        bool ResumeTask();
-        bool SubmitTask();
-        bool CancelTask();
-        bool SubmitTaskEx();
-        EventCoroutineTask* Task() { return task_data; }
-    public:
-        EventCoroutine& operator++(i32) = delete;
-        EventCoroutine& operator++();
-        bool operator==(const EventCoroutine& rhs);
-        bool operator!=(const EventCoroutine& rhs);
-        bool operator==(EventCoroutine* rhs);
-        bool operator!=(EventCoroutine* rhs);
-        EventCoroutineTask* operator->();
-        EventCoroutineTask* operator*();
-    public:
-        class promise_type
+        struct promise_type
         {
-        public:
-            explicit promise_type() : task_base(std::make_unique<EventCoroutineTask>()) { }
-        public:
-            static EventCoroutine get_return_object_on_allocation_failure();
-            EventCoroutine get_return_object();
-            std::experimental::suspend_always initial_suspend();
-            std::experimental::suspend_always final_suspend();
-            void unhandled_exception();
-            void return_void();
-            std::experimental::suspend_always yield_value(EventCoroutineTask* data);
-        public:
-            std::unique_ptr<EventCoroutineTask>                                                     task_base;
+            auto get_return_object() { return EventCoroutine{}; };
+            auto initial_suspend() { return std::experimental::suspend_never{}; };
+            auto final_suspend() { return std::experimental::suspend_never{}; };
+            void unhandled_exception() { throw; };
+            void return_void() { };
         };
-    private:
-        EventCoroutineTask*                                                                         task_data;
+        static EventCoroutine JoinInTask(const std::function<bool()>& callback);
     };
 
-    class EventCoroutineTask
+    struct EventCoroutineTask
     {
     public:
-        explicit EventCoroutineTask() : function(nullptr), reflock(0) {};
-        explicit EventCoroutineTask(std::function<void()> callback) : function(callback), reflock(0) {};
+        explicit EventCoroutineTask() : function(nullptr), result(false) {};
+        explicit EventCoroutineTask(std::function<bool()> callback) : function(callback), result(false) {};
     public:
-        bool DestroyTask();
-        EventCoroutineTask* GetHandlerInstance();
-    protected:
-        virtual void EventCoroutineTaskCallback() { return; };
+        bool await_ready() const
+        {
+            return false;
+        }
+
+        bool await_resume()
+        {
+            return result;
+        }
+
+        void await_suspend(std::experimental::coroutine_handle<> handle)
+        {
+            if (nullptr != function)
+            {
+                result = function();
+            }
+            else
+            {
+                result = false;
+            }
+            handle.resume();
+        }
     public:
-        std::function<void()>                                                                       function;
-        std::atomic<u32>                                                                            reflock;
-        std::experimental::coroutine_handle<EventCoroutine::promise_type>                           handler;
+        std::function<bool()>                                                                       function;
+        bool                                                                                        result;
     };
 #endif
 }

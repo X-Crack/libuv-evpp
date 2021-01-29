@@ -23,7 +23,7 @@ namespace Evpp
         Join();
     }
 
-    bool EventLoopThread::CreaterSubThread(bool wait)
+    bool EventLoopThread::CreaterSubThread()
     {
         if (nullptr != event_base)
         {
@@ -31,14 +31,10 @@ namespace Evpp
             {
                 if (this->CreaterThread())
                 {
-                    if (wait)
-                    {
-                        return Join();
-                    }
                     return true;
                 }
             }
-            return event_base->RunInLoop(std::bind((bool(EventLoopThread::*)(bool))&EventLoopThread::CreaterThread, this, wait));
+            return event_base->RunInLoop(std::bind(&EventLoopThread::CreaterThread, this));
         }
         return false;
     }

@@ -23,7 +23,7 @@ namespace Evpp
     public:
         bool ExistsRuning();
         bool ExistsStoped();
-    private:
+    protected:
         std::atomic<Status>                                      status;
     };
 }

@@ -13,7 +13,7 @@ namespace Evpp
         explicit EventLoopThread(EventLoop* loop, const std::shared_ptr<EventShare>& share, const u96 index);
         virtual ~EventLoopThread();
     public:
-        bool CreaterSubThread(bool wait = false);
+        bool CreaterSubThread();
         bool DestroyThread();
         EventLoop* GetEventLoop();
     private:

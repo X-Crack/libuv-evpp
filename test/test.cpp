@@ -97,6 +97,21 @@ int main()
 //     
 //     ev.ExecDispatch();
 //    return 0;
+
+    TcpServerService Tcp;
+
+    Tcp.AddListenPort("0.0.0.0", 8888);
+    Tcp.AddListenPort("0.0.0.0", 7777);
+    Tcp.AddListenPort("0.0.0.0", 9999);
+    Tcp.SetAcceptsCallback(Import::DefaultAccepts);
+    Tcp.SetDisconsCallback(Import::DefaultDiscons);
+    Tcp.SetMessageCallback(Import::DefaultMessage);
+    //Tcp.SetEventThreadId(GetCurrentThreadId());
+    Tcp.CreaterServer(16);
+    //std::unique_ptr<std::thread> thread = std::make_unique<std::thread>(std::bind(exitserver, &Tcp));
+    //thread->detach();
+    Tcp.ExecDispatch();
+    return 0;
     std::unique_ptr<std::thread> thread = std::make_unique<std::thread>(std::bind(Run));
     thread->detach();
 //     Sleep(10000);

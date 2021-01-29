@@ -31,7 +31,15 @@ namespace Evpp
 
     bool EventWatcher::CreaterQueue()
     {
-        return event_async_->CreatePipe() && event_async_ex_->CreatePipe();
+        if (event_async_->CreatePipe())
+        {
+            if (event_async_ex_->CreatePipe())
+            {
+                return true;
+            }
+            return false;
+        }
+        return false;
     }
 
     bool EventWatcher::DestroyQueue()
