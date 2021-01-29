@@ -7,7 +7,6 @@
 #include <event_loop.h>
 #include <event_loop_thread_pool.h>
 
-
 namespace Evpp
 {
     TcpServer::TcpServer(EventLoop* loop, const std::shared_ptr<EventShare>& share) : TcpServer(loop, share, InterfaceAccepts(), InterfaceDiscons(), InterfaceMessage())

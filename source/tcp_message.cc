@@ -49,7 +49,7 @@ namespace Evpp
 #endif
                 }
             }
-            return event_base->RunInLoop(std::bind((bool(TcpMessage::*)(const char*, u32, u32))&TcpMessage::Send, this, buf, len, nbufs));
+            return RunInLoopEx(std::bind((bool(TcpMessage::*)(const char*, u32, u32))&TcpMessage::Send, this, buf, len, nbufs));
         }
         return false;
     }
@@ -69,7 +69,7 @@ namespace Evpp
 #endif
                 }
             }
-            return event_base->RunInLoop(std::bind((bool(TcpMessage::*)(const std::string&, u32))&TcpMessage::Send, this, buf, nbufs));
+            return RunInLoopEx(std::bind((bool(TcpMessage::*)(const std::string&, u32))&TcpMessage::Send, this, buf, nbufs));
         }
         return false;
     }
@@ -258,11 +258,22 @@ namespace Evpp
                 return true;
             }
         }
+
+        if (UV_ENOBUFS == nread)
+        {
+            if (event_data.capacity() < buf->len)
+            {
+                event_data.resize(buf->len);
+            }
+
+            return true;
+        }
+
         if (UV_EOF == nread || UV_ECONNRESET == nread)
         {
             return SystemClose(stream);
         }
-        return false;
+        return SystemShutdown(stream);
     }
 
     void TcpMessage::DefaultSend(socket_write* handler, int status)
