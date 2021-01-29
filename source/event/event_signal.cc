@@ -4,7 +4,8 @@ namespace Evpp
 {
     EventSignal::EventSignal(EventLoop* loop, const Handler& function) : 
         event_base(loop), 
-        event_signaler(new event_signal())
+        event_signaler(new event_signal()),
+        event_callback(function)
     {
         if (nullptr == event_signaler->data)
         {
@@ -58,7 +59,7 @@ namespace Evpp
 
     void EventSignal::OnNotify(event_signal* handler, int signum)
     {
-        if (signum > 0)
+        if (nullptr != handler && signum > 0)
         {
             EventSignal* watcher = static_cast<EventSignal*>(handler->data);
             {
