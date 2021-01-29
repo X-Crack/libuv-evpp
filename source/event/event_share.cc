@@ -58,9 +58,9 @@ namespace Evpp
     {
         std::unique_lock<std::mutex> lock(event_mutex);
         {
-            if (0 != event_loops.size() && nullptr != event_loops[index])
+            if (0 != event_loops.size())
             {
-                return event_loops[index];
+                return event_loops[index % event_loops.size()];
             }
         }
         return nullptr;
