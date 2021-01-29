@@ -18,6 +18,7 @@ namespace Evpp
         event_base(loop),
         event_share(share),
         event_close_flag(0),
+        event_close_flag_ex(0),
         event_thread_pool(std::make_shared<EventLoopThreadPool>(loop, share)),
         socket_accepts(accepts),
         socket_discons(discons),
@@ -64,7 +65,7 @@ namespace Evpp
         return false;
     }
 
-    bool TcpServer::DestroyServer()
+    bool TcpServer::DestroyServer(const bool wait)
     {
         if (nullptr != event_base)
         {
@@ -76,13 +77,30 @@ namespace Evpp
                     {
                         if (CleanedSession())
                         {
-                            return event_thread_pool->DestroyEventThreadPool();
+                            if (event_thread_pool->DestroyEventThreadPool())
+                            {
+                                if (wait)
+                                {
+                                    event_close_flag_ex.store(1, std::memory_order_release);
+                                    std::atomic_notify_one(&event_close_flag_ex);
+                                }
+
+                                return true;
+                            }
                         }
                     }
                 }
                 return false;
             }
-            return RunInLoopEx(std::bind(&TcpServer::DestroyServer, this));
+
+            if (RunInLoopEx(std::bind(&TcpServer::DestroyServer, this, wait)))
+            {
+                if (wait)
+                {
+                    std::atomic_wait_explicit(&event_close_flag_ex, 0, std::memory_order_relaxed);
+                }
+            }
+            return true;
         }
         return false;
     }
@@ -203,7 +221,7 @@ namespace Evpp
         {
             {
                 std::lock_guard<std::recursive_mutex> lock(tcp_recursive_mutex);
-                for (auto& [index, session] : tcp_session)
+                for (auto & [index, session] : tcp_session)
                 {
                     if (Close(index))
                     {

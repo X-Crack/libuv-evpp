@@ -27,9 +27,9 @@ using namespace Evpp;
 
 void exitserver(TcpServerService* Tcp)
 {
-    Sleep(3000);
+    Sleep(13000);
     Tcp->DestroyServer();
-    
+    printf("okok\n");
     while (1)
     {
         Sleep(1000);
@@ -80,8 +80,8 @@ void Run()
     Tcp.SetMessageCallback(Import::DefaultMessage);
     //Tcp.SetEventThreadId(GetCurrentThreadId());
     Tcp.CreaterServer(16);
-    //std::unique_ptr<std::thread> thread = std::make_unique<std::thread>(std::bind(exitserver, &Tcp));
-    //thread->detach();
+    std::unique_ptr<std::thread> thread = std::make_unique<std::thread>(std::bind(exitserver, &Tcp));
+    thread->detach();
     Tcp.ExecDispatch();
     printf("exit thread\n");
 }

@@ -23,7 +23,7 @@ namespace Evpp
         friend TcpListen;
     public:
         bool CreaterServer(const u96 thread_size);
-        bool DestroyServer();
+        bool DestroyServer(const bool wait = false);
         bool AddListenPort(const std::string& server_address, const u16 port);
         bool Send(const u96 index, const char* buf, u96 len, u32 nbufs = 1);
         bool Send(const u96 index, const std::string& buf, u32 nbufs = 1);
@@ -69,6 +69,7 @@ namespace Evpp
         EventLoop*                                                      event_base;
         std::shared_ptr<EventShare>                                     event_share;
         std::atomic<u32>                                                event_close_flag;
+        std::atomic<u32>                                                event_close_flag_ex;
         std::shared_ptr<EventLoopThreadPool>                            event_thread_pool;
         InterfaceAccepts                                                socket_accepts;
         InterfaceDiscons                                                socket_discons;
