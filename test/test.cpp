@@ -108,12 +108,11 @@ int main()
     Tcp.SetMessageCallback(Import::DefaultMessage);
     //Tcp.SetEventThreadId(GetCurrentThreadId());
     Tcp.CreaterServer(16);
-    //std::unique_ptr<std::thread> thread = std::make_unique<std::thread>(std::bind(exitserver, &Tcp));
-    //thread->detach();
+    std::unique_ptr<std::thread> thread = std::make_unique<std::thread>(std::bind(exitserver, &Tcp));
+    thread->detach();
     Tcp.ExecDispatch();
     return 0;
-    std::unique_ptr<std::thread> thread = std::make_unique<std::thread>(std::bind(Run));
-    thread->detach();
+
 //     Sleep(10000);
 //     if (Tcp.DestroyServer())
 //     {
