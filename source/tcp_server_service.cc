@@ -5,7 +5,7 @@
 #include <tcp_server.h>
 namespace Evpp
 {
-    TcpServerService::TcpServerService() : 
+    TcpServerService::TcpServerService() :
         event_share(std::make_shared<EventShare>()),
         event_base(std::make_shared<EventLoop>(event_share->DefaultEventLoop())),
         tcp_server(std::make_unique<TcpServer>(event_base.get(), event_share))
@@ -123,10 +123,5 @@ namespace Evpp
         {
             return tcp_server->SetMessageCallback(message);
         }
-    }
-
-    void TcpServerService::SetEventThreadId(const u32 id)
-    {
-        event_base->SetEventThreadId(id);
     }
 }

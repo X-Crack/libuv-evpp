@@ -15,6 +15,8 @@ namespace Evpp
 	typedef std::function<void()>                                                                                                                           Handler;
 	typedef std::function<bool()>                                                                                                                           Functor;
 	typedef std::function<void(EventLoop*)>                                                                                                                 EventLoopHandler;
+	typedef std::function<void(EventLoop*, const String*)>																									EventResolveHandler;
+	typedef std::function<void(EventLoop*, const std::vector<std::string>&)>                                                                                EventResolveExHandler;
 	typedef std::function<void(EventLoop*)>                                                                                                                 CreaterWorkHandler;
 	typedef std::function<void(EventLoop*, i32)>                                                                                                            DestroyWorkHandler;
     typedef std::function<void(EventLoop*, const std::shared_ptr<EventTimer>&, const u96)>																	EventTimerHandle;

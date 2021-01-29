@@ -41,7 +41,6 @@ namespace Evpp
         bool EventThread();
         u32  EventThreadId();
         u32  EventThreadSelf();
-        void SetEventThreadId(const u32 id);
     public:
         event_loop* EventBasic() { return event_base; };
     public:

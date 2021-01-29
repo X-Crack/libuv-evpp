@@ -29,7 +29,6 @@ namespace Evpp
         void SetAcceptsCallback(const InterfaceAccepts& accepts);
         void SetDisconsCallback(const InterfaceDiscons& discons);
         void SetMessageCallback(const InterfaceMessage& message);
-        void SetEventThreadId(const u32 id);
     private:
         std::shared_ptr<EventShare>                                     event_share;
         std::shared_ptr<EventLoop>                                      event_base;

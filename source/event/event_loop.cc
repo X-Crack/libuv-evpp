@@ -202,11 +202,6 @@ namespace Evpp
         return event_thread;
     }
 
-    void EventLoop::SetEventThreadId(const u32 id)
-    {
-        event_thread = id;
-    }
-
     EventLoop* EventLoop::AddRefer()
     {
         ++event_refer;

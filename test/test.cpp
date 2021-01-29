@@ -19,6 +19,7 @@
 #include <tcp_client.h>
 #include <tcp_server_service.h>
 #include <event_work_queue.h>
+#include <event_resolve.h>
 //#include "cpps/cpps.h"
 
 #include <future>
@@ -26,7 +27,7 @@ using namespace Evpp;
 
 void exitserver(TcpServerService* Tcp)
 {
-    Sleep(15000);
+    Sleep(99995000);
     Tcp->DestroyServer();
     
     while (1)
@@ -35,8 +36,40 @@ void exitserver(TcpServerService* Tcp)
     }
 }
 
+
+void Resolvecallback(EventLoop* loop, const std::vector<std::string>& address_list)
+{
+    printf("\n");
+}
+
+void ExecResolvecallback(EventLoop* loop)
+{
+    printf("\n");
+
+    Sleep(3000);
+
+    EventResolve rl(loop);
+
+
+    rl.SetGetaddrInfoExCallback(Resolvecallback);
+    rl.GetAddressInfo("www.baidu.com", "");
+
+    Sleep(9999999);
+}
+
+
 void Run()
 {
+
+
+    EventLoop ev;
+
+
+    ev.InitialEvent();
+    std::unique_ptr<std::thread> thread1 = std::make_unique<std::thread>(std::bind(ExecResolvecallback, &ev));
+    ev.ExecDispatch();
+
+    return;
     TcpServerService Tcp;
 
     Tcp.AddListenPort("0.0.0.0", 8888);
