@@ -203,8 +203,8 @@ namespace Evpp
 
     bool TcpServer::CleanedSession()
     {
+        std::lock_guard<std::recursive_mutex> lock(tcp_recursive_mutex);
         {
-            std::lock_guard<std::recursive_mutex> lock(tcp_recursive_mutex);
             for (auto& [index, session] : tcp_session)
             {
                 if (Close(index))
