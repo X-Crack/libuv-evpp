@@ -179,7 +179,7 @@ namespace Evpp
         return false;
     }
 
-    bool TcpServer::DeletedSession(const u96 index)
+    void TcpServer::DeletedSession(const u96 index)
     {
         if (tcp_session.size())
         {
@@ -194,8 +194,6 @@ namespace Evpp
         {
             zero_flag.store(1, std::memory_order_release);
         }
-
-        return true;
     }
 
     bool TcpServer::CleanedSession()
@@ -227,6 +225,11 @@ namespace Evpp
 
     bool TcpServer::CreaterSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const u96 index)
     {
+        if (zero_flag.load())
+        {
+            zero_flag.store(0, std::memory_order_release);
+        }
+
         std::lock_guard<std::recursive_mutex> lock(tcp_recursive_mutex);
         return tcp_session.emplace
         (
@@ -346,9 +349,7 @@ namespace Evpp
                     socket_discons(loop, index);
                 }
 
-                while (!DeletedSession(index));
-
-                return;
+                return DeletedSession(index);
             }
 
             if (!loop->RunInLoopEx(std::bind(&TcpServer::DefaultDiscons, this, loop, index)))
@@ -478,7 +479,7 @@ namespace Evpp
             {
                 if (nullptr != watcher)
                 {
-                    watcher->tcp_listen->OnClose(handler);
+                    watcher->tcp_listen->OnClose();
                 }
             }
         }

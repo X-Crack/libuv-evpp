@@ -104,8 +104,9 @@ namespace Evpp
                 }
                 return false;
             }
+            return RunInLoopEx(std::bind(&TcpMessage::Close, this));
         }
-        return RunInLoopEx(std::bind(&TcpMessage::Close, this));
+        return false;
     }
 
     bool TcpMessage::DefaultSend(const socket_data bufs, u32 nbufs)
@@ -189,15 +190,14 @@ namespace Evpp
         {
             if (nullptr != system_discons)
             {
-                if (RunInLoopEx(std::bind(system_discons)))
+                if (nullptr != tcp_socket->data)
                 {
-                    if (nullptr != tcp_socket->data)
-                    {
-                        event_data.clear();
-                        event_data.shrink_to_fit();
-                        tcp_socket->data = nullptr;
-                    }
+                    event_data.clear();
+                    event_data.shrink_to_fit();
+                    tcp_socket->data = nullptr;
                 }
+
+                RunInLoopEx(std::bind(system_discons));
             }
         }
     }
@@ -212,9 +212,9 @@ namespace Evpp
                 {
                     if (nullptr != system_discons)
                     {
-                        if (RunInLoopEx(std::bind(system_discons)))
+                        uv_close(reinterpret_cast<event_handle*>(tcp_socket.get()), &TcpMessage::DefaultClose);
                         {
-                            uv_close(reinterpret_cast<event_handle*>(tcp_socket.get()), &TcpMessage::DefaultClose);
+                            RunInLoopEx(std::bind(system_discons));
                         }
                     }
                 }

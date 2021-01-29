@@ -59,7 +59,7 @@ namespace Evpp
             {
                 for (u96 i = 0; i < tcp_server.size(); ++i)
                 {
-                    if (DestroyListenService(event_thread_pool->GetEventLoop(i), i, tcp_server[i]))
+                    if (DestroyListenService(event_thread_pool->GetEventLoop(i), tcp_server[i]))
                     {
                         continue;
                     }
@@ -67,6 +67,15 @@ namespace Evpp
                 }
 
                 while (tcp_server.size() != event_close_flag.load(std::memory_order_acquire));
+
+                for (auto & var: tcp_server)
+                {
+                    if (nullptr != var)
+                    {
+                        delete var;
+                        var = nullptr;
+                    }
+                }
 
                 if (ChangeStatus(Status::Exec, Status::Stop))
                 {
@@ -79,20 +88,20 @@ namespace Evpp
         return event_base->RunInLoopEx(std::bind((bool(TcpListen::*)(void))&TcpListen::DestroyListenService, this));
     }
 
-    bool TcpListen::DestroyListenService(EventLoop* loop, const u96 index, socket_tcp* server)
+    bool TcpListen::DestroyListenService(EventLoop* loop, socket_tcp* server)
     {
-        if (nullptr != loop && loop->EventBasic() == server->loop)
+        if (nullptr != loop && nullptr != server && loop->EventBasic() == server->loop)
         {
             if (loop->EventThread())
             {
-                return DeletedListenService(loop, index, server);
+                return DeletedListenService(loop, server);
             }
-            return loop->RunInLoopEx(std::bind((bool(TcpListen::*)(EventLoop*, const u96, socket_tcp*))&TcpListen::DestroyListenService, this, loop, index, server));
+            return loop->RunInLoopEx(std::bind((bool(TcpListen::*)(EventLoop*, socket_tcp*))&TcpListen::DestroyListenService, this, loop, server));
         }
         return false;
     }
 
-    bool TcpListen::DeletedListenService(EventLoop* loop, const u96 index, socket_tcp* server)
+    bool TcpListen::DeletedListenService(EventLoop* loop, socket_tcp* server)
     {
         if (nullptr != loop)
         {
@@ -193,14 +202,8 @@ namespace Evpp
         return 0 == uv_listen(reinterpret_cast<socket_stream*>(server), SOMAXCONN, &TcpServer::OnDefaultAccepts);
     }
 
-    void TcpListen::OnClose(event_handle* handler)
+    void TcpListen::OnClose()
     {
-        if (nullptr != handler)
-        {
-            delete reinterpret_cast<socket_tcp*>(handler);
-            handler = nullptr;
-        }
-
         if ((1 + event_close_flag.fetch_add(1, std::memory_order_release)) == tcp_server.size())
         {
             printf("¼àÌýÍ£Ö¹\n");

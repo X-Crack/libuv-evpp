@@ -25,8 +25,8 @@ namespace Evpp
         bool CreaterListenService(EventSocketPool* socket, TcpServer* server);
         bool DestroyListenService();
     private:
-        bool DestroyListenService(EventLoop* loop, const u96 index, socket_tcp* server);
-        bool DeletedListenService(EventLoop* loop, const u96 index, socket_tcp* server);
+        bool DestroyListenService(EventLoop* loop, socket_tcp* server);
+        bool DeletedListenService(EventLoop* loop, socket_tcp* server);
     private:
         bool InitialListenService(EventSocketPool* socket, TcpServer* server, const u96 size);
         bool InitEventThreadPools(const u96 size);
@@ -36,7 +36,7 @@ namespace Evpp
         bool BindTcpService(socket_tcp* server, const sockaddr* addr);
         bool ListenTcpService(socket_tcp* server);
     private:
-        void OnClose(event_handle* handler);
+        void OnClose();
     private:
         EventLoop*                                                      event_base;
         std::atomic<u32>                                                event_close_flag;
