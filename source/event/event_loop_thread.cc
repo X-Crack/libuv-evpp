@@ -33,6 +33,7 @@ namespace Evpp
                 {
                     return true;
                 }
+                return false;
             }
             return event_base->RunInLoop(std::bind(&EventLoopThread::CreaterThread, this));
         }

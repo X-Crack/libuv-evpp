@@ -45,10 +45,9 @@ namespace Evpp
                         {
                             return true;
                         }
-                        return false;
                     }
                 }
-                return true;
+                return false;
             }
             return event_base->RunInLoop(std::bind(&EventLoopThreadEx::CreaterSubThread, this));
         }
