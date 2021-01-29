@@ -13,7 +13,7 @@ namespace Evpp
 
     bool EventStatus::ChangeStatus(Status original, const Status other)
     {
-        return status.compare_exchange_strong(original, other, std::memory_order_release);;
+        return status.compare_exchange_strong(original, other, std::memory_order_release);
     }
 
     bool EventStatus::ExistsStarts(const Status other)

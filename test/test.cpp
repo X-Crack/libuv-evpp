@@ -27,12 +27,12 @@ using namespace Evpp;
 
 void exitserver(TcpServerService* Tcp)
 {
-    Sleep(99995000);
+    Sleep(5000);
     Tcp->DestroyServer();
     
     while (1)
     {
-        Sleep(0);
+        Sleep(1000);
     }
 }
 
@@ -62,17 +62,19 @@ void Run()
 {
 
 
-    EventLoop ev;
-
-
-    ev.InitialEvent();
-    std::unique_ptr<std::thread> thread1 = std::make_unique<std::thread>(std::bind(ExecResolvecallback, &ev));
-    ev.ExecDispatch();
-
-    return;
+//     EventLoop ev;
+// 
+// 
+//     ev.InitialEvent();
+//     std::unique_ptr<std::thread> thread1 = std::make_unique<std::thread>(std::bind(ExecResolvecallback, &ev));
+//     ev.ExecDispatch();
+// 
+//     return;
     TcpServerService Tcp;
 
     Tcp.AddListenPort("0.0.0.0", 8888);
+    Tcp.AddListenPort("0.0.0.0", 7777);
+    Tcp.AddListenPort("0.0.0.0", 9999);
     Tcp.SetAcceptsCallback(Import::DefaultAccepts);
     Tcp.SetDisconsCallback(Import::DefaultDiscons);
     Tcp.SetMessageCallback(Import::DefaultMessage);

@@ -20,10 +20,13 @@ namespace Evpp
         explicit TcpListen(EventLoop* loop, const std::shared_ptr<EventLoopThreadPool>& thread_pool, const bool proble = true);
 #endif
         virtual ~TcpListen();
+        friend TcpServer;
     public:
         bool CreaterListenService(EventSocketPool* socket, TcpServer* server);
         bool DestroyListenService();
+    private:
         bool DestroyListenService(EventLoop* loop, const u96 index, socket_tcp* server);
+        bool DeletedListenService(EventLoop* loop, const u96 index, socket_tcp* server);
     private:
         bool InitialListenService(EventSocketPool* socket, TcpServer* server, const u96 size);
         bool InitEventThreadPools(const u96 size);
@@ -35,15 +38,14 @@ namespace Evpp
     private:
         void OnClose(event_handle* handler);
     private:
-        static void DefaultClose(event_handle* handler);
-    private:
-        EventLoop*                                      event_base;
+        EventLoop*                                                      event_base;
+        std::atomic<u32>                                                event_close_flag;
 #ifdef H_OS_WINDOWS
-        std::shared_ptr<EventShare>                     event_share;
+        std::shared_ptr<EventShare>                                     event_share;
 #endif
-        std::shared_ptr<EventLoopThreadPool>            event_thread_pool;
-        bool                                            tcp_proble;
-        std::vector<socket_tcp*>                        tcp_server;
+        std::shared_ptr<EventLoopThreadPool>                            event_thread_pool;
+        bool                                                            tcp_proble;
+        std::vector<socket_tcp*>                                        tcp_server;
     };
 }
 #endif // __TCP_LISTEN_H__

@@ -33,6 +33,7 @@ namespace Evpp
         EventLoop* GetEventLoop();
         EventLoop* GetEventLoop(const u96 index);
         EventLoop* GetEventLoopEx(event_loop* loop);
+        EventLoop* GetEventLoopEx(const u96 index);
         std::unique_ptr<EventLoopThread>& GetEventLoopThread(const u96 index);
         std::unique_ptr<EventLoopThreadEx>& GetEventLoopThreadEx(const u96 index);
     private:

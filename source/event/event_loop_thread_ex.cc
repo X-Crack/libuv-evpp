@@ -17,6 +17,7 @@ namespace Evpp
         event_share(share), 
         event_index(index),
         event_coroutine_task(std::make_unique<EventCoroutineTask>(std::bind(&EventLoopThreadEx::CoroutineDispatch, this))/* new EventCoroutineTask(std::bind(&EventLoopThreadEx::CoroutineDispatch, this))*/),
+        loop(std::make_shared<EventLoop>(event_share->EventLoop(event_index), event_index)),
         loop_exit(0)
     {
 
@@ -95,7 +96,7 @@ namespace Evpp
     {
         if (ChangeStatus(Status::None, Status::Init))
         {
-            loop.reset(new EventLoop(event_share->EventLoop(event_index), event_index));
+            if(nullptr != loop)
             {
                 if (ChangeStatus(Status::Init, Status::Exec))
                 {

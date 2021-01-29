@@ -178,6 +178,28 @@ namespace Evpp
         return nullptr;
     }
 
+    EventLoop* EventLoopThreadPool::GetEventLoopEx(const u96 index)
+    {
+        std::unique_lock<std::mutex> lock(event_pool_lock);
+        {
+            if (event_pool.empty() && event_pool_ex.empty())
+            {
+                return event_base;
+            }
+
+            if (event_pool.size())
+            {
+                return event_pool[index]->GetEventLoop();
+            }
+
+            if (event_pool_ex.size())
+            {
+                return event_pool_ex[index]->GetEventLoop();
+            }
+        }
+        return nullptr;
+    }
+
     std::unique_ptr<EventLoopThread>& EventLoopThreadPool::GetEventLoopThread(const u96 index)
     {
         std::unique_lock<std::mutex> lock(event_pool_lock);

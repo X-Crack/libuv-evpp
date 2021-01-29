@@ -9,18 +9,9 @@ namespace Evpp
         event_refer(0),
         event_watcher(std::make_unique<EventWatcher>(this)),
         event_timer_pool(std::make_unique<EventTimerPool>(this)),
-        event_thread(EventThreadId())
+        event_thread(0)
     {
-        if (ChangeStatus(Status::None, Status::Init))
-        {
-            if (0 == uv_loop_init(event_base))
-            {
-                if (event_base)
-                {
-                    uv_loop_set_data(event_base, this);
-                }
-            }
-        }
+
     }
 
     EventLoop::~EventLoop()
@@ -30,7 +21,23 @@ namespace Evpp
 
     bool EventLoop::InitialEvent()
     {
-        return event_watcher->CreaterQueue();
+        if (ChangeStatus(Status::None, Status::Init))
+        {
+            if (0 == uv_loop_init(event_base))
+            {
+                if (event_base)
+                {
+                    uv_loop_set_data(event_base, this);
+                }
+
+                if (0 == event_thread)
+                {
+                    event_thread = EventThreadId();
+                }
+                return event_watcher->CreaterQueue();
+            }
+        }
+        return false;
     }
 
     bool EventLoop::ExecDispatch()

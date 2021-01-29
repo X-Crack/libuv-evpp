@@ -469,4 +469,18 @@ namespace Evpp
             }
         }
     }
+
+    void TcpServer::DefaultCloseListen(event_handle* handler)
+    {
+        if (nullptr != handler)
+        {
+            TcpServer* watcher = static_cast<TcpServer*>(handler->data);
+            {
+                if (nullptr != watcher)
+                {
+                    watcher->tcp_listen->OnClose(handler);
+                }
+            }
+        }
+    }
 }

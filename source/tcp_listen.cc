@@ -10,6 +10,7 @@ namespace Evpp
 #ifdef H_OS_WINDOWS
     TcpListen::TcpListen(EventLoop* loop, const bool proble) :
         event_base(loop),
+        event_close_flag(0),
         tcp_proble(proble),
         event_share(std::make_shared<EventShare>()),
         event_thread_pool(std::make_shared<EventLoopThreadPool>(loop, event_share))
@@ -19,6 +20,7 @@ namespace Evpp
 #else
     TcpListen::TcpListen(EventLoop* loop, const std::shared_ptr<EventLoopThreadPool>& thread_pool, const bool proble) :
         event_base(loop),
+        event_close_flag(0),
         tcp_proble(proble),
         event_thread_pool(thread_pool)
     {
@@ -27,7 +29,7 @@ namespace Evpp
 #endif
     TcpListen::~TcpListen()
     {
-
+        printf("Delete TcpListen\n");
     }
 
     bool TcpListen::CreaterListenService(EventSocketPool* socket, TcpServer* server)
@@ -46,49 +48,56 @@ namespace Evpp
 
     bool TcpListen::DestroyListenService()
     {
-        if (ExistsStoped())
+        if (event_base->EventThread())
         {
-            return true;
-        }
-
-        if (ExistsRuning())
-        {
-            for (u96 i = 0; i < tcp_server.size(); ++i)
+            if (ExistsStoped())
             {
-                if (DestroyListenService(event_thread_pool->GetEventLoop(i), i, tcp_server[i]))
+                return true;
+            }
+
+            if (ExistsRuning())
+            {
+                for (u96 i = 0; i < tcp_server.size(); ++i)
                 {
-                    continue;
+                    if (DestroyListenService(event_thread_pool->GetEventLoop(i), i, tcp_server[i]))
+                    {
+                        continue;
+                    }
+                    return false;
+                }
+
+                while (tcp_server.size() != event_close_flag.load(std::memory_order_acquire));
+
+                if (ChangeStatus(Status::Exec, Status::Stop))
+                {
+                    return event_thread_pool->DestroyEventThreadPool();
                 }
                 return false;
             }
-
-            for (u96 i = 0; i < tcp_server.size(); ++i)
-            {
-                if (1 == tcp_server[i]->activecnt)
-                {
-                    --i;
-                }
-            }
-
-            if (ChangeStatus(Status::Exec, Status::Stop))
-            {
-                return event_thread_pool->DestroyEventThreadPool();
-            }
-            return false;
         }
-        return false;
+
+        return event_base->RunInLoopEx(std::bind((bool(TcpListen::*)(void))&TcpListen::DestroyListenService, this));
     }
 
     bool TcpListen::DestroyListenService(EventLoop* loop, const u96 index, socket_tcp* server)
     {
-        if (nullptr != loop)
+        if (nullptr != loop && loop->EventBasic() == server->loop)
         {
             if (loop->EventThread())
             {
-                uv_close(reinterpret_cast<event_handle*>(server), 0);
-                return true;
+                return DeletedListenService(loop, index, server);
             }
             return loop->RunInLoopEx(std::bind((bool(TcpListen::*)(EventLoop*, const u96, socket_tcp*))&TcpListen::DestroyListenService, this, loop, index, server));
+        }
+        return false;
+    }
+
+    bool TcpListen::DeletedListenService(EventLoop* loop, const u96 index, socket_tcp* server)
+    {
+        if (nullptr != loop)
+        {
+            uv_close(reinterpret_cast<event_handle*>(server), &TcpServer::DefaultCloseListen);
+            return true;
         }
         return false;
     }
@@ -117,7 +126,7 @@ namespace Evpp
                         return false;
                     }
                 }
-                return true;
+                return ChangeStatus(Status::Init, Status::Exec);
             }
         }
         return false;
@@ -140,31 +149,28 @@ namespace Evpp
     {
         if (loop->EventThread())
         {
-            if (ChangeStatus(Status::Init, Status::Exec))
+            if (InitTcpService(loop, server))
             {
-                if (InitTcpService(loop, server))
+                if (0 == uv_tcp_simultaneous_accepts(server, 0))
                 {
-                    if (0 == uv_tcp_simultaneous_accepts(server, 0))
+                    if (tcp_proble)
                     {
-                        if (tcp_proble)
+                        if (uv_tcp_nodelay(server, 1))
                         {
-                            if (uv_tcp_nodelay(server, 1))
-                            {
-                                printf("≥ı ºªØ ß∞‹\n");
-                            }
+                            printf("≥ı ºªØ ß∞‹\n");
                         }
-
-                        if (false == BindTcpService(server, addr))
-                        {
-                            return false;
-                        }
-
-                        if (false == ListenTcpService(server))
-                        {
-                            return false;
-                        }
-                        return true;
                     }
+
+                    if (false == BindTcpService(server, addr))
+                    {
+                        return false;
+                    }
+
+                    if (false == ListenTcpService(server))
+                    {
+                        return false;
+                    }
+                    return true;
                 }
             }
             return false;
@@ -189,20 +195,15 @@ namespace Evpp
 
     void TcpListen::OnClose(event_handle* handler)
     {
-        // socket_tcp
-    }
-
-    void TcpListen::DefaultClose(event_handle* handler)
-    {
         if (nullptr != handler)
         {
-            TcpListen* watcher = static_cast<TcpListen*>(handler->data);
-            {
-                if (nullptr != watcher)
-                {
-                    watcher->OnClose(handler);
-                }
-            }
+            delete reinterpret_cast<socket_tcp*>(handler);
+            handler = nullptr;
+        }
+
+        if ((1 + event_close_flag.fetch_add(1, std::memory_order_release)) == tcp_server.size())
+        {
+            printf("º‡Ã˝Õ£÷π\n");
         }
     }
 }

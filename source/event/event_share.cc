@@ -21,7 +21,7 @@ namespace Evpp
         {
             std::unique_lock<std::mutex> lock(event_mutex);
             {
-                event_loops.emplace(i, CreaterDefaultEventLoop());
+                event_loops.emplace(i, new event_loop());
             }
         }
         return nullptr != event_base;
