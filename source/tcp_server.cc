@@ -79,11 +79,6 @@ namespace Evpp
                         {
                             if (event_thread_pool->DestroyEventThreadPool())
                             {
-                                if (event_base->EventThread())
-                                {
-                                    return true;
-                                }
-
                                 if (wait)
                                 {
                                     event_close_flag_ex.store(1, std::memory_order_release);
