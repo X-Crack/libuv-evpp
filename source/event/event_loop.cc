@@ -11,7 +11,7 @@ namespace Evpp
         event_timer_vesse(std::make_unique<EventTimerVesse>(this)),
         event_thread(EventThreadId())
     {
-        if (ChangeStatus(None, Init))
+        if (ChangeStatus(Status::None, Status::Init))
         {
             if (0 == uv_loop_init(event_base))
             {
@@ -37,11 +37,11 @@ namespace Evpp
     {
         if (0 != event_base)
         {
-            if (ChangeStatus(Init, Exec))
+            if (ChangeStatus(Status::Init, Status::Exec))
             {
                 if (0 == uv_run(event_base, UV_RUN_DEFAULT))
                 {
-                    return ChangeStatus(Exec, Stop);
+                    return ChangeStatus(Status::Exec, Status::Stop);
                 }
             }
         }

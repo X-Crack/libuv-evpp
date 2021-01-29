@@ -93,11 +93,11 @@ namespace Evpp
 
     void EventLoopThreadEx::CoroutineInThread()
     {
-        if (ChangeStatus(None, Init))
+        if (ChangeStatus(Status::None, Status::Init))
         {
             loop.reset(new EventLoop(event_share->EventLoop(event_index), event_index));
             {
-                if (ChangeStatus(Init, Exec))
+                if (ChangeStatus(Status::Init, Status::Exec))
                 {
                     if (loop->InitialEvent())
                     {
@@ -119,7 +119,7 @@ namespace Evpp
                             printf("Delete EventLoop Ok\n");
                         }
 
-                        if (ChangeStatus(Exec, Stop))
+                        if (ChangeStatus(Status::Exec, Status::Stop))
                         {
                             assert(!loop->ExistsStoped());
                         }

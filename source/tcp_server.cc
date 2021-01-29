@@ -18,10 +18,11 @@ namespace Evpp
     TcpServer::TcpServer(EventLoop* loop, const std::shared_ptr<EventShare>& share, const InterfaceAccepts& accepts, const InterfaceDiscons& discons, const InterfaceMessage& message) :
         event_base(loop),
         event_share(share),
+        event_thread_pool(std::make_shared<EventLoopThreadPool>(loop, share)),
         socket_accepts(accepts),
         socket_discons(discons),
         socket_message(message),
-        event_thread_pool(std::make_shared<EventLoopThreadPool>(loop, share)),
+        zero_flag(0),
         tcp_socket(std::make_unique<EventSocketPool>()),
 #ifdef H_OS_WINDOWS
         tcp_listen(std::make_unique<TcpListen>(loop, true)),
@@ -41,11 +42,12 @@ namespace Evpp
 
     bool TcpServer::CreaterServer(const u96 thread_size)
     {
+        printf("concurrent threads are supported: %d\n", GetHardwareThreads());
         if (tcp_socket && tcp_listen)
         {
-            if (ExistsStarts(None))
+            if (ExistsStarts(Status::None))
             {
-                if (ChangeStatus(None, Init))
+                if (ChangeStatus(Status::None, Status::Init))
                 {
 #ifdef H_OS_WINDOWS
                     if (event_thread_pool->CreaterEventThreadPool(thread_size))
@@ -53,7 +55,7 @@ namespace Evpp
                     if (event_thread_pool->CreaterEventThreadPool(tcp_socket->GetSocketPoolSize()))
 #endif
                     {
-                        if (ChangeStatus(Init, Exec))
+                        if (ChangeStatus(Status::Init, Status::Exec))
                         {
                             return tcp_listen->CreaterListenService(tcp_socket.get(), this);
                         }
@@ -70,26 +72,14 @@ namespace Evpp
         {
             if (event_base->EventThread())
             {
-                if (ChangeStatus(Exec, Stop))
+                if (ChangeStatus(Status::Exec, Status::Stop))
                 {
                     if (tcp_listen->DestroyListenService())
                     {
-                        for (auto& [index, session] : tcp_session)
+                        if (CleanedSession())
                         {
-                            if (Close(index))
-                            {
-                                continue;
-                            }
-                            return false;
+                            printf("DestroyServer OK\n");
                         }
-
-                        while (!tcp_session.empty())
-                        {
-                            Sleep(0);
-                        }
-
-                        printf("DestroyServer OK\n");
-
                         return event_thread_pool->DestroyEventThreadPool();
                     }
                 }
@@ -102,7 +92,7 @@ namespace Evpp
 
     bool TcpServer::AddListenPort(const std::string& server_address, const u16 port)
     {
-        if (ExistsStarts(None))
+        if (ExistsStarts(Status::None))
         {
             if (nullptr != tcp_socket)
             {
@@ -143,6 +133,11 @@ namespace Evpp
     void TcpServer::SetKeepaLive(const u32 time)
     {
         tcp_keepalive.store(time);
+    }
+
+    u32  TcpServer::GetHardwareThreads()
+    {
+        return std::thread::hardware_concurrency();
     }
 
     void TcpServer::SetAcceptsCallback(const InterfaceAccepts& accepts)
@@ -189,19 +184,41 @@ namespace Evpp
 
     bool TcpServer::DeletedSession(const u96 index)
     {
-        std::lock_guard<std::recursive_mutex> lock(tcp_recursive_mutex);
+        if (tcp_session.size())
         {
-            if (auto it = tcp_session.find(index); it != std::end(tcp_session))
+            std::lock_guard<std::recursive_mutex> lock(tcp_recursive_mutex);
             {
-                if (!tcp_session.empty())
-                {
-                    tcp_session.erase(it);
-                    tcp_index_multiplexing.emplace(index);
-                }
-                return true;
+                tcp_session.erase(index);
+                tcp_index_multiplexing.emplace(index);
             }
         }
-        return false;
+
+        if (tcp_session.empty())
+        {
+            zero_flag.store(1, std::memory_order_release);
+        }
+
+        return true;
+    }
+
+    bool TcpServer::CleanedSession()
+    {
+        {
+            std::lock_guard<std::recursive_mutex> lock(tcp_recursive_mutex);
+            for (auto& [index, session] : tcp_session)
+            {
+                if (Close(index))
+                {
+                    continue;
+                }
+                return false;
+            }
+        }
+
+        // TODO: Timer out ?
+        while (1 == zero_flag.load(std::memory_order_acquire) || tcp_session.size());
+
+        return tcp_session.empty();
     }
 
     const std::shared_ptr<TcpSession>& TcpServer::GetSession(const u96 index)

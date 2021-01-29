@@ -24,6 +24,17 @@
 #include <future>
 using namespace Evpp;
 
+void exitserver(TcpServerService* Tcp)
+{
+    Sleep(15000);
+    Tcp->DestroyServer();
+    
+    while (1)
+    {
+        Sleep(0);
+    }
+}
+
 void Run()
 {
     TcpServerService Tcp;
@@ -34,7 +45,8 @@ void Run()
     Tcp.SetMessageCallback(Import::DefaultMessage);
     //Tcp.SetEventThreadId(GetCurrentThreadId());
     Tcp.CreaterServer(16);
-    //Tcp.DestroyServer();
+    std::unique_ptr<std::thread> thread = std::make_unique<std::thread>(std::bind(exitserver, &Tcp));
+    thread->detach();
     Tcp.ExecDispatch();
     printf("exit thread\n");
 }

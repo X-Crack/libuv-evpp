@@ -7,7 +7,7 @@ namespace Evpp
     class EventStatus
     {
     public:
-        enum Status
+        enum class Status : u32
         {
             None = 1 << 0,
             Init = 1 << 1,
@@ -18,7 +18,7 @@ namespace Evpp
         explicit EventStatus();
         virtual ~EventStatus();
     public:
-        bool ChangeStatus(const Status original, const Status other);
+        bool ChangeStatus(Status original = Status::None, const Status other = Status::None);
         bool ExistsStarts(const Status other);
     public:
         bool ExistsRuning();

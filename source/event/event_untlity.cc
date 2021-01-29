@@ -25,11 +25,6 @@ namespace Evpp
         bool DefaultMessage(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const std::shared_ptr<TcpBuffer>& buffer, const u96 index)
         {
             (void)loop, session, buffer, index;
-            //printf("用户消息：%d 消息长度：%d 线程：%d\n", index, buffer->readableBytes(), loop->EventThreadId());
-            //buffer->retrieve(buffer->readableBytes());
-            //thread_local std::string send_str = send_data + std::to_string(index) + "\n";
-           
-            
             printf("Message:%d MessageLen:%d Thread:%d\n", index, buffer->readableBytes(), loop->EventThreadId());
             session->Send(send_data + std::to_string(index) + "\n" + char(10));
             buffer->retrieve(buffer->readableBytes());

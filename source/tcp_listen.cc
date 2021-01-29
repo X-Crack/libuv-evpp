@@ -37,7 +37,7 @@ namespace Evpp
             return false;
         }
 
-        if (ExistsStarts(None))
+        if (ExistsStarts(Status::None))
         {
             return InitialListenService(socket, server, socket->GetSocketPoolSize());
         }
@@ -70,7 +70,7 @@ namespace Evpp
                 }
             }
 
-            if (ChangeStatus(Exec, Stop))
+            if (ChangeStatus(Status::Exec, Status::Stop))
             {
                 return event_thread_pool->DestroyEventThreadPool();
             }
@@ -103,7 +103,7 @@ namespace Evpp
                 return false;
             }
 #endif
-            if (ChangeStatus(None, Init))
+            if (ChangeStatus(Status::None, Status::Init))
             {
                 for (u96 i = 0; i < size; ++i)
                 {
@@ -140,7 +140,7 @@ namespace Evpp
     {
         if (loop->EventThread())
         {
-            if (ChangeStatus(Init, Exec))
+            if (ChangeStatus(Status::Init, Status::Exec))
             {
                 if (InitTcpService(loop, server))
                 {

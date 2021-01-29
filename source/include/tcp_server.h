@@ -2,6 +2,7 @@
 #define __TCP_SERVER_H__
 #include <config.h>
 #include <event_status.h>
+#include <atomic>
 #include <memory>
 #include <queue>
 #include <mutex>
@@ -28,6 +29,7 @@ namespace Evpp
         bool Send(const u96 index, const std::string& buf, u32 nbufs = 1);
         bool Close(const u96 index);
         void SetKeepaLive(const u32 time);
+        u32  GetHardwareThreads();
     public:
         void SetAcceptsCallback(const InterfaceAccepts& accepts);
         void SetDisconsCallback(const InterfaceDiscons& discons);
@@ -39,6 +41,7 @@ namespace Evpp
         bool CreaterSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const u96 index);
         bool InitialSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client);
         bool DeletedSession(const u96 index);
+        bool CleanedSession();
         const std::shared_ptr<TcpSession>& GetSession(const u96 index);
     private:
         bool DefaultAccepts(EventLoop* loop, socket_stream* server);
@@ -64,10 +67,13 @@ namespace Evpp
     private:
         EventLoop*                                                      event_base;
         std::shared_ptr<EventShare>                                     event_share;
+        std::shared_ptr<EventLoopThreadPool>                            event_thread_pool;
         InterfaceAccepts                                                socket_accepts;
         InterfaceDiscons                                                socket_discons;
         InterfaceMessage                                                socket_message;
-        std::shared_ptr<EventLoopThreadPool>                            event_thread_pool;
+#if _HAS_CXX20
+        std::atomic<u32>                                                zero_flag;
+#endif
         std::unique_ptr<EventSocketPool>                                tcp_socket;
         std::unique_ptr<TcpListen>                                      tcp_listen;
         std::atomic<u96>											    tcp_index;
@@ -76,6 +82,8 @@ namespace Evpp
         std::priority_queue<u96>									    tcp_index_multiplexing;
         std::mutex                                                      tcp_mutex;
         std::recursive_mutex                                            tcp_recursive_mutex;
+        std::condition_variable							                cv_signal;
+        std::mutex										                cv_mutex;
     };
 }
 #endif // __TCP_SERVER_H__

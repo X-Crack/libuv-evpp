@@ -1,7 +1,7 @@
 #include <event_status.h>
 namespace Evpp
 {
-    EventStatus::EventStatus() : status(None)
+    EventStatus::EventStatus() : status(Status::None)
     {
 
     }
@@ -11,9 +11,9 @@ namespace Evpp
 
     }
 
-    bool EventStatus::ChangeStatus(const Status original, const Status other)
+    bool EventStatus::ChangeStatus(Status original, const Status other)
     {
-        return original == status.exchange(other, std::memory_order_release);
+        return status.compare_exchange_strong(original, other, std::memory_order_release);;
     }
 
     bool EventStatus::ExistsStarts(const Status other)
@@ -23,11 +23,11 @@ namespace Evpp
 
     bool EventStatus::ExistsRuning()
     {
-        return Exec == status;
+        return Status::Exec == status;
     }
 
     bool EventStatus::ExistsStoped()
     {
-        return Stop == status;
+        return Status::Stop == status;
     }
 }

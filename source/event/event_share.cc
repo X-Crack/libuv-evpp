@@ -6,6 +6,7 @@ namespace Evpp
     {
 
     }
+
     EventShare::~EventShare()
     {
         if (event_loops.size())
@@ -45,6 +46,12 @@ namespace Evpp
             event_loops.clear();
         }
         return true;
+    }
+
+
+    u32 EventShare::GetHardwareThreads()
+    {
+        return std::thread::hardware_concurrency();
     }
 
     event_loop* EventShare::EventLoop(const u96 index)

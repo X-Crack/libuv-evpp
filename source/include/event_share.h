@@ -11,8 +11,9 @@ namespace Evpp
         explicit EventShare();
         virtual ~EventShare();
     public:
-        bool CreaterLoops(const u96 size = 1);
+        bool CreaterLoops(const u96 size = GetHardwareThreads());
         bool DestroyLoops();
+        static u32  GetHardwareThreads();
         u32  GetLoopsSize() { return event_loops.size(); };
     public:
         event_loop* EventLoop(const u96 index = 0);
