@@ -71,9 +71,7 @@ namespace Evpp
         InterfaceAccepts                                                socket_accepts;
         InterfaceDiscons                                                socket_discons;
         InterfaceMessage                                                socket_message;
-#if _HAS_CXX20
         std::atomic<u32>                                                zero_flag;
-#endif
         std::unique_ptr<EventSocketPool>                                tcp_socket;
         std::unique_ptr<TcpListen>                                      tcp_listen;
         std::atomic<u96>											    tcp_index;
@@ -82,8 +80,6 @@ namespace Evpp
         std::priority_queue<u96>									    tcp_index_multiplexing;
         std::mutex                                                      tcp_mutex;
         std::recursive_mutex                                            tcp_recursive_mutex;
-        std::condition_variable							                cv_signal;
-        std::mutex										                cv_mutex;
     };
 }
 #endif // __TCP_SERVER_H__
