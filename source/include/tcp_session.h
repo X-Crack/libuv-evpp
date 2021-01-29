@@ -6,7 +6,7 @@
 namespace Evpp
 {
     class EventLoop;
-    class EventTimerVesse;
+    class EventTimerPool;
     class TcpMessage;
     class TcpSession : public std::enable_shared_from_this<TcpSession>
     {
@@ -41,7 +41,7 @@ namespace Evpp
         EventLoop*                                                      event_base;
         std::shared_ptr<socket_tcp>                                     tcp_socket;
         std::unique_ptr<TcpMessage>                                     tcp_message;
-        std::unique_ptr<EventTimerVesse>                                event_timer_vesse;
+        std::unique_ptr<EventTimerPool>                                 event_timer_pool;
         u96                                                             self_index;
         SystemDiscons                                                   system_discons;
         SystemMessage                                                   system_message;

@@ -42,9 +42,6 @@
     <ClCompile Include="..\source\event\event_timer.cc">
       <Filter>event</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\event\event_timer_vesse.cc">
-      <Filter>event</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\event\event_signal.cc">
       <Filter>event</Filter>
     </ClCompile>
@@ -99,6 +96,9 @@
     <ClCompile Include="..\source\event\event_coroutine.cc">
       <Filter>event</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\event\event_timer_pool.cc">
+      <Filter>event</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\include\platform.h">
@@ -143,9 +143,6 @@
     <ClInclude Include="..\source\include\event_timer.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\include\event_timer_vesse.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\include\event_signal.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -183,6 +180,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\source\include\event_coroutine.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\event_timer_pool.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
