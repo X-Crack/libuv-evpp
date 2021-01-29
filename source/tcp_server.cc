@@ -41,7 +41,6 @@ namespace Evpp
 
     bool TcpServer::CreaterServer(const u96 thread_size)
     {
-        printf("concurrent threads are supported: %d\n", GetHardwareThreads());
         if (tcp_socket && tcp_listen)
         {
             if (ExistsStarts(Status::None))
@@ -77,9 +76,8 @@ namespace Evpp
                     {
                         if (CleanedSession())
                         {
-                            printf("DestroyServer OK\n");
+                            return event_thread_pool->DestroyEventThreadPool();
                         }
-                        return event_thread_pool->DestroyEventThreadPool();
                     }
                 }
                 return false;
