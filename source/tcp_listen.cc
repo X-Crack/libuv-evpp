@@ -68,8 +68,6 @@ namespace Evpp
                     return false;
                 }
 
-                //while (tcp_server.size() != event_close_flag.load(std::memory_order_acquire));
-
                 std::atomic_wait_explicit(&event_close_flag, event_close_flag_ex, std::memory_order_relaxed);
 
                 for (auto & var: tcp_server)
@@ -210,9 +208,10 @@ namespace Evpp
     {
         if ((1 + event_close_flag.fetch_add(1, std::memory_order_release)) == tcp_server.size())
         {
-            event_close_flag_ex.store(1, std::memory_order_release);
-            std::atomic_notify_one(&event_close_flag);
-            printf("¼àÌýÍ£Ö¹\n");
+            if (0 == event_close_flag_ex.exchange(1, std::memory_order_release))
+            {
+                std::atomic_notify_one(&event_close_flag);
+            }
         }
     }
 }
