@@ -230,7 +230,9 @@ namespace Evpp
                 tcp_session.reset();
                 event_close_flag.store(1, std::memory_order_release);
                 std::atomic_notify_one(&event_close_flag);
+                return true;
             }
+            return false;
         }
 
 
