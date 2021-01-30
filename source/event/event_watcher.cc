@@ -70,8 +70,7 @@ namespace Evpp
     {
         if (nullptr != event_base && nullptr != event_async_)
         {
-            EventCoroutine::JoinInTask(std::bind(&EventWatcher::SendAsyncNotifyEx, this, function));
-            return true;
+            return SendAsyncNotifyEx(function);
         }
         return false;
     }

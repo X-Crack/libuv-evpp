@@ -41,6 +41,46 @@ namespace Evpp
 
     }
 
+    bool TcpMessage::RunInLoop(const Functor& function)
+    {
+        if (nullptr != event_base)
+        {
+            return event_base->RunInLoop(function);
+        }
+        return false;
+    }
+
+    bool TcpMessage::RunInLoopEx(const Handler& function)
+    {
+        if (nullptr != event_base)
+        {
+            return event_base->RunInLoopEx(function);
+        }
+        return false;
+    }
+
+    bool TcpMessage::Close()
+    {
+        if (nullptr != event_base)
+        {
+            if (event_base->EventThread())
+            {
+                if (nullptr != tcp_socket)
+                {
+                    return SystemClose(reinterpret_cast<socket_stream*>(tcp_socket.get()));
+                }
+                return false;
+            }
+            return RunInLoopEx(std::bind(&TcpMessage::Close, this));
+        }
+        return false;
+    }
+
+    bool TcpMessage::SetSendBlocking(const u32 value)
+    {
+        return 0 == uv_stream_set_blocking(reinterpret_cast<socket_stream*>(tcp_socket.get()), value);
+    }
+
     bool TcpMessage::Send(const char* buf, u32 len, u32 nbufs)
     {
         if (nullptr != event_base)
@@ -81,41 +121,6 @@ namespace Evpp
         return false;
     }
 
-    bool TcpMessage::RunInLoop(const Functor& function)
-    {
-        if (nullptr != event_base)
-        {
-            return event_base->RunInLoop(function);
-        }
-        return false;
-    }
-
-    bool TcpMessage::RunInLoopEx(const Handler& function)
-    {
-        if (nullptr != event_base)
-        {
-            return event_base->RunInLoopEx(function);
-        }
-        return false;
-    }
-
-    bool TcpMessage::Close()
-    {
-        if (nullptr != event_base)
-        {
-            if (event_base->EventThread())
-            {
-                if (nullptr != tcp_socket)
-                {
-                    return SystemClose(reinterpret_cast<socket_stream*>(tcp_socket.get()));
-                }
-                return false;
-            }
-            return RunInLoopEx(std::bind(&TcpMessage::Close, this));
-        }
-        return false;
-    }
-
     bool TcpMessage::DefaultSend(const socket_data bufs, u32 nbufs)
     {
         if (uv_is_active(reinterpret_cast<event_handle*>(tcp_socket.get())))
@@ -123,11 +128,6 @@ namespace Evpp
             return 0 == uv_write(event_write.get(), reinterpret_cast<socket_stream*>(tcp_socket.get()), &bufs, nbufs, &TcpMessage::DefaultSend);
         }
         return false;
-    }
-
-    bool TcpMessage::SetSendBlocking(const u32 value)
-    {
-        return 0 == uv_stream_set_blocking(reinterpret_cast<socket_stream*>(tcp_socket.get()), value);
     }
 
     bool TcpMessage::CheckClose(socket_stream* handler)
@@ -138,7 +138,7 @@ namespace Evpp
             {
                 if (uv_is_closing(reinterpret_cast<event_handle*>(handler)))
                 {
-                    return true;
+                    return 0 == uv_read_stop(reinterpret_cast<socket_stream*>(handler));
                 }
             }
             return 0 == uv_read_stop(reinterpret_cast<socket_stream*>(handler));
@@ -160,7 +160,9 @@ namespace Evpp
         if (CheckClose(stream))
         {
             uv_close(reinterpret_cast<event_handle*>(stream), &TcpMessage::DefaultClose);
-            return true;
+            {
+                return true;
+            }
         }
         return false;
     }
@@ -186,7 +188,7 @@ namespace Evpp
         }
     }
 
-    void TcpMessage::OnClose(event_handle* handler)
+    bool TcpMessage::OnClose(event_handle* handler)
     {
         if (nullptr != handler)
         {
@@ -199,12 +201,12 @@ namespace Evpp
                     tcp_socket->data = nullptr;
                 }
 
-                RunInLoopEx(std::bind(system_discons));
+                return RunInLoopEx(std::bind(system_discons));
             }
         }
     }
 
-    void TcpMessage::OnShutdown(socket_shutdown* shutdown, int status)
+    bool TcpMessage::OnShutdown(socket_shutdown* shutdown, int status)
     {
         if (0 == status)
         {
@@ -216,7 +218,7 @@ namespace Evpp
                     {
                         uv_close(reinterpret_cast<event_handle*>(tcp_socket.get()), &TcpMessage::DefaultClose);
                         {
-                            RunInLoopEx(std::bind(system_discons));
+                            return RunInLoopEx(std::bind(system_discons));
                         }
                     }
                 }
@@ -254,11 +256,12 @@ namespace Evpp
                 {
                     if (nullptr != system_message)
                     {
-                        return RunInLoopEx(std::bind(system_message, std::weak_ptr<TcpBuffer>(tcp_buffer).lock()));
+                        return system_message(std::weak_ptr<TcpBuffer>(tcp_buffer).lock());
                     }
                 }
                 return true;
             }
+            return false;
         }
 
         if (UV_ENOBUFS == nread)
@@ -300,7 +303,12 @@ namespace Evpp
             {
                 if (nullptr != watcher)
                 {
-                    watcher->OnClose(handler);
+                    if (watcher->OnClose(handler))
+                    {
+                        return;
+                    }
+
+                    printf("RunInLoop Error\n");
                 }
             }
         }
@@ -314,7 +322,12 @@ namespace Evpp
             {
                 if (nullptr != watcher)
                 {
-                    watcher->OnShutdown(handler, status);
+                    if (watcher->OnShutdown(handler, status))
+                    {
+                        return;
+                    }
+
+                    printf("RunInLoop Error\n");
                 }
             }
         }
@@ -346,6 +359,7 @@ namespace Evpp
                     {
                         return;
                     }
+
                     printf("OnSystemMessage Error\n");
                 }
             }

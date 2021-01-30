@@ -57,7 +57,7 @@ namespace Evpp
         bool InitTcpSocket(EventLoop* loop, socket_stream* handler, socket_tcp* client);
     private:
         bool CheckClose(socket_stream* handler);
-        void SystemClose(socket_stream* stream);
+        bool SystemClose(socket_stream* stream);
         bool SystemShutdown(socket_stream* stream);
         const u96 GetPlexingIndex(u96 index = 0);
         const u96 GetClientIndex();

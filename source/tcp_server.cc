@@ -287,9 +287,14 @@ namespace Evpp
                 {
                     if (nullptr != socket_accepts)
                     {
-                        return socket_accepts(loop, GetSession(index), index);
+                        if (socket_accepts(loop, GetSession(index), index))
+                        {
+                            return true;
+                        }
+
+                        return Close(index);
                     }
-                    return true;
+                    return false;
                 }
             }
             return SystemShutdown(reinterpret_cast<socket_stream*>(client.get()));
@@ -307,8 +312,12 @@ namespace Evpp
                 {
                     return 0 == uv_tcp_keepalive(client, 1, tcp_keepalive.load());
                 }
+
+                if (SystemShutdown(reinterpret_cast<socket_stream*>(client)))
+                {
+                    return false;
+                }
             }
-            return SystemShutdown(reinterpret_cast<socket_stream*>(client));
         }
         return false;
     }
@@ -323,9 +332,9 @@ namespace Evpp
                 {
                     return InitialSession(loop, client);
                 }
-            }
 
-            SystemClose(reinterpret_cast<socket_stream*>(client.get()));
+                return SystemClose(reinterpret_cast<socket_stream*>(client.get()));
+            }
         }
         return false;
     }
@@ -360,9 +369,9 @@ namespace Evpp
             {
                 if (nullptr != watcher)
                 {
-                    if (!watcher->DefaultAccepts(handler, status))
+                    if (watcher->DefaultAccepts(handler, status))
                     {
-                        
+                        return;
                     }
                 }
             }
@@ -421,13 +430,16 @@ namespace Evpp
         return false;
     }
 
-    void TcpServer::SystemClose(socket_stream* stream)
+    bool TcpServer::SystemClose(socket_stream* stream)
     {
         if (CheckClose(stream))
         {
-            return uv_close(reinterpret_cast<uv_handle_t*>(stream), &TcpServer::OnDefaultClose);
+            uv_close(reinterpret_cast<uv_handle_t*>(stream), &TcpServer::OnDefaultClose);
+            {
+                return true;
+            }
         }
-        return;
+        return false;
     }
 
     bool TcpServer::SystemShutdown(socket_stream* stream)

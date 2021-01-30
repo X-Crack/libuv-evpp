@@ -16,25 +16,22 @@ namespace Evpp
         explicit TcpMessage(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const SystemDiscons& discons, const SystemMessage& message, const SystemSendMsg& sendmsg);
         virtual ~TcpMessage();
     public:
-        bool Send(const char* buf, u32 len, u32 nbufs = 1);
-        bool Send(const std::string& buf, u32 nbufs = 1);
-    public:
         bool RunInLoop(const Functor& function);
         bool RunInLoopEx(const Handler& function);
-    public:
         bool Close();
+        bool SetSendBlocking(const u32 value = 0);
+        bool Send(const char* buf, u32 len, u32 nbufs = 1);
+        bool Send(const std::string& buf, u32 nbufs = 1);
     private:
         bool DefaultSend(const socket_data bufs, u32 nbufs);
-    public:
-        bool SetSendBlocking(const u32 value = 0);
     private:
         bool CheckClose(socket_stream* handler);
         bool SystemShutdown(socket_stream* stream);
         bool SystemClose(socket_stream* stream);
     private:
         void OnSend(socket_write* request, int status);
-        void OnClose(event_handle* handler);
-        void OnShutdown(socket_shutdown* shutdown, int status);
+        bool OnClose(event_handle* handler);
+        bool OnShutdown(socket_shutdown* shutdown, int status);
         void OnMallocEx(event_handle* handler, size_t suggested_size, socket_data* buf);
         bool OnMessages(socket_stream* stream, i96 nread, const socket_data* buf);
     private:
