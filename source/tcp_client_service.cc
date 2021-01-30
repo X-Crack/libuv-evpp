@@ -28,7 +28,7 @@ namespace Evpp
     {
         if (nullptr != tcp_client)
         {
-            return tcp_client->DestroyClient(wait) && event_base->StopDispatch();
+            return tcp_client->DestroyClient(wait) && StopDispatch();
         }
         return false;
     }
