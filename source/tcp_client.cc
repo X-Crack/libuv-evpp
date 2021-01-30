@@ -272,7 +272,7 @@ namespace Evpp
                             {
                                 return true;
                             }
-                            return Close();
+                            return false;
                         }
                     }
 
@@ -282,8 +282,6 @@ namespace Evpp
                         {
                             return true;
                         }
-
-                        return Close();
                     }
                 }
             }
