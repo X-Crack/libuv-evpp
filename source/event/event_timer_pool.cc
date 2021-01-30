@@ -28,7 +28,7 @@ namespace Evpp
         return event_timer[index]->StopedTimer();
     }
 
-    bool EventTimerPool::KilledTimer(const u96 index)
+    void EventTimerPool::KilledTimer(const u96 index)
     {
         return event_timer[index]->KilledTimer();
     }

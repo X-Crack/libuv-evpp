@@ -15,7 +15,7 @@ namespace Evpp
         bool AssignTimer(const u64 delay, const u64 repeat);
     public:
         bool StopedTimer();
-        bool KilledTimer();
+        void KilledTimer();
     public:
         void ModiyRepeat(const u64 repeat);
         bool ReStarTimer();
@@ -25,6 +25,8 @@ namespace Evpp
         const u96 GetTimerIndex() { return safe_index; };
     public:
         void SetEventTimerCallback(const EventTimerHandle& callback);
+    private:
+        bool CheckStatus();
     private:
         static void DefaultClose(event_handle* handler);
     private:

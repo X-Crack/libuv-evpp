@@ -152,13 +152,12 @@ namespace Evpp
         return false;
     }
 
-    bool EventLoop::KilledTimer(const u96 index)
+    void EventLoop::KilledTimer(const u96 index)
     {
         if (nullptr != event_timer_pool)
         {
             return event_timer_pool->KilledTimer(index);
         }
-        return false;
     }
 
     void EventLoop::ModiyRepeat(const u96 index, const u64 repeat)

@@ -31,9 +31,8 @@ namespace Evpp
             event_time->data = nullptr;
         }
 
-        if (!KilledTimer())
         {
-            printf("killedtimer error\n");
+            KilledTimer();
         }
     }
 
@@ -62,25 +61,20 @@ namespace Evpp
     {
         if (nullptr != event_base && nullptr != event_time)
         {
-            if (uv_is_active(reinterpret_cast<event_handle*>(event_time)))
+            if (CheckStatus())
             {
                 return 0 == uv_timer_stop(event_time);
             }
         }
         return false;
     }
-    // ¿ÉÄÜ´æÔÚ BUG
-    bool EventTimer::KilledTimer()
+
+    void EventTimer::KilledTimer()
     {
         if (StopedTimer())
         {
-            if (0 == uv_is_closing(reinterpret_cast<event_handle*>(event_time)))
-            {
-                uv_close(reinterpret_cast<event_handle*>(event_time), &EventTimer::DefaultClose);
-            }
-            return true;
+            return uv_close(reinterpret_cast<event_handle*>(event_time), &EventTimer::DefaultClose);
         }
-        return false;
     }
 
     void EventTimer::ModiyRepeat(const u64 repeat)
@@ -117,6 +111,22 @@ namespace Evpp
         {
             event_callback = callback;
         }
+    }
+
+    bool EventTimer::CheckStatus()
+    {
+        if (nullptr != event_base && nullptr != event_time)
+        {
+            if (uv_is_active(reinterpret_cast<event_handle*>(event_time)))
+            {
+                if (uv_is_closing(reinterpret_cast<event_handle*>(event_time)))
+                {
+                    return true;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     void EventTimer::DefaultClose(event_handle* handler)

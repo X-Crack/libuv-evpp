@@ -98,7 +98,7 @@ namespace Evpp
         return RunInLoop(std::bind(&TcpSession::StopedTimer, this, index));
     }
 
-    bool TcpSession::KilledTimer(const u96 index)
+    void TcpSession::KilledTimer(const u96 index)
     {
         if (event_base->EventThread())
         {
@@ -107,7 +107,11 @@ namespace Evpp
                 return event_timer_pool->KilledTimer(index);
             }
         }
-        return RunInLoop(std::bind(&TcpSession::KilledTimer, this, index));
+        
+        if (RunInLoopEx(std::bind(&TcpSession::KilledTimer, this, index)))
+        {
+            return;
+        }
     }
 
     void TcpSession::ModiyRepeat(const u96 index, const u64 repeat)
