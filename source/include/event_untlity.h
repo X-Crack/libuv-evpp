@@ -62,8 +62,8 @@ namespace Evpp
 
 	struct SocketInfoEx
 	{
-		SocketInfo			sockname;
-		SocketInfo			peername;
+		SocketInfo				sockname;
+		SocketInfo				peername;
 	};
 
 }

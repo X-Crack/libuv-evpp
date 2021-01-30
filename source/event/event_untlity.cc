@@ -12,7 +12,7 @@ namespace Evpp
         {
             (void)loop, session, index;
             printf("DefaultAccepts:%d Thread:%d\n", index, loop->EventThreadId());
-            return true; 
+            return true;
         }
 
         bool DefaultDiscons(EventLoop* loop, const u96 index)

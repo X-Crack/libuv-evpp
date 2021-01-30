@@ -301,7 +301,6 @@ namespace Evpp
 
                             return Close(index);
                         }
-                        return false;
                     }
                 }
             }
@@ -339,12 +338,10 @@ namespace Evpp
                 if (InitTcpSocket(loop, server, client.get()))
                 {
                     // 停止服务器不在接受新客户到来
-                    if (ExistsStoped())
+                    if (ExistsRuning())
                     {
-                        return SystemClose(reinterpret_cast<socket_stream*>(client.get()));
+                        return InitialSession(loop, client);
                     }
-
-                    return InitialSession(loop, client);
                 }
 
                 return SystemClose(reinterpret_cast<socket_stream*>(client.get()));

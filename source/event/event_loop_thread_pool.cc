@@ -115,11 +115,6 @@ namespace Evpp
         return true;
     }
 
-    bool EventLoopThreadPool::SetThreadMaxNum(const u32 size)
-    {
-        return true;
-    }
-
     EventLoop* EventLoopThreadPool::GetEventLoop()
     {
         if (event_pool.empty() && event_pool_ex.empty())
