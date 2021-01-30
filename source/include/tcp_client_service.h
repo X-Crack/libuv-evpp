@@ -14,7 +14,7 @@ namespace Evpp
     public:
         bool CreaterClient();
         bool DestroyClient(const bool wait = true);
-        bool AddListenPort(const std::string& host, const u16 port);
+        bool AddServerPort(const std::string& host, const u16 port);
     public:
         bool ExecDispatch();
         bool ExecDispatch(u32 mode);

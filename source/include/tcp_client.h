@@ -23,7 +23,7 @@ namespace Evpp
     public:
         bool CreaterClient();
         bool DestroyClient(const bool wait = true);
-        bool AddListenPort(const std::string& server_address, const u16 port);
+        bool AddServerPort(const std::string& host, const u16 port);
         void SetResetConnectTimer(const u64 delay, const u64 timer);
         void SetResetConnect(const u32 status);
     public:

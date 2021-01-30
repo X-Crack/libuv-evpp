@@ -39,7 +39,7 @@ int main()
 
     TcpClientService client;
 
-    client.AddListenPort("127.0.0.1", 8888);
+    client.AddServerPort("127.0.0.1", 8888);
 
     client.SetConnectCallback();
     client.SetDisconsCallback();

@@ -76,9 +76,9 @@ namespace Evpp
         return false;
     }
 
-    bool TcpClient::AddListenPort(const std::string& server_address, const u16 port)
+    bool TcpClient::AddServerPort(const std::string& host, const u16 port)
     {
-        return tcp_socket->CreaterSocket(server_address, port);
+        return tcp_socket->CreaterSocket(host, port);
     }
 
     void TcpClient::SetResetConnectTimer(const u64 delay, const u64 timer)

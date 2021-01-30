@@ -33,11 +33,11 @@ namespace Evpp
         return false;
     }
 
-    bool TcpClientService::AddListenPort(const std::string& host, const u16 port)
+    bool TcpClientService::AddServerPort(const std::string& host, const u16 port)
     {
         if (nullptr != tcp_client)
         {
-            return tcp_client->AddListenPort(host, port);
+            return tcp_client->AddServerPort(host, port);
         }
         return false;
     }

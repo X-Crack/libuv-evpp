@@ -11,13 +11,13 @@ namespace Evpp
 
     }
 
-    bool EventSocket::CreaterSocket(const std::string& server_address, const u16 port)
+    bool EventSocket::CreaterSocket(const std::string& host, const u16 port)
     {
         if (nullptr != socket_t)
         {
             if (0 == socket_t->port)
             {
-                socket_t->host = server_address;
+                socket_t->host = host;
                 socket_t->port = port;
             }
             return InitialSocket();

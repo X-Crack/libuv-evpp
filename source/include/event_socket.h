@@ -11,7 +11,7 @@ namespace Evpp
         explicit EventSocket();
         virtual ~EventSocket();
     public:
-        bool CreaterSocket(const std::string& server_address, const u16 port);
+        bool CreaterSocket(const std::string& host, const u16 port);
         const std::string& GetHostAddress();
         const u16 GetHostPort();
     private:
