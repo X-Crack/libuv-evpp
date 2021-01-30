@@ -71,7 +71,7 @@ namespace Evpp
             {
                 if (nullptr != watcher)
                 {
-                    return watcher->OnCreaterNotify();
+                    watcher->OnCreaterNotify();
                 }
             }
         }
@@ -87,7 +87,7 @@ namespace Evpp
                 {
                     delete handler;
                     handler = nullptr;
-                    return watcher->OnDestroyNotify(status);
+                    watcher->OnDestroyNotify(status);
                 }
             }
         }
