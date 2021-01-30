@@ -9,11 +9,11 @@ namespace Evpp
     public:
         enum class Status : u32
         {
-            None = 1 << 0,
-            Init = 1 << 1,
-            Exec = 1 << 2,
-            Stop = 1 << 3,
-            Exit = 1 << 4,
+            None = 1 << 1,
+            Init = 1 << 2,
+            Exec = 1 << 3,
+            Stop = 1 << 4,
+            Exit = 1 << 5,
         };
     public:
         explicit EventStatus();
