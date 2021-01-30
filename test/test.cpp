@@ -25,6 +25,14 @@
 
 #include <future>
 
+void exit_loop(Evpp::TcpClientService* client)
+{
+    Sleep(5000);
+    u32 timer = GetTickCount();
+    client->DestroyClient(true);
+    printf("Exit OK %d\n", GetTickCount() - timer);
+}
+
 using namespace Evpp;
 int main()
 {
@@ -41,6 +49,9 @@ int main()
     client.SetSendMsgCallback();
 
     client.CreaterClient();
+
+    std::thread t1(std::bind(exit_loop, &client));
+    t1.detach();
 
     client.ExecDispatch();
 

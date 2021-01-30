@@ -13,6 +13,7 @@ namespace Evpp
         virtual ~TcpClientService();
     public:
         bool CreaterClient();
+        bool DestroyClient(const bool wait = true);
         bool AddListenPort(const std::string& host, const u16 port);
     public:
         bool ExecDispatch();

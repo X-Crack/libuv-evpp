@@ -24,6 +24,15 @@ namespace Evpp
         return false;
     }
 
+    bool TcpClientService::DestroyClient(const bool wait)
+    {
+        if (nullptr != tcp_client)
+        {
+            return tcp_client->DestroyClient(wait) && event_base->StopDispatch();
+        }
+        return false;
+    }
+
     bool TcpClientService::AddListenPort(const std::string& host, const u16 port)
     {
         if (nullptr != tcp_client)

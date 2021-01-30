@@ -48,37 +48,25 @@ namespace Evpp
     {
         if (nullptr != tcp_socket && nullptr != tcp_session)
         {
-            if (event_base->EventThread())
+            if (ChangeStatus(Status::Exec, Status::Exit))
             {
-                if (ChangeStatus(Status::Exec, Status::Exit))
+                if (tcp_retry_connection)
                 {
-                    if (tcp_retry_connection)
-                    {
-                        // 关闭断线重连
-                        tcp_retry_connection.store(0);
-                    }
+                    // 关闭断线重连
+                    tcp_retry_connection.store(0);
+                }
 
-                    if (Close())
+                if (wait)
+                {
+                    if (RunInLoopEx(std::bind(&TcpClient::Close, this)))
                     {
                         std::atomic_wait_explicit(&event_close_flag, 0, std::memory_order_relaxed);
                     }
-
-                    if (wait)
-                    {
-                        event_close_flag_ex.store(1, std::memory_order_release);
-                        std::atomic_notify_one(&event_close_flag_ex);
-                    }
+                    return true;
                 }
-            }
 
-            if (event_base->RunInLoopEx(std::bind(&TcpClient::DestroyClient, this, wait)))
-            {
-                if (wait)
-                {
-                    std::atomic_wait_explicit(&event_close_flag_ex, 0, std::memory_order_relaxed);
-                }
+                return Close();
             }
-            return true;
         }
         return false;
     }
@@ -120,7 +108,7 @@ namespace Evpp
     {
         if (nullptr != tcp_session)
         {
-            if (ExistsRuning())
+            if (ExistsRuning() || ExistsStarts(Status::Exit))
             {
                 return tcp_session->Close();
             }
@@ -313,16 +301,13 @@ namespace Evpp
     {
         if (nullptr != socket_discons)
         {
-            if (ChangeStatus(Status::Exec, Status::Stop))
+            if (ChangeStatus(Status::Exec, Status::Stop) || ExistsStarts(Status::Exit))
             {
                 if (socket_discons(loop, index))
                 {
-                    if (tcp_retry_connection)
+                    if (RunInLoop(std::bind(&TcpClient::DeletedSession, this)))
                     {
-                        if (RunInLoop(std::bind(&TcpClient::DeletedSession, this)))
-                        {
-                            return;
-                        }
+                        return;
                     }
                 }
             }

@@ -22,7 +22,7 @@ namespace Evpp
         friend TcpAttach;
     public:
         bool CreaterClient();
-        bool DestroyClient(const bool wait);
+        bool DestroyClient(const bool wait = true);
         bool AddListenPort(const std::string& server_address, const u16 port);
         void SetResetConnectTimer(const u64 delay, const u64 timer);
         void SetResetConnect(const u32 status);
