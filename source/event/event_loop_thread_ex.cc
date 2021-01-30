@@ -41,10 +41,13 @@ namespace Evpp
                 {
                     std::unique_lock<std::mutex> lock(cv_mutex);
                     {
-                        // 启动线程需要慢启动，因为初始化数据过多，否则会导致RunInLoop异步安全初始化失败。
-                        if (cv_signal.wait_for(lock, std::chrono::milliseconds(64), std::bind(&EventLoopThreadEx::AvailableEvent, this)))
+                        if (ChangeStatus(Status::None, Status::Init))
                         {
-                            return true;
+                            // 启动线程需要慢启动，因为初始化数据过多，否则会导致RunInLoop异步安全初始化失败。
+                            if (cv_signal.wait_for(lock, std::chrono::milliseconds(64), std::bind(&EventLoopThreadEx::AvailableEvent, this)))
+                            {
+                                return true;
+                            }
                         }
                     }
                 }
@@ -57,7 +60,12 @@ namespace Evpp
 
     bool EventLoopThreadEx::DestroyThread()
     {
-        if (nullptr != event_loop)
+        if (nullptr == event_loop)
+        {
+            return false;
+        }
+
+        if (ExistsRuning())
         {
             if (uv_loop_alive(event_loop->EventBasic()))
             {
@@ -88,39 +96,38 @@ namespace Evpp
 
     void EventLoopThreadEx::CoroutineInThread()
     {
-        if (ChangeStatus(Status::None, Status::Init))
+        if (nullptr == event_loop)
         {
-            if(nullptr != event_loop)
+            return;
+        }
+
+        if (ChangeStatus(Status::Init, Status::Exec))
+        {
+            if (event_loop->InitialEvent())
             {
-                if (ChangeStatus(Status::Init, Status::Exec))
+                while (!loop_exit.load())
                 {
-                    if (event_loop->InitialEvent())
+                    if (uv_loop_alive(event_loop->EventBasic()))
                     {
-                        while (!loop_exit.load())
+                        try
                         {
-                            if (uv_loop_alive(event_loop->EventBasic()))
-                            {
-                                try
-                                {
-                                    EventCoroutine::JoinInTask(std::bind(&EventLoopThreadEx::CoroutineDispatch, this));
-                                }
-                                catch (...)
-                                {
-                                	break;
-                                }
-                            }
+                            EventCoroutine::JoinInTask(std::bind(&EventLoopThreadEx::CoroutineDispatch, this));
                         }
-
-                        if (0 || UV_EBUSY == uv_loop_close(event_loop->EventBasic()))
+                        catch (...)
                         {
-                            printf("Delete EventLoop Ok %d\n", event_index);
-                        }
-
-                        if (ChangeStatus(Status::Exec, Status::Stop))
-                        {
-                            assert(!event_loop->ExistsStoped());
+                            break;
                         }
                     }
+                }
+
+                if (0 || UV_EBUSY == uv_loop_close(event_loop->EventBasic()))
+                {
+                    printf("Delete EventLoop Ok %d\n", event_index);
+                }
+
+                if (ChangeStatus(Status::Exec, Status::Stop))
+                {
+                    assert(!event_loop->ExistsStoped());
                 }
             }
         }
