@@ -18,7 +18,6 @@ namespace Evpp
     public:
         bool CreaterServer(const u96 thread_size);
         bool DestroyServer();
-        bool DestroyServerEx();
         bool ExecDispatch();
         bool ExecDispatch(const u32 mode);
     public:

@@ -44,11 +44,6 @@ namespace Evpp
 
     bool TcpServerService::DestroyServer()
     {
-        return DestroyServerEx();
-    }
-
-    bool TcpServerService::DestroyServerEx()
-    {
         if (nullptr != tcp_server)
         {
             return tcp_server->DestroyServer();
