@@ -83,6 +83,24 @@ namespace Evpp
         return;
     }
 
+    bool TcpClientService::Send(const char* buf, u96 len, u32 nbufs)
+    {
+        if (nullptr != tcp_client)
+        {
+            return tcp_client->Send(buf, len, nbufs);
+        }
+        return false;
+    }
+
+    bool TcpClientService::Send(const std::string& buf, u32 nbufs)
+    {
+        if (nullptr != tcp_client)
+        {
+            return tcp_client->Send(buf, nbufs);
+        }
+        return false;
+    }
+
     bool TcpClientService::Close()
     {
         if (nullptr != tcp_client)

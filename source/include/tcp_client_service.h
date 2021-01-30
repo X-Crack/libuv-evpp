@@ -18,11 +18,14 @@ namespace Evpp
         bool ExecDispatch();
         bool ExecDispatch(u32 mode);
         // 回调用于客户端界面消息刷新防止窗口假死
-        bool ExecDispatch(const EventLoopHandler& function, u32 mode = UV_RUN_ONCE);
+        bool ExecDispatch(const EventLoopHandler& function, u32 mode = UV_RUN_NOWAIT);
         bool StopDispatch();
     public:
         void SetResetConnectTimer(const u64 delay, const u64 timer);
         void SetResetConnect(const u32 status);
+    public:
+        bool Send(const char* buf, u96 len, u32 nbufs = 1);
+        bool Send(const std::string& buf, u32 nbufs = 1);
     public:
         bool Close();
     public:

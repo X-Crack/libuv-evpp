@@ -57,6 +57,24 @@ namespace Evpp
         tcp_retry_connection.store(status);
     }
 
+    bool TcpClient::Send(const char* buf, u96 len, u32 nbufs)
+    {
+        if (nullptr != tcp_session)
+        {
+            return tcp_session->Send(buf, len, nbufs);
+        }
+        return false;
+    }
+
+    bool TcpClient::Send(const std::string& buf, u32 nbufs)
+    {
+        if (nullptr != tcp_session)
+        {
+            return tcp_session->Send(buf, nbufs);
+        }
+        return false;
+    }
+
     bool TcpClient::Close()
     {
         if (nullptr != tcp_session)

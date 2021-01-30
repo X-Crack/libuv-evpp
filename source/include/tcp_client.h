@@ -26,6 +26,9 @@ namespace Evpp
         void SetResetConnectTimer(const u64 delay, const u64 timer);
         void SetResetConnect(const u32 status);
     public:
+        bool Send(const char* buf, u96 len, u32 nbufs = 1);
+        bool Send(const std::string& buf, u32 nbufs = 1);
+    public:
         bool Close();
     public:
         bool RunInLoop(const Functor& function);
