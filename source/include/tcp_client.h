@@ -22,6 +22,7 @@ namespace Evpp
         friend TcpAttach;
     public:
         bool CreaterClient();
+        bool DestroyClient(const bool wait);
         bool AddListenPort(const std::string& server_address, const u16 port);
         void SetResetConnectTimer(const u64 delay, const u64 timer);
         void SetResetConnect(const u32 status);
@@ -54,21 +55,23 @@ namespace Evpp
     private:
         static void DefaultConnect(socket_connect* hanlder, int status);
     private:
-        EventLoop*                                          event_base;
-        u96                                                 event_index;
-        InterfaceConnect                                    socket_connect_;
-        InterfaceRestore                                    socket_restore;
-        InterfaceFailure                                    socket_failure;
-        InterfaceDiscons                                    socket_discons;
-        InterfaceMessage                                    socket_message;
-        InterfaceSendMsg                                    socket_sendmsg;
-        std::shared_ptr<socket_tcp>                         socket_handler;
-        std::unique_ptr<EventSocket>                        tcp_socket;
-        std::unique_ptr<TcpConnect>                         tcp_connect;
-        std::shared_ptr<TcpSession>                         tcp_session;
-        std::unique_ptr<TcpAttach>                          tcp_attach;
-        std::atomic<u32>                                    tcp_retry;
-        std::atomic<u32>                                    tcp_retry_connection;
+        EventLoop*                                                      event_base;
+        u96                                                             event_index;
+        InterfaceConnect                                                socket_connect_;
+        InterfaceRestore                                                socket_restore;
+        InterfaceFailure                                                socket_failure;
+        InterfaceDiscons                                                socket_discons;
+        InterfaceMessage                                                socket_message;
+        InterfaceSendMsg                                                socket_sendmsg;
+        std::shared_ptr<socket_tcp>                                     socket_handler;
+        std::unique_ptr<EventSocket>                                    tcp_socket;
+        std::unique_ptr<TcpConnect>                                     tcp_connect;
+        std::shared_ptr<TcpSession>                                     tcp_session;
+        std::unique_ptr<TcpAttach>                                      tcp_attach;
+        std::atomic<u32>                                                tcp_retry;
+        std::atomic<u32>                                                tcp_retry_connection;
+        std::atomic<u32>                                                event_close_flag;
+        std::atomic<u32>                                                event_close_flag_ex;
     };
 }
 #endif // __TCP_CLIENT_H__

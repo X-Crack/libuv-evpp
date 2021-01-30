@@ -15,7 +15,9 @@ namespace Evpp
         tcp_connect(std::make_unique<TcpConnect>(loop, socket_handler, this)),
         tcp_attach(std::make_unique<TcpAttach>(loop, this)),
         tcp_retry(0),
-        tcp_retry_connection(1)
+        tcp_retry_connection(1),
+        event_close_flag(0),
+        event_close_flag_ex(0)
     {
         
     }
@@ -38,6 +40,45 @@ namespace Evpp
             {
                 return ConnectService();
             }
+        }
+        return false;
+    }
+
+    bool TcpClient::DestroyClient(const bool wait)
+    {
+        if (nullptr != tcp_socket && nullptr != tcp_session)
+        {
+            if (event_base->EventThread())
+            {
+                if (ChangeStatus(Status::Exec, Status::Exit))
+                {
+                    if (tcp_retry_connection)
+                    {
+                        // 关闭断线重连
+                        tcp_retry_connection.store(0);
+                    }
+
+                    if (Close())
+                    {
+                        std::atomic_wait_explicit(&event_close_flag, 0, std::memory_order_relaxed);
+                    }
+
+                    if (wait)
+                    {
+                        event_close_flag_ex.store(1, std::memory_order_release);
+                        std::atomic_notify_one(&event_close_flag_ex);
+                    }
+                }
+            }
+
+            if (event_base->RunInLoopEx(std::bind(&TcpClient::DestroyClient, this, wait)))
+            {
+                if (wait)
+                {
+                    std::atomic_wait_explicit(&event_close_flag_ex, 0, std::memory_order_relaxed);
+                }
+            }
+            return true;
         }
         return false;
     }
@@ -182,8 +223,18 @@ namespace Evpp
             {
                 tcp_session.reset();
                 {
-                    return tcp_attach->TryRetryConnect();
+                    if (tcp_retry_connection)
+                    {
+                        return tcp_attach->TryRetryConnect();
+                    }
                 }
+            }
+
+            if (ExistsStarts(Status::Exit))
+            {
+                tcp_session.reset();
+                event_close_flag.store(1, std::memory_order_release);
+                std::atomic_notify_one(&event_close_flag);
             }
         }
         return false;

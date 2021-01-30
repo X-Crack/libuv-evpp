@@ -13,6 +13,7 @@ namespace Evpp
             Init = 1 << 1,
             Exec = 1 << 2,
             Stop = 1 << 3,
+            Exit = 1 << 4,
         };
     public:
         explicit EventStatus();
