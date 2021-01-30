@@ -48,6 +48,11 @@ namespace Evpp
     {
         if (nullptr != tcp_socket && nullptr != tcp_session)
         {
+            if (ExistsStoped() || ExistsStarts(Status::None))
+            {
+                return true;
+            }
+
             if (ChangeStatus(Status::Exec, Status::Exit))
             {
                 if (tcp_retry_connection)
