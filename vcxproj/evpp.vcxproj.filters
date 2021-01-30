@@ -102,6 +102,12 @@
     <ClCompile Include="..\source\tcp_socket.cc">
       <Filter>socket\tcp</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\tcp_attach.cc">
+      <Filter>socket\tcp\client</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\tcp_client_service.cc">
+      <Filter>socket\tcp\client</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\include\platform.h">
@@ -192,6 +198,12 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\source\include\tcp_socket.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\tcp_attach.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\tcp_client_service.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

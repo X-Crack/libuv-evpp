@@ -6,22 +6,20 @@ namespace Evpp
 {
     class EventLoop;
     class EventSocket;
+    class TcpClient;
     class TcpConnect
     {
     public:
-        explicit TcpConnect(EventLoop* loop, const std::shared_ptr<socket_tcp>& client);
+        explicit TcpConnect(EventLoop* loop, const std::shared_ptr<socket_tcp>& handler, TcpClient* client);
         virtual ~TcpConnect();
     public:
-        bool ConnectServers(const std::unique_ptr<EventSocket>& socket, void* client);
+        bool ConnectService(const std::unique_ptr<EventSocket>& socket);
     private:
         bool InitTcpService();
         bool CreaterConnect(const sockaddr* addr);
     private:
-        bool ConnectService(const std::unique_ptr<EventSocket>& socket);
-        bool InitialConnect(void* client);
-    private:
         EventLoop*                                              event_base;
-        std::shared_ptr<socket_tcp>                             tcp_client;
+        std::shared_ptr<socket_tcp>                             tcp_handler;
         std::unique_ptr<socket_connect>                         tcp_connect;
     };
 }

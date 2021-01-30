@@ -1,23 +1,21 @@
 #include <tcp_client.h>
+#include <tcp_attach.h>
 #include <tcp_connect.h>
 #include <tcp_session.h>
 #include <event_socket.h>
-#include <event_loop.h>
 #include <event_timer.h>
+#include <event_loop.h>
 namespace Evpp
 {
-    TcpClient::TcpClient(EventLoop* loop, const u96 index, const u32 reconnect) :
+    TcpClient::TcpClient(EventLoop* loop, const u96 index) :
         event_base(loop),
-        self_index(index),
-        tcp_client(std::make_shared<socket_tcp>()),
+        event_index(index),
+        socket_handler(std::make_shared<socket_tcp>()),
         tcp_socket(std::make_unique<EventSocket>()),
-        tcp_connect(std::make_unique<TcpConnect>(loop, tcp_client)),
-        reconn_timer(std::make_shared<EventTimer>(loop, std::bind(&TcpClient::DefaultTimercb, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), index)),
-        connect_mark(false),
-        connect_tag(false),
-        reconnect_after(reconnect),
-        reconnect_delay(3000),
-        reconnect_time(3000)
+        tcp_connect(std::make_unique<TcpConnect>(loop, socket_handler, this)),
+        tcp_attach(std::make_unique<TcpAttach>(loop, this)),
+        tcp_retry(0),
+        tcp_retry_connection(0)
     {
         
     }
@@ -29,15 +27,19 @@ namespace Evpp
 
     bool TcpClient::CreaterClient()
     {
-        if (connect_mark.load())
+        if (ExistsRuning() || ExistsStoped())
         {
             return false;
         }
-        else
+
+        if (ExistsStarts(Status::None))
         {
-            connect_mark.store(true);
+            if (ChangeStatus(Status::None, Status::Init))
+            {
+                return ConnectService();
+            }
         }
-        return ConnectService();
+        return false;
     }
 
     bool TcpClient::AddListenPort(const std::string& server_address, const u16 port)
@@ -45,15 +47,39 @@ namespace Evpp
         return tcp_socket->CreaterSocket(server_address, port);
     }
 
-    bool TcpClient::SetReconnect(const u32 reconnect)
+    void TcpClient::SetResetConnect(const u64 delay, const u64 timer)
     {
-        return reconnect_after.exchange(reconnect);
+        return tcp_attach->SetResetConnect(delay, timer);
     }
 
-    void TcpClient::SetReconnectTimer(const u64 delay, const u64 time)
+    bool TcpClient::Close()
     {
-        reconnect_delay.store(delay);
-        reconnect_time.store(time);
+        if (nullptr != tcp_session)
+        {
+            if (ExistsRuning())
+            {
+                return tcp_session->Close();
+            }
+        }
+        return false;
+    }
+
+    bool TcpClient::RunInLoop(const Functor& function)
+    {
+        if (nullptr != event_base)
+        {
+            return event_base->RunInLoop(function);
+        }
+        return false;
+    }
+
+    bool TcpClient::RunInLoopEx(const Handler& function)
+    {
+        if (nullptr != event_base)
+        {
+            return event_base->RunInLoopEx(function);
+        }
+        return false;
     }
 
     void TcpClient::SetConnectCallback(const InterfaceConnect& connect)
@@ -104,28 +130,23 @@ namespace Evpp
         }
     }
 
-    bool TcpClient::Close()
-    {
-        if (nullptr != tcp_session)
-        {
-            return tcp_session->Close();
-        }
-        return false;
-    }
-
     bool TcpClient::InitialSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const u96 index)
     {
         if (nullptr == tcp_session)
         {
-            tcp_session.reset(new TcpSession(
-                loop,
-                client,
-                index,
-                std::bind(&TcpClient::DefaultDiscons, this, std::placeholders::_1, std::placeholders::_2),
-                std::bind(&TcpClient::DefaultMessage, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4),
-                std::bind(&TcpClient::DefaultSendMsg, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4)
-            ));
-            return true;
+            if (ChangeStatus(Status::Init, Status::Exec))
+            {
+                tcp_session.reset(new TcpSession
+                (
+                    loop,
+                    client,
+                    index,
+                    std::bind(&TcpClient::DefaultDiscons, this, std::placeholders::_1, std::placeholders::_2),
+                    std::bind(&TcpClient::DefaultMessage, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4),
+                    std::bind(&TcpClient::DefaultSendMsg, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4)
+                ));
+                return true;
+            }
         }
         return false;
     }
@@ -134,22 +155,13 @@ namespace Evpp
     {
         if (nullptr != tcp_session)
         {
-            tcp_session.reset();
-            return true;
-        }
-        return false;
-    }
-
-    bool TcpClient::RemovedSession()
-    {
-        return DeletedSession() && ReConnectAfter(reconnect_delay.load(), reconnect_time.load());
-    }
-
-    bool TcpClient::ReConnectAfter(const u64 delay, const u64 time)
-    {
-        if (nullptr != reconn_timer)
-        {
-            return reconn_timer->AssignTimer(delay, time);
+            if (ChangeStatus(Status::Exec, Status::Stop))
+            {
+                tcp_session.reset();
+                {
+                    return tcp_attach->TryRetryConnect();
+                }
+            }
         }
         return false;
     }
@@ -158,7 +170,10 @@ namespace Evpp
     {
         if (tcp_socket && tcp_connect && nullptr == tcp_session)
         {
-            return tcp_connect->ConnectServers(tcp_socket, this);
+            if (ExistsStoped() || ExistsStarts(Status::None))
+            {
+                return tcp_connect->ConnectService(tcp_socket);
+            }
         }
         return false;
     }
@@ -167,22 +182,37 @@ namespace Evpp
     {
         if (nullptr != event_base)
         {
-            if (InitialSession(event_base, tcp_client, self_index))
+            if (InitialSession(event_base, socket_handler, event_index))
             {
                 if (nullptr != tcp_session)
                 {
-                    if (connect_tag.load())
+                    if (tcp_retry)
                     {
                         if (nullptr != socket_restore)
                         {
-                            socket_restore(event_base, tcp_session, self_index);
+                            if (socket_restore(event_base, tcp_session, event_index))
+                            {
+                                return;
+                            }
+
+                            if (Close())
+                            {
+                                return;
+                            }
                         }
-                        return;
                     }
 
                     if (nullptr != socket_connect_)
                     {
-                        socket_connect_(event_base, tcp_session, self_index);
+                        if (socket_connect_(event_base, tcp_session, event_index))
+                        {
+                            return;
+                        }
+
+                        if (Close())
+                        {
+                            return;
+                        }
                     }
                 }
             }
@@ -196,13 +226,13 @@ namespace Evpp
         {
             if (nullptr != socket_failure)
             {
-                if (socket_failure(event_base, self_index, status, uv_err_name_r(status, error_name, 96), uv_strerror_r(status, error_msgs, 96)))
+                if (socket_failure(event_base, event_index, status, uv_err_name_r(status, error_name, std::size(error_name)), uv_strerror_r(status, error_msgs, std::size(error_msgs))))
                 {
-                    if (reconnect_after.load())
+                    if (tcp_retry_connection)
                     {
-                        if (connect_mark.exchange(false))
+                        if (RunInLoop(std::bind(&TcpClient::DeletedSession, this)))
                         {
-                            event_base->RunInLoop(std::bind(&TcpClient::ReConnectAfter, this, reconnect_delay.load(), reconnect_time.load()));
+                            return;
                         }
                     }
                 }
@@ -216,12 +246,9 @@ namespace Evpp
         {
             if (socket_discons(loop, index))
             {
-                if (reconnect_after.load())
+                if (RunInLoop(std::bind(&TcpClient::DeletedSession, this)))
                 {
-                    if (connect_mark.exchange(false))
-                    {
-                        loop->RunInLoop(std::bind(&TcpClient::RemovedSession, this));
-                    }
+                    return;
                 }
             }
         }
@@ -243,34 +270,6 @@ namespace Evpp
             return socket_sendmsg(loop, session, index, status);
         }
         return false;
-    }
-
-    void TcpClient::DefaultTimercb(EventLoop* loop, const std::shared_ptr<EventTimer>& timer, const u96 index)
-    {
-        if (nullptr != loop)
-        {
-            if (index == self_index)
-            {
-                if (connect_mark.load())
-                {
-                    return;
-                }
-
-                if (nullptr != tcp_session)
-                {
-                    return;
-                }
-
-                if (ConnectService())
-                {
-                    if (timer->StopedTimer())
-                    {
-                        connect_tag.store(true);
-                        connect_mark.store(true);
-                    }
-                }
-            }
-        }
     }
 
     void TcpClient::DefaultConnect(socket_connect* hanlder, int status)

@@ -4,40 +4,20 @@
 #include <event_loop.h>
 namespace Evpp
 {
-    TcpConnect::TcpConnect(EventLoop* loop, const std::shared_ptr<socket_tcp>& client) :
+    TcpConnect::TcpConnect(EventLoop* loop, const std::shared_ptr<socket_tcp>& handler, TcpClient* client) :
         event_base(loop),
-        tcp_client(client),
+        tcp_handler(handler),
         tcp_connect(std::make_unique<socket_connect>())
     {
-
+        if (nullptr == tcp_connect->data)
+        {
+            tcp_connect->data = client;
+        }
     }
 
     TcpConnect::~TcpConnect()
     {
 
-    }
-
-    bool TcpConnect::ConnectServers(const std::unique_ptr<EventSocket>& socket, void* client)
-    {
-        if (nullptr != socket && nullptr != client)
-        {
-            if (InitialConnect(client))
-            {
-                return ConnectService(socket);
-            }
-            return ConnectService(socket);
-        }
-        return false;
-    }
-
-    bool TcpConnect::InitTcpService()
-    {
-        return 0 == uv_tcp_init(event_base->EventBasic(), tcp_client.get());
-    }
-
-    bool TcpConnect::CreaterConnect(const sockaddr* addr)
-    {
-        return 0 == uv_tcp_connect(tcp_connect.get(), tcp_client.get(), addr, &TcpClient::DefaultConnect);
     }
 
     bool TcpConnect::ConnectService(const std::unique_ptr<EventSocket>& socket)
@@ -46,7 +26,7 @@ namespace Evpp
         {
             if (InitTcpService())
             {
-                if (uv_tcp_nodelay(tcp_client.get(), 1))
+                if (uv_tcp_nodelay(tcp_handler.get(), 1))
                 {
                     printf("³õÊ¼»¯Ê§°Ü\n");
                 }
@@ -57,13 +37,14 @@ namespace Evpp
         return false;
     }
 
-    bool TcpConnect::InitialConnect(void* client)
+    bool TcpConnect::InitTcpService()
     {
-        if (nullptr == tcp_connect->data)
-        {
-            tcp_connect->data = client;
-            return true;
-        }
-        return false;
+        return 0 == uv_tcp_init(event_base->EventBasic(), tcp_handler.get());
     }
+
+    bool TcpConnect::CreaterConnect(const sockaddr* addr)
+    {
+        return 0 == uv_tcp_connect(tcp_connect.get(), tcp_handler.get(), addr, &TcpClient::DefaultConnect);
+    }
+
 }
