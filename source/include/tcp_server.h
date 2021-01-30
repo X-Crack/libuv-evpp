@@ -14,6 +14,7 @@ namespace Evpp
     class EventSocketPool;
     class TcpListen;
     class TcpSession;
+    class TcpSocket;
     class TcpServer : public EventStatus
     {
     public:
@@ -73,11 +74,12 @@ namespace Evpp
         std::atomic<u32>                                                event_close_flag;
         std::atomic<u32>                                                event_close_flag_ex;
         std::shared_ptr<EventLoopThreadPool>                            event_thread_pool;
+        std::unique_ptr<EventSocketPool>                                event_socket;
         InterfaceAccepts                                                socket_accepts;
         InterfaceDiscons                                                socket_discons;
         InterfaceMessage                                                socket_message;
         InterfaceSendMsg                                                socket_sendmsg;
-        std::unique_ptr<EventSocketPool>                                tcp_socket;
+        std::unique_ptr<TcpSocket>                                      tcp_socket;
         std::unique_ptr<TcpListen>                                      tcp_listen;
         std::atomic<u96>											    tcp_index;
         std::atomic<u32>                                                tcp_keepalive;

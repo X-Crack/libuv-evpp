@@ -1,10 +1,6 @@
 #ifndef __CONFIG_H__
 #define __CONFIG_H__
-
-#include <platform.h>
 #include <event_untlity.h>
-#include <uv.h>
-
 #define __bswap_constant_16(x) ((((uint16_t)(x) >> 8) & 0xff) | (((uint16_t)(x) & 0xff) << 8))
 
 #define __bswap_constant_32(x) ( \

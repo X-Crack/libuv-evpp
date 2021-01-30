@@ -99,6 +99,9 @@
     <ClCompile Include="..\source\event\event_timer_pool.cc">
       <Filter>event</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\tcp_socket.cc">
+      <Filter>socket\tcp</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\include\platform.h">
@@ -186,6 +189,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\source\include\event_loop_thread.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\tcp_socket.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

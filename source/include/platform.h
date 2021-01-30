@@ -1,6 +1,5 @@
 #ifndef __PLATFORM_H__
 #define __PLATFORM_H__
-
 #include <type.h>
 #include <assert.h>
 

@@ -1,6 +1,7 @@
 #ifndef __EVENT_UNTILITY_H__
 #define __EVENT_UNTILITY_H__
 #include <platform.h>
+#include <uv.h>
 #include <functional>
 #include <unordered_map>
 #include <memory>
@@ -29,12 +30,12 @@ namespace Evpp
 	typedef std::function<bool(EventLoop*, const std::shared_ptr<TcpSession>&, const u96, const i32)>                                                       InterfaceSendMsg;
 	
 	namespace Import
-    {
+	{
 		bool DefaultAccepts(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const u96 index);
 
 		bool DefaultDiscons(EventLoop* loop, const u96 index);
 
-        bool DefaultMessage(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const std::shared_ptr<TcpBuffer>& buffer, const u96 index);
+		bool DefaultMessage(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const std::shared_ptr<TcpBuffer>& buffer, const u96 index);
 
 		bool DefaultSendMsg(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const u96 index, const i32 status);
 
@@ -43,7 +44,28 @@ namespace Evpp
 		bool DefaultRestore(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const u96 index);
 
 		bool DefaultFailure(EventLoop* loop, const u96 index, const i32 status, const String* name, const String* msgs);
-	}
+	};
+
+
+    struct SocketInfo final
+    {
+        union
+        {
+            u16                 family;
+            sockaddr            addr;
+            sockaddr_in         addr4;
+            sockaddr_in6        addr6;
+        };
+        std::string             host;
+        u16                     port;
+    };
+
+	struct SocketInfoEx
+	{
+		SocketInfo			sockname;
+		SocketInfo			peername;
+	};
+
 }
 
 #endif // __EVENT_UNTILITY_H__

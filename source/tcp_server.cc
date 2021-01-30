@@ -1,12 +1,12 @@
 #include <tcp_server.h>
 #include <tcp_listen.h>
 #include <tcp_session.h>
+#include <tcp_socket.h>
 #include <event_share.h>
 #include <event_socket.h>
 #include <event_socket_pool.h>
 #include <event_loop.h>
 #include <event_loop_thread_pool.h>
-
 namespace Evpp
 {
     TcpServer::TcpServer(EventLoop* loop, const std::shared_ptr<EventShare>& share) : TcpServer(loop, share, InterfaceAccepts(), InterfaceDiscons(), InterfaceMessage(), InterfaceSendMsg())
@@ -20,11 +20,12 @@ namespace Evpp
         event_close_flag(0),
         event_close_flag_ex(0),
         event_thread_pool(std::make_shared<EventLoopThreadPool>(loop, share)),
+        event_socket(std::make_unique<EventSocketPool>()),
         socket_accepts(accepts),
         socket_discons(discons),
         socket_message(message),
         socket_sendmsg(sendmsg),
-        tcp_socket(std::make_unique<EventSocketPool>()),
+        tcp_socket(std::make_unique<TcpSocket>()),
 #ifdef H_OS_WINDOWS
         tcp_listen(std::make_unique<TcpListen>(loop, true)),
 #else
@@ -43,7 +44,7 @@ namespace Evpp
 
     bool TcpServer::CreaterServer(const u96 thread_size)
     {
-        if (tcp_socket && tcp_listen)
+        if (event_socket && tcp_listen)
         {
             if (ExistsStarts(Status::None))
             {
@@ -57,7 +58,7 @@ namespace Evpp
                     {
                         if (ChangeStatus(Status::Init, Status::Exec))
                         {
-                            return tcp_listen->CreaterListenService(tcp_socket.get(), this);
+                            return tcp_listen->CreaterListenService(event_socket.get(), this);
                         }
                     }
                 }
@@ -110,9 +111,9 @@ namespace Evpp
     {
         if (ExistsStarts(Status::None))
         {
-            if (nullptr != tcp_socket)
+            if (nullptr != event_socket)
             {
-                return tcp_socket->AddListenPort(server_address, port);
+                return event_socket->AddListenPort(server_address, port);
             }
         }
         return false;
@@ -210,6 +211,7 @@ namespace Evpp
     {
         if (tcp_session.size())
         {
+            tcp_socket->DelSockInfo(index);
             {
                 std::lock_guard<std::recursive_mutex> lock(tcp_recursive_mutex);
                 tcp_session.erase(index);
@@ -217,10 +219,13 @@ namespace Evpp
             }
         }
 
-        if (tcp_session.empty())
+        if (ExistsStoped())
         {
-            event_close_flag.store(1, std::memory_order_release);
-            std::atomic_notify_one(&event_close_flag);
+            if (tcp_session.empty())
+            {
+                event_close_flag.store(1, std::memory_order_release);
+                std::atomic_notify_one(&event_close_flag);
+            }
         }
     }
 
@@ -285,16 +290,19 @@ namespace Evpp
             {
                 if (CreaterSession(loop, client, index))
                 {
-                    if (nullptr != socket_accepts)
+                    if (tcp_socket->AddSockInfo(client.get(), index))
                     {
-                        if (socket_accepts(loop, GetSession(index), index))
+                        if (nullptr != socket_accepts)
                         {
-                            return true;
-                        }
+                            if (socket_accepts(loop, GetSession(index), index))
+                            {
+                                return true;
+                            }
 
-                        return Close(index);
+                            return Close(index);
+                        }
+                        return false;
                     }
-                    return false;
                 }
             }
             return SystemShutdown(reinterpret_cast<socket_stream*>(client.get()));
@@ -330,6 +338,12 @@ namespace Evpp
             {
                 if (InitTcpSocket(loop, server, client.get()))
                 {
+                    // 停止服务器不在接受新客户到来
+                    if (ExistsStoped())
+                    {
+                        return SystemClose(reinterpret_cast<socket_stream*>(client.get()));
+                    }
+
                     return InitialSession(loop, client);
                 }
 

@@ -39,9 +39,9 @@ namespace Evpp
     {
         if (nullptr != socket_t)
         {
-            if (uv_ip4_addr(socket_t->host.c_str(), socket_t->port, &socket_t->addr4))
+            if (uv_ip4_addr(socket_t->host.data(), socket_t->port, &socket_t->addr4))
             {
-                if (uv_ip6_addr(socket_t->host.c_str(), socket_t->port, &socket_t->addr6))
+                if (uv_ip6_addr(socket_t->host.data(), socket_t->port, &socket_t->addr6))
                 {
                     return false;
                 }
