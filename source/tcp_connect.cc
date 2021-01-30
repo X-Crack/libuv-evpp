@@ -46,5 +46,4 @@ namespace Evpp
     {
         return 0 == uv_tcp_connect(tcp_connect.get(), tcp_handler.get(), addr, &TcpClient::DefaultConnect);
     }
-
 }
