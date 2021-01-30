@@ -50,7 +50,10 @@ namespace Evpp
     {
         if (nullptr != event_base && nullptr != event_time)
         {
-            return 0 == uv_timer_start(event_time, &EventTimer::OnNotify, delay, repeat);
+            if (0 == uv_is_active(reinterpret_cast<event_handle*>(event_time)))
+            {
+                return 0 == uv_timer_start(event_time, &EventTimer::OnNotify, delay, repeat);
+            }
         }
         return false;
     }
@@ -66,7 +69,7 @@ namespace Evpp
         }
         return false;
     }
-
+    // ¿ÉÄÜ´æÔÚ BUG
     bool EventTimer::KilledTimer()
     {
         if (StopedTimer())

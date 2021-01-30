@@ -13,7 +13,7 @@ namespace Evpp
     class TcpConnect;
     class TcpSession;
     class TcpAttach;
-    class TcpClient final : public EventStatus
+    class TcpClient : public EventStatus
     {
     public:
         explicit TcpClient(EventLoop* loop, const u96 index = 1);
