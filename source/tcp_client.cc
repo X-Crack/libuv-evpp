@@ -212,6 +212,7 @@ namespace Evpp
     {
         if (nullptr != tcp_session)
         {
+            // 已经存在连接对象，并且是正常被断开的状态。
             if (ChangeStatus(Status::Stop, Status::Init))
             {
                 tcp_session.reset();
@@ -223,6 +224,7 @@ namespace Evpp
                 }
             }
 
+            // 已经存在连接对象，并且服务器主动关闭的状态。
             if (ExistsStarts(Status::Exit))
             {
                 tcp_session.reset();
@@ -230,6 +232,14 @@ namespace Evpp
                 std::atomic_notify_one(&event_close_flag);
             }
         }
+
+
+        // 不存在连接对象，并且服务器无法连接，反复尝试状态。
+        if (nullptr == tcp_session && ExistsStarts(Status::Init))
+        {
+            return tcp_attach->TryRetryConnect();
+        }
+
         return false;
     }
 

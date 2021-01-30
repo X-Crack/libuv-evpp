@@ -10,7 +10,7 @@ namespace Evpp
         event_timer(std::make_shared<EventTimer>(loop)),
         socket_client(client),
         attach_timer(1),
-        attach_delay(3000)
+        attach_delay(100)
     {
         event_timer->SetEventTimerCallback(std::bind(&TcpAttach::OnTimer, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
     }
