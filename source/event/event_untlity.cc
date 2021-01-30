@@ -31,6 +31,12 @@ namespace Evpp
             return true;
         }
 
+        bool DefaultSendMsg(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const u96 index, const i32 status)
+        {
+            printf("SendMessage:%d status:%d Thread:%d\n", index, status, loop->EventThreadId());
+            return true;
+        }
+
         bool DefaultConnect(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const u96 index)
         {
             (void)loop, session, index;

@@ -5,13 +5,15 @@
 
 namespace Evpp
 {
-    TcpMessage::TcpMessage(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const SystemDiscons& discons, const SystemMessage& message) :
+    TcpMessage::TcpMessage(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const SystemDiscons& discons, const SystemMessage& message, const SystemSendMsg& sendmsg) :
         event_base(loop),
+        system_discons(discons),
+        system_message(message),
+        system_sendmsg(sendmsg),
         tcp_socket(client),
         tcp_buffer(std::make_shared<TcpBuffer>()),
         event_shutdown(std::make_unique<socket_shutdown>()),
-        system_discons(discons),
-        system_message(message)
+        event_write(std::make_unique<socket_write>())
     {
         if (nullptr == client->data)
         {
@@ -21,6 +23,11 @@ namespace Evpp
         if (nullptr == event_shutdown->data)
         {
             event_shutdown->data = this;
+        }
+
+        if (nullptr == event_write->data)
+        {
+            event_write->data = this;
         }
 
         if (uv_read_start(reinterpret_cast<socket_stream*>(client.get()), &TcpMessage::DefaultMakesram, &TcpMessage::DefaultMessages))
@@ -113,26 +120,9 @@ namespace Evpp
     {
         if (uv_is_active(reinterpret_cast<event_handle*>(tcp_socket.get())))
         {
-            return DefaultSend(&bufs, nbufs);
+            return 0 == uv_write(event_write.get(), reinterpret_cast<socket_stream*>(tcp_socket.get()), &bufs, nbufs, &TcpMessage::DefaultSend);
         }
         return false;
-    }
-
-    bool TcpMessage::DefaultSend(const socket_data* bufs, u32 nbufs)
-    {
-        socket_write* request = new socket_write();
-        {
-            if (0 == request->data)
-            {
-                request->data = this;
-            }
-        }
-        return DefaultSend(request, reinterpret_cast<socket_stream*>(tcp_socket.get()), bufs, nbufs);
-    }
-
-    bool TcpMessage::DefaultSend(socket_write* request, socket_stream* handler, const socket_data* bufs, unsigned int nbufs)
-    {
-        return 0 == uv_write(request, handler, bufs, nbufs, &TcpMessage::DefaultSend);
     }
 
     bool TcpMessage::SetSendBlocking(const u32 value)
@@ -179,8 +169,20 @@ namespace Evpp
     {
         if (nullptr != request && 0 == status)
         {
-            delete request;
-            request = nullptr;
+            if (nullptr != system_sendmsg)
+            {
+                if (system_sendmsg(status))
+                {
+                    return;
+                }
+
+                if (SystemClose(reinterpret_cast<socket_stream*>(tcp_socket.get())))
+                {
+                    return;
+                }
+
+                printf("the client has been shut down\n");
+            }
         }
     }
 
@@ -278,11 +280,14 @@ namespace Evpp
 
     void TcpMessage::DefaultSend(socket_write* handler, int status)
     {
-        TcpMessage* watcher = static_cast<TcpMessage*>(handler->data);
+        if (nullptr != handler)
         {
-            if (nullptr != watcher)
+            TcpMessage* watcher = static_cast<TcpMessage*>(handler->data);
             {
-                watcher->OnSend(handler, status);
+                if (nullptr != watcher)
+                {
+                    watcher->OnSend(handler, status);
+                }
             }
         }
     }

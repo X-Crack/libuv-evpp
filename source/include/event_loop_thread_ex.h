@@ -4,9 +4,6 @@
 #include <thread>
 #include <mutex>
 #include <condition_variable>
-#ifdef __cpp_coroutines
-#include <event_coroutine.h>
-#endif
 namespace Evpp
 {
     class EventLoop;

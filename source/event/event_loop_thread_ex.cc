@@ -2,6 +2,7 @@
 #include <event_loop.h>
 #include <event_loop_thread_ex.h>
 #include <event_share.h>
+#include <event_coroutine.h>
 namespace Evpp
 {
 #ifdef __cpp_coroutines
@@ -17,7 +18,6 @@ namespace Evpp
         event_share(share),
         event_index(index),
         event_loop(std::make_shared<EventLoop>(event_share->EventLoop(index), index)),
-        //event_coroutine_task(new EventCoroutineTask(std::bind(&EventLoopThreadEx::CoroutineDispatch, this))),
         loop_exit(0)
     {
 
@@ -96,7 +96,6 @@ namespace Evpp
                 {
                     if (event_loop->InitialEvent())
                     {
-                        std::atomic_notify_one(&status);
                         while (!loop_exit.load())
                         {
                             if (uv_loop_alive(event_loop->EventBasic()))

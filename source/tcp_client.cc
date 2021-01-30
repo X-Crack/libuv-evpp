@@ -96,6 +96,14 @@ namespace Evpp
         }
     }
 
+    void TcpClient::SetSendMsgCallback(const InterfaceSendMsg& sendmsg)
+    {
+        if (nullptr == socket_sendmsg)
+        {
+            socket_sendmsg = sendmsg;
+        }
+    }
+
     bool TcpClient::Close()
     {
         if (nullptr != tcp_session)
@@ -114,7 +122,8 @@ namespace Evpp
                 client,
                 index,
                 std::bind(&TcpClient::DefaultDiscons, this, std::placeholders::_1, std::placeholders::_2),
-                std::bind(&TcpClient::DefaultMessage, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4)
+                std::bind(&TcpClient::DefaultMessage, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4),
+                std::bind(&TcpClient::DefaultSendMsg, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4)
             ));
             return true;
         }
@@ -223,6 +232,15 @@ namespace Evpp
         if (nullptr != socket_message)
         {
             return socket_message(loop, session, buffer, index);
+        }
+        return false;
+    }
+
+    bool TcpClient::DefaultSendMsg(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const u96 index, const i32 status)
+    {
+        if (nullptr != socket_sendmsg)
+        {
+            return socket_sendmsg(loop, session, index, status);
         }
         return false;
     }

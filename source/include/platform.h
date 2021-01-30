@@ -21,6 +21,7 @@
 #pragma warning( disable: 4530 )
 #pragma warning( disable: 4577 )
 #pragma warning( disable: 4503 )
+#pragma warning( disable: 4458 )
 #endif
 
 #ifdef H_OS_WINDOWS

@@ -26,6 +26,7 @@ namespace Evpp
     typedef std::function<bool(EventLoop*, const u96, const i32, const String*, const String*)>																InterfaceFailure;
 	typedef std::function<bool(EventLoop*, const u96)>                                                                                                      InterfaceDiscons;
 	typedef std::function<bool(EventLoop*, const std::shared_ptr<TcpSession>&, const std::shared_ptr<TcpBuffer>&, const u96)>                               InterfaceMessage;
+	typedef std::function<bool(EventLoop*, const std::shared_ptr<TcpSession>&, const u96, const i32)>                                                       InterfaceSendMsg;
 	
 	namespace Import
     {
@@ -34,6 +35,8 @@ namespace Evpp
 		bool DefaultDiscons(EventLoop* loop, const u96 index);
 
         bool DefaultMessage(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const std::shared_ptr<TcpBuffer>& buffer, const u96 index);
+
+		bool DefaultSendMsg(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const u96 index, const i32 status);
 
 		bool DefaultConnect(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const u96 index);
 

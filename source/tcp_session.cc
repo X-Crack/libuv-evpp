@@ -6,14 +6,15 @@
 
 namespace Evpp
 {
-    TcpSession::TcpSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const u96 index, const SystemDiscons& discons, const SystemMessage& message) :
+    TcpSession::TcpSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const u96 index, const SystemDiscons& discons, const SystemMessage& message, const SystemSendMsg& sendmsg) :
         event_base(loop),
-        tcp_socket(client),
-        tcp_message(std::make_unique<TcpMessage>(loop, client, std::bind(&TcpSession::OnSystemDiscons, this), std::bind(&TcpSession::OnSystemMessage, this, std::placeholders::_1))),
-        event_timer_pool(std::make_unique<EventTimerPool>(loop)),
         self_index(index),
         system_discons(discons),
-        system_message(message)
+        system_message(message),
+        system_sendmsg(sendmsg),
+        tcp_socket(client),
+        tcp_message(std::make_unique<TcpMessage>(loop, client, std::bind(&TcpSession::OnSystemDiscons, this), std::bind(&TcpSession::OnSystemMessage, this, std::placeholders::_1), std::bind(&TcpSession::OnSystemSendMsg, this, std::placeholders::_1))),
+        event_timer_pool(std::make_unique<EventTimerPool>(loop))
     {
 
     }
@@ -155,6 +156,15 @@ namespace Evpp
         if (nullptr != system_message)
         {
             return system_message(event_base, std::weak_ptr<TcpSession>(shared_from_this()).lock(), Buffer, self_index);
+        }
+        return false;
+    }
+
+    bool TcpSession::OnSystemSendMsg(const i32 status)
+    {
+        if (nullptr != system_sendmsg)
+        {
+            return system_sendmsg(event_base, std::weak_ptr<TcpSession>(shared_from_this()).lock(), self_index, status);
         }
         return false;
     }

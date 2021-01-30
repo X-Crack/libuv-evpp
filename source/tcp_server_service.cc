@@ -124,4 +124,12 @@ namespace Evpp
             return tcp_server->SetMessageCallback(message);
         }
     }
+
+    void TcpServerService::SetSendMsgCallback(const InterfaceSendMsg& sendmsg)
+    {
+        if (nullptr != tcp_server)
+        {
+            return tcp_server->SetSendMsgCallback(sendmsg);
+        }
+    }
 }

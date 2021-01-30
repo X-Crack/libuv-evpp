@@ -13,8 +13,9 @@ namespace Evpp
     public:
         typedef std::function<void(EventLoop*, const u96)>                                                                          SystemDiscons;
         typedef std::function<bool(EventLoop*, const std::shared_ptr<TcpSession>&, const std::shared_ptr<TcpBuffer>&, const u96)>   SystemMessage;
+        typedef std::function<bool(EventLoop*, const std::shared_ptr<TcpSession>&, const u96, const i32)>                           SystemSendMsg;
     public:
-        explicit TcpSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const u96 index, const SystemDiscons& discons, const SystemMessage& message);
+        explicit TcpSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const u96 index, const SystemDiscons& discons, const SystemMessage& message, const SystemSendMsg& sendmsg);
         virtual ~TcpSession();
     public:
         bool Send(const char* buf, u96 len, u32 nbufs = 1);
@@ -37,14 +38,16 @@ namespace Evpp
     private:
         void OnSystemDiscons();
         bool OnSystemMessage(const std::shared_ptr<TcpBuffer>& Buffer);
+        bool OnSystemSendMsg(const i32 status);
     private:
         EventLoop*                                                      event_base;
-        std::shared_ptr<socket_tcp>                                     tcp_socket;
-        std::unique_ptr<TcpMessage>                                     tcp_message;
-        std::unique_ptr<EventTimerPool>                                 event_timer_pool;
         u96                                                             self_index;
         SystemDiscons                                                   system_discons;
         SystemMessage                                                   system_message;
+        SystemSendMsg                                                   system_sendmsg;
+        std::shared_ptr<socket_tcp>                                     tcp_socket;
+        std::unique_ptr<TcpMessage>                                     tcp_message;
+        std::unique_ptr<EventTimerPool>                                 event_timer_pool;
     };
 }
 #endif // __TCP_SESSION_H__

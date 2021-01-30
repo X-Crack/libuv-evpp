@@ -8,7 +8,6 @@
 #include <experimental/resumable>
 namespace Evpp
 {
-#ifdef __cpp_coroutines
     struct EventCoroutineTask;
     struct EventCoroutine
     {
@@ -55,6 +54,5 @@ namespace Evpp
         std::function<bool()>                                                                       function;
         bool                                                                                        result;
     };
-#endif
 }
 #endif // __EVENT_COROUTINE_H__

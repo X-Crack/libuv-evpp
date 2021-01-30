@@ -9,12 +9,12 @@
 
 namespace Evpp
 {
-    TcpServer::TcpServer(EventLoop* loop, const std::shared_ptr<EventShare>& share) : TcpServer(loop, share, InterfaceAccepts(), InterfaceDiscons(), InterfaceMessage())
+    TcpServer::TcpServer(EventLoop* loop, const std::shared_ptr<EventShare>& share) : TcpServer(loop, share, InterfaceAccepts(), InterfaceDiscons(), InterfaceMessage(), InterfaceSendMsg())
     {
 
     }
 
-    TcpServer::TcpServer(EventLoop* loop, const std::shared_ptr<EventShare>& share, const InterfaceAccepts& accepts, const InterfaceDiscons& discons, const InterfaceMessage& message) :
+    TcpServer::TcpServer(EventLoop* loop, const std::shared_ptr<EventShare>& share, const InterfaceAccepts& accepts, const InterfaceDiscons& discons, const InterfaceMessage& message, const InterfaceSendMsg& sendmsg) :
         event_base(loop),
         event_share(share),
         event_close_flag(0),
@@ -23,6 +23,7 @@ namespace Evpp
         socket_accepts(accepts),
         socket_discons(discons),
         socket_message(message),
+        socket_sendmsg(sendmsg),
         tcp_socket(std::make_unique<EventSocketPool>()),
 #ifdef H_OS_WINDOWS
         tcp_listen(std::make_unique<TcpListen>(loop, true)),
@@ -99,8 +100,8 @@ namespace Evpp
                 {
                     std::atomic_wait_explicit(&event_close_flag_ex, 0, std::memory_order_relaxed);
                 }
+                return true;
             }
-            return true;
         }
         return false;
     }
@@ -176,6 +177,14 @@ namespace Evpp
         if (nullptr == socket_message)
         {
             socket_message = message;
+        }
+    }
+
+    void TcpServer::SetSendMsgCallback(const InterfaceSendMsg& sendmsg)
+    {
+        if (nullptr == socket_sendmsg)
+        {
+            socket_sendmsg = sendmsg;
         }
     }
 
@@ -262,7 +271,8 @@ namespace Evpp
             client,
             index,
             std::bind(&TcpServer::DefaultDiscons, this, std::placeholders::_1, std::placeholders::_2),
-            std::bind(&TcpServer::DefaultMessage, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4)
+            std::bind(&TcpServer::DefaultMessage, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4),
+            std::bind(&TcpServer::DefaultSendMsg, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4)
             )
         ).second;
     }
@@ -387,6 +397,15 @@ namespace Evpp
             return socket_message(loop, session, buffer, index);
         }
         return false;
+    }
+
+    bool TcpServer::DefaultSendMsg(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const u96 index, const i32 status)
+    {
+        if (nullptr != loop && nullptr != socket_sendmsg)
+        {
+            return socket_sendmsg(loop, session, index, status);
+        }
+        return true;
     }
 
     bool TcpServer::CheckClose(socket_stream* handler)

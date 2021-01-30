@@ -18,7 +18,7 @@ namespace Evpp
     {
     public:
         explicit TcpServer(EventLoop* loop, const std::shared_ptr<EventShare>& share);
-        explicit TcpServer(EventLoop* loop, const std::shared_ptr<EventShare>& share, const InterfaceAccepts& accepts, const InterfaceDiscons& discons, const InterfaceMessage& message);
+        explicit TcpServer(EventLoop* loop, const std::shared_ptr<EventShare>& share, const InterfaceAccepts& accepts, const InterfaceDiscons& discons, const InterfaceMessage& message, const InterfaceSendMsg& sendmsg);
         virtual ~TcpServer();
         friend TcpListen;
     public:
@@ -34,6 +34,7 @@ namespace Evpp
         void SetAcceptsCallback(const InterfaceAccepts& accepts);
         void SetDisconsCallback(const InterfaceDiscons& discons);
         void SetMessageCallback(const InterfaceMessage& message);
+        void SetSendMsgCallback(const InterfaceSendMsg& sendmsg);
     public:
         bool RunInLoop(const Functor& function);
         bool RunInLoopEx(const Handler& function);
@@ -51,6 +52,7 @@ namespace Evpp
     private:
         void DefaultDiscons(EventLoop* loop, const u96 index);
         bool DefaultMessage(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const std::shared_ptr<TcpBuffer>& buffer, const u96 index);
+        bool DefaultSendMsg(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const u96 index, const i32 status);
     private:
         bool InitTcpSocket(EventLoop* loop, socket_stream* handler, socket_tcp* client);
     private:
@@ -74,6 +76,7 @@ namespace Evpp
         InterfaceAccepts                                                socket_accepts;
         InterfaceDiscons                                                socket_discons;
         InterfaceMessage                                                socket_message;
+        InterfaceSendMsg                                                socket_sendmsg;
         std::unique_ptr<EventSocketPool>                                tcp_socket;
         std::unique_ptr<TcpListen>                                      tcp_listen;
         std::atomic<u96>											    tcp_index;

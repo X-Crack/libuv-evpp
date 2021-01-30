@@ -21,6 +21,7 @@ namespace Evpp
         bool OnAccepts(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const u96 index);
         bool OnDiscons(EventLoop* loop, const u96 index);
         bool OnMessage(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const std::shared_ptr<TcpBuffer>& buffer, const u96 index);
+        bool OnSendMsg(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const u96 index, const i32 status);
     private:
         std::shared_ptr<EventShare>                 event_share;
         std::shared_ptr<EventLoop>                  event_base;

@@ -41,6 +41,7 @@ namespace Evpp
         tcp_server->SetAcceptsCallback(std::bind(&EchoServer::OnAccepts, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
         tcp_server->SetDisconsCallback(std::bind(&EchoServer::OnDiscons, this, std::placeholders::_1, std::placeholders::_2));
         tcp_server->SetMessageCallback(std::bind(&EchoServer::OnMessage, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
+        tcp_server->SetSendMsgCallback(std::bind(&EchoServer::OnSendMsg, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
 
         tcp_server->CreaterServer(event_share->GetLoopsSize());
 
@@ -64,6 +65,12 @@ namespace Evpp
     {
         std::cout << "用户消息: " << index << "消息长度: %d" << buffer->readableBytes() << std::endl;
         buffer->retrieve(buffer->readableBytes());
+        return true;
+    }
+
+    bool EchoServer::OnSendMsg(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const u96 index, const i32 status)
+    {
+        std::cout << "发送消息: " << "发送状态: %d" << status << std::endl;
         return true;
     }
 }

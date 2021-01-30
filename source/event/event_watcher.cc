@@ -3,6 +3,7 @@
 #include <event_async.h>
 #include <blockingconcurrentqueue.h>
 #include <concurrentqueue.h>
+#include <event_coroutine.h>
 namespace Evpp
 {
     struct Traits : public moodycamel::ConcurrentQueueDefaultTraits
@@ -69,7 +70,8 @@ namespace Evpp
     {
         if (nullptr != event_base && nullptr != event_async_)
         {
-            return SendAsyncNotifyEx(function);
+            EventCoroutine::JoinInTask(std::bind(&EventWatcher::SendAsyncNotifyEx, this, function));
+            return true;
         }
         return false;
     }
