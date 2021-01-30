@@ -244,7 +244,11 @@ namespace Evpp
     {
         if (tcp_socket && tcp_connect && nullptr == tcp_session)
         {
-            return tcp_connect->ConnectService(tcp_socket);
+            if (event_base->EventThread())
+            {
+                return tcp_connect->ConnectService(tcp_socket);
+            }
+            return RunInLoopEx(std::bind(&TcpClient::ConnectService, this));
         }
         return false;
     }
