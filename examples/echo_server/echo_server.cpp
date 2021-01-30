@@ -63,14 +63,14 @@ namespace Evpp
 
     bool EchoServer::OnMessage(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const std::shared_ptr<TcpBuffer>& buffer, const u96 index)
     {
-        std::cout << "用户消息: " << index << "消息长度: %d" << buffer->readableBytes() << std::endl;
+        std::cout << "用户消息: " << index << " " << "消息长度: %d" << buffer->readableBytes() << std::endl;
         buffer->retrieve(buffer->readableBytes());
         return true;
     }
 
     bool EchoServer::OnSendMsg(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const u96 index, const i32 status)
     {
-        std::cout << "发送消息: " << "发送状态: %d" << status << std::endl;
+        std::cout << "发送消息: " << index << " " << "发送状态: %d" << status << std::endl;
         return true;
     }
 }
