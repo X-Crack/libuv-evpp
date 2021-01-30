@@ -37,7 +37,7 @@ int main()
     Tcp.SetMessageCallback(Import::DefaultMessage);
     Tcp.SetSendMsgCallback(Import::DefaultSendMsg);
     //Tcp.SetEventThreadId(GetCurrentThreadId());
-    Tcp.CreaterServer(1);
+    Tcp.CreaterServer(16);
     Tcp.ExecDispatch();
     printf("exit thread\n");
 
