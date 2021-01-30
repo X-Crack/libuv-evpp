@@ -224,7 +224,7 @@ namespace Evpp
                 }
             }
 
-            // 已经存在连接对象，并且服务器主动关闭的状态。
+            // 已经存在连接对象，并且客户端主动销毁的状态。
             if (ExistsStarts(Status::Exit))
             {
                 tcp_session.reset();
