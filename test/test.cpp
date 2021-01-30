@@ -20,6 +20,7 @@
 #include <tcp_server_service.h>
 #include <event_work_queue.h>
 #include <event_resolve.h>
+#include <tcp_client_service.h>
 //#include "cpps/cpps.h"
 
 #include <future>
@@ -27,6 +28,24 @@
 using namespace Evpp;
 int main()
 {
+
+    TcpClientService client;
+
+    client.AddListenPort("127.0.0.1", 8888);
+
+    client.SetConnectCallback();
+    client.SetDisconsCallback();
+    client.SetFailureCallback();
+    client.SetMessageCallback();
+    client.SetRestoreCallback();
+    client.SetSendMsgCallback();
+
+    client.CreaterClient();
+
+    client.ExecDispatch();
+
+
+    return 0;
     TcpServerService Tcp;
 
     Tcp.AddListenPort("0.0.0.0", 8888);

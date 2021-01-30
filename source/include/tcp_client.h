@@ -23,7 +23,8 @@ namespace Evpp
     public:
         bool CreaterClient();
         bool AddListenPort(const std::string& server_address, const u16 port);
-        void SetResetConnect(const u64 delay, const u64 timer);
+        void SetResetConnectTimer(const u64 delay, const u64 timer);
+        void SetResetConnect(const u32 status);
     public:
         bool Close();
     public:
@@ -42,7 +43,7 @@ namespace Evpp
     private:
         bool ConnectService();
     private:
-        void DefaultConnect();
+        bool DefaultConnect();
         void DefaultFailure(int status);
         void DefaultDiscons(EventLoop* loop, const u96 index);
         bool DefaultMessage(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const std::shared_ptr<TcpBuffer>& buffer, const u96 index);

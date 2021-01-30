@@ -19,7 +19,7 @@ namespace Evpp
     {
         if (nullptr != tcp_client)
         {
-            return tcp_client->CreaterClient();
+            return event_base->InitialEvent() && tcp_client->CreaterClient();
         }
         return false;
     }
@@ -33,11 +33,52 @@ namespace Evpp
         return false;
     }
 
-    void TcpClientService::SetResetConnect(const u64 delay, const u64 timer)
+    bool TcpClientService::ExecDispatch()
+    {
+        if (nullptr != event_base)
+        {
+            return event_base->ExecDispatch();
+        }
+    }
+
+    bool TcpClientService::ExecDispatch(u32 mode)
+    {
+        if (nullptr != event_base)
+        {
+            return event_base->ExecDispatch(mode);
+        }
+    }
+
+    bool TcpClientService::ExecDispatch(const EventLoopHandler& function, u32 mode)
+    {
+        if (nullptr != event_base)
+        {
+            return event_base->ExecDispatch(function, mode);
+        }
+    }
+
+    bool TcpClientService::StopDispatch()
+    {
+        if (nullptr != event_base)
+        {
+            return event_base->StopDispatch();
+        }
+    }
+
+    void TcpClientService::SetResetConnectTimer(const u64 delay, const u64 timer)
     {
         if (nullptr != tcp_client)
         {
-            return tcp_client->SetResetConnect(delay, timer);
+            return tcp_client->SetResetConnectTimer(delay, timer);
+        }
+        return;
+    }
+
+    void TcpClientService::SetResetConnect(const u32 status)
+    {
+        if (nullptr != tcp_client)
+        {
+            return tcp_client->SetResetConnect(status);
         }
         return;
     }

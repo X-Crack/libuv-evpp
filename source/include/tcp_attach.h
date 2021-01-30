@@ -12,7 +12,7 @@ namespace Evpp
         explicit TcpAttach(EventLoop* loop, TcpClient* client);
         virtual ~TcpAttach();
     public:
-        void SetResetConnect(const u64 delay, const u64 timer);
+        void SetResetConnectTimer(const u64 delay, const u64 timer);
     public:
         bool TryRetryConnect();
         bool TryRetryConnect(const u64 delay, const u64 timer);

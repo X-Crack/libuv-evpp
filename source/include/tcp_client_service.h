@@ -14,7 +14,15 @@ namespace Evpp
     public:
         bool CreaterClient();
         bool AddListenPort(const std::string& host, const u16 port);
-        void SetResetConnect(const u64 delay, const u64 timer);
+    public:
+        bool ExecDispatch();
+        bool ExecDispatch(u32 mode);
+        // 回调用于客户端界面消息刷新防止窗口假死
+        bool ExecDispatch(const EventLoopHandler& function, u32 mode = UV_RUN_ONCE);
+        bool StopDispatch();
+    public:
+        void SetResetConnectTimer(const u64 delay, const u64 timer);
+        void SetResetConnect(const u32 status);
     public:
         bool Close();
     public:

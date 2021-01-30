@@ -15,7 +15,7 @@ namespace Evpp
         tcp_connect(std::make_unique<TcpConnect>(loop, socket_handler, this)),
         tcp_attach(std::make_unique<TcpAttach>(loop, this)),
         tcp_retry(0),
-        tcp_retry_connection(0)
+        tcp_retry_connection(1)
     {
         
     }
@@ -47,9 +47,14 @@ namespace Evpp
         return tcp_socket->CreaterSocket(server_address, port);
     }
 
-    void TcpClient::SetResetConnect(const u64 delay, const u64 timer)
+    void TcpClient::SetResetConnectTimer(const u64 delay, const u64 timer)
     {
-        return tcp_attach->SetResetConnect(delay, timer);
+        return tcp_attach->SetResetConnectTimer(delay, timer);
+    }
+
+    void TcpClient::SetResetConnect(const u32 status)
+    {
+        tcp_retry_connection.store(status);
     }
 
     bool TcpClient::Close()
@@ -155,7 +160,7 @@ namespace Evpp
     {
         if (nullptr != tcp_session)
         {
-            if (ChangeStatus(Status::Exec, Status::Stop))
+            if (ChangeStatus(Status::Stop, Status::Init))
             {
                 tcp_session.reset();
                 {
@@ -170,15 +175,12 @@ namespace Evpp
     {
         if (tcp_socket && tcp_connect && nullptr == tcp_session)
         {
-            if (ExistsStoped() || ExistsStarts(Status::None))
-            {
-                return tcp_connect->ConnectService(tcp_socket);
-            }
+            return tcp_connect->ConnectService(tcp_socket);
         }
         return false;
     }
 
-    void TcpClient::DefaultConnect()
+    bool TcpClient::DefaultConnect()
     {
         if (nullptr != event_base)
         {
@@ -186,19 +188,15 @@ namespace Evpp
             {
                 if (nullptr != tcp_session)
                 {
-                    if (tcp_retry)
+                    if (tcp_retry_connection && tcp_retry)
                     {
                         if (nullptr != socket_restore)
                         {
                             if (socket_restore(event_base, tcp_session, event_index))
                             {
-                                return;
+                                return true;
                             }
-
-                            if (Close())
-                            {
-                                return;
-                            }
+                            return Close();
                         }
                     }
 
@@ -206,17 +204,15 @@ namespace Evpp
                     {
                         if (socket_connect_(event_base, tcp_session, event_index))
                         {
-                            return;
+                            return true;
                         }
 
-                        if (Close())
-                        {
-                            return;
-                        }
+                        return Close();
                     }
                 }
             }
         }
+        return false;
     }
 
     void TcpClient::DefaultFailure(int status)
@@ -244,11 +240,17 @@ namespace Evpp
     {
         if (nullptr != socket_discons)
         {
-            if (socket_discons(loop, index))
+            if (ChangeStatus(Status::Exec, Status::Stop))
             {
-                if (RunInLoop(std::bind(&TcpClient::DeletedSession, this)))
+                if (socket_discons(loop, index))
                 {
-                    return;
+                    if (tcp_retry_connection)
+                    {
+                        if (RunInLoop(std::bind(&TcpClient::DeletedSession, this)))
+                        {
+                            return;
+                        }
+                    }
                 }
             }
         }
@@ -280,7 +282,23 @@ namespace Evpp
             {
                 if (nullptr != watcher)
                 {
-                    status ? watcher->DefaultFailure(status) : watcher->DefaultConnect();
+                    if (status)
+                    {
+                        watcher->DefaultFailure(status);
+                        return;
+                    }
+                    
+                    if (watcher->DefaultConnect())
+                    {
+                        return;
+                    }
+
+                    if (watcher->Close())
+                    {
+                        return;
+                    }
+
+                    printf("Close Client Error\n");
                 }
             }
         }
