@@ -9,7 +9,8 @@ namespace Evpp
         event_refer(0),
         event_watcher(std::make_unique<EventWatcher>(this)),
         event_timer_pool(std::make_unique<EventTimerPool>(this)),
-        event_thread(0)
+        event_thread(0),
+        event_stop_flag(1)
     {
 
     }
@@ -68,14 +69,32 @@ namespace Evpp
     {
         if (0 != event_base)
         {
-            for (; 0 == event_base->stop_flag && 1 == uv_run(event_base, static_cast<uv_run_mode>(mode));)
+            if (uv_run(event_base, static_cast<uv_run_mode>(mode)))
             {
                 if (nullptr != function)
                 {
                     function(this);
                 }
             }
-            return 1 == event_base->stop_flag;
+            return true;
+        }
+        return false;
+    }
+
+
+    bool EventLoop::ExecDispatchEx(const EventLoopHandler& function, u32 mode)
+    {
+        if (0 != event_base)
+        {
+            for (; 0 == event_base->stop_flag && event_stop_flag;)
+            {
+                if (ExecDispatch(function, static_cast<uv_run_mode>(mode)))
+                {
+                    continue;
+                }
+            }
+
+            return 0 == event_stop_flag.load(std::memory_order_acquire);
         }
         return false;
     }
@@ -86,16 +105,27 @@ namespace Evpp
         {
             if (0 == event_base->stop_flag)
             {
-                while (event_watcher->DestroyQueue())
-                {
-                    Sleep(1);
-                }
+                while (event_watcher->DestroyQueue());
+
                 uv_stop(event_base);
+
+                if (event_stop_flag)
+                {
+                    event_stop_flag.store(0, std::memory_order_release);
+                    std::atomic_notify_one(&event_stop_flag);
+                }
+                
                 return true;
             }
-            return false;
+            return true;
         }
-        return RunInLoop(std::bind(&EventLoop::StopDispatch, this));
+        
+        if (RunInLoop(std::bind(&EventLoop::StopDispatch, this)))
+        {
+            std::atomic_wait_explicit(&event_stop_flag, 1, std::memory_order_relaxed);
+            return true;
+        }
+        return false;
     }
 
     bool EventLoop::RunInLoop(const Functor& function)

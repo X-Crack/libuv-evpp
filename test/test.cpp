@@ -33,6 +33,18 @@ void exit_loop(Evpp::TcpClientService* client)
     printf("Exit OK %d\n", GetTickCount() - timer);
 }
 
+void printf_loop_ex()
+{
+    printf("RunInLoop Printf\n");
+}
+
+void printf_loop(Evpp::EventLoop* loop)
+{
+    loop->RunInLoopEx(std::bind(printf_loop_ex));
+}
+
+
+
 using namespace Evpp;
 int main()
 {
@@ -50,10 +62,10 @@ int main()
 
     client.CreaterClient();
 
-    std::thread t1(std::bind(exit_loop, &client));
-    t1.detach();
+//     std::thread t1(std::bind(exit_loop, &client));
+//     t1.detach();
 
-    client.ExecDispatch();
+    client.ExecDispatchCoroutine(std::bind(printf_loop, std::placeholders::_1));
 
     return 0;
     TcpServerService Tcp;

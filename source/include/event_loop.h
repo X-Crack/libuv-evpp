@@ -21,6 +21,7 @@ namespace Evpp
         bool ExecDispatch();
         bool ExecDispatch(u32 mode);
         bool ExecDispatch(const EventLoopHandler& function, u32 mode = UV_RUN_ONCE);
+        bool ExecDispatchEx(const EventLoopHandler& function, u32 mode = UV_RUN_ONCE);
         bool StopDispatch();
     public:
         bool RunInLoop(const Functor& function);
@@ -54,6 +55,7 @@ namespace Evpp
         std::unique_ptr<EventTimerPool>                         event_timer_pool;
         std::unordered_map<u96, std::unique_ptr<std::any>>      event_context;
         u32                                                     event_thread;
+        std::atomic<u32>                                        event_stop_flag;
     };
 }
 #endif // __EVENT_LOOP_H__

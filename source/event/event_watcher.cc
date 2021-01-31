@@ -45,6 +45,16 @@ namespace Evpp
 
     bool EventWatcher::DestroyQueue()
     {
+        if (nolock_queue->size_approx())
+        {
+            RecvAsyncNotify();
+        }
+
+        if (nolock_queue_ex->size_approx())
+        {
+            RecvAsyncNotifyEx();
+        }
+        
         return nolock_queue->size_approx() || nolock_queue_ex->size_approx();
     }
 
