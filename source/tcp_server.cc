@@ -39,7 +39,7 @@ namespace Evpp
 
     TcpServer::~TcpServer()
     {
-
+        printf("Delete TcpServer\n");
     }
 
     bool TcpServer::CreaterServer(const u96 thread_size)
@@ -245,7 +245,7 @@ namespace Evpp
                 }
             }
 
-            std::atomic_wait_explicit(&event_close_flag, 0, std::memory_order_relaxed);
+            event_close_flag.wait(1, std::memory_order_relaxed);
         }
         return tcp_session.empty();
     }
@@ -259,12 +259,6 @@ namespace Evpp
 
     bool TcpServer::CreaterSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const u96 index)
     {
-        // 防止在停止服务器时触发新用户加入
-        if (event_close_flag.load())
-        {
-            event_close_flag.store(0, std::memory_order_release);
-        }
-
         std::lock_guard<std::recursive_mutex> lock(tcp_recursive_mutex);
         return tcp_session.emplace
         (
