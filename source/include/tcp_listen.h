@@ -26,7 +26,8 @@ namespace Evpp
         bool DestroyListenService();
     private:
         bool DestroyListenService(EventLoop* loop, socket_tcp* server);
-        bool DeletedListenService(EventLoop* loop, socket_tcp* server);
+        bool DeletedListenService();
+        bool CloseedListenService(EventLoop* loop, socket_tcp* server);
     private:
         bool InitialListenService(EventSocketPool* socket, TcpServer* server, const u96 size);
         bool InitEventThreadPools(const u96 size);

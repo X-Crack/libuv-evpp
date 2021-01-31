@@ -83,13 +83,12 @@ int main()
     Tcp->SetDisconsCallback(Import::DefaultDiscons);
     Tcp->SetMessageCallback(Import::DefaultMessage);
     Tcp->SetSendMsgCallback(Import::DefaultSendMsg);
-    //Tcp.SetEventThreadId(GetCurrentThreadId());
-    Tcp->CreaterServer(16);
-    std::thread t2(std::bind(exit_loop1, Tcp.get()));
-    t2.detach();
+    Tcp->CreaterServer(32);
+//     std::thread t2(std::bind(exit_loop1, Tcp.get()));
+//     t2.detach();
     Tcp->ExecDispatchCoroutine(std::bind(printf_loop, std::placeholders::_1));
-    printf("exit thread\n");
     Tcp.reset();
+    printf("exit thread\n");
     //printf("异常退出\n");
 //     using namespace cpps; 
 //     C* c = cpps::create();
@@ -97,6 +96,6 @@ int main()
 //         cpps::dofile(c, "./src.cpp");
 //     _CPPS_CATCH;
 //     cpps::close(c);
-    //getchar();
+    getchar();
     return 0;
 }

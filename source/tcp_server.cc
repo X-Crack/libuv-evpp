@@ -75,22 +75,7 @@ namespace Evpp
             {
                 if (ChangeStatus(Status::Exec, Status::Stop))
                 {
-                    if (tcp_listen->DestroyListenService())
-                    {
-                        if (CleanedSession())
-                        {
-                            if (event_thread_pool->DestroyEventThreadPool())
-                            {
-                                if (wait)
-                                {
-                                    event_close_flag_ex.store(0, std::memory_order_release);
-                                    event_close_flag_ex.notify_one();
-                                }
-
-                                return true;
-                            }
-                        }
-                    }
+                    return DestroyService(wait);
                 }
                 return false;
             }
@@ -107,6 +92,36 @@ namespace Evpp
         return false;
     }
 
+    bool TcpServer::DestroyService(const bool wait)
+    {
+        if (nullptr == tcp_listen || nullptr == event_thread_pool)
+        {
+            return false;
+        }
+
+        // 销毁监听服务
+        if (0 == tcp_listen->DestroyListenService())
+        {
+            return false;
+        }
+        // 清理会话列表
+        if (0 == CleanedSession())
+        {
+            return false;
+        }
+        // 销毁线程列表
+        if (0 == event_thread_pool->DestroyEventThreadPool())
+        {
+            return false;
+        }
+
+        if (wait)
+        {
+            event_close_flag_ex.store(0, std::memory_order_release);
+            event_close_flag_ex.notify_one();
+        }
+        return true;
+    }
     bool TcpServer::AddListenPort(const std::string& server_address, const u16 port)
     {
         if (ExistsStarts(Status::None))

@@ -52,41 +52,25 @@ namespace Evpp
     {
         if (event_base->EventThread())
         {
-            if (ExistsStoped())
+            if (ExistsStoped() || ExistsNoneed() || ExistsInited())
             {
                 return true;
             }
 
             if (ExistsRuning())
             {
-                for (u96 i = 0; i < tcp_server.size(); ++i)
+                if (0 == DeletedListenService())
                 {
-                    if (DestroyListenService(event_thread_pool->GetEventLoop(i), tcp_server[i]))
-                    {
-                        continue;
-                    }
                     return false;
-                }
-
-                event_close_flag_ex.wait(1, std::memory_order_relaxed);
-
-                for (auto & var: tcp_server)
-                {
-                    if (nullptr != var)
-                    {
-                        delete var;
-                        var = nullptr;
-                    }
                 }
 
                 if (ChangeStatus(Status::Exec, Status::Stop))
                 {
                     return event_thread_pool->DestroyEventThreadPool();
                 }
-                return false;
             }
+            return true;
         }
-
         return event_base->RunInLoopEx(std::bind((bool(TcpListen::*)(void))&TcpListen::DestroyListenService, this));
     }
 
@@ -96,14 +80,41 @@ namespace Evpp
         {
             if (loop->EventThread())
             {
-                return DeletedListenService(loop, server);
+                return CloseedListenService(loop, server);
             }
             return loop->RunInLoopEx(std::bind((bool(TcpListen::*)(EventLoop*, socket_tcp*))&TcpListen::DestroyListenService, this, loop, server));
         }
         return false;
     }
 
-    bool TcpListen::DeletedListenService(EventLoop* loop, socket_tcp* server)
+    bool TcpListen::DeletedListenService()
+    {
+        for (u96 i = 0; i < tcp_server.size(); ++i)
+        {
+            if (DestroyListenService(event_thread_pool->GetEventLoop(i), tcp_server[i]))
+            {
+                continue;
+            }
+            return false;
+        }
+
+        event_close_flag_ex.wait(1, std::memory_order_relaxed);
+
+        for (auto& var : tcp_server)
+        {
+            if (nullptr != var)
+            {
+                delete var;
+                var = nullptr;
+            }
+        }
+
+        tcp_server.clear();
+        tcp_server.shrink_to_fit();
+        return tcp_server.empty();
+    }
+
+    bool TcpListen::CloseedListenService(EventLoop* loop, socket_tcp* server)
     {
         if (nullptr != loop)
         {
