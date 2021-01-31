@@ -104,9 +104,10 @@ namespace Evpp
         {
             tcp_server.clear();
             tcp_server.shrink_to_fit();
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     bool TcpListen::CloseedListenService(EventLoop* loop, socket_tcp* server)
