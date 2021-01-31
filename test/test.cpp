@@ -48,49 +48,48 @@ void printf_loop_ex()
 
 void printf_loop(Evpp::EventLoop* loop)
 {
-    //loop->RunInLoopEx(std::bind(printf_loop_ex));
-    printf("RunInLoop Printf\n");
+    loop->RunInLoopEx(std::bind(printf_loop_ex));
+    //printf("RunInLoop Printf\n");
 }
 
 using namespace Evpp;
 int main()
 {
+    TcpClientService client;
 
-//     TcpClientService client;
-// 
-//     client.AddServerPort("127.0.0.1", 8888);
-// 
-//     client.SetConnectCallback();
-//     client.SetDisconsCallback();
-//     client.SetFailureCallback();
-//     client.SetMessageCallback();
-//     client.SetRestoreCallback();
-//     client.SetSendMsgCallback();
-// 
-//     client.CreaterClient();
-// 
-//     std::thread t1(std::bind(exit_loop, &client));
-//     t1.detach();
-// 
-//     client.ExecDispatchCoroutine(std::bind(printf_loop, std::placeholders::_1));
-// 
-//     return 0;
-    TcpServerService Tcp;
+    client.AddServerPort("127.0.0.1", 8888);
 
-    Tcp.AddListenPort("0.0.0.0", 8888);
-    Tcp.AddListenPort("0.0.0.0", 7777);
-    Tcp.AddListenPort("0.0.0.0", 9999);
-    Tcp.SetAcceptsCallback(Import::DefaultAccepts);
-    Tcp.SetDisconsCallback(Import::DefaultDiscons);
-    Tcp.SetMessageCallback(Import::DefaultMessage);
-    Tcp.SetSendMsgCallback(Import::DefaultSendMsg);
+    client.SetConnectCallback();
+    client.SetDisconsCallback();
+    client.SetFailureCallback();
+    client.SetMessageCallback();
+    client.SetRestoreCallback();
+    client.SetSendMsgCallback();
+
+    client.CreaterClient();
+
+    std::thread t1(std::bind(exit_loop, &client));
+    t1.detach();
+
+    client.ExecDispatchCoroutine(std::bind(printf_loop, std::placeholders::_1));
+
+    return 0;
+    std::unique_ptr<TcpServerService> Tcp = std::make_unique<TcpServerService>();
+
+    Tcp->AddListenPort("0.0.0.0", 8888);
+    Tcp->AddListenPort("0.0.0.0", 7777);
+    Tcp->AddListenPort("0.0.0.0", 9999);
+    Tcp->SetAcceptsCallback(Import::DefaultAccepts);
+    Tcp->SetDisconsCallback(Import::DefaultDiscons);
+    Tcp->SetMessageCallback(Import::DefaultMessage);
+    Tcp->SetSendMsgCallback(Import::DefaultSendMsg);
     //Tcp.SetEventThreadId(GetCurrentThreadId());
-    Tcp.CreaterServer(16);
-    std::thread t2(std::bind(exit_loop1, &Tcp));
+    Tcp->CreaterServer(16);
+    std::thread t2(std::bind(exit_loop1, Tcp.get()));
     t2.detach();
-    Tcp.ExecDispatch();
+    Tcp->ExecDispatch();
     printf("exit thread\n");
-
+    Tcp.reset();
     //printf("异常退出\n");
 //     using namespace cpps; 
 //     C* c = cpps::create();

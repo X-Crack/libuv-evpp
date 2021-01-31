@@ -2,13 +2,15 @@
 #include <event_share.h>
 #include <event_loop.h>
 #include <event_timer.h>
+#include <event_coroutine.h>
 #include <tcp_server.h>
 namespace Evpp
 {
     TcpServerService::TcpServerService() :
         event_share(std::make_shared<EventShare>()),
         event_base(std::make_shared<EventLoop>(event_share->DefaultEventLoop())),
-        tcp_server(std::make_unique<TcpServer>(event_base.get(), event_share))
+        tcp_server(std::make_unique<TcpServer>(event_base.get(), event_share)),
+        event_stop_flag(1)
     {
         
     }
@@ -46,7 +48,14 @@ namespace Evpp
     {
         if (nullptr != tcp_server)
         {
-            return tcp_server->DestroyServer() && event_base->StopDispatchEx();
+            if (tcp_server->DestroyServer() && event_base->StopDispatchEx())
+            {
+                if (event_stop_flag)
+                {
+                    event_stop_flag.store(0, std::memory_order_release);
+                }
+                return true;
+            }
         }
         return false;
     }
@@ -65,6 +74,44 @@ namespace Evpp
         if (nullptr != event_base)
         {
             return event_base->ExecDispatch(mode);
+        }
+        return false;
+    }
+
+    bool TcpServerService::ExecDispatch(const EventLoopHandler& function, u32 mode)
+    {
+        if (nullptr != event_base)
+        {
+            return event_base->ExecDispatch(function, mode);
+        }
+        return false;
+    }
+
+    bool TcpServerService::ExecDispatchEx(const EventLoopHandler& function, u32 mode)
+    {
+        if (nullptr != event_base)
+        {
+            return event_base->ExecDispatchEx(function, mode);
+        }
+        return false;
+    }
+
+    bool TcpServerService::ExecDispatchCoroutine(const EventLoopHandler& function, u32 mode)
+    {
+        if (nullptr != event_base)
+        {
+            for (; event_stop_flag.load(std::memory_order_acquire);)
+            {
+                try
+                {
+                    EventCoroutine::JoinInTask(std::bind((bool(TcpServerService::*)(const EventLoopHandler&, u32))&TcpServerService::ExecDispatch, this, function, mode));
+                }
+                catch (...)
+                {
+
+                }
+            }
+            return true;
         }
         return false;
     }
