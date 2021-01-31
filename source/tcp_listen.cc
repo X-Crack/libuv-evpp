@@ -134,7 +134,7 @@ namespace Evpp
             {
                 for (u96 i = 0; i < size; ++i)
                 {
-                    tcp_server.emplace(tcp_server.begin() + i, new socket_tcp({ server }));
+                    tcp_server.emplace(tcp_server.begin() + i, std::make_unique<socket_tcp>(std::move(socket_tcp{ .data = server })));
                     {
                         if (ExecuteListenService(event_thread_pool->GetEventLoop(i), tcp_server[i].get(), &socket->GetEventSocket(i)->GetSocketInfo()->addr))
                         {
