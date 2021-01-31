@@ -71,7 +71,7 @@ namespace Evpp
             }
             return true;
         }
-        return event_base->RunInLoopEx(std::bind((bool(TcpListen::*)(void))&TcpListen::DestroyListenService, this));
+        return event_base->RunInLoopEx(std::bind((bool(TcpListen::*)(void)) & TcpListen::DestroyListenService, this));
     }
 
     bool TcpListen::DestroyListenService(EventLoop* loop, socket_tcp* server)
@@ -82,7 +82,7 @@ namespace Evpp
             {
                 return CloseedListenService(loop, server);
             }
-            return loop->RunInLoopEx(std::bind((bool(TcpListen::*)(EventLoop*, socket_tcp*))&TcpListen::DestroyListenService, this, loop, server));
+            return loop->RunInLoopEx(std::bind((bool(TcpListen::*)(EventLoop*, socket_tcp*)) & TcpListen::DestroyListenService, this, loop, server));
         }
         return false;
     }
@@ -91,7 +91,7 @@ namespace Evpp
     {
         for (u96 i = 0; i < tcp_server.size(); ++i)
         {
-            if (DestroyListenService(event_thread_pool->GetEventLoop(i), tcp_server[i]))
+            if (DestroyListenService(event_thread_pool->GetEventLoop(i), tcp_server[i].get()))
             {
                 continue;
             }
@@ -100,18 +100,13 @@ namespace Evpp
 
         event_close_flag_ex.wait(1, std::memory_order_relaxed);
 
-        for (auto& var : tcp_server)
+        if (tcp_server.size())
         {
-            if (nullptr != var)
-            {
-                delete var;
-                var = nullptr;
-            }
+            tcp_server.clear();
+            tcp_server.shrink_to_fit();
         }
 
-        tcp_server.clear();
-        tcp_server.shrink_to_fit();
-        return tcp_server.empty();
+        return true;
     }
 
     bool TcpListen::CloseedListenService(EventLoop* loop, socket_tcp* server)
@@ -140,7 +135,7 @@ namespace Evpp
                 {
                     tcp_server.emplace(tcp_server.begin() + i, new socket_tcp({ server }));
                     {
-                        if (ExecuteListenService(event_thread_pool->GetEventLoop(i), tcp_server[i], &socket->GetEventSocket(i)->GetSocketInfo()->addr))
+                        if (ExecuteListenService(event_thread_pool->GetEventLoop(i), tcp_server[i].get(), &socket->GetEventSocket(i)->GetSocketInfo()->addr))
                         {
                             continue;
                         }

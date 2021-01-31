@@ -47,7 +47,7 @@ namespace Evpp
 #endif
         std::shared_ptr<EventLoopThreadPool>                            event_thread_pool;
         bool                                                            tcp_proble;
-        std::vector<socket_tcp*>                                        tcp_server;
+        std::vector<std::unique_ptr<socket_tcp>>                        tcp_server;
     };
 }
 #endif // __TCP_LISTEN_H__
