@@ -1,6 +1,6 @@
 #ifndef __EVEMT_LOGGING_H__
 #define __EVEMT_LOGGING_H__
-
+#include <event_config.h>
 #ifndef GOOGLE_GLOG_DLL_DECL
 #define GOOGLE_GLOG_DLL_DECL
 #endif

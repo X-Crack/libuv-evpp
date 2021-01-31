@@ -1,5 +1,5 @@
-#ifndef __PLATFORM_H__
-#define __PLATFORM_H__
+#ifndef __EVENT_PLATFORM_H__
+#define __EVENT_PLATFORM_H__
 #include <assert.h>
 
 #if defined(_MSC_VER)
@@ -30,4 +30,4 @@
 #pragma comment(lib, "psapi.lib")
 #pragma comment(lib, "userenv.lib")
 #endif
-#endif // __PLATFORM_H__
+#endif // __EVENT_PLATFORM_H__
