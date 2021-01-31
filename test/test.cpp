@@ -40,10 +40,9 @@ void printf_loop_ex()
 
 void printf_loop(Evpp::EventLoop* loop)
 {
-    loop->RunInLoopEx(std::bind(printf_loop_ex));
+    //loop->RunInLoopEx(std::bind(printf_loop_ex));
+    printf("RunInLoop Printf\n");
 }
-
-
 
 using namespace Evpp;
 int main()

@@ -43,11 +43,11 @@ namespace Evpp
 
     bool EventLoop::ExecDispatch()
     {
-        if (0 != event_base)
+        if (nullptr != event_base)
         {
             if (ChangeStatus(Status::Init, Status::Exec))
             {
-                if (0 == uv_run(event_base, UV_RUN_DEFAULT))
+                if (0 == ExecDispatch(UV_RUN_DEFAULT))
                 {
                     return ChangeStatus(Status::Exec, Status::Stop);
                 }
@@ -58,7 +58,7 @@ namespace Evpp
 
     bool EventLoop::ExecDispatch(u32 mode)
     {
-        if (0 != event_base)
+        if (nullptr != event_base)
         {
             return 0 == uv_run(event_base, static_cast<uv_run_mode>(mode));
         }
@@ -67,9 +67,14 @@ namespace Evpp
 
     bool EventLoop::ExecDispatch(const EventLoopHandler& function, u32 mode)
     {
-        if (0 != event_base)
+        if (nullptr != event_base)
         {
-            if (uv_run(event_base, static_cast<uv_run_mode>(mode)))
+            if (ExistsInited())
+            {
+                ChangeStatus(Status::Exec);
+            }
+
+            if (0 == ExecDispatch(mode))
             {
                 if (nullptr != function)
                 {
@@ -84,27 +89,34 @@ namespace Evpp
 
     bool EventLoop::ExecDispatchEx(const EventLoopHandler& function, u32 mode)
     {
-        if (0 != event_base)
+        if (nullptr != event_base)
         {
-            for (; 0 == event_base->stop_flag && event_stop_flag;)
+            if (ChangeStatus(Status::Init, Status::Exec))
             {
-                if (ExecDispatch(function, mode))
+                for (; 0 == event_base->stop_flag && event_stop_flag;)
                 {
-                    continue;
+                    if (ExecDispatch(function, mode))
+                    {
+                        continue;
+                    }
+                }
+
+                if (0 == event_stop_flag.load(std::memory_order_acquire))
+                {
+                    return ChangeStatus(Status::Exec, Status::Stop);
                 }
             }
-
-            return 0 == event_stop_flag.load(std::memory_order_acquire);
         }
         return false;
     }
 
     bool EventLoop::StopDispatch()
     {
-        if (this->EventThread())
+        if (ExistsRuning())
         {
-            if (0 == event_base->stop_flag)
+            if (this->EventThread())
             {
+
                 while (event_watcher->DestroyQueue());
 
                 uv_stop(event_base);
@@ -114,13 +126,14 @@ namespace Evpp
                     event_stop_flag.store(0, std::memory_order_release);
                     std::atomic_notify_one(&event_stop_flag);
                 }
+
+                return true;
             }
-            return true;
-        }
-        
-        if (RunInLoop(std::bind(&EventLoop::StopDispatch, this)))
-        {
-            std::atomic_wait_explicit(&event_stop_flag, 1, std::memory_order_relaxed);
+
+            if (RunInLoopEx(std::bind(&EventLoop::StopDispatch, this)))
+            {
+                std::atomic_wait_explicit(&event_stop_flag, 1, std::memory_order_relaxed);
+            }
             return true;
         }
         return false;
@@ -128,38 +141,50 @@ namespace Evpp
 
     bool EventLoop::RunInLoop(const Functor& function)
     {
-        if (nullptr == event_watcher)
+        if (nullptr != event_watcher)
         {
-            return false;
+            if (ExistsRuning())
+            {
+                return event_watcher->RunInLoop(function);
+            }
         }
-        return event_watcher->RunInLoop(function);
+        return false;
     }
 
     bool EventLoop::RunInLoop(Functor&& function)
     {
-        if (nullptr == event_watcher)
+        if (nullptr != event_watcher)
         {
-            return false;
+            if (ExistsRuning())
+            {
+                return event_watcher->RunInLoop(std::move(function));
+            }
         }
-        return event_watcher->RunInLoop(std::move(function));
+        return false;
     }
 
     bool EventLoop::RunInLoopEx(const Handler& function)
     {
-        if (nullptr == event_watcher)
+        if (nullptr != event_watcher)
         {
-            return false;
+            if (ExistsRuning())
+            {
+                return event_watcher->RunInLoopEx(function);
+            }
         }
-        return event_watcher->RunInLoopEx(function);
+        return false;
     }
 
     bool EventLoop::RunInLoopEx(Handler&& function)
     {
-        if (nullptr == event_watcher)
+        if (nullptr != event_watcher)
         {
-            return false;
+            if (ExistsRuning())
+            {
+                return event_watcher->RunInLoopEx(std::move(function));
+            }
         }
-        return event_watcher->RunInLoopEx(std::move(function));
+        return false;
     }
 
     bool EventLoop::AssignTimer(const u96 index, const u64 delay, const u64 repeat)
