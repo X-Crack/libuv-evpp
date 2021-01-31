@@ -56,25 +56,25 @@ using namespace Evpp;
 int main()
 {
 
-    TcpClientService client;
-
-    client.AddServerPort("127.0.0.1", 8888);
-
-    client.SetConnectCallback();
-    client.SetDisconsCallback();
-    client.SetFailureCallback();
-    client.SetMessageCallback();
-    client.SetRestoreCallback();
-    client.SetSendMsgCallback();
-
-    client.CreaterClient();
-
-    std::thread t1(std::bind(exit_loop, &client));
-    t1.detach();
-
-    client.ExecDispatchCoroutine(std::bind(printf_loop, std::placeholders::_1));
-
-    return 0;
+//     TcpClientService client;
+// 
+//     client.AddServerPort("127.0.0.1", 8888);
+// 
+//     client.SetConnectCallback();
+//     client.SetDisconsCallback();
+//     client.SetFailureCallback();
+//     client.SetMessageCallback();
+//     client.SetRestoreCallback();
+//     client.SetSendMsgCallback();
+// 
+//     client.CreaterClient();
+// 
+//     std::thread t1(std::bind(exit_loop, &client));
+//     t1.detach();
+// 
+//     client.ExecDispatchCoroutine(std::bind(printf_loop, std::placeholders::_1));
+// 
+//     return 0;
     TcpServerService Tcp;
 
     Tcp.AddListenPort("0.0.0.0", 8888);

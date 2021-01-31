@@ -57,6 +57,7 @@ namespace Evpp
         {
             return event_base->ExecDispatch();
         }
+        return false;
     }
 
     bool TcpClientService::ExecDispatch(u32 mode)
@@ -65,6 +66,7 @@ namespace Evpp
         {
             return event_base->ExecDispatch(mode);
         }
+        return false;
     }
 
     bool TcpClientService::ExecDispatch(const EventLoopHandler& function, u32 mode)
@@ -73,6 +75,7 @@ namespace Evpp
         {
             return event_base->ExecDispatch(function, mode);
         }
+        return false;
     }
 
     bool TcpClientService::ExecDispatchEx(const EventLoopHandler& function, u32 mode)
@@ -81,6 +84,7 @@ namespace Evpp
         {
             return event_base->ExecDispatchEx(function, mode);
         }
+        return false;
     }
 
     bool TcpClientService::ExecDispatchCoroutine(const EventLoopHandler& function, u32 mode)
@@ -109,6 +113,7 @@ namespace Evpp
         {
             return event_base->StopDispatchEx();
         }
+        return false;
     }
 
     void TcpClientService::SetResetConnectTimer(const u64 delay, const u64 timer)
@@ -117,7 +122,6 @@ namespace Evpp
         {
             return tcp_client->SetResetConnectTimer(delay, timer);
         }
-        return;
     }
 
     void TcpClientService::SetResetConnect(const u32 status)
@@ -126,7 +130,6 @@ namespace Evpp
         {
             return tcp_client->SetResetConnect(status);
         }
-        return;
     }
 
     bool TcpClientService::Send(const char* buf, u96 len, u32 nbufs)
@@ -180,7 +183,6 @@ namespace Evpp
         {
             return tcp_client->SetConnectCallback(connect);
         }
-        return;
     }
 
     void TcpClientService::SetRestoreCallback(const InterfaceRestore& restore)
@@ -189,7 +191,6 @@ namespace Evpp
         {
             return tcp_client->SetRestoreCallback(restore);
         }
-        return;
     }
 
     void TcpClientService::SetFailureCallback(const InterfaceFailure& failure)
@@ -198,7 +199,6 @@ namespace Evpp
         {
             return tcp_client->SetFailureCallback(failure);
         }
-        return;
     }
 
     void TcpClientService::SetDisconsCallback(const InterfaceDiscons& discons)
@@ -207,7 +207,6 @@ namespace Evpp
         {
             return tcp_client->SetDisconsCallback(discons);
         }
-        return;
     }
 
     void TcpClientService::SetMessageCallback(const InterfaceMessage& message)
@@ -216,7 +215,6 @@ namespace Evpp
         {
             return tcp_client->SetMessageCallback(message);
         }
-        return;
     }
 
     void TcpClientService::SetSendMsgCallback(const InterfaceSendMsg& sendmsg)
@@ -225,6 +223,5 @@ namespace Evpp
         {
             return tcp_client->SetSendMsgCallback(sendmsg);
         }
-        return;
     }
 }
