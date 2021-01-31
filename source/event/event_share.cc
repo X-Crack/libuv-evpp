@@ -58,9 +58,4 @@ namespace Evpp
     {
         return event_base;
     }
-
-    event_loop* EventShare::CreaterDefaultEventLoop()
-    {
-        return new event_loop();
-    }
 }
