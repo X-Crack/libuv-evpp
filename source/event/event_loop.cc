@@ -88,7 +88,7 @@ namespace Evpp
         {
             for (; 0 == event_base->stop_flag && event_stop_flag;)
             {
-                if (ExecDispatch(function, static_cast<uv_run_mode>(mode)))
+                if (ExecDispatch(function, mode))
                 {
                     continue;
                 }
@@ -114,8 +114,6 @@ namespace Evpp
                     event_stop_flag.store(0, std::memory_order_release);
                     std::atomic_notify_one(&event_stop_flag);
                 }
-                
-                return true;
             }
             return true;
         }
