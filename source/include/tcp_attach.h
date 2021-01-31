@@ -20,6 +20,9 @@ namespace Evpp
         bool CreaterConnect();
         bool CreaterConnect(const u64 delay, const u64 timer);
         bool DestroyConnect();
+    public:
+        bool RunInLoop(const Functor& function);
+        bool RunInLoopEx(const Handler& function);
     private:
         void OnTimer(EventLoop* loop, const std::shared_ptr<EventTimer>& timer, const u96 index);
     private:

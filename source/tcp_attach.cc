@@ -9,8 +9,8 @@ namespace Evpp
         event_base(loop),
         event_timer(std::make_shared<EventTimer>(loop)),
         socket_client(client),
-        attach_delay(100),
-        attach_timer(100)
+        attach_delay(3000),
+        attach_timer(0)
     {
         if (ChangeStatus(Status::None, Status::Init))
         {
@@ -60,6 +60,24 @@ namespace Evpp
         return false;
     }
 
+    bool TcpAttach::RunInLoop(const Functor& function)
+    {
+        if (nullptr != event_base)
+        {
+            return event_base->RunInLoop(function);
+        }
+        return false;
+    }
+
+    bool TcpAttach::RunInLoopEx(const Handler& function)
+    {
+        if (nullptr != event_base)
+        {
+            return event_base->RunInLoopEx(function);
+        }
+        return false;
+    }
+
     void TcpAttach::OnTimer(EventLoop* loop, const std::shared_ptr<EventTimer>& timer, const u96 index)
     {
         if (nullptr != loop && nullptr != timer && 0 >= index && nullptr != socket_client)
@@ -68,9 +86,9 @@ namespace Evpp
             {
                 if (socket_client->ExistsInited())
                 {
-                    if (socket_client->ConnectService())
+                    if (RunInLoopEx(std::bind(&TcpClient::ConnectService, socket_client)))
                     {
-                        if (timer->StopedTimer())
+                        if(timer->StopedTimer())
                         {
                             if (ChangeStatus(Status::Exec, Status::Stop))
                             {
