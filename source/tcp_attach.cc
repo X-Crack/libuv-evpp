@@ -9,10 +9,13 @@ namespace Evpp
         event_base(loop),
         event_timer(std::make_shared<EventTimer>(loop)),
         socket_client(client),
-        attach_timer(1),
-        attach_delay(100)
+        attach_delay(100),
+        attach_timer(100)
     {
-        event_timer->SetEventTimerCallback(std::bind(&TcpAttach::OnTimer, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+        if (ChangeStatus(Status::None, Status::Init))
+        {
+            event_timer->SetEventTimerCallback(std::bind(&TcpAttach::OnTimer, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+        }
     }
 
     TcpAttach::~TcpAttach()
@@ -26,34 +29,54 @@ namespace Evpp
         attach_timer.store(timer);
     }
 
-    bool TcpAttach::TryRetryConnect()
+    bool TcpAttach::CreaterConnect()
     {
-        return TryRetryConnect(attach_delay, attach_timer);
+        return CreaterConnect(attach_delay, attach_timer);
     }
 
-    bool TcpAttach::TryRetryConnect(const u64 delay, const u64 time)
+    bool TcpAttach::CreaterConnect(const u64 delay, const u64 timer)
     {
-        return event_timer->AssignTimer(delay, time);
+        if (ExistsInited() || ExistsStoped() || ExistsExited())
+        {
+            return event_timer->AssignTimer(delay, timer);
+        }
+        return false;
+    }
+
+    bool TcpAttach::DestroyConnect()
+    {
+        if (nullptr != event_timer)
+        {
+            if (ExistsRuning() || ExistsInited())
+            {
+                return ChangeStatus(Status::Exit) && event_timer->StopedTimer();
+            }
+
+            if (ExistsStoped())
+            {
+                return ChangeStatus(Status::Exit);
+            }
+        }
+        return false;
     }
 
     void TcpAttach::OnTimer(EventLoop* loop, const std::shared_ptr<EventTimer>& timer, const u96 index)
     {
         if (nullptr != loop && nullptr != timer && 0 >= index && nullptr != socket_client)
         {
-            if (socket_client->ExistsStarts(EventStatus::Status::Init))
+            if (ChangeStatus(Status::Exec))
             {
-                if (socket_client->ConnectService())
+                if (socket_client->ExistsInited())
                 {
-                    if (0 != attach_timer)
+                    if (socket_client->ConnectService())
                     {
                         if (timer->StopedTimer())
                         {
-                            socket_client->tcp_retry.store(1);
+                            if (ChangeStatus(Status::Exec, Status::Stop))
+                            {
+                                socket_client->tcp_retry.store(1);
+                            }
                         }
-                    }
-                    else
-                    {
-                        socket_client->tcp_retry.store(1);
                     }
                 }
             }

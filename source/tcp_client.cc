@@ -46,14 +46,14 @@ namespace Evpp
 
     bool TcpClient::DestroyClient(const bool wait)
     {
-        if (nullptr != tcp_socket && nullptr != tcp_session)
+        if (nullptr != tcp_socket)
         {
             if (ExistsStoped() || ExistsStarts(Status::None))
             {
                 return true;
             }
 
-            if (ChangeStatus(Status::Exec, Status::Exit))
+            if (ExistsRuning())
             {
                 if (tcp_retry_connection)
                 {
@@ -65,12 +65,29 @@ namespace Evpp
                 {
                     if (RunInLoopEx(std::bind(&TcpClient::Close, this)))
                     {
-                        std::atomic_wait_explicit(&event_close_flag, 0, std::memory_order_relaxed);
+                        if (ChangeStatus(Status::Exec, Status::Exit))
+                        {
+                            std::atomic_wait_explicit(&event_close_flag, 0, std::memory_order_relaxed);
+                        }
                     }
                     return true;
                 }
 
                 return Close();
+            }
+
+            if (ExistsInited())
+            {
+                if (tcp_retry_connection)
+                {
+                    // 关闭断线重连
+                    tcp_retry_connection.store(0);
+                }
+
+                if (tcp_attach->DestroyConnect())
+                {
+                    return ChangeStatus(Status::Exit);
+                }
             }
         }
         return false;
@@ -219,7 +236,7 @@ namespace Evpp
                 {
                     if (tcp_retry_connection)
                     {
-                        return tcp_attach->TryRetryConnect();
+                        return tcp_attach->CreaterConnect();
                     }
                 }
             }
@@ -239,7 +256,7 @@ namespace Evpp
         // 不存在连接对象，并且服务器无法连接，反复尝试状态。
         if (nullptr == tcp_session && ExistsStarts(Status::Init))
         {
-            return tcp_attach->TryRetryConnect();
+            return tcp_attach->CreaterConnect();
         }
 
         return false;

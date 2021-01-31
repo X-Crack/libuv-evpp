@@ -50,8 +50,8 @@ int main()
 
     client.CreaterClient();
 
-    //std::thread t1(std::bind(exit_loop, &client));
-    //t1.detach();
+    std::thread t1(std::bind(exit_loop, &client));
+    t1.detach();
 
     client.ExecDispatch();
 

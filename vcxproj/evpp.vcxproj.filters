@@ -22,6 +22,9 @@
     <Filter Include="socket\tcp\client">
       <UniqueIdentifier>{18fad710-92c5-4e6d-9092-e9ceef2837c1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="socket\curl">
+      <UniqueIdentifier>{cce95809-4eed-4ce6-9cab-d34e759ab5fa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\event\event_loop.cc">
