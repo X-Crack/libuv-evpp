@@ -21,7 +21,7 @@ namespace Evpp
         {
             std::unique_lock<std::mutex> lock(event_mutex);
             {
-                event_loops.emplace(i, new event_loop());
+                event_loops.emplace(i, std::make_unique<event_loop>());
             }
         }
         return nullptr != event_base;
@@ -31,18 +31,6 @@ namespace Evpp
     {
         std::unique_lock<std::mutex> lock(event_mutex);
         {
-            for (auto & [index, loop] : event_loops)
-            {
-                if (0 == uv_loop_close(loop))
-                {
-                    loop = nullptr;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-
             event_loops.clear();
         }
         return true;
@@ -60,7 +48,7 @@ namespace Evpp
         {
             if (0 != event_loops.size())
             {
-                return event_loops[index % event_loops.size()];
+                return event_loops[index % event_loops.size()].get();
             }
         }
         return nullptr;

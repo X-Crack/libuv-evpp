@@ -10,8 +10,8 @@ namespace Evpp
 #ifdef H_OS_WINDOWS
     TcpListen::TcpListen(EventLoop* loop, const bool proble) :
         event_base(loop),
-        event_close_flag(0),
-        event_close_flag_ex(0),
+        event_close_flag(1),
+        event_close_flag_ex(1),
         tcp_proble(proble),
         event_share(std::make_shared<EventShare>()),
         event_thread_pool(std::make_shared<EventLoopThreadPool>(loop, event_share))
@@ -68,7 +68,7 @@ namespace Evpp
                     return false;
                 }
 
-                std::atomic_wait_explicit(&event_close_flag, event_close_flag_ex, std::memory_order_relaxed);
+                event_close_flag_ex.wait(1, std::memory_order_relaxed);
 
                 for (auto & var: tcp_server)
                 {
@@ -206,11 +206,11 @@ namespace Evpp
 
     void TcpListen::OnClose()
     {
-        if ((1 + event_close_flag.fetch_add(1, std::memory_order_release)) == tcp_server.size())
+        if (event_close_flag.fetch_add(1, std::memory_order_release) == tcp_server.size())
         {
-            if (0 == event_close_flag_ex.exchange(1, std::memory_order_release))
+            if (1 == event_close_flag_ex.exchange(0, std::memory_order_release))
             {
-                std::atomic_notify_one(&event_close_flag);
+                event_close_flag_ex.notify_one();
             }
         }
     }

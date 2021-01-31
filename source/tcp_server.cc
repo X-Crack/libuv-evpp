@@ -17,8 +17,8 @@ namespace Evpp
     TcpServer::TcpServer(EventLoop* loop, const std::shared_ptr<EventShare>& share, const InterfaceAccepts& accepts, const InterfaceDiscons& discons, const InterfaceMessage& message, const InterfaceSendMsg& sendmsg) :
         event_base(loop),
         event_share(share),
-        event_close_flag(0),
-        event_close_flag_ex(0),
+        event_close_flag(1),
+        event_close_flag_ex(1),
         event_thread_pool(std::make_shared<EventLoopThreadPool>(loop, share)),
         event_socket(std::make_unique<EventSocketPool>()),
         socket_accepts(accepts),
@@ -83,8 +83,8 @@ namespace Evpp
                             {
                                 if (wait)
                                 {
-                                    event_close_flag_ex.store(1, std::memory_order_release);
-                                    std::atomic_notify_one(&event_close_flag_ex);
+                                    event_close_flag_ex.store(0, std::memory_order_release);
+                                    event_close_flag_ex.notify_one();
                                 }
 
                                 return true;
@@ -99,7 +99,7 @@ namespace Evpp
             {
                 if (wait)
                 {
-                    std::atomic_wait_explicit(&event_close_flag_ex, 0, std::memory_order_relaxed);
+                    event_close_flag_ex.wait(1, std::memory_order_relaxed);
                 }
                 return true;
             }
@@ -223,8 +223,8 @@ namespace Evpp
         {
             if (tcp_session.empty())
             {
-                event_close_flag.store(1, std::memory_order_release);
-                std::atomic_notify_one(&event_close_flag);
+                event_close_flag.store(0, std::memory_order_release);
+                event_close_flag.notify_one();
             }
         }
     }

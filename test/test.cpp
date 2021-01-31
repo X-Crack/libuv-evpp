@@ -98,5 +98,6 @@ int main()
 //         cpps::dofile(c, "./src.cpp");
 //     _CPPS_CATCH;
 //     cpps::close(c);
-    getchar();
+    //getchar();
+    return 0;
 }

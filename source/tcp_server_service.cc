@@ -46,7 +46,7 @@ namespace Evpp
     {
         if (nullptr != tcp_server)
         {
-            return tcp_server->DestroyServer();
+            return tcp_server->DestroyServer() && event_base->StopDispatchEx();
         }
         return false;
     }

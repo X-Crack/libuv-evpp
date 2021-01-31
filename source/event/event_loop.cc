@@ -141,7 +141,7 @@ namespace Evpp
                 if (event_stop_flag)
                 {
                     event_stop_flag.store(0, std::memory_order_release);
-                    std::atomic_notify_one(&event_stop_flag);
+                    event_stop_flag.notify_one();
                 }
 
                 return true;
@@ -149,7 +149,7 @@ namespace Evpp
 
             if (RunInLoopEx(std::bind(&EventLoop::StopDispatchEx, this)))
             {
-                std::atomic_wait_explicit(&event_stop_flag, 1, std::memory_order_relaxed);
+                event_stop_flag.wait(1, std::memory_order_relaxed);
             }
             return true;
         }
