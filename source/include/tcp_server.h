@@ -1,6 +1,6 @@
 #ifndef __TCP_SERVER_H__
 #define __TCP_SERVER_H__
-#include <config.h>
+#include <event_config.h>
 #include <event_status.h>
 #include <atomic>
 #include <memory>
@@ -25,7 +25,6 @@ namespace Evpp
     public:
         bool CreaterServer(const u96 thread_size);
         bool DestroyServer(const bool wait = true);
-        bool DestroyService(const bool wait = true);
         bool AddListenPort(const std::string& server_address, const u16 port);
         bool Send(const u96 index, const char* buf, u96 len, u32 nbufs = 1);
         bool Send(const u96 index, const std::string& buf, u32 nbufs = 1);
@@ -42,23 +41,21 @@ namespace Evpp
         bool RunInLoopEx(const Handler& function);
     private:
         bool CreaterSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const u96 index);
-        bool InitialSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client);
+        bool InitialSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const u96 index);
+        bool InitialAccepts(EventLoop* loop, socket_stream* server, socket_tcp* client);
         void DeletedSession(const u96 index);
         bool CleanedSession();
         const std::shared_ptr<TcpSession>& GetSession(const u96 index);
     private:
-        bool DefaultAccepts(EventLoop* loop, socket_stream* server);
-        bool AsyncAccepts(EventLoop* loop, socket_stream* server);
-        bool DefaultAccepts(socket_stream* server, i32 status_);
-        static void OnDefaultAccepts(socket_stream* handler, int status);
+        bool DefaultAccepts(EventLoop* loop, socket_stream* server, const u96 index);
+        bool DefaultAcceptsEx(EventLoop* loop, socket_stream* server, const u96 index);
+        bool DefaultAccepts(socket_stream* server, i32 status);
     private:
         void DefaultDiscons(EventLoop* loop, const u96 index);
-        bool DefaultMessage(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const std::shared_ptr<TcpBuffer>& buffer, const u96 index);
+        bool DefaultMessage(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const std::shared_ptr<EventBuffer>& buffer, const u96 index);
         bool DefaultSendMsg(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const u96 index, const i32 status);
     private:
-        bool InitTcpSocket(EventLoop* loop, socket_stream* handler, socket_tcp* client);
-    private:
-        bool CheckClose(socket_stream* handler);
+        bool CheckStatus(socket_stream* handler);
         bool SystemClose(socket_stream* stream);
         bool SystemShutdown(socket_stream* stream);
         const u96 GetPlexingIndex(u96 index = 0);
@@ -66,9 +63,13 @@ namespace Evpp
     private:
         void DefaultClose(event_handle* handler);
     private:
+        static void OnDefaultAccepts(socket_stream* handler, int status);
         static void OnDefaultClose(event_handle* handler);
         static void OnDefaultShutdown(socket_shutdown* request, int status);
-        static void DefaultCloseListen(event_handle* handler);
+        static void OnDefaultListen(event_handle* handler);
+    private:
+        bool DestroyService(const bool wait = true);
+        bool DestroySyncEvent(const bool wait = true);
     private:
         EventLoop*                                                      event_base;
         std::shared_ptr<EventShare>                                     event_share;
@@ -86,7 +87,6 @@ namespace Evpp
         std::atomic<u32>                                                tcp_keepalive;
         std::unordered_map<u96, std::shared_ptr<TcpSession>>            tcp_session;
         std::priority_queue<u96>									    tcp_index_multiplexing;
-        std::mutex                                                      tcp_mutex;
         std::recursive_mutex                                            tcp_recursive_mutex;
     };
 }

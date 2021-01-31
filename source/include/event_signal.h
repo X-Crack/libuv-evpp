@@ -1,6 +1,6 @@
 #ifndef __EVENT_SIGNAL_H__
 #define __EVENT_SIGNAL_H__
-#include <config.h>
+#include <event_config.h>
 namespace Evpp
 {
     class EventLoop;

@@ -1,6 +1,6 @@
 #ifndef __TCP_SOCKET_POOL_H__
 #define __TCP_SOCKET_POOL_H__
-#include <config.h>
+#include <event_config.h>
 #include <memory>
 #include <vector>
 namespace Evpp

@@ -1,7 +1,6 @@
 #ifndef __EVENT_UNTILITY_H__
 #define __EVENT_UNTILITY_H__
-#include <platform.h>
-#include <uv.h>
+#include <event_config.h>
 #include <functional>
 #include <unordered_map>
 #include <memory>
@@ -11,8 +10,8 @@ namespace Evpp
 {
 	class EventLoop;
 	class EventTimer;
+	class EventBuffer;
 	class TcpSession;
-	class TcpBuffer;
 	typedef std::function<void()>                                                                                                                           Handler;
 	typedef std::function<bool()>                                                                                                                           Functor;
 	typedef std::function<void(EventLoop*)>                                                                                                                 EventLoopHandler;
@@ -26,7 +25,7 @@ namespace Evpp
 	typedef std::function<bool(EventLoop*, const std::shared_ptr<TcpSession>&, const u96)>                                                                  InterfaceRestore;
     typedef std::function<bool(EventLoop*, const u96, const i32, const String*, const String*)>																InterfaceFailure;
 	typedef std::function<bool(EventLoop*, const u96)>                                                                                                      InterfaceDiscons;
-	typedef std::function<bool(EventLoop*, const std::shared_ptr<TcpSession>&, const std::shared_ptr<TcpBuffer>&, const u96)>                               InterfaceMessage;
+	typedef std::function<bool(EventLoop*, const std::shared_ptr<TcpSession>&, const std::shared_ptr<EventBuffer>&, const u96)>                             InterfaceMessage;
 	typedef std::function<bool(EventLoop*, const std::shared_ptr<TcpSession>&, const u96, const i32)>                                                       InterfaceSendMsg;
 	
 	namespace Import
@@ -36,7 +35,7 @@ namespace Evpp
 		// 断开连接
 		bool DefaultDiscons(EventLoop* loop, const u96 index);
 		// 接收消息
-		bool DefaultMessage(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const std::shared_ptr<TcpBuffer>& buffer, const u96 index);
+		bool DefaultMessage(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const std::shared_ptr<EventBuffer>& buffer, const u96 index);
 		// 发送消息
 		bool DefaultSendMsg(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const u96 index, const i32 status);
 

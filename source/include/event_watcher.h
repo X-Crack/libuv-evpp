@@ -1,6 +1,6 @@
 #ifndef __EVENT_WATCHER_H__
 #define __EVENT_WATCHER_H__
-#include <config.h>
+#include <event_config.h>
 #include <memory>
 namespace moodycamel
 {

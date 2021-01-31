@@ -1,8 +1,7 @@
 #include <event_untlity.h>
-#include <tcp_session.h>
 #include <event_loop.h>
-#include <config.h>
-#include <buffer.h>
+#include <event_buffer.h>
+#include <tcp_session.h>
 namespace Evpp
 {
     namespace Import
@@ -22,7 +21,7 @@ namespace Evpp
             return true;
         }
 
-        bool DefaultMessage(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const std::shared_ptr<TcpBuffer>& buffer, const u96 index)
+        bool DefaultMessage(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const std::shared_ptr<EventBuffer>& buffer, const u96 index)
         {
             (void)loop, session, buffer, index;
             printf("Message:%d MessageLen:%d Thread:%d\n", index, buffer->readableBytes(), loop->EventThreadId());

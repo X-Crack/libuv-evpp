@@ -1,6 +1,6 @@
 #ifndef __TCP_ATTACH_H__
 #define __TCP_ATTACH_H__
-#include <config.h>
+#include <event_config.h>
 #include <event_status.h>
 #include <atomic>
 #include <memory>

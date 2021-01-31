@@ -1,16 +1,16 @@
 #ifndef __TCP_MESSAGE_H__
 #define __TCP_MESSAGE_H__
-#include <config.h>
+#include <event_config.h>
 #include <vector>
 namespace Evpp
 {
     class EventLoop;
-    class TcpBuffer;
+    class EventBuffer;
     class TcpMessage
     {
     public:
         typedef std::function<void()>                                           SystemDiscons;
-        typedef std::function<bool(const std::shared_ptr<TcpBuffer>&)>          SystemMessage;
+        typedef std::function<bool(const std::shared_ptr<EventBuffer>&)>        SystemMessage;
         typedef std::function<bool(const i32)>                                  SystemSendMsg;
     public:
         explicit TcpMessage(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const SystemDiscons& discons, const SystemMessage& message, const SystemSendMsg& sendmsg);
@@ -46,7 +46,7 @@ namespace Evpp
         SystemMessage                                                   system_message;
         SystemSendMsg                                                   system_sendmsg;
         std::shared_ptr<socket_tcp>                                     tcp_socket;
-        std::shared_ptr<TcpBuffer>                                      tcp_buffer;
+        std::shared_ptr<EventBuffer>                                    tcp_buffer;
         std::unique_ptr<socket_shutdown>                                event_shutdown;
         std::unique_ptr<socket_write>                                   event_write;
         std::vector<char>                                               event_data;

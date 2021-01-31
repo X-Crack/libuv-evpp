@@ -1,6 +1,6 @@
 #ifndef __TCP_CLIENT_H__
 #define __TCP_CLIENT_H__
-#include <config.h>
+#include <event_config.h>
 #include <event_status.h>
 #include <memory>
 #include <atomic>
@@ -50,7 +50,7 @@ namespace Evpp
         bool DefaultConnect();
         void DefaultFailure(int status);
         void DefaultDiscons(EventLoop* loop, const u96 index);
-        bool DefaultMessage(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const std::shared_ptr<TcpBuffer>& buffer, const u96 index);
+        bool DefaultMessage(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const std::shared_ptr<EventBuffer>& buffer, const u96 index);
         bool DefaultSendMsg(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const u96 index, const i32 status);
     private:
         static void DefaultConnect(socket_connect* hanlder, int status);

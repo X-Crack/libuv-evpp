@@ -1,6 +1,6 @@
 #ifndef __EVENT_QUEUE_H__
 #define __EVENT_QUEUE_H__
-#include <config.h>
+#include <event_config.h>
 namespace Evpp
 {
     /*

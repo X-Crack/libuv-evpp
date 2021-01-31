@@ -1,6 +1,6 @@
 #ifndef __EVENT_SOCKET_H__
 #define __EVENT_SOCKET_H__
-#include <config.h>
+#include <event_config.h>
 #include <string>
 #include <memory>
 namespace Evpp

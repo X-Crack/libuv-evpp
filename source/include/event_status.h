@@ -1,6 +1,6 @@
 #ifndef __EVENT_STATUS_H__
 #define __EVENT_STATUS_H__
-#include <type.h>
+#include <event_config.h>
 #include <atomic>
 namespace Evpp
 {

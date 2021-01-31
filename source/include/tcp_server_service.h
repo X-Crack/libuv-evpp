@@ -1,6 +1,6 @@
 #ifndef __TCP_SERVER_SERVICE_H__
 #define __TCP_SERVER_SERVICE_H__
-#include <config.h>
+#include <event_config.h>
 #include <memory>
 namespace Evpp
 {

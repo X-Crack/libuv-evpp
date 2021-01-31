@@ -1,6 +1,6 @@
 #ifndef __EVENT_COROUTINE_H__
 #define __EVENT_COROUTINE_H__
-#include <config.h>
+#include <event_config.h>
 #include <memory>
 #include <atomic>
 #include <functional>

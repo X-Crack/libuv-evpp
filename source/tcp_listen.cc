@@ -98,15 +98,19 @@ namespace Evpp
             return false;
         }
 
-        event_close_flag_ex.wait(1, std::memory_order_relaxed);
-
-        if (tcp_server.size())
+        if (event_close_flag_ex)
         {
-            tcp_server.clear();
-            tcp_server.shrink_to_fit();
+            event_close_flag_ex.wait(1, std::memory_order_relaxed);
+            {
+                if (tcp_server.size())
+                {
+                    tcp_server.clear();
+                    tcp_server.shrink_to_fit();
+                    
+                }
+            }
             return true;
         }
-
         return false;
     }
 
@@ -114,7 +118,7 @@ namespace Evpp
     {
         if (nullptr != loop)
         {
-            uv_close(reinterpret_cast<event_handle*>(server), &TcpServer::DefaultCloseListen);
+            uv_close(reinterpret_cast<event_handle*>(server), &TcpServer::OnDefaultListen);
             return true;
         }
         return false;
@@ -169,27 +173,29 @@ namespace Evpp
         {
             if (InitTcpService(loop, server))
             {
-                if (0 == uv_tcp_simultaneous_accepts(server, 0))
+                if (uv_tcp_simultaneous_accepts(server, 0))
                 {
-                    if (tcp_proble)
-                    {
-                        if (uv_tcp_nodelay(server, 1))
-                        {
-                            printf("初始化失败\n");
-                        }
-                    }
-
-                    if (false == BindTcpService(server, addr))
-                    {
-                        return false;
-                    }
-
-                    if (false == ListenTcpService(server))
-                    {
-                        return false;
-                    }
-                    return true;
+                    return false;
                 }
+
+                if (tcp_proble)
+                {
+                    if (uv_tcp_nodelay(server, 1))
+                    {
+                        printf("初始化失败\n");
+                    }
+                }
+
+                if (0 == BindTcpService(server, addr))
+                {
+                    return false;
+                }
+
+                if (0 == ListenTcpService(server))
+                {
+                    return false;
+                }
+                return true;
             }
             return false;
         }

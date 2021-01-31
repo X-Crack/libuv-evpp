@@ -1,6 +1,6 @@
 #ifndef __SOCKET_BUFFER_H__
 #define __SOCKET_BUFFER_H__
-#include <config.h>
+#include <event_config.h>
 #include <algorithm>
 #include <vector>
 #include <assert.h>
@@ -26,13 +26,13 @@ namespace Evpp
 	/// |                   |                  |                  |
 	/// 0      <=      readerIndex   <=   writerIndex    <=     size
 	/// @endcode
-	class TcpBuffer
+	class EventBuffer
 	{
 	public:
 		static const size_t kCheapPrepend = 8;
 		static const size_t kInitialSize = 1024;
 
-		explicit TcpBuffer(size_t initialSize = kInitialSize)
+		explicit EventBuffer(size_t initialSize = kInitialSize)
 			: buffer_(kCheapPrepend + initialSize),
 			readerIndex_(kCheapPrepend),
 			writerIndex_(kCheapPrepend)
@@ -45,7 +45,7 @@ namespace Evpp
 		// implicit copy-ctor, move-ctor, dtor and assignment are fine
 		// NOTE: implicit move-ctor is added in g++ 4.6
 
-		void swap(TcpBuffer& rhs)
+		void swap(EventBuffer& rhs)
 		{
 			buffer_.swap(rhs.buffer_);
 			std::swap(readerIndex_, rhs.readerIndex_);

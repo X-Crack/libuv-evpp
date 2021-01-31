@@ -1,6 +1,5 @@
 #ifndef __PLATFORM_H__
 #define __PLATFORM_H__
-#include <type.h>
 #include <assert.h>
 
 #if defined(_MSC_VER)
@@ -21,6 +20,8 @@
 #pragma warning( disable: 4577 )
 #pragma warning( disable: 4503 )
 #pragma warning( disable: 4458 )
+#pragma warning( disable: 4100 )
+#pragma warning( disable: 4702 )
 #endif
 
 #ifdef H_OS_WINDOWS

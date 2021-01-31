@@ -1,6 +1,6 @@
 #ifndef __TCP_SESSION_H__
 #define __TCP_SESSION_H__
-#include <config.h>
+#include <event_config.h>
 #include <string>
 #include <vector>
 namespace Evpp
@@ -12,7 +12,7 @@ namespace Evpp
     {
     public:
         typedef std::function<void(EventLoop*, const u96)>                                                                          SystemDiscons;
-        typedef std::function<bool(EventLoop*, const std::shared_ptr<TcpSession>&, const std::shared_ptr<TcpBuffer>&, const u96)>   SystemMessage;
+        typedef std::function<bool(EventLoop*, const std::shared_ptr<TcpSession>&, const std::shared_ptr<EventBuffer>&, const u96)> SystemMessage;
         typedef std::function<bool(EventLoop*, const std::shared_ptr<TcpSession>&, const u96, const i32)>                           SystemSendMsg;
     public:
         explicit TcpSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const u96 index, const SystemDiscons& discons, const SystemMessage& message, const SystemSendMsg& sendmsg);
@@ -37,7 +37,7 @@ namespace Evpp
         u96  GetSelfIndex() { return self_index; };
     private:
         void OnSystemDiscons();
-        bool OnSystemMessage(const std::shared_ptr<TcpBuffer>& Buffer);
+        bool OnSystemMessage(const std::shared_ptr<EventBuffer>& Buffer);
         bool OnSystemSendMsg(const i32 status);
     private:
         EventLoop*                                                      event_base;

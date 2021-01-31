@@ -1,6 +1,6 @@
 #ifndef __EVENT_RESOLVE_H__
 #define __EVENT_RESOLVE_H__
-#include <config.h>
+#include <event_config.h>
 #include <string>
 namespace Evpp
 {

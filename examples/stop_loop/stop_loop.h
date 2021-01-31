@@ -1,6 +1,6 @@
 #ifndef __STOP_LOOP_H__
 #define __STOP_LOOP_H__
-#include <config.h>
+#include <event_config.h>
 #include <memory>
 #include <thread>
 namespace Evpp

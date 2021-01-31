@@ -19,6 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\glog\vsprojects\glog.vcxproj">
+      <Project>{90f986d2-3f78-3b7f-a88b-7283b79e08ef}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\libuv\vsprojects\uv_a.vcxproj">
       <Project>{271f0c53-971b-3471-a1f8-1c2a3209445c}</Project>
     </ProjectReference>
@@ -107,7 +110,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../source/include;../../../common/libuv/include;../../../common/cpps/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../source/include;../../../common/libuv/include;../../../common/cpps/include;../../../common/glog/src/windows;../../../common/glog/src/windows/glog;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <LanguageStandard>stdcpplatest</LanguageStandard>

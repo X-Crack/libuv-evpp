@@ -79,49 +79,11 @@ namespace Evpp
                 }
                 return false;
             }
-
-            if (RunInLoopEx(std::bind(&TcpServer::DestroyServer, this, wait)))
-            {
-                if (wait)
-                {
-                    event_close_flag_ex.wait(1, std::memory_order_relaxed);
-                }
-                return true;
-            }
+            return DestroySyncEvent(wait);
         }
         return false;
     }
 
-    bool TcpServer::DestroyService(const bool wait)
-    {
-        if (nullptr == tcp_listen || nullptr == event_thread_pool)
-        {
-            return false;
-        }
-
-        // 销毁监听服务
-        if (0 == tcp_listen->DestroyListenService())
-        {
-            return false;
-        }
-        // 清理会话列表
-        if (0 == CleanedSession())
-        {
-            return false;
-        }
-        // 销毁线程列表
-        if (0 == event_thread_pool->DestroyEventThreadPool())
-        {
-            return false;
-        }
-
-        if (wait)
-        {
-            event_close_flag_ex.store(0, std::memory_order_release);
-            event_close_flag_ex.notify_one();
-        }
-        return true;
-    }
     bool TcpServer::AddListenPort(const std::string& server_address, const u16 port)
     {
         if (ExistsStarts(Status::None))
@@ -228,7 +190,7 @@ namespace Evpp
         {
             tcp_socket->DelSockInfo(index);
             {
-                std::lock_guard<std::recursive_mutex> lock(tcp_recursive_mutex);
+                std::unique_lock<std::recursive_mutex> lock(tcp_recursive_mutex);
                 tcp_session.erase(index);
                 tcp_index_multiplexing.emplace(index);
             }
@@ -249,7 +211,7 @@ namespace Evpp
         if (tcp_session.size())
         {
             {
-                std::lock_guard<std::recursive_mutex> lock(tcp_recursive_mutex);
+                std::unique_lock<std::recursive_mutex> lock(tcp_recursive_mutex);
                 for (auto & [index, session] : tcp_session)
                 {
                     if (Close(index))
@@ -267,14 +229,14 @@ namespace Evpp
 
     const std::shared_ptr<TcpSession>& TcpServer::GetSession(const u96 index)
     {
-        std::lock_guard<std::recursive_mutex> lock(tcp_recursive_mutex);
+        std::unique_lock<std::recursive_mutex> lock(tcp_recursive_mutex);
         return tcp_session[index];
     }
 
 
     bool TcpServer::CreaterSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const u96 index)
     {
-        std::lock_guard<std::recursive_mutex> lock(tcp_recursive_mutex);
+        std::unique_lock<std::recursive_mutex> lock(tcp_recursive_mutex);
         return tcp_session.emplace
         (
             index, 
@@ -291,40 +253,37 @@ namespace Evpp
         ).second;
     }
 
-    bool TcpServer::InitialSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client)
+    bool TcpServer::InitialSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const u96 index)
     {
         if (loop->EventThread())
         {
-            u96 index = GetPlexingIndex();
+            if (CreaterSession(loop, client, index))
             {
-                if (CreaterSession(loop, client, index))
+                if (tcp_socket->AddSockInfo(client.get(), index))
                 {
-                    if (tcp_socket->AddSockInfo(client.get(), index))
+                    if (nullptr != socket_accepts)
                     {
-                        if (nullptr != socket_accepts)
+                        if (socket_accepts(loop, GetSession(index), index))
                         {
-                            if (socket_accepts(loop, GetSession(index), index))
-                            {
-                                return true;
-                            }
-
-                            return Close(index);
+                            return true;
                         }
+
+                        return Close(index);
                     }
                 }
             }
             return SystemShutdown(reinterpret_cast<socket_stream*>(client.get()));
         }
-        return loop->RunInLoopEx(std::bind(&TcpServer::InitialSession, this, loop, client));
+        return loop->RunInLoopEx(std::bind(&TcpServer::InitialSession, this, loop, client, index));
     }
 
-    bool TcpServer::InitTcpSocket(EventLoop* loop, socket_stream* handler, socket_tcp* client)
+    bool TcpServer::InitialAccepts(EventLoop* loop, socket_stream* server, socket_tcp* client)
     {
         if (nullptr != loop && nullptr != client)
         {
             if (0 == uv_tcp_init(loop->EventBasic(), client))
             {
-                if (0 == uv_accept(handler, reinterpret_cast<socket_stream*>(client)))
+                if (0 == uv_accept(server, reinterpret_cast<socket_stream*>(client)))
                 {
                     return 0 == uv_tcp_keepalive(client, 1, tcp_keepalive.load());
                 }
@@ -338,18 +297,18 @@ namespace Evpp
         return false;
     }
 
-    bool TcpServer::DefaultAccepts(EventLoop* loop, socket_stream* server)
+    bool TcpServer::DefaultAccepts(EventLoop* loop, socket_stream* server, const u96 index)
     {
         if (nullptr != event_thread_pool && nullptr != loop && nullptr != server)
         {
             std::shared_ptr<socket_tcp> client = std::make_shared<socket_tcp>();
             {
-                if (InitTcpSocket(loop, server, client.get()))
+                if (InitialAccepts(loop, server, client.get()))
                 {
                     // 停止服务器不在接受新客户到来
                     if (ExistsRuning())
                     {
-                        return InitialSession(loop, client);
+                        return InitialSession(loop, client, index);
                     }
                 }
 
@@ -359,43 +318,29 @@ namespace Evpp
         return false;
     }
 
-    bool TcpServer::AsyncAccepts(EventLoop* loop, socket_stream* server)
+    bool TcpServer::DefaultAcceptsEx(EventLoop* loop, socket_stream* server, const u96 index)
     {
         if (nullptr != loop)
         {
-            return loop->RunInLoopEx(std::bind((bool(TcpServer::*)(EventLoop*, socket_stream*))&TcpServer::DefaultAccepts, this, loop, server));
+            return loop->RunInLoopEx(std::bind((bool(TcpServer::*)(EventLoop*, socket_stream*, const u96))&TcpServer::DefaultAccepts, this, loop, server, index));
         }
         return false;
     }
 
-    bool TcpServer::DefaultAccepts(socket_stream* server, i32 status_)
+    bool TcpServer::DefaultAccepts(socket_stream* server, i32 status)
     {
-        if (0 == status_ && nullptr != server)
+        if (0 == status && nullptr != server)
         {
-#ifdef H_OS_WINDOWS
-            return DefaultAccepts(event_thread_pool->GetEventLoop(), server);
-#else
-            return AsyncAccepts(event_thread_pool->GetEventLoopEx(server->loop), server);
-#endif
-        }
-        return false;
-    }
-
-    void TcpServer::OnDefaultAccepts(socket_stream* handler, int status)
-    {
-        if (nullptr != handler)
-        {
-            TcpServer* watcher = static_cast<TcpServer*>(handler->data);
+            u96 index = GetPlexingIndex();
             {
-                if (nullptr != watcher)
-                {
-                    if (watcher->DefaultAccepts(handler, status))
-                    {
-                        return;
-                    }
-                }
+#ifdef H_OS_WINDOWS
+                return DefaultAccepts(event_thread_pool->GetEventLoop(index), server, index);
+#else
+                return DefaultAcceptsEx(event_thread_pool->GetEventLoopEx(server->loop), server, index);
+#endif
             }
         }
+        return false;
     }
 
     void TcpServer::DefaultDiscons(EventLoop* loop, const u96 index)
@@ -419,7 +364,7 @@ namespace Evpp
         }
     }
 
-    bool TcpServer::DefaultMessage(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const std::shared_ptr<TcpBuffer>& buffer, const u96 index)
+    bool TcpServer::DefaultMessage(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const std::shared_ptr<EventBuffer>& buffer, const u96 index)
     {
         if (nullptr != loop && nullptr != socket_message)
         {
@@ -437,7 +382,7 @@ namespace Evpp
         return true;
     }
 
-    bool TcpServer::CheckClose(socket_stream* handler)
+    bool TcpServer::CheckStatus(socket_stream* handler)
     {
         if (nullptr != handler)
         {
@@ -452,7 +397,7 @@ namespace Evpp
 
     bool TcpServer::SystemClose(socket_stream* stream)
     {
-        if (CheckClose(stream))
+        if (CheckStatus(stream))
         {
             uv_close(reinterpret_cast<uv_handle_t*>(stream), &TcpServer::OnDefaultClose);
             {
@@ -464,7 +409,7 @@ namespace Evpp
 
     bool TcpServer::SystemShutdown(socket_stream* stream)
     {
-        if (CheckClose(stream))
+        if (CheckStatus(stream))
         {
             socket_shutdown* shutdown = new socket_shutdown();
             {
@@ -472,7 +417,6 @@ namespace Evpp
                 {
                     shutdown->data = this;
                 }
-
                 return 0 == uv_shutdown(shutdown, stream, &TcpServer::OnDefaultShutdown);
             }
         }
@@ -481,8 +425,8 @@ namespace Evpp
 
     const u96 TcpServer::GetPlexingIndex(u96 index)
     {
-        std::lock_guard<std::recursive_mutex> lock(tcp_recursive_mutex);
-        {
+        std::unique_lock<std::recursive_mutex> lock(tcp_recursive_mutex);
+        {        
             if (index == 0)
             {
                 return GetPlexingIndex(tcp_index_multiplexing.empty() ? tcp_index.fetch_add(1) : tcp_index_multiplexing.top());
@@ -506,6 +450,23 @@ namespace Evpp
         if (nullptr != handler->data)
         {
             handler->data = nullptr;
+        }
+    }
+
+    void TcpServer::OnDefaultAccepts(socket_stream* handler, int status)
+    {
+        if (nullptr != handler)
+        {
+            TcpServer* watcher = static_cast<TcpServer*>(handler->data);
+            {
+                if (nullptr != watcher)
+                {
+                    if (watcher->DefaultAccepts(handler, status))
+                    {
+                        return;
+                    }
+                }
+            }
         }
     }
 
@@ -543,7 +504,7 @@ namespace Evpp
         }
     }
 
-    void TcpServer::DefaultCloseListen(event_handle* handler)
+    void TcpServer::OnDefaultListen(event_handle* handler)
     {
         if (nullptr != handler)
         {
@@ -555,5 +516,49 @@ namespace Evpp
                 }
             }
         }
+    }
+
+    bool TcpServer::DestroyService(const bool wait)
+    {
+        if (nullptr == tcp_listen || nullptr == event_thread_pool)
+        {
+            return false;
+        }
+
+        // 销毁监听服务
+        if (0 == tcp_listen->DestroyListenService())
+        {
+            return false;
+        }
+        // 清理会话列表
+        if (0 == CleanedSession())
+        {
+            return false;
+        }
+        // 销毁线程列表
+        if (0 == event_thread_pool->DestroyEventThreadPool())
+        {
+            return false;
+        }
+
+        if (wait)
+        {
+            event_close_flag_ex.store(0, std::memory_order_release);
+            event_close_flag_ex.notify_one();
+        }
+        return true;
+    }
+
+    bool TcpServer::DestroySyncEvent(const bool wait)
+    {
+        if (RunInLoopEx(std::bind(&TcpServer::DestroyServer, this, wait)))
+        {
+            if (wait)
+            {
+                event_close_flag_ex.wait(1, std::memory_order_relaxed);
+            }
+            return true;
+        }
+        return false;
     }
 }

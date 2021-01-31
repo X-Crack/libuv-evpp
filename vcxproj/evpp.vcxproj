@@ -19,7 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\source\event\event_base.cc" />
     <ClCompile Include="..\source\event\event_coroutine.cc" />
     <ClCompile Include="..\source\event\event_loop.cc" />
     <ClCompile Include="..\source\event\event_loop_thread.cc" />
@@ -49,10 +48,10 @@
     <ClCompile Include="..\source\tcp_socket.cc" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\include\buffer.h" />
-    <ClInclude Include="..\source\include\config.h" />
-    <ClInclude Include="..\source\include\event_base.h" />
+    <ClInclude Include="..\source\include\event_buffer.h" />
+    <ClInclude Include="..\source\include\event_config.h" />
     <ClInclude Include="..\source\include\event_coroutine.h" />
+    <ClInclude Include="..\source\include\event_logging.h" />
     <ClInclude Include="..\source\include\event_loop.h" />
     <ClInclude Include="..\source\include\event_loop_thread.h" />
     <ClInclude Include="..\source\include\event_loop_thread_ex.h" />
@@ -67,7 +66,7 @@
     <ClInclude Include="..\source\include\event_timer.h" />
     <ClInclude Include="..\source\include\event_timer_pool.h" />
     <ClInclude Include="..\source\include\event_untlity.h" />
-    <ClInclude Include="..\source\include\platform.h" />
+    <ClInclude Include="..\source\include\event_platform.h" />
     <ClInclude Include="..\source\include\tcp_attach.h" />
     <ClInclude Include="..\source\include\tcp_client.h" />
     <ClInclude Include="..\source\include\tcp_client_service.h" />
@@ -80,7 +79,7 @@
     <ClInclude Include="..\source\include\event_socket.h" />
     <ClInclude Include="..\source\include\event_socket_pool.h" />
     <ClInclude Include="..\source\include\tcp_socket.h" />
-    <ClInclude Include="..\source\include\type.h" />
+    <ClInclude Include="..\source\include\event_stdint.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -163,7 +162,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>../source/include;../../../common/libuv/include;../../../common/queue/concurrent;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../source/include;../../../common/libuv/include;../../../common/queue/concurrent;../../../common/glog/src/windows;../../../common/glog/src/windows/glog;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <LanguageStandard>stdcpplatest</LanguageStandard>

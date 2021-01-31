@@ -1,6 +1,6 @@
 #ifndef __EVENT_LOOP_THREAD_POOL_H__
 #define __EVENT_LOOP_THREAD_POOL_H__
-#include <config.h>
+#include <event_config.h>
 #include <memory>
 #include <mutex>
 #include <atomic>

@@ -1,6 +1,6 @@
 #ifndef __EVENT_SHARE_H__
 #define __EVENT_SHARE_H__
-#include <config.h>
+#include <event_config.h>
 #include <unordered_map>
 #include <mutex>
 namespace Evpp

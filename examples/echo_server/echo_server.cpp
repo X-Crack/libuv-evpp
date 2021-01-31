@@ -3,7 +3,7 @@
 #include <event_loop.h>
 #include <tcp_server.h>
 #include <tcp_session.h>
-#include <buffer.h>
+#include <event_buffer.h>
 namespace Evpp
 {
 
@@ -61,7 +61,7 @@ namespace Evpp
         return true;
     }
 
-    bool EchoServer::OnMessage(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const std::shared_ptr<TcpBuffer>& buffer, const u96 index)
+    bool EchoServer::OnMessage(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const std::shared_ptr<EventBuffer>& buffer, const u96 index)
     {
         std::cout << "用户消息: " << index << " " << "消息长度: %d" << buffer->readableBytes() << std::endl;
         buffer->retrieve(buffer->readableBytes());

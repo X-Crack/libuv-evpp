@@ -1,7 +1,7 @@
 #pragma once
 #ifndef __EVENT_LOOP_H__
 #define __EVENT_LOOP_H__
-#include <config.h>
+#include <event_config.h>
 #include <event_status.h>
 #include <memory>
 #include <atomic>

@@ -1,6 +1,6 @@
 #ifndef __EVENT_TIMER_POOL_H__
 #define __EVENT_TIMER_POOL_H__
-#include <config.h>
+#include <event_config.h>
 #include <unordered_map>
 #include <memory>
 namespace Evpp

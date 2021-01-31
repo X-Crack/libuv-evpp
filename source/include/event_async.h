@@ -1,6 +1,6 @@
 #ifndef __EVENT_ASYNC_H__
 #define __EVENT_ASYNC_H__
-#include <config.h>
+#include <event_config.h>
 #include <event_untlity.h>
 namespace Evpp
 {

@@ -1,6 +1,6 @@
 #ifndef __TCP_CONNECT_H__
 #define __TCP_CONNECT_H__
-#include <config.h>
+#include <event_config.h>
 #include <memory>
 namespace Evpp
 {

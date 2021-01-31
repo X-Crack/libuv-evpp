@@ -346,7 +346,7 @@ namespace Evpp
         }
     }
 
-    bool TcpClient::DefaultMessage(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const std::shared_ptr<TcpBuffer>& buffer, const u96 index)
+    bool TcpClient::DefaultMessage(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const std::shared_ptr<EventBuffer>& buffer, const u96 index)
     {
         if (nullptr != socket_message)
         {

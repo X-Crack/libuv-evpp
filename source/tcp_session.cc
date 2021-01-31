@@ -155,7 +155,7 @@ namespace Evpp
         }
     }
 
-    bool TcpSession::OnSystemMessage(const std::shared_ptr<TcpBuffer>& Buffer)
+    bool TcpSession::OnSystemMessage(const std::shared_ptr<EventBuffer>& Buffer)
     {
         if (nullptr != system_message)
         {

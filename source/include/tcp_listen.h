@@ -1,6 +1,6 @@
 #ifndef __TCP_LISTEN_H__
 #define __TCP_LISTEN_H__
-#include <config.h>
+#include <event_config.h>
 #include <event_status.h>
 #include <string>
 #include <memory>

@@ -1,7 +1,6 @@
 #include <tcp_message.h>
 #include <event_loop.h>
-
-#include <buffer.h>
+#include <event_buffer.h>
 
 namespace Evpp
 {
@@ -11,7 +10,7 @@ namespace Evpp
         system_message(message),
         system_sendmsg(sendmsg),
         tcp_socket(client),
-        tcp_buffer(std::make_shared<TcpBuffer>()),
+        tcp_buffer(std::make_shared<EventBuffer>()),
         event_shutdown(std::make_unique<socket_shutdown>()),
         event_write(std::make_unique<socket_write>())
     {
@@ -256,7 +255,7 @@ namespace Evpp
                 {
                     if (nullptr != system_message)
                     {
-                        return system_message(std::weak_ptr<TcpBuffer>(tcp_buffer).lock());
+                        return system_message(std::weak_ptr<EventBuffer>(tcp_buffer).lock());
                     }
                 }
                 return true;
