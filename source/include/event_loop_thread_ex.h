@@ -22,6 +22,8 @@ namespace Evpp
         bool DestroyThread();
         EventLoop* GetEventLoop();
     private:
+        bool StopDispatch();
+    private:
         void CoroutineInThread();
         bool CoroutineDispatch();
     private:

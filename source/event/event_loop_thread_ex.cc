@@ -18,7 +18,7 @@ namespace Evpp
         event_share(share),
         event_index(index),
         event_loop(std::make_shared<EventLoop>(event_share->EventLoop(index), index)),
-        loop_exit(0)
+        loop_exit(1)
     {
 
     }
@@ -27,7 +27,7 @@ namespace Evpp
     {
         if (Join())
         {
-
+            printf("Delete EventLoopThreadEx %d\n", event_index);
         }
     }
 
@@ -69,11 +69,14 @@ namespace Evpp
         {
             if (uv_loop_alive(event_loop->EventBasic()))
             {
-                if (0 == loop_exit)
+                if(StopDispatch())
                 {
-                    loop_exit.store(1);
+                    if (loop_exit)
+                    {
+                        loop_exit.store(0, std::memory_order_release);
+                    }
+                    return true;
                 }
-                return event_loop->StopDispatch();
             }
         }
         return false;
@@ -94,6 +97,15 @@ namespace Evpp
         return nullptr;
     }
 
+    bool EventLoopThreadEx::StopDispatch()
+    {
+        if (nullptr != event_loop)
+        {
+            return event_loop->StopDispatchEx();
+        }
+        return false;
+    }
+
     void EventLoopThreadEx::CoroutineInThread()
     {
         if (nullptr == event_loop)
@@ -105,7 +117,7 @@ namespace Evpp
         {
             if (event_loop->InitialEvent())
             {
-                while (!loop_exit.load())
+                while (loop_exit.load(std::memory_order_acquire))
                 {
                     if (uv_loop_alive(event_loop->EventBasic()))
                     {

@@ -23,6 +23,7 @@ namespace Evpp
         bool ExecDispatch(const EventLoopHandler& function, u32 mode = UV_RUN_ONCE);
         bool ExecDispatchEx(const EventLoopHandler& function, u32 mode = UV_RUN_ONCE);
         bool StopDispatch();
+        bool StopDispatchEx();
     public:
         bool RunInLoop(const Functor& function);
         bool RunInLoop(Functor&& function);

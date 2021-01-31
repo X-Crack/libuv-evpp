@@ -33,6 +33,14 @@ void exit_loop(Evpp::TcpClientService* client)
     printf("Exit OK %d\n", GetTickCount() - timer);
 }
 
+void exit_loop1(Evpp::TcpServerService* client)
+{
+    Sleep(5000);
+    u32 timer = GetTickCount();
+    client->DestroyServer();
+    printf("Exit OK %d\n", GetTickCount() - timer);
+}
+
 void printf_loop_ex()
 {
     printf("RunInLoop Printf\n");
@@ -61,8 +69,8 @@ int main()
 
     client.CreaterClient();
 
-//     std::thread t1(std::bind(exit_loop, &client));
-//     t1.detach();
+    std::thread t1(std::bind(exit_loop, &client));
+    t1.detach();
 
     client.ExecDispatchCoroutine(std::bind(printf_loop, std::placeholders::_1));
 
@@ -78,6 +86,8 @@ int main()
     Tcp.SetSendMsgCallback(Import::DefaultSendMsg);
     //Tcp.SetEventThreadId(GetCurrentThreadId());
     Tcp.CreaterServer(16);
+    std::thread t2(std::bind(exit_loop1, &Tcp));
+    t2.detach();
     Tcp.ExecDispatch();
     printf("exit thread\n");
 

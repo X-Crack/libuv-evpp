@@ -112,11 +112,28 @@ namespace Evpp
 
     bool EventLoop::StopDispatch()
     {
-        if (ExistsRuning())
+        if (nullptr != event_base)
         {
-            if (this->EventThread())
+            if (EventThread() && ExistsRuning())
             {
+                while (event_watcher->DestroyQueue());
 
+                uv_stop(event_base);
+
+                return ChangeStatus(Status::Exec, Status::Stop);
+            }
+
+            return RunInLoopEx(std::bind(&EventLoop::StopDispatch, this));
+        }
+        return false;
+    }
+
+    bool EventLoop::StopDispatchEx()
+    {
+        if (nullptr != event_base)
+        {
+            if (EventThread() && ExistsRuning())
+            {
                 while (event_watcher->DestroyQueue());
 
                 uv_stop(event_base);
@@ -130,7 +147,7 @@ namespace Evpp
                 return true;
             }
 
-            if (RunInLoopEx(std::bind(&EventLoop::StopDispatch, this)))
+            if (RunInLoopEx(std::bind(&EventLoop::StopDispatchEx, this)))
             {
                 std::atomic_wait_explicit(&event_stop_flag, 1, std::memory_order_relaxed);
             }
