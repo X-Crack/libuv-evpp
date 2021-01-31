@@ -191,7 +191,10 @@ namespace Evpp
     {
         if (nullptr != event_timer_pool)
         {
-            return event_timer_pool->AssignTimer(index, delay, repeat);
+            if (ExistsRuning())
+            {
+                return event_timer_pool->AssignTimer(index, delay, repeat);
+            }
         }
         return false;
     }
@@ -200,7 +203,10 @@ namespace Evpp
     {
         if (nullptr != event_timer_pool)
         {
-            return event_timer_pool->StopedTimer(index);
+            if (ExistsRuning())
+            {
+                return event_timer_pool->StopedTimer(index);
+            }
         }
         return false;
     }
@@ -209,7 +215,10 @@ namespace Evpp
     {
         if (nullptr != event_timer_pool)
         {
-            return event_timer_pool->KilledTimer(index);
+            if (ExistsRuning())
+            {
+                return event_timer_pool->KilledTimer(index);
+            }
         }
     }
 
@@ -217,7 +226,10 @@ namespace Evpp
     {
         if (nullptr != event_timer_pool)
         {
-            return event_timer_pool->ModiyRepeat(index, repeat);
+            if (ExistsRuning())
+            {
+                return event_timer_pool->ModiyRepeat(index, repeat);
+            }
         }
         return;
     }
@@ -226,7 +238,10 @@ namespace Evpp
     {
         if (nullptr != event_timer_pool)
         {
-            return event_timer_pool->ReStarTimer(index);
+            if (ExistsRuning())
+            {
+                return event_timer_pool->ReStarTimer(index);
+            }
         }
         return false;
     }
@@ -235,7 +250,10 @@ namespace Evpp
     {
         if (nullptr != event_timer_pool)
         {
-            return event_timer_pool->ReStarTimerEx(index, delay, repeat);
+            if (ExistsRuning())
+            {
+                return event_timer_pool->ReStarTimerEx(index, delay, repeat);
+            }
         }
         return false;
     }
