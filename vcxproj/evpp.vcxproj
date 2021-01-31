@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\event\event_coroutine.cc" />
+    <ClCompile Include="..\source\event\event_explicit.cc" />
     <ClCompile Include="..\source\event\event_loop.cc" />
     <ClCompile Include="..\source\event\event_loop_thread.cc" />
     <ClCompile Include="..\source\event\event_loop_thread_ex.cc" />
@@ -51,6 +52,7 @@
     <ClInclude Include="..\source\include\event_buffer.h" />
     <ClInclude Include="..\source\include\event_config.h" />
     <ClInclude Include="..\source\include\event_coroutine.h" />
+    <ClInclude Include="..\source\include\event_explicit.h" />
     <ClInclude Include="..\source\include\event_logging.h" />
     <ClInclude Include="..\source\include\event_loop.h" />
     <ClInclude Include="..\source\include\event_loop_thread.h" />

@@ -36,6 +36,7 @@ namespace Evpp
 
     bool TcpListen::CreaterListenService(EventSocketPool* socket, TcpServer* server)
     {
+        LOG_INFO << "123";
         if (nullptr == socket || nullptr == server)
         {
             return false;

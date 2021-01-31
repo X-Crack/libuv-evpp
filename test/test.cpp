@@ -2,6 +2,11 @@
 //
 
 #include <iostream>
+
+
+
+
+#include <event_explicit.h>
 #include <event_loop.h>
 #include <event_loop_thread.h>
 #include <event_share.h>
@@ -24,8 +29,9 @@
 //#include "cpps/cpps.h"
 
 #include <future>
+using namespace Evpp;
 
-void exit_loop(Evpp::TcpClientService* client)
+void exit_loop(TcpClientService* client)
 {
     Sleep(5000);
     u32 timer = GetTickCount();
@@ -33,7 +39,7 @@ void exit_loop(Evpp::TcpClientService* client)
     printf("Exit OK %d\n", GetTickCount() - timer);
 }
 
-void exit_loop1(Evpp::TcpServerService* client)
+void exit_loop1(TcpServerService* client)
 {
     Sleep(5000);
     u32 timer = GetTickCount();
@@ -46,15 +52,15 @@ void printf_loop_ex()
     printf("RunInLoop Printf\n");
 }
 
-void printf_loop(Evpp::EventLoop* loop)
+void printf_loop(EventLoop* loop)
 {
     loop->RunInLoopEx(std::bind(printf_loop_ex));
     //printf("RunInLoop Printf\n");
 }
 
-using namespace Evpp;
-int main()
+int main(int argc, char* argv[])
 {
+    EventExplicit init(argc, argv);
 //     TcpClientService client;
 // 
 //     client.AddServerPort("127.0.0.1", 8888);

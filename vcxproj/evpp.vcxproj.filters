@@ -108,6 +108,9 @@
     <ClCompile Include="..\source\tcp_client_service.cc">
       <Filter>socket\tcp\client</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\event\event_explicit.cc">
+      <Filter>event</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\include\event_untlity.h">
@@ -204,6 +207,9 @@
       <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="..\source\include\event_buffer.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\event_explicit.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
