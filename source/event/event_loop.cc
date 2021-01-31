@@ -60,6 +60,11 @@ namespace Evpp
     {
         if (nullptr != event_base)
         {
+            if (ExistsInited())
+            {
+                ChangeStatus(Status::Exec);
+            }
+
             return 0 == uv_run(event_base, static_cast<uv_run_mode>(mode));
         }
         return false;
@@ -69,11 +74,6 @@ namespace Evpp
     {
         if (nullptr != event_base)
         {
-            if (ExistsInited())
-            {
-                ChangeStatus(Status::Exec);
-            }
-
             if (0 == ExecDispatch(mode))
             {
                 if (nullptr != function)
