@@ -58,7 +58,11 @@ namespace Evpp
                     {
                         if (ChangeStatus(Status::Init, Status::Exec))
                         {
-                            return tcp_listen->CreaterListenService(event_socket.get(), this);
+                            if(tcp_listen->CreaterListenService(event_socket.get(), this))
+                            {
+                                EVENT_INFO("server started successfully");
+                                return true;
+                            }
                         }
                     }
                 }

@@ -27,7 +27,7 @@ namespace Evpp
     {
         if (Join())
         {
-
+            EVENT_INFO("Release Class EventLoopThreadEx");
         }
     }
 
@@ -44,11 +44,16 @@ namespace Evpp
                         if (ChangeStatus(Status::None, Status::Init))
                         {
                             // 启动线程需要慢启动，因为初始化数据过多，否则会导致RunInLoop异步安全初始化失败。
-                            if (cv_signal.wait_for(lock, std::chrono::milliseconds(64), std::bind(&EventLoopThreadEx::AvailableEvent, this)))
+                            if (cv_signal.wait_for(lock, std::chrono::milliseconds(8), std::bind(&EventLoopThreadEx::AvailableEvent, this)))
                             {
                                 return true;
                             }
+                            else
+                            {
+                                EVENT_INFO("thread failed to start please wait a little longer");
+                            }
                         }
+                        assert(0);
                     }
                 }
                 return false;
@@ -127,6 +132,7 @@ namespace Evpp
                         }
                         catch (...)
                         {
+                            EVENT_INFO("during the operation of the coroutine there may be some problems please check carefully");
                             break;
                         }
                     }
@@ -134,12 +140,12 @@ namespace Evpp
 
                 if (0 || UV_EBUSY == uv_loop_close(event_loop->EventBasic()))
                 {
-                    printf("Delete EventLoop Ok %d\n", event_index);
+                    EVENT_INFO("delete eventLoop ok %d", event_index);
                 }
 
                 if (ChangeStatus(Status::Exec, Status::Stop))
                 {
-                    assert(!event_loop->ExistsStoped());
+                    assert(event_loop->ExistsStoped());
                 }
             }
         }
@@ -176,7 +182,7 @@ namespace Evpp
     {
         if (loop_thread && loop_thread->joinable())
         {
-            loop_thread->detach();
+            loop_thread->join();
             return true;
         }
         return false;
