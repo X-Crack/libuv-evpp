@@ -48,15 +48,15 @@
 #endif // GOOGLE_LOGGING
 
 #ifndef GOOGLE_LOGGING
-#       define EVENT_INFO(...)                                      GOOGLE_LOG_DEBUG_MSG(INFO, ##__VA_ARGS__)
-#       define EVENT_WARN(...)                                      GOOGLE_LOG_DEBUG_MSG(WARNING, ##__VA_ARGS__)
-#       define EVENT_ERROR(...)                                     GOOGLE_LOG_DEBUG_MSG(ERROR, ##__VA_ARGS__)
-#       define EVENT_FATAL(...)                                     GOOGLE_LOG_DEBUG_MSG(FATAL, ##__VA_ARGS__)
+#       define EVENT_INFO(...)                                      GOOGLE_LOG_DEBUG_MSG(INFO, __VA_ARGS__)
+#       define EVENT_WARN(...)                                      GOOGLE_LOG_DEBUG_MSG(WARNING, __VA_ARGS__)
+#       define EVENT_ERROR(...)                                     GOOGLE_LOG_DEBUG_MSG(ERROR, __VA_ARGS__)
+#       define EVENT_FATAL(...)                                     GOOGLE_LOG_DEBUG_MSG(FATAL, __VA_ARGS__)
 #elif   EVENT_SYSTEM_LOGGING
-#       define EVENT_INFO(...)                                      GOOGLE_LOG_DEBUG_MSG(INFO, ##__VA_ARGS__)
-#       define EVENT_WARN(...)                                      GOOGLE_LOG_DEBUG_MSG(WARNING, ##__VA_ARGS__)
-#       define EVENT_ERROR(...)                                     GOOGLE_LOG_DEBUG_MSG(ERROR, ##__VA_ARGS__)
-#       define EVENT_FATAL(...)                                     GOOGLE_LOG_DEBUG_MSG(FATAL, ##__VA_ARGS__)
+#       define EVENT_INFO(...)                                      GOOGLE_LOG_DEBUG_MSG(INFO, __VA_ARGS__)
+#       define EVENT_WARN(...)                                      GOOGLE_LOG_DEBUG_MSG(WARNING, __VA_ARGS__)
+#       define EVENT_ERROR(...)                                     GOOGLE_LOG_DEBUG_MSG(ERROR, __VA_ARGS__)
+#       define EVENT_FATAL(...)                                     GOOGLE_LOG_DEBUG_MSG(FATAL, __VA_ARGS__)
 #endif // GOOGLE_LOGGING
 #endif // __cplusplus
 #endif // __EVEMT_LOGGING_H__
