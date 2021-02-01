@@ -8,7 +8,7 @@ namespace Evpp
 
     TcpSocket::~TcpSocket()
     {
-        LOG_INFO << "Release Class TcpSocket";
+
     }
 
     bool TcpSocket::AddSockInfo(socket_tcp* handler, const u96 index)
@@ -49,27 +49,30 @@ namespace Evpp
 
     bool TcpSocket::GetSockInfo(socket_tcp* handler, SocketInfoEx* socket)
     {
-        String address[96];
+        String address[256];
         // 获取与某个套接字关联的本地协议地址
         if (GetSockName(handler, &socket->sockname.addr, sizeof(struct sockaddr)))
         {
             if (AF_INET == socket->sockname.family)
             {
-                if (uv_ip4_name(&socket->sockname.addr4, address, std::size(address)))
+                if (0 == uv_ip4_name(&socket->sockname.addr4, address, std::size(address)))
                 {
                     socket->sockname.host = address;
                     socket->sockname.port = socket->sockname.addr4.sin_port;
+                    EVENT_INFO("new client enters localhost address: %s localhost port: %u", address, socket->sockname.addr4.sin_port);
                 }
             }
 
             if (AF_INET6 == socket->sockname.family)
             {
-                if (uv_ip6_name(&socket->sockname.addr6, address, std::size(address)))
+                if (0 == uv_ip6_name(&socket->sockname.addr6, address, std::size(address)))
                 {
                     socket->sockname.host = address;
                     socket->sockname.port = socket->sockname.addr6.sin6_port;
+                    EVENT_INFO("new client enters localhost address: %s localhost port: %u", address, socket->sockname.addr6.sin6_port);
                 }
             }
+
             return true;
         }
         return false;
@@ -77,27 +80,31 @@ namespace Evpp
 
     bool TcpSocket::GetPeerInfo(socket_tcp* handler, SocketInfoEx* socket)
     {
-        String address[96];
+        String address[256];
         // 获取与某个套接字关联的外地协议地址
         if (GetPeerName(handler, &socket->peername.addr, sizeof(struct sockaddr)))
         {
             if (AF_INET == socket->peername.family)
             {
-                if (uv_ip4_name(&socket->peername.addr4, address, std::size(address)))
+                if (0 == uv_ip4_name(&socket->peername.addr4, address, std::size(address)))
                 {
                     socket->peername.host = address;
                     socket->peername.port = socket->peername.addr4.sin_port;
+                    EVENT_INFO("new client enters remote address: %s remote port: %u", address, socket->sockname.addr4.sin_port);
                 }
             }
 
             if (AF_INET6 == socket->peername.family)
             {
-                if (uv_ip6_name(&socket->peername.addr6, address, std::size(address)))
+                if (0 == uv_ip6_name(&socket->peername.addr6, address, std::size(address)))
                 {
                     socket->peername.host = address;
                     socket->peername.port = socket->peername.addr6.sin6_port;
+                    EVENT_INFO("new client enters remote address: %s remote port: %u", address, socket->sockname.addr6.sin6_port);
                 }
             }
+
+            
             return true;
         }
 

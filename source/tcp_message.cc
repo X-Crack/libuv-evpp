@@ -37,7 +37,7 @@ namespace Evpp
 
     TcpMessage::~TcpMessage()
     {
-        LOG_INFO << "Release Class TcpMessage";
+
     }
 
     bool TcpMessage::RunInLoop(const Functor& function)

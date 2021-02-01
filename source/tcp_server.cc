@@ -39,7 +39,7 @@ namespace Evpp
 
     TcpServer::~TcpServer()
     {
-        LOG_INFO << "Release Class TcpServer";
+
     }
 
     bool TcpServer::CreaterServer(const u96 thread_size)
@@ -75,6 +75,7 @@ namespace Evpp
             {
                 if (ChangeStatus(Status::Exec, Status::Stop))
                 {
+                    EVENT_INFO("The server is stopping please be patient...");
                     return DestroyService(wait);
                 }
                 return false;

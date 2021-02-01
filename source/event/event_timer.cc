@@ -18,9 +18,9 @@ namespace Evpp
             event_time->data = this;
         }
         
-        if (!InitedTimer())
+        if (0 == InitedTimer())
         {
-            // TODO: error;
+            EVENT_INFO("An unpredictable error occurred when initializing the timer, please follow the libuv method to use EventTimer");
         }
     }
 
@@ -34,8 +34,6 @@ namespace Evpp
         {
             KilledTimer();
         }
-
-        LOG_INFO << "Release Class EventTimer";
     }
 
     bool EventTimer::InitedTimer()

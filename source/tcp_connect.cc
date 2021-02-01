@@ -17,7 +17,7 @@ namespace Evpp
 
     TcpConnect::~TcpConnect()
     {
-        LOG_INFO << "Release Class TcpConnect";
+
     }
 
     bool TcpConnect::ConnectService(const std::unique_ptr<EventSocket>& socket)

@@ -27,7 +27,7 @@ namespace Evpp
 
     EventWatcher::~EventWatcher()
     {
-        LOG_INFO << "Release Class EventWatcher";
+
     }
 
     bool EventWatcher::CreaterQueue()
@@ -109,7 +109,7 @@ namespace Evpp
         {
             if (!function())
             {
-                LOG_FATAL << "The queue failed, please check your code logic in time.";
+                //LOG_FATAL << "The queue failed, please check your code logic in time.";
             }
         }
     }

@@ -11,6 +11,8 @@
 #   endif
 #endif
 
+#define USE_PARAMETER(P) (P)
+
 #ifdef H_OS_WINDOWS
 #pragma warning( disable: 4005 )
 #pragma warning( disable: 4251 )

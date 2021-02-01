@@ -8,7 +8,7 @@ namespace Evpp
 
     EventStatus::~EventStatus()
     {
-        LOG_INFO << "Release Class EventStatus";
+
     }
 
     bool EventStatus::ChangeStatus(Status original, const Status other)

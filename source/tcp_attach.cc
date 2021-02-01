@@ -20,7 +20,7 @@ namespace Evpp
 
     TcpAttach::~TcpAttach()
     {
-        LOG_INFO << "Release Class TcpAttach";
+
     }
 
     void TcpAttach::SetResetConnectTimer(const u64 delay, const u64 timer)

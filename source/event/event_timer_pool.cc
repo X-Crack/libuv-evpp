@@ -11,7 +11,7 @@ namespace Evpp
 
     EventTimerPool::~EventTimerPool()
     {
-        LOG_INFO << "Release Class EventTimerPool";
+
     }
 
     bool EventTimerPool::AssignTimer(const u96 index, const u64 delay, const u64 repeat)

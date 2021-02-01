@@ -21,7 +21,7 @@ namespace Evpp
 
     TcpSession::~TcpSession()
     {
-        LOG_INFO << "Release Class TcpSession";
+
     }
 
     bool TcpSession::Send(const char* buf, u96 len, u32 nbufs)

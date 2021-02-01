@@ -31,12 +31,11 @@ namespace Evpp
 #endif
     TcpListen::~TcpListen()
     {
-        LOG_INFO << "Release Class TcpListen";
+
     }
 
     bool TcpListen::CreaterListenService(EventSocketPool* socket, TcpServer* server)
     {
-        LOG_INFO << "123";
         if (nullptr == socket || nullptr == server)
         {
             return false;
@@ -143,6 +142,7 @@ namespace Evpp
                     {
                         if (ExecuteListenService(event_thread_pool->GetEventLoop(i), tcp_server[i].get(), &socket->GetEventSocket(i)->GetSocketInfo()->addr))
                         {
+                            EVENT_INFO("the server is starting, listening address: %s listening port: %u", socket->GetEventSocket(i)->GetSocketInfo()->host.c_str(), socket->GetEventSocket(i)->GetSocketInfo()->port);
                             continue;
                         }
 
@@ -183,7 +183,7 @@ namespace Evpp
                 {
                     if (uv_tcp_nodelay(server, 1))
                     {
-                        printf("≥ı ºªØ ß∞‹\n");
+                        EVENT_INFO("an error occurred while setting the nodelay algorithm");
                     }
                 }
 
@@ -225,6 +225,9 @@ namespace Evpp
             if (1 == event_close_flag_ex.exchange(0, std::memory_order_release))
             {
                 event_close_flag_ex.notify_one();
+                {
+                    EVENT_INFO("the listening port has been closed");
+                }
             }
         }
     }

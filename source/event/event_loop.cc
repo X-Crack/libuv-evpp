@@ -17,7 +17,7 @@ namespace Evpp
 
     EventLoop::~EventLoop()
     {
-        LOG_INFO << "Release Class EventLoop Index: " << event_index;
+
     }
 
     bool EventLoop::InitialEvent()
@@ -37,6 +37,8 @@ namespace Evpp
                 }
                 return event_watcher->CreaterQueue();
             }
+
+            EVENT_INFO("an error occurred during the initialization loop this: %p", this);
         }
         return false;
     }
@@ -51,6 +53,10 @@ namespace Evpp
                 {
                     return ChangeStatus(Status::Exec, Status::Stop);
                 }
+
+                EVENT_INFO("the cyclic event stopped running and an unexpected error occurred this: %p", this);
+
+                assert(0);
             }
         }
         return false;
@@ -100,6 +106,8 @@ namespace Evpp
                         continue;
                     }
                 }
+
+                EVENT_INFO("cyclic event stop running this: %p", this);
 
                 if (0 == event_stop_flag.load(std::memory_order_acquire))
                 {

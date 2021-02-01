@@ -20,8 +20,6 @@ namespace Evpp
             delete event_signaler;
             event_signaler = nullptr;
         }
-
-        LOG_INFO << "Release Class EventSignal";
     }
 
     bool EventSignal::InitialSignal()

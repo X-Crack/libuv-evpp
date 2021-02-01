@@ -27,7 +27,7 @@ namespace Evpp
     {
         if (Join())
         {
-            LOG_INFO << "Release Class EventLoopThreadEx Index: " << event_index;
+
         }
     }
 

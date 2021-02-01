@@ -11,7 +11,7 @@ namespace Evpp
     {
         if (this->DestroyLoops())
         {
-            LOG_INFO << "Release Class EventShare";
+
         }
     }
 

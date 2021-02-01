@@ -10,7 +10,7 @@ namespace Evpp
 
     EventWorkQueue::~EventWorkQueue()
     {
-        LOG_INFO << "Release Class EventWorkQueue";
+
     }
 
     bool EventWorkQueue::AssignWorkQueue(EventLoop* loop)

@@ -20,7 +20,7 @@ namespace Evpp
 
     EventLoopThreadPool::~EventLoopThreadPool()
     {
-        LOG_INFO << "Release Class EventLoopThreadPool";
+
     }
 
     bool EventLoopThreadPool::CreaterEventThreadPool()

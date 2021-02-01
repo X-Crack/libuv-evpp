@@ -20,8 +20,6 @@ namespace Evpp
             delete event_async_;
             event_async_ = nullptr;
         }
-
-        LOG_INFO << "release class EventAsync";
     }
 
     bool EventAsync::CreatePipe()
