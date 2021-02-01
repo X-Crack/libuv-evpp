@@ -8,7 +8,7 @@ namespace Evpp
 
     TcpSocket::~TcpSocket()
     {
-
+        LOG_INFO << "Release Class TcpSocket";
     }
 
     bool TcpSocket::AddSockInfo(socket_tcp* handler, const u96 index)

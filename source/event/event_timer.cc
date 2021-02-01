@@ -34,6 +34,8 @@ namespace Evpp
         {
             KilledTimer();
         }
+
+        LOG_INFO << "Release Class EventTimer";
     }
 
     bool EventTimer::InitedTimer()

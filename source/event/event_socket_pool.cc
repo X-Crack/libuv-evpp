@@ -9,7 +9,7 @@ namespace Evpp
 
     EventSocketPool::~EventSocketPool()
     {
-
+        LOG_INFO << "Release Class EventSocketPool";
     }
 
     bool EventSocketPool::AddListenPort(const std::string& server_address, const u16 port)

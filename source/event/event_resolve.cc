@@ -31,6 +31,8 @@ namespace Evpp
             delete socket_resolve;
             socket_resolve = nullptr;
         }
+
+        LOG_INFO << "Release Class EventResolve";
     }
 
     bool EventResolve::GetAddressInfo(const std::string& hostname, const std::string& service)

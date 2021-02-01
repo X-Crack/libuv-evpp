@@ -27,7 +27,7 @@ namespace Evpp
     {
         if (Join())
         {
-            printf("Delete EventLoopThreadEx %d\n", event_index);
+            LOG_INFO << "Release Class EventLoopThreadEx Index: " << event_index;
         }
     }
 

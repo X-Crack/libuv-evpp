@@ -6,41 +6,40 @@
 #include <event_logging.h>
 #include <event_untlity.h>
 
-
 #ifndef __bswap_constant_16
-#define __bswap_constant_16(x) ((((uint16_t)(x) >> 8) & 0xff) | (((uint16_t)(x) & 0xff) << 8))
+#       define __bswap_constant_16(x) ((((uint16_t)(x) >> 8) & 0xff) | (((uint16_t)(x) & 0xff) << 8))
 #endif
 
 #ifndef __bswap_constant_32
-#define __bswap_constant_32(x) (															\
-		  (((uint32_t)(x) & 0xff000000) >> 24)												\
-		| (((uint32_t)(x) & 0x00ff0000) >>  8)												\
-		| (((uint32_t)(x) & 0x0000ff00) <<  8)												\
-		| (((uint32_t)(x) & 0x000000ff) << 24))
+#       define __bswap_constant_32(x) (                                                         \
+              (((uint32_t)(x) & 0xff000000) >> 24)                                              \
+            | (((uint32_t)(x) & 0x00ff0000) >>  8)                                              \
+            | (((uint32_t)(x) & 0x0000ff00) <<  8)                                              \
+            | (((uint32_t)(x) & 0x000000ff) << 24))
 #endif
 
 #ifndef __bswap_constant_64
-#define __bswap_constant_64(x) (															\
-		  (((uint64_t)(x) & 0xff00000000000000ull) >> 56)									\
-		| (((uint64_t)(x) & 0x00ff000000000000ull) >> 40)									\
-		| (((uint64_t)(x) & 0x0000ff0000000000ull) >> 24)									\
-		| (((uint64_t)(x) & 0x000000ff00000000ull) >> 8)									\
-		| (((uint64_t)(x) & 0x00000000ff000000ull) << 8)									\
-		| (((uint64_t)(x) & 0x0000000000ff0000ull) << 24)									\
-		| (((uint64_t)(x) & 0x000000000000ff00ull) << 40)									\
-		| (((uint64_t)(x) & 0x00000000000000ffull) << 56))
+#       define __bswap_constant_64(x) (                                                         \
+              (((uint64_t)(x) & 0xff00000000000000ull) >> 56)                                   \
+            | (((uint64_t)(x) & 0x00ff000000000000ull) >> 40)                                   \
+            | (((uint64_t)(x) & 0x0000ff0000000000ull) >> 24)                                   \
+            | (((uint64_t)(x) & 0x000000ff00000000ull) >> 8)                                    \
+            | (((uint64_t)(x) & 0x00000000ff000000ull) << 8)                                    \
+            | (((uint64_t)(x) & 0x0000000000ff0000ull) << 24)                                   \
+            | (((uint64_t)(x) & 0x000000000000ff00ull) << 40)                                   \
+            | (((uint64_t)(x) & 0x00000000000000ffull) << 56))
 #endif
 
 #ifndef bswap_16
-#define bswap_16 __bswap_constant_16
+#       define bswap_16 __bswap_constant_16
 #endif
 
 #ifndef bswap_32
-#define bswap_32 __bswap_constant_32
+#       define bswap_32 __bswap_constant_32
 #endif
 
 #ifndef bswap_64
-#define bswap_64 __bswap_constant_64
+#       define bswap_64 __bswap_constant_64
 #endif
 
 using event_loop                        = uv_loop_t;

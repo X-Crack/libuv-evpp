@@ -31,7 +31,7 @@ namespace Evpp
 #endif
     TcpListen::~TcpListen()
     {
-        printf("Delete TcpListen\n");
+        LOG_INFO << "Release Class TcpListen";
     }
 
     bool TcpListen::CreaterListenService(EventSocketPool* socket, TcpServer* server)

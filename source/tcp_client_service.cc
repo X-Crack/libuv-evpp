@@ -14,7 +14,7 @@ namespace Evpp
 
     TcpClientService::~TcpClientService()
     {
-
+        LOG_INFO << "Release Class TcpClientService";
     }
 
     bool TcpClientService::CreaterClient()

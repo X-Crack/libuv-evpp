@@ -39,7 +39,7 @@ namespace Evpp
 
     TcpServer::~TcpServer()
     {
-        printf("Delete TcpServer\n");
+        LOG_INFO << "Release Class TcpServer";
     }
 
     bool TcpServer::CreaterServer(const u96 thread_size)

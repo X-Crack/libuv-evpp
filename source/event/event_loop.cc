@@ -17,7 +17,7 @@ namespace Evpp
 
     EventLoop::~EventLoop()
     {
-
+        LOG_INFO << "Release Class EventLoop Index: " << event_index;
     }
 
     bool EventLoop::InitialEvent()

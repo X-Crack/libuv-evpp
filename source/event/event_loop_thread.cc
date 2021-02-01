@@ -20,7 +20,10 @@ namespace Evpp
 
     EventLoopThread::~EventLoopThread()
     {
-        Join();
+        if (Join())
+        {
+            LOG_INFO << "Release Class EventLoopThread Index: " << event_index;
+        }
     }
 
     bool EventLoopThread::CreaterSubThread()

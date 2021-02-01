@@ -17,7 +17,7 @@ namespace Evpp
 
     TcpServerService::~TcpServerService()
     {
-        printf("Delete TcpServerService\n");
+        LOG_INFO << "Release Class TcpServerService";
     }
 
     bool TcpServerService::AddListenPort(const std::string& server_address, const u16 port)

@@ -8,7 +8,7 @@ namespace Evpp
 
     EventSocket::~EventSocket()
     {
-
+        LOG_INFO << "Release Class EventSocket";
     }
 
     bool EventSocket::CreaterSocket(const std::string& host, const u16 port)

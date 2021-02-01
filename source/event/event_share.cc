@@ -9,9 +9,9 @@ namespace Evpp
 
     EventShare::~EventShare()
     {
-        if (event_loops.size())
+        if (this->DestroyLoops())
         {
-            this->DestroyLoops();
+            LOG_INFO << "Release Class EventShare";
         }
     }
 
