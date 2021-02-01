@@ -19,11 +19,23 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\curl\vsprojects\lib\libcurl.vcxproj">
+      <Project>{5689bdbe-e93b-3b97-9f8e-643c3c180172}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\glog\vsprojects\glog.vcxproj">
       <Project>{90f986d2-3f78-3b7f-a88b-7283b79e08ef}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\libuv\vsprojects\uv_a.vcxproj">
       <Project>{271f0c53-971b-3471-a1f8-1c2a3209445c}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\openssl\crypto_static\vsprojects\crypto_static.vcxproj">
+      <Project>{8c9e408d-7deb-4124-9ffb-6c9385d5992d}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\openssl\ssl_static\vsprojects\ssl_static.vcxproj">
+      <Project>{6ff39cd8-d57e-42fe-8f62-009dda98d520}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\zlib\vsprojects\zlibstatic.vcxproj">
+      <Project>{a55bdc8a-3299-3625-adbd-6f55c06869a5}</Project>
     </ProjectReference>
     <ProjectReference Include="..\vcxproj\evpp.vcxproj">
       <Project>{2af40e9d-5653-4eb4-94c9-d2235733ddae}</Project>

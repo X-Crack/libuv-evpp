@@ -20,6 +20,7 @@ namespace Evpp
     public:
         bool ExecDispatch();
         bool ExecDispatch(u32 mode);
+        // TODO: TranslateMessage DispatchMessage
         bool ExecDispatch(const EventLoopHandler& function, u32 mode = UV_RUN_ONCE);
         bool ExecDispatchEx(const EventLoopHandler& function, u32 mode = UV_RUN_ONCE);
         bool StopDispatch();
