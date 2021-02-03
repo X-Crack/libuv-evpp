@@ -3,22 +3,15 @@
 #include <event_timer.h>
 namespace Evpp
 {
-    HttpDownloadPoll::HttpDownloadPoll(EventLoop* loop, CURLM* curl, const i32 fd) :
+    HttpDownloadPoll::HttpDownloadPoll(EventLoop* loop, CURLM* curl_handler, const i32 fd) :
         event_base(loop),
-        http_event_poll(new event_poll()),
-        http_curl_handler(curl),
-        http_fd(fd),
-        http_curl_runed(0),
-        http_curl_queue(0),
-        http_curl_handles(0),
-        http_curl_hosts(nullptr)
+        http_event_poll(new event_poll),
+        http_curl_handler(curl_handler),
+        http_fd(fd)
     {
-        if (0 == uv_poll_init_socket(loop->EventBasic(), http_event_poll, fd) && CURLMcode::CURLM_OK == curl_multi_assign(http_curl_handler, fd, this))
+        if (0 == uv_poll_init_socket(loop->EventBasic(), http_event_poll, fd) && 0 == curl_multi_assign(curl_handler, fd, this))
         {
-            if (nullptr == http_event_poll->data)
-            {
-                http_event_poll->data = this;
-            }
+            http_event_poll->data = this;
         }
     }
 
@@ -31,7 +24,19 @@ namespace Evpp
         }
     }
 
-    void HttpDownloadPoll::OnCurlPerform(uv_poll_t* req, int status, int events)
+    void HttpDownloadPoll::OnClose(HttpDownloadPoll* handler)
+    {
+        if (this == handler)
+        {
+            delete this;
+        }
+        else
+        {
+            delete handler;
+        }
+    }
+
+    void HttpDownloadPoll::OnCurlPerform(uv_poll_t* handler, int status, int events)
     {
         if (0 != status)
         {
@@ -48,20 +53,22 @@ namespace Evpp
             events |= CURL_CSELECT_OUT;
         }
 
-        if (CURLMcode::CURLM_OK == curl_multi_socket_action(http_curl_handler, req->socket, events, &http_curl_runed))
+        if (CURLMcode::CURLM_OK == curl_multi_socket_action(http_curl_handler, handler->socket, events, &http_curl_handles))
         {
             DownloadMessage(curl_multi_info_read(http_curl_handler, &http_curl_queue));
         }
     }
 
-    void HttpDownloadPoll::OnClose(event_handle* handler)
+    void HttpDownloadPoll::DefaultClose(uv_handle_t* handler)
     {
         if (nullptr != handler)
         {
-
+            HttpDownloadPoll* watcher = static_cast<HttpDownloadPoll*>(handler->data);
             {
-                delete reinterpret_cast<uv_handle_t*>(handler);
-                handler = nullptr;
+                if (nullptr != watcher)
+                {
+                    return watcher->OnClose(watcher);
+                }
             }
         }
     }
@@ -80,20 +87,6 @@ namespace Evpp
         }
     }
 
-    void HttpDownloadPoll::DefaultClose(event_handle* handler)
-    {
-        if (nullptr != handler)
-        {
-            HttpDownloadPoll* watcher = static_cast<HttpDownloadPoll*>(handler->data);
-            {
-                if (nullptr != watcher)
-                {
-                    return watcher->OnClose(handler);
-                }
-            }
-        }
-    }
-
     void HttpDownloadPoll::DownloadMessage(CURLMsg* message)
     {
         if (nullptr != message)
@@ -104,12 +97,7 @@ namespace Evpp
                 {
                     if (CURLMcode::CURLM_OK == curl_multi_remove_handle(http_curl_handler, message->easy_handle))
                     {
-                        if (0 == uv_poll_stop(http_event_poll))
-                        {
-                            EVENT_INFO("完成任务:%s", http_curl_hosts);
-                            uv_close(reinterpret_cast<uv_handle_t*>(http_event_poll), &HttpDownloadPoll::DefaultClose);
-                            curl_easy_cleanup(message->easy_handle);
-                        }
+                        curl_easy_cleanup(message->easy_handle);
                     }
                 }
             }

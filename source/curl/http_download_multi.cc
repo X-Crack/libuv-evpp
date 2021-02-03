@@ -12,10 +12,10 @@ namespace Evpp
         event_base(loop),
         event_timer(std::make_shared<EventTimer>(loop, std::bind(&HttpDownloadMulti::OnTaskTimer, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3))),
         http_download_service(std::make_unique<HttpDownloadService>()),
-        http_curl_global_handler(curl_multi_init()),
+        http_curl_global_handler(nullptr),
         http_curl_global_handles(0)
     {
-        InitialDownload();
+
     }
 
     HttpDownloadMulti::~HttpDownloadMulti()
@@ -28,15 +28,18 @@ namespace Evpp
 
     bool HttpDownloadMulti::InitialDownload()
     {
-        if (nullptr != http_curl_global_handler)
+        if (nullptr == http_curl_global_handler)
         {
-            curl_multi_setopt(http_curl_global_handler, CURLMOPT_SOCKETDATA, this);
-            curl_multi_setopt(http_curl_global_handler, CURLMOPT_TIMERDATA, this);
-            curl_multi_setopt(http_curl_global_handler, CURLMOPT_SOCKETFUNCTION, &HttpDownloadMulti::DefaultSocket);
-            curl_multi_setopt(http_curl_global_handler, CURLMOPT_TIMERFUNCTION, &HttpDownloadMulti::DefaultTimer);
+            http_curl_global_handler = curl_multi_init();
+            {
+                curl_multi_setopt(http_curl_global_handler, CURLMOPT_SOCKETDATA, this);
+                curl_multi_setopt(http_curl_global_handler, CURLMOPT_TIMERDATA, this);
+                curl_multi_setopt(http_curl_global_handler, CURLMOPT_SOCKETFUNCTION, &HttpDownloadMulti::DefaultSocket);
+                curl_multi_setopt(http_curl_global_handler, CURLMOPT_TIMERFUNCTION, &HttpDownloadMulti::DefaultTimer);
+            }
             return true;
         }
-        return false;
+        return true;
     }
 
     bool HttpDownloadMulti::CreaterDownload(const String* host, const u32 port)
@@ -64,58 +67,44 @@ namespace Evpp
         }
     }
 
-    i32 HttpDownloadMulti::OnSocket(CURL* easy, curl_socket_t fd, i32 action)
+    i32 HttpDownloadMulti::OnSocket(CURL* easy, curl_socket_t fd, i32 action, HttpDownloadPoll* http_download_poll)
     {
-        if (nullptr != easy && nullptr != easy->set.out)
+        if (nullptr == http_download_poll)
         {
-            return CreaterSocket(static_cast<HttpDownloadSession*>(easy->set.out), fd, action);
+            http_download_poll = new HttpDownloadPoll(event_base, http_curl_global_handler, fd);
         }
-        return 0;
+        return InitialSocket(easy, fd, action, http_download_poll);
     }
 
-    i32 HttpDownloadMulti::CreaterSocket(HttpDownloadSession* session, curl_socket_t fd, i32 action)
-    {
-        if (nullptr != session)
-        {
-            if (http_download_service->CreaterDownloadPoll(event_base, http_curl_global_handler, fd))
-            {
-                return InitialSocket(http_download_service->GetDownloadPoll(), action);
-            }
-        }
-        return 0;
-    }
-
-    i32 HttpDownloadMulti::InitialSocket(HttpDownloadPoll* poll, i32 action)
+    i32 HttpDownloadMulti::InitialSocket(CURL* easy, curl_socket_t fd, i32 action, HttpDownloadPoll* http_download_poll)
     {
         switch (action)
         {
         case CURL_POLL_IN:
         {
-            if (uv_poll_start(poll->GetPollHandler(), UV_READABLE, &HttpDownloadPoll::DefaultCurlPerform))
-            {
-                EVENT_INFO("an unexpected error occurred when initializing the Poll read event.");
-            }
+            uv_poll_start(http_download_poll->http_event_poll, UV_READABLE, &HttpDownloadPoll::DefaultCurlPerform);
             break;
         }
         case CURL_POLL_OUT:
         {
-            if (uv_poll_start(poll->GetPollHandler(), UV_WRITABLE, &HttpDownloadPoll::DefaultCurlPerform))
-            {
-                EVENT_INFO("an unexpected error occurred when initializing the Poll write event.");
-            }
+            uv_poll_start(http_download_poll->http_event_poll, UV_WRITABLE, &HttpDownloadPoll::DefaultCurlPerform);
+            break;
+        }
+        case CURL_POLL_INOUT:
+        {
             break;
         }
         case CURL_POLL_REMOVE:
         {
-            if (http_download_service->DestroyPoll())
+            if (0 == uv_poll_stop(http_download_poll->http_event_poll))
             {
-                if (CURLMcode::CURLM_OK != curl_multi_assign(http_curl_global_handler, poll->GetPollSocket(), 0))
-                {
-                    // 移除发生异常可能远程端口被提前关闭
-                    EVENT_INFO("an exception occurred when removing the queue event");
-                }
+                uv_close(reinterpret_cast<uv_handle_t*>(http_download_poll->http_event_poll), &HttpDownloadPoll::DefaultClose);
             }
-            break;
+
+            if (CURLMcode::CURLM_OK != curl_multi_assign(http_curl_global_handler, fd, nullptr))
+            {
+                EVENT_INFO("an exception occurred when removing the queue event");
+            }
         }
         }
         return 0;
@@ -123,6 +112,11 @@ namespace Evpp
 
     i32 HttpDownloadMulti::OnTimer(CURLM* multi, i32 delay)
     {
+        if (delay <= 0)
+        {
+            delay = 1;
+        }
+
         if (delay != ~0)
         {
             event_timer->AssignTimer(delay, 0);
@@ -142,7 +136,7 @@ namespace Evpp
             {
                 if (nullptr != watcher)
                 {
-                    return watcher->OnSocket(easy, fd, action);
+                    return watcher->OnSocket(easy, fd, action, static_cast<HttpDownloadPoll*>(socketp));
                 }
             }
         }

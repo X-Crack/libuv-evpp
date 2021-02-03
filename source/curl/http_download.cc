@@ -1,6 +1,7 @@
 ﻿#include <http_download.h>
 #include <http_download_multi.h>
 #include <event_share.h>
+#include <event_loop.h>
 #include <event_loop_thread_pool.h>
 namespace Evpp
 {
@@ -11,7 +12,7 @@ namespace Evpp
     {
 
     }
-
+    // 断点下载 https://www.cnblogs.com/chang290/archive/2012/08/12/2634858.html
     HttpDownload::~HttpDownload()
     {
         curl_global_cleanup();
@@ -36,19 +37,27 @@ namespace Evpp
 
     bool HttpDownload::CreaterDownload(const u96 index, const std::string& host, const u32 port)
     {
-        if (InitialDownload(index))
-        {
-            return http_download_multi[index]->CreaterDownload(host, port);
-        }
-        return false;
+        return InitialDownload(event_loop_thread_pool->GetEventLoop(index), index, host, port);
     }
 
-    bool HttpDownload::InitialDownload(const u96 index)
+    bool HttpDownload::InitialDownload(EventLoop* loop, const u96 index, const std::string& host, const u32 port)
     {
         if (http_download_multi.find(index) == http_download_multi.end())
         {
-            return http_download_multi.emplace(index, std::make_unique<HttpDownloadMulti>(event_loop_thread_pool->GetEventLoop(index))).second;
+            if (http_download_multi.emplace(index, std::make_unique<HttpDownloadMulti>(loop)).second)
+            {
+                return CreaterDownloadEx(loop, index, host, port);
+            }
         }
         return true;
+    }
+
+    bool HttpDownload::CreaterDownloadEx(EventLoop* loop, const u96 index, const std::string& host, const u32 port)
+    {
+        if (loop->EventThread())
+        {
+            return http_download_multi[index]->InitialDownload() && http_download_multi[index]->CreaterDownload(host, port);
+        }
+        return loop->RunInLoopEx(std::bind(&HttpDownload::CreaterDownloadEx, this, loop, index, host, port));
     }
 }

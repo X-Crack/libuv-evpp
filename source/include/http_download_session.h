@@ -8,7 +8,7 @@ namespace Evpp
     class HttpDownloadSession
     {
     public:
-        explicit HttpDownloadSession(const std::string& hosts);
+        explicit HttpDownloadSession(CURL* easy_cyrl, const std::string& hosts);
         virtual ~HttpDownloadSession();
     public:
         friend HttpDownloadMulti;
@@ -22,7 +22,9 @@ namespace Evpp
         static u96 DefaultMessage(void* buffer, u96 size, u96 nmemb, void* handler);
         static i32 DefaultProgress(void* handler, double count_download_size, double current_download_size, double count_upload_size, double current_upload_size);
     private:
+        CURL*                                                       http_easy_curl;
         std::string                                                 http_hosts;
+        String*                                                     http_curl_hosts;
         double                                                      original_download_size;
     };
 }

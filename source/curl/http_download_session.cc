@@ -1,7 +1,8 @@
 ﻿#include <http_download_session.h>
 namespace Evpp
 {
-    HttpDownloadSession::HttpDownloadSession(const std::string& hosts) :
+    HttpDownloadSession::HttpDownloadSession(CURL* easy_cyrl, const std::string& hosts) :
+        http_easy_curl(easy_cyrl),
         http_hosts(hosts),
         original_download_size(0.0F)
     {
@@ -25,24 +26,30 @@ namespace Evpp
 
     i32 HttpDownloadSession::OnProgress(double count_download_size, double current_download_size, double count_upload_size, double current_upload_size)
     {
-        if (current_download_size == original_download_size)
+        if (CURLcode::CURLE_OK == curl_easy_getinfo(http_easy_curl, CURLINFO_EFFECTIVE_URL, &http_curl_hosts))
         {
-            return 0;
-        }
-        else
-        {
-            original_download_size = current_download_size;
+            if (current_download_size == original_download_size)
+            {
+                return 0;
+            }
+            else
+            {
+                original_download_size = current_download_size;
+            }
+
+            if (current_download_size > 0.000000000001F)
+            {
+                EVENT_INFO("下载地址:%s 当前下载:%.2F%%", http_curl_hosts, (current_download_size / count_download_size) * 100.0F);
+            }
+
+            //             if (0.0F != current_download_size && current_download_size >= count_download_size)
+            //             {
+            //                 return 1;
+            //             }
         }
 
-        if (current_download_size > 0.000000000001F)
-        {
-            EVENT_INFO("下载地址:%s 当前下载:%.2F%%", http_hosts.c_str(), (current_download_size / count_download_size) * 100.0F);
-        }
 
-        if (0.0F != current_download_size && current_download_size >= count_download_size)
-        {
-            return 1;
-        }
+
 
         return 0;
     }

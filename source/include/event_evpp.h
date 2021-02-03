@@ -31,7 +31,6 @@
 #include <tcp_server.h>
 #include <tcp_server_service.h>
 #include <tcp_socket.h>
-#include <http_download.h>
-#endif
-
+//#include <http_download.h>
+#endif // __cplusplus
 #endif // __EVENT_EVPP_H__

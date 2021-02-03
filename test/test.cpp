@@ -3,21 +3,22 @@
 
 #include <iostream>
 #include <event_evpp.h>
+#include <http_download_multi.h>
+#include <http_download.h>
+
 int main(int argc, char* argv[])
 {
-    std::shared_ptr<Evpp::EventShare> share = std::make_shared<Evpp::EventShare>();
-    share->CreaterLoops(8);
-    Evpp::EventLoop ev(share->DefaultEventLoop());
+
+    Evpp::EventLoop ev;
     ev.InitialEvent();
 
-    Sleep(1000);
-    Evpp::HttpDownload down(&ev);
-    down.InitialCurlGlobal(16);
-    down.CreaterDownload(1, "http://mirrors.aliyun.com/centos/8.3.2011/isos/x86_64/CentOS-8.3.2011-x86_64-dvd1.iso", 80);
-    //down.CreaterDownload(2, "https://mirrors.aliyun.com/centos/8.3.2011/isos/x86_64/CentOS-8.3.2011-x86_64-dvd1.iso", 443);
-    //down.CreaterDownload(3, "https://mirrors.aliyun.com/centos/7.9.2009/isos/x86_64/CentOS-7-x86_64-Everything-2009.iso", 443);
+    Evpp::HttpDownload dow(&ev);
+    dow.InitialCurlGlobal(8);
+    dow.CreaterDownload(1, "https://github.com/v2ray/v2ray-core/releases/download/v4.28.2/v2ray-linux-mips32.zip", 443);
+    dow.CreaterDownload(2, "https://mirrors.aliyun.com/centos/8.3.2011/isos/x86_64/CentOS-8.3.2011-x86_64-dvd1.iso", 443);
+    //     Evpp::HttpDownloadMulti down(&ev);
+    //     down.CreaterDownload("https://github.com/v2ray/v2ray-core/releases/download/v4.28.2/v2ray-linux-mips32.zip");
     ev.ExecDispatch();
-    printf("exit downloader\n");
     return 0;
     //     using namespace cpps; 
     //     C* c = cpps::create();
