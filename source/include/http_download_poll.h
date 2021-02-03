@@ -24,10 +24,8 @@ namespace Evpp
         static void DefaultClose(event_handle* handler);
     private:
         void DownloadMessage(CURLMsg* message);
-        void OnTaskTimer(EventLoop* loop, const std::shared_ptr<EventTimer>& timer, const u96 index);
     private:
         EventLoop* event_base;
-        std::shared_ptr<EventTimer>                     event_timer;
         event_poll* http_event_poll;
         CURLM* http_curl_handler;
         i32                                             http_fd;

@@ -31,6 +31,11 @@ namespace Evpp
 
     bool HttpDownload::CreaterDownload(const u96 index, const String* host, const u32 port)
     {
+        return CreaterDownload(index, std::string(host), port);
+    }
+
+    bool HttpDownload::CreaterDownload(const u96 index, const std::string& host, const u32 port)
+    {
         if (InitialDownload(index))
         {
             return http_download_multi[index]->CreaterDownload(host, port);

@@ -17,6 +17,7 @@ namespace Evpp
         bool InitialCurlGlobal(const u96 thread_size, const long flags = CURL_GLOBAL_DEFAULT);
     public:
         bool CreaterDownload(const u96 index, const String* host, const u32 port = 80);
+        bool CreaterDownload(const u96 index, const std::string& host, const u32 port = 80);
     private:
         bool InitialDownload(const u96 index);
     private:

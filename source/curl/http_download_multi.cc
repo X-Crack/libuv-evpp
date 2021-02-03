@@ -41,6 +41,11 @@ namespace Evpp
 
     bool HttpDownloadMulti::CreaterDownload(const String* host, const u32 port)
     {
+        return CreaterDownload(std::string(host), port);
+    }
+
+    bool HttpDownloadMulti::CreaterDownload(const std::string& host, const u32 port)
+    {
         return http_download_service->CreaterDownload(event_base, http_curl_global_handler, host, port);
     }
 

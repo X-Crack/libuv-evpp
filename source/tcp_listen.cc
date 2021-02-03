@@ -167,7 +167,6 @@ namespace Evpp
         return false;
     }
 
-
     bool TcpListen::ExecuteListenService(EventLoop* loop, socket_tcp* server, const sockaddr* addr)
     {
         if (loop->EventThread())

@@ -5,7 +5,6 @@ namespace Evpp
 {
     HttpDownloadPoll::HttpDownloadPoll(EventLoop* loop, CURLM* curl, const i32 fd) :
         event_base(loop),
-        event_timer(std::make_shared<EventTimer>(loop, std::bind(&HttpDownloadPoll::OnTaskTimer, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3))),
         http_event_poll(new event_poll()),
         http_curl_handler(curl),
         http_fd(fd),
@@ -59,8 +58,11 @@ namespace Evpp
     {
         if (nullptr != handler)
         {
-            delete reinterpret_cast<uv_handle_t*>(handler);
-            handler = nullptr;
+
+            {
+                delete reinterpret_cast<uv_handle_t*>(handler);
+                handler = nullptr;
+            }
         }
     }
 
@@ -102,25 +104,13 @@ namespace Evpp
                 {
                     if (CURLMcode::CURLM_OK == curl_multi_remove_handle(http_curl_handler, message->easy_handle))
                     {
-                        EVENT_INFO("完成任务:%s", http_curl_hosts);
-                        curl_easy_cleanup(message->easy_handle);
-                        uv_close(reinterpret_cast<uv_handle_t*>(http_event_poll), &HttpDownloadPoll::DefaultClose);
+                        if (0 == uv_poll_stop(http_event_poll))
+                        {
+                            EVENT_INFO("完成任务:%s", http_curl_hosts);
+                            uv_close(reinterpret_cast<uv_handle_t*>(http_event_poll), &HttpDownloadPoll::DefaultClose);
+                            curl_easy_cleanup(message->easy_handle);
+                        }
                     }
-                }
-            }
-        }
-    }
-
-    void HttpDownloadPoll::OnTaskTimer(EventLoop* loop, const std::shared_ptr<EventTimer>& timer, const u96 index)
-    {
-        USE_PARAMETER(loop);
-        USE_PARAMETER(index);
-        {
-            if (timer->StopedTimer())
-            {
-                if (CURLMcode::CURLM_OK != curl_multi_socket_action(http_curl_handler, CURL_SOCKET_TIMEOUT, 0, &http_curl_handles))
-                {
-                    EVENT_INFO("An unexpected error occurred during the initial curl download task");
                 }
             }
         }

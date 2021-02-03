@@ -19,6 +19,7 @@ namespace Evpp
     public:
         bool InitialDownload();
         bool CreaterDownload(const String* host, const u32 port = 80);
+        bool CreaterDownload(const std::string& host, const u32 port = 80);
     private:
         void OnTaskTimer(EventLoop* loop, const std::shared_ptr<EventTimer>& timer, const u96 index);
     private:
