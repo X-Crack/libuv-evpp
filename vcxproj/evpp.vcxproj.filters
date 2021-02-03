@@ -111,6 +111,21 @@
     <ClCompile Include="..\source\event\event_explicit.cc">
       <Filter>event</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\curl\http_download_session.cc">
+      <Filter>socket\curl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\curl\http_download_service.cc">
+      <Filter>socket\curl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\curl\http_download_poll.cc">
+      <Filter>socket\curl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\curl\http_download_multi.cc">
+      <Filter>socket\curl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\curl\http_download.cc">
+      <Filter>socket\curl</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\include\event_untlity.h">
@@ -210,6 +225,30 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\source\include\event_explicit.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\event_curl.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\event_evpp.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\event_curl_config.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\http_download_session.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\http_download_service.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\http_download_poll.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\http_download_multi.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\http_download.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

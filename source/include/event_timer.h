@@ -4,7 +4,7 @@
 namespace Evpp
 {
     class EventLoop;
-    class EventTimer : public std::enable_shared_from_this<EventTimer>
+    class EventTimer : public EventStatus, public std::enable_shared_from_this<EventTimer>
     {
     public:
         explicit EventTimer(EventLoop* loop, const u96 index = 0);
@@ -12,7 +12,7 @@ namespace Evpp
         virtual ~EventTimer();
     public:
         bool InitedTimer();
-        bool AssignTimer(const u64 delay, const u64 repeat);
+        bool AssignTimer(const u64 timer, const u64 retimer);
     public:
         bool StopedTimer();
         void KilledTimer();

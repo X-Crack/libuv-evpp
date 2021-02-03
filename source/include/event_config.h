@@ -1,10 +1,14 @@
 #ifndef __EVENT_CONFIG_H__
 #define __EVENT_CONFIG_H__
-#include <uv.h>
 #include <event_platform.h>
-#include <event_stdint.h>
+#include <uv.h>
+#include <event_curl.h>
 #include <event_logging.h>
+#include <event_stdint.h>
 #include <event_untlity.h>
+
+
+
 
 #ifndef __bswap_constant_16
 #       define __bswap_constant_16(x) ((((uint16_t)(x) >> 8) & 0xff) | (((uint16_t)(x) & 0xff) << 8))
@@ -49,6 +53,7 @@ using event_handle                      = uv_handle_t;
 using event_signal                      = uv_signal_t;
 using event_thread                      = uv_thread_t;
 using event_work                        = uv_work_t;
+using event_poll                        = uv_poll_t;
 using socket_tcp                        = uv_tcp_t;
 using socket_stream                     = uv_stream_t;
 using socket_data                       = uv_buf_t;

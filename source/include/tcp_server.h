@@ -21,6 +21,7 @@ namespace Evpp
         explicit TcpServer(EventLoop* loop, const std::shared_ptr<EventShare>& share);
         explicit TcpServer(EventLoop* loop, const std::shared_ptr<EventShare>& share, const InterfaceAccepts& accepts, const InterfaceDiscons& discons, const InterfaceMessage& message, const InterfaceSendMsg& sendmsg);
         virtual ~TcpServer();
+    public:
         friend TcpListen;
     public:
         bool CreaterServer(const u96 thread_size);

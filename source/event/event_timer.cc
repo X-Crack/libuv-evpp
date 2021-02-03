@@ -1,3 +1,4 @@
+#include <event_status.h>
 #include <event_timer.h>
 #include <event_loop.h>
 namespace Evpp
@@ -17,7 +18,7 @@ namespace Evpp
         {
             event_time->data = this;
         }
-        
+
         if (0 == InitedTimer())
         {
             EVENT_INFO("An unpredictable error occurred when initializing the timer, please follow the libuv method to use EventTimer");
@@ -40,18 +41,27 @@ namespace Evpp
     {
         if (nullptr != event_base && nullptr != event_time)
         {
-            return 0 == uv_timer_init(event_base->EventBasic(), event_time);
+            if (0 == uv_timer_init(event_base->EventBasic(), event_time))
+            {
+                return ChangeStatus(Status::None, Status::Init);
+            }
         }
         return false;
     }
 
-    bool EventTimer::AssignTimer(const u64 delay, const u64 repeat)
+    bool EventTimer::AssignTimer(const u64 timer, const u64 retimer)
     {
         if (nullptr != event_base && nullptr != event_time)
         {
-            if (0 == uv_is_active(reinterpret_cast<event_handle*>(event_time)))
+            if (ExistsInited() || ExistsStoped())
             {
-                return 0 == uv_timer_start(event_time, &EventTimer::OnNotify, delay, repeat);
+                if (0 == uv_is_active(reinterpret_cast<event_handle*>(event_time)))
+                {
+                    if (0 == uv_timer_start(event_time, &EventTimer::OnNotify, timer, retimer))
+                    {
+                        return ChangeStatus(Status::Exec);
+                    }
+                }
             }
         }
         return false;
@@ -61,9 +71,15 @@ namespace Evpp
     {
         if (nullptr != event_base && nullptr != event_time)
         {
-            if (CheckStatus())
+            if (ExistsRuning())
             {
-                return 0 == uv_timer_stop(event_time);
+                if (CheckStatus())
+                {
+                    if (0 == uv_timer_stop(event_time))
+                    {
+                        return ChangeStatus(Status::Stop);
+                    }
+                }
             }
         }
         return false;
@@ -73,7 +89,10 @@ namespace Evpp
     {
         if (StopedTimer())
         {
-            return uv_close(reinterpret_cast<event_handle*>(event_time), &EventTimer::DefaultClose);
+            if (ChangeStatus(Status::Stop, Status::Exit))
+            {
+                return uv_close(reinterpret_cast<event_handle*>(event_time), &EventTimer::DefaultClose);
+            }
         }
     }
 
@@ -86,16 +105,25 @@ namespace Evpp
     {
         if (nullptr != event_base && nullptr != event_time)
         {
-            return 0 == uv_timer_again(event_time);
+            if (ExistsRuning() || ExistsStoped())
+            {
+                return 0 == uv_timer_again(event_time);
+            }
         }
         return false;
     }
 
     bool EventTimer::ReStarTimerEx(const u64 delay, const u64 repeat)
     {
-        if (StopedTimer())
+        if (nullptr != event_base && nullptr != event_time)
         {
-            return AssignTimer(delay, repeat);
+            if (ExistsRuning() || ExistsStoped())
+            {
+                if (StopedTimer())
+                {
+                    return AssignTimer(delay, repeat);
+                }
+            }
         }
         return false;
     }

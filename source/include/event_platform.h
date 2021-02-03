@@ -2,9 +2,10 @@
 #define __EVENT_PLATFORM_H__
 #include <assert.h>
 
-#if defined(_MSC_VER)
+#if (defined(_MSC_VER) || defined(_WIN32) || defined(__WIN32__) || defined(WIN32)) && !defined(__SYMBIAN32__)
 #   ifndef H_OS_WINDOWS
 #       define H_OS_WINDOWS
+#       define WIN32_LEAN_AND_MEAN
 #   endif
 #   ifndef H_WINDOWS_API
 #       define H_WINDOWS_API
@@ -28,6 +29,7 @@
 
 #ifdef H_OS_WINDOWS
 #pragma comment(lib, "ws2_32.lib")
+#pragma comment(lib, "wldap32.lib")
 #pragma comment(lib, "iphlpapi.lib")
 #pragma comment(lib, "psapi.lib")
 #pragma comment(lib, "userenv.lib")

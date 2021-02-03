@@ -168,7 +168,7 @@ namespace Evpp
     {
         if (nullptr != event_watcher)
         {
-            if (ExistsRuning())
+            if (ExistsRuning() || ExistsInited())
             {
                 return event_watcher->RunInLoop(function);
             }
@@ -180,7 +180,7 @@ namespace Evpp
     {
         if (nullptr != event_watcher)
         {
-            if (ExistsRuning())
+            if (ExistsRuning() || ExistsInited())
             {
                 return event_watcher->RunInLoop(std::move(function));
             }
@@ -192,7 +192,7 @@ namespace Evpp
     {
         if (nullptr != event_watcher)
         {
-            if (ExistsRuning())
+            if (ExistsRuning() || ExistsInited())
             {
                 return event_watcher->RunInLoopEx(function);
             }
@@ -204,7 +204,7 @@ namespace Evpp
     {
         if (nullptr != event_watcher)
         {
-            if (ExistsRuning())
+            if (ExistsRuning() || ExistsInited())
             {
                 return event_watcher->RunInLoopEx(std::move(function));
             }
@@ -216,7 +216,7 @@ namespace Evpp
     {
         if (nullptr != event_timer_pool)
         {
-            if (ExistsRuning())
+            if (ExistsRuning() || ExistsInited())
             {
                 return event_timer_pool->AssignTimer(index, delay, repeat);
             }
@@ -228,7 +228,7 @@ namespace Evpp
     {
         if (nullptr != event_timer_pool)
         {
-            if (ExistsRuning())
+            if (ExistsRuning() || ExistsInited())
             {
                 return event_timer_pool->StopedTimer(index);
             }
@@ -240,7 +240,7 @@ namespace Evpp
     {
         if (nullptr != event_timer_pool)
         {
-            if (ExistsRuning())
+            if (ExistsRuning() || ExistsInited())
             {
                 return event_timer_pool->KilledTimer(index);
             }
@@ -251,7 +251,7 @@ namespace Evpp
     {
         if (nullptr != event_timer_pool)
         {
-            if (ExistsRuning())
+            if (ExistsRuning() || ExistsInited())
             {
                 return event_timer_pool->ModiyRepeat(index, repeat);
             }
@@ -263,7 +263,7 @@ namespace Evpp
     {
         if (nullptr != event_timer_pool)
         {
-            if (ExistsRuning())
+            if (ExistsRuning() || ExistsInited())
             {
                 return event_timer_pool->ReStarTimer(index);
             }
@@ -275,7 +275,7 @@ namespace Evpp
     {
         if (nullptr != event_timer_pool)
         {
-            if (ExistsRuning())
+            if (ExistsRuning() || ExistsInited())
             {
                 return event_timer_pool->ReStarTimerEx(index, delay, repeat);
             }
