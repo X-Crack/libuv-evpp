@@ -1,4 +1,4 @@
-#include <http_download_service.h>
+﻿#include <http_download_service.h>
 #include <http_download_session.h>
 #include <http_download_poll.h>
 #include <event_loop.h>

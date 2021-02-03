@@ -1,4 +1,4 @@
-#include <http_download_multi.h>
+ï»¿#include <http_download_multi.h>
 #include <http_download_session.h>
 #include <http_download_service.h>
 #include <http_download_poll.h>
@@ -106,7 +106,7 @@ namespace Evpp
             {
                 if (CURLMcode::CURLM_OK != curl_multi_assign(http_curl_global_handler, poll->GetPollSocket(), 0))
                 {
-                    // ÒÆ³ı·¢ÉúÒì³£¿ÉÄÜÔ¶³Ì¶Ë¿Ú±»ÌáÇ°¹Ø±Õ
+                    // ç§»é™¤å‘ç”Ÿå¼‚å¸¸å¯èƒ½è¿œç¨‹ç«¯å£è¢«æå‰å…³é—­
                     EVENT_INFO("an exception occurred when removing the queue event");
                 }
             }

@@ -1,4 +1,4 @@
-#include <http_download_session.h>
+ï»¿#include <http_download_session.h>
 namespace Evpp
 {
     HttpDownloadSession::HttpDownloadSession(const std::string& hosts) :
@@ -19,7 +19,7 @@ namespace Evpp
 
     u96 HttpDownloadSession::OnMessage(void* buffer, u96 size, u96 nmemb)
     {
-        EVENT_INFO("ÏÂÔØµØÖ·£º%s µ±Ç°ÏÂÔØ£º%d", http_hosts.c_str(), size * nmemb);
+        EVENT_INFO("ä¸‹è½½åœ°å€:%s å½“å‰ä¸‹è½½:%d", http_hosts.c_str(), size * nmemb);
         return size * nmemb; 
     }
 

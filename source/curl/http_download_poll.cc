@@ -1,4 +1,4 @@
-#include <http_download_poll.h>
+ï»¿#include <http_download_poll.h>
 #include <event_loop.h>
 #include <event_timer.h>
 namespace Evpp
@@ -102,7 +102,7 @@ namespace Evpp
                 {
                     if (CURLMcode::CURLM_OK == curl_multi_remove_handle(http_curl_handler, message->easy_handle))
                     {
-                        EVENT_INFO("Íê³ÉÈÎÎñ:%s", http_curl_hosts);
+                        EVENT_INFO("å®Œæˆä»»åŠ¡:%s", http_curl_hosts);
                         curl_easy_cleanup(message->easy_handle);
                         uv_close(reinterpret_cast<uv_handle_t*>(http_event_poll), &HttpDownloadPoll::DefaultClose);
                     }
