@@ -1,4 +1,4 @@
-#ifndef __HTTP_DOWNLOAD_SERVICE_H__
+﻿#ifndef __HTTP_DOWNLOAD_SERVICE_H__
 #define __HTTP_DOWNLOAD_SERVICE_H__
 #include <event_config.h>
 namespace Evpp
@@ -24,7 +24,7 @@ namespace Evpp
         HttpDownloadPoll* GetDownloadPoll();
         bool DestroyPoll();
     private:
-        EventLoop*                                                              event_base;
+        EventLoop* event_base;
         std::shared_ptr<HttpDownloadSession>                                    http_download_session;
         std::shared_ptr<HttpDownloadPoll>                                       http_download_poll;
     };

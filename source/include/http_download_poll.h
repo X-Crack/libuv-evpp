@@ -1,4 +1,4 @@
-#ifndef __HTTP_DOWNLOAD_POLL_H__
+﻿#ifndef __HTTP_DOWNLOAD_POLL_H__
 #define __HTTP_DOWNLOAD_POLL_H__
 #include <event_config.h>
 namespace Evpp
@@ -26,15 +26,15 @@ namespace Evpp
         void DownloadMessage(CURLMsg* message);
         void OnTaskTimer(EventLoop* loop, const std::shared_ptr<EventTimer>& timer, const u96 index);
     private:
-        EventLoop*                                      event_base;
+        EventLoop* event_base;
         std::shared_ptr<EventTimer>                     event_timer;
-        event_poll*                                     http_event_poll;
-        CURLM*                                          http_curl_handler;
+        event_poll* http_event_poll;
+        CURLM* http_curl_handler;
         i32                                             http_fd;
         i32                                             http_curl_runed;
         i32                                             http_curl_queue;
         i32                                             http_curl_handles;
-        String*                                         http_curl_hosts;
+        String* http_curl_hosts;
     };
 }
 #endif // __HTTP_DOWNLOAD_POLL_H__

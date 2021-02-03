@@ -1,21 +1,21 @@
-#include <event_resolve.h>
+﻿#include <event_resolve.h>
 #include <event_loop.h>
 namespace Evpp
 {
     namespace
     {
-        #ifdef H_OS_WINDOWS
-            #define IPPROTO_IPV4_PROTOCOL IPPROTO_IPV4
-            #define IPPROTO_IPV6_PROTOCOL IPPROTO_IPV6
-        #else
-            #define IPPROTO_IPV4_PROTOCOL IPPROTO_IPIP
-            #define IPPROTO_IPV6_PROTOCOL IPPROTO_IPV6
-        #endif
+#ifdef H_OS_WINDOWS
+#define IPPROTO_IPV4_PROTOCOL IPPROTO_IPV4
+#define IPPROTO_IPV6_PROTOCOL IPPROTO_IPV6
+#else
+#define IPPROTO_IPV4_PROTOCOL IPPROTO_IPIP
+#define IPPROTO_IPV6_PROTOCOL IPPROTO_IPV6
+#endif
     }
 
     EventResolve::EventResolve(EventLoop* loop) :
         event_base(loop),
-        socket_resolve(new socket_getaddrinfo()), 
+        socket_resolve(new socket_getaddrinfo()),
         socket_hints()
     {
         if (nullptr == socket_resolve->data)
@@ -76,7 +76,7 @@ namespace Evpp
                                 socket_list.push_back(ipaddress);
                                 continue;
                             }
-                            
+
                             if (nullptr != event_callback)
                             {
                                 event_callback(event_base, ipaddress);

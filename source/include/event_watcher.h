@@ -1,4 +1,4 @@
-#ifndef __EVENT_WATCHER_H__
+﻿#ifndef __EVENT_WATCHER_H__
 #define __EVENT_WATCHER_H__
 #include <event_config.h>
 #include <memory>
@@ -32,7 +32,7 @@ namespace Evpp
         bool SendAsyncNotifyEx(const Handler& function);
         void RecvAsyncNotifyEx();
     private:
-        EventLoop*                                                                                          event_base;
+        EventLoop* event_base;
         std::unique_ptr<EventAsync>                                                                         event_async_;
         std::unique_ptr<EventAsync>                                                                         event_async_ex_;
         std::unique_ptr<moodycamel::ConcurrentQueue<Functor, Traits>>                                       nolock_queue;

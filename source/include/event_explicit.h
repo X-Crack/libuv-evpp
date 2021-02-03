@@ -1,4 +1,4 @@
-#ifndef __EVENT_EXPLICIT_H__
+﻿#ifndef __EVENT_EXPLICIT_H__
 #define __EVENT_EXPLICIT_H__
 #include <event_config.h>
 namespace Evpp

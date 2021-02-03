@@ -1,4 +1,4 @@
-#include <event_share.h>
+﻿#include <event_share.h>
 #include <event_loop.h>
 namespace Evpp
 {

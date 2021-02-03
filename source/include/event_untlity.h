@@ -1,4 +1,4 @@
-#ifndef __EVENT_UNTILITY_H__
+ï»¿#ifndef __EVENT_UNTILITY_H__
 #define __EVENT_UNTILITY_H__
 #include <event_config.h>
 #include <functional>
@@ -15,39 +15,39 @@ namespace Evpp
     typedef std::function<void()>                                                                                                                           Handler;
     typedef std::function<bool()>                                                                                                                           Functor;
     typedef std::function<void(EventLoop*)>                                                                                                                 EventLoopHandler;
-    typedef std::function<void(EventLoop*, const String*)>																									EventResolveHandler;
+    typedef std::function<void(EventLoop*, const String*)>                                                                                                  EventResolveHandler;
     typedef std::function<void(EventLoop*, const std::vector<std::string>&)>                                                                                EventResolveExHandler;
     typedef std::function<void(EventLoop*)>                                                                                                                 CreaterWorkHandler;
     typedef std::function<void(EventLoop*, i32)>                                                                                                            DestroyWorkHandler;
-    typedef std::function<void(EventLoop*, const std::shared_ptr<EventTimer>&, const u96)>																	EventTimerHandle;
+    typedef std::function<void(EventLoop*, const std::shared_ptr<EventTimer>&, const u96)>                                                                  EventTimerHandle;
     typedef std::function<bool(EventLoop*, const std::shared_ptr<TcpSession>&, const u96)>                                                                  InterfaceAccepts;
     typedef std::function<bool(EventLoop*, const std::shared_ptr<TcpSession>&, const u96)>                                                                  InterfaceConnect;
     typedef std::function<bool(EventLoop*, const std::shared_ptr<TcpSession>&, const u96)>                                                                  InterfaceRestore;
-    typedef std::function<bool(EventLoop*, const u96, const i32, const String*, const String*)>																InterfaceFailure;
+    typedef std::function<bool(EventLoop*, const u96, const i32, const String*, const String*)>                                                             InterfaceFailure;
     typedef std::function<bool(EventLoop*, const u96)>                                                                                                      InterfaceDiscons;
     typedef std::function<bool(EventLoop*, const std::shared_ptr<TcpSession>&, const std::shared_ptr<EventBuffer>&, const u96)>                             InterfaceMessage;
     typedef std::function<bool(EventLoop*, const std::shared_ptr<TcpSession>&, const u96, const i32)>                                                       InterfaceSendMsg;
-    
+
     namespace Import
     {
-        // ½ÓÊÜÁ¬½Ó
+        // æ¥å—è¿æ¥
         bool DefaultAccepts(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const u96 index);
-        // ¶Ï¿ªÁ¬½Ó
+        // æ–­å¼€è¿æ¥
         bool DefaultDiscons(EventLoop* loop, const u96 index);
-        // ½ÓÊÕÏûÏ¢
+        // æ¥æ”¶æ¶ˆæ¯
         bool DefaultMessage(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const std::shared_ptr<EventBuffer>& buffer, const u96 index);
-        // ·¢ËÍÏûÏ¢
+        // å‘é€æ¶ˆæ¯
         bool DefaultSendMsg(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const u96 index, const i32 status);
 
-        // ¿Í»§¶Ë -> Á¬½Ó³É¹¦
+        // å®¢æˆ·ç«¯ -> è¿æ¥æˆåŠŸ
         bool DefaultConnect(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const u96 index);
-        // ¿Í»§¶Ë -> ¶ÏÏßÖØÁ¬
+        // å®¢æˆ·ç«¯ -> æ–­çº¿é‡è¿
         bool DefaultRestore(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const u96 index);
-        // ¿Í»§¶Ë -> Á¬½ÓÊ§°Ü
+        // å®¢æˆ·ç«¯ -> è¿æ¥å¤±è´¥
         bool DefaultFailure(EventLoop* loop, const u96 index, const i32 status, const String* name, const String* msgs);
 
-        // ¿Í»§¶ËÓµÓĞ DefaultConnect DefaultDiscons DefaultMessage DefaultSendMsg DefaultRestore DefaultFailure
-        // ·şÎñ¶ËÓµÓĞ DefaultAccepts DefaultDiscons DefaultMessage DefaultSendMsg
+        // å®¢æˆ·ç«¯æ‹¥æœ‰ DefaultConnect DefaultDiscons DefaultMessage DefaultSendMsg DefaultRestore DefaultFailure
+        // æœåŠ¡ç«¯æ‹¥æœ‰ DefaultAccepts DefaultDiscons DefaultMessage DefaultSendMsg
     };
 
 
@@ -66,8 +66,8 @@ namespace Evpp
 
     struct SocketInfoEx
     {
-        SocketInfo				sockname;
-        SocketInfo				peername;
+        SocketInfo              sockname;
+        SocketInfo              peername;
     };
 
 }

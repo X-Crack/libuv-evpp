@@ -1,4 +1,4 @@
-#ifndef __EVENT_STDINT_H__
+﻿#ifndef __EVENT_STDINT_H__
 #define __EVENT_STDINT_H__
 
 #include <stdint.h>

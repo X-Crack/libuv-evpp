@@ -1,4 +1,4 @@
-#ifndef __SOCKET_BUFFER_H__
+﻿#ifndef __SOCKET_BUFFER_H__
 #define __SOCKET_BUFFER_H__
 #include <event_config.h>
 #include <algorithm>

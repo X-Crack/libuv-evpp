@@ -1,4 +1,4 @@
-#ifndef __TCP_SESSION_H__
+﻿#ifndef __TCP_SESSION_H__
 #define __TCP_SESSION_H__
 #include <event_config.h>
 #include <string>
@@ -40,7 +40,7 @@ namespace Evpp
         bool OnSystemMessage(const std::shared_ptr<EventBuffer>& Buffer);
         bool OnSystemSendMsg(const i32 status);
     private:
-        EventLoop*                                                      event_base;
+        EventLoop* event_base;
         u96                                                             self_index;
         SystemDiscons                                                   system_discons;
         SystemMessage                                                   system_message;

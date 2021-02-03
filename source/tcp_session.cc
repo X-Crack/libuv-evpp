@@ -1,4 +1,4 @@
-#include <tcp_session.h>
+﻿#include <tcp_session.h>
 #include <tcp_message.h>
 #include <event_loop.h>
 #include <event_timer.h>
@@ -107,7 +107,7 @@ namespace Evpp
                 return event_timer_pool->KilledTimer(index);
             }
         }
-        
+
         if (RunInLoopEx(std::bind(&TcpSession::KilledTimer, this, index)))
         {
             return;

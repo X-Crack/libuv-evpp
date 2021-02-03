@@ -1,4 +1,4 @@
-#include <event_socket.h>
+﻿#include <event_socket.h>
 namespace Evpp
 {
     EventSocket::EventSocket() : socket_t(std::make_unique<SocketInfo>())

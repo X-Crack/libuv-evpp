@@ -1,4 +1,4 @@
-#ifndef __TCP_LISTEN_H__
+﻿#ifndef __TCP_LISTEN_H__
 #define __TCP_LISTEN_H__
 #include <event_config.h>
 #include <event_status.h>
@@ -39,7 +39,7 @@ namespace Evpp
     private:
         void OnClose();
     private:
-        EventLoop*                                                      event_base;
+        EventLoop* event_base;
         std::atomic<u32>                                                event_close_flag;
         std::atomic<u32>                                                event_close_flag_ex;
 #ifdef H_OS_WINDOWS

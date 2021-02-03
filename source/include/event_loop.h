@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #ifndef __EVENT_LOOP_H__
 #define __EVENT_LOOP_H__
 #include <event_config.h>
@@ -50,9 +50,9 @@ namespace Evpp
         u96 GetEventIndex() { return event_index; };
         EventLoop* AddRefer();
     private:
-        event_loop*                                             event_base;
+        event_loop* event_base;
         u96                                                     event_index;
-        std::atomic<u32>                                        event_refer;        // µ±Ç° Loop session ¸öÊı -> ÓÃÓÚ¶¯Ì¬Ïß³ÌÅĞ¶Ï·ÖÅäĞÂµÄÏß³ÌÊ¹ÓÃ
+        std::atomic<u32>                                        event_refer;        // å½“å‰ Loop session ä¸ªæ•° -> ç”¨äºåŠ¨æ€çº¿ç¨‹åˆ¤æ–­åˆ†é…æ–°çš„çº¿ç¨‹ä½¿ç”¨
         std::unique_ptr<EventWatcher>                           event_watcher;
         std::unique_ptr<EventTimerPool>                         event_timer_pool;
         std::unordered_map<u96, std::unique_ptr<std::any>>      event_context;

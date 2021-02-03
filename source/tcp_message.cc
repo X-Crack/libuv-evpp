@@ -1,4 +1,4 @@
-#include <tcp_message.h>
+﻿#include <tcp_message.h>
 #include <event_loop.h>
 #include <event_buffer.h>
 
@@ -95,7 +95,7 @@ namespace Evpp
 #endif
                 }
             }
-            return RunInLoopEx(std::bind((bool(TcpMessage::*)(const char*, u32, u32))&TcpMessage::Send, this, buf, len, nbufs));
+            return RunInLoopEx(std::bind((bool(TcpMessage::*)(const char*, u32, u32)) & TcpMessage::Send, this, buf, len, nbufs));
         }
         return false;
     }
@@ -115,7 +115,7 @@ namespace Evpp
 #endif
                 }
             }
-            return RunInLoopEx(std::bind((bool(TcpMessage::*)(const std::string&, u32))&TcpMessage::Send, this, buf, nbufs));
+            return RunInLoopEx(std::bind((bool(TcpMessage::*)(const std::string&, u32)) & TcpMessage::Send, this, buf, nbufs));
         }
         return false;
     }

@@ -1,4 +1,4 @@
-#ifndef __EVENT_LOOP_THREAD_POOL_H__
+ï»¿#ifndef __EVENT_LOOP_THREAD_POOL_H__
 #define __EVENT_LOOP_THREAD_POOL_H__
 #include <event_config.h>
 #include <memory>
@@ -36,18 +36,18 @@ namespace Evpp
         std::unique_ptr<EventLoopThread>& GetEventLoopThread(const u96 index);
         std::unique_ptr<EventLoopThreadEx>& GetEventLoopThreadEx(const u96 index);
     private:
-        EventLoop*                                                                              event_base;
+        EventLoop* event_base;
         std::shared_ptr<EventShare>                                                             event_share;
         u96                                                                                     event_size;
         std::unordered_map<u96, std::unique_ptr<EventLoopThread>>                               event_pool;
         std::unordered_map<u96, std::unique_ptr<EventLoopThreadEx>>                             event_pool_ex;
-        // Ïß³Ì³Ø¸ß¼¶ÊµÏÖ£¬Öğ½¥¿ª·¢¡£
-        std::atomic<u32>                                                                        event_pool_min;         // ×îĞ¡Ïß³Ì
-        std::atomic<u32>                                                                        event_pool_max;         // ×î´óÏß³Ì
-        std::atomic<u32>                                                                        event_pool_let;         // ¿ÕÏĞÏß³Ì
-        std::mutex										                                        event_pool_lock;
+        // çº¿ç¨‹æ± é«˜çº§å®ç°ï¼Œé€æ¸å¼€å‘ã€‚
+        std::atomic<u32>                                                                        event_pool_min;         // æœ€å°çº¿ç¨‹
+        std::atomic<u32>                                                                        event_pool_max;         // æœ€å¤§çº¿ç¨‹
+        std::atomic<u32>                                                                        event_pool_let;         // ç©ºé—²çº¿ç¨‹
+        std::mutex                                                                              event_pool_lock;
 
-        std::atomic<u96>															            event_loop_thread_next;
+        std::atomic<u96>                                                                        event_loop_thread_next;
     };
 }
 #endif // __EVENT_LOOP_THREAD_POOL_H__

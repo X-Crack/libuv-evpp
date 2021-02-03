@@ -1,4 +1,4 @@
-#ifndef __HTTP_DOWNLOAD_SESSION_H__
+﻿#ifndef __HTTP_DOWNLOAD_SESSION_H__
 #define __HTTP_DOWNLOAD_SESSION_H__
 #include <event_config.h>
 namespace Evpp

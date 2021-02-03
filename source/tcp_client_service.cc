@@ -1,4 +1,4 @@
-#include <tcp_client_service.h>
+﻿#include <tcp_client_service.h>
 #include <event_loop.h>
 #include <tcp_client.h>
 #include <event_coroutine.h>
@@ -95,11 +95,11 @@ namespace Evpp
             {
                 try
                 {
-                    EventCoroutine::JoinInTask(std::bind((bool(TcpClientService::*)(const EventLoopHandler&, u32))&TcpClientService::ExecDispatch, this, function, mode));
+                    EventCoroutine::JoinInTask(std::bind((bool(TcpClientService::*)(const EventLoopHandler&, u32)) & TcpClientService::ExecDispatch, this, function, mode));
                 }
                 catch (...)
                 {
-                	
+
                 }
             }
             return true;

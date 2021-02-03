@@ -1,4 +1,4 @@
-#include <tcp_connect.h>
+ï»¿#include <tcp_connect.h>
 #include <tcp_client.h>
 #include <event_socket.h>
 #include <event_loop.h>
@@ -28,7 +28,7 @@ namespace Evpp
             {
                 if (uv_tcp_nodelay(tcp_handler.get(), 1))
                 {
-                    printf("³õÊ¼»¯Ê§°Ü\n");
+                    printf("åˆå§‹åŒ–å¤±è´¥\n");
                 }
 
                 return CreaterConnect(&socket->GetSocketInfo()->addr);

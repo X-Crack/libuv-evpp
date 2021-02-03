@@ -1,4 +1,4 @@
-#ifndef __TCP_SERVER_H__
+﻿#ifndef __TCP_SERVER_H__
 #define __TCP_SERVER_H__
 #include <event_config.h>
 #include <event_status.h>
@@ -72,7 +72,7 @@ namespace Evpp
         bool DestroyService(const bool wait = true);
         bool DestroySyncEvent(const bool wait = true);
     private:
-        EventLoop*                                                      event_base;
+        EventLoop* event_base;
         std::shared_ptr<EventShare>                                     event_share;
         std::atomic<u32>                                                event_close_flag;
         std::atomic<u32>                                                event_close_flag_ex;
@@ -84,10 +84,10 @@ namespace Evpp
         InterfaceSendMsg                                                socket_sendmsg;
         std::unique_ptr<TcpSocket>                                      tcp_socket;
         std::unique_ptr<TcpListen>                                      tcp_listen;
-        std::atomic<u96>											    tcp_index;
+        std::atomic<u96>                                                tcp_index;
         std::atomic<u32>                                                tcp_keepalive;
         std::unordered_map<u96, std::shared_ptr<TcpSession>>            tcp_session;
-        std::priority_queue<u96>									    tcp_index_multiplexing;
+        std::priority_queue<u96>                                        tcp_index_multiplexing;
         std::recursive_mutex                                            tcp_recursive_mutex;
     };
 }

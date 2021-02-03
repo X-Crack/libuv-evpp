@@ -1,4 +1,4 @@
-#include <tcp_server.h>
+ï»¿#include <tcp_server.h>
 #include <tcp_listen.h>
 #include <tcp_session.h>
 #include <tcp_socket.h>
@@ -58,7 +58,7 @@ namespace Evpp
                     {
                         if (ChangeStatus(Status::Init, Status::Exec))
                         {
-                            if(tcp_listen->CreaterListenService(event_socket.get(), this))
+                            if (tcp_listen->CreaterListenService(event_socket.get(), this))
                             {
                                 EVENT_INFO("server started successfully");
                                 return true;
@@ -217,7 +217,7 @@ namespace Evpp
         {
             {
                 std::unique_lock<std::recursive_mutex> lock(tcp_recursive_mutex);
-                for (auto & [index, session] : tcp_session)
+                for (auto& [index, session] : tcp_session)
                 {
                     if (Close(index))
                     {
@@ -244,17 +244,17 @@ namespace Evpp
         std::unique_lock<std::recursive_mutex> lock(tcp_recursive_mutex);
         return tcp_session.emplace
         (
-            index, 
+            index,
 
             std::make_shared<TcpSession>
             (
-            loop,
-            client,
-            index,
-            std::bind(&TcpServer::DefaultDiscons, this, std::placeholders::_1, std::placeholders::_2),
-            std::bind(&TcpServer::DefaultMessage, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4),
-            std::bind(&TcpServer::DefaultSendMsg, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4)
-            )
+                loop,
+                client,
+                index,
+                std::bind(&TcpServer::DefaultDiscons, this, std::placeholders::_1, std::placeholders::_2),
+                std::bind(&TcpServer::DefaultMessage, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4),
+                std::bind(&TcpServer::DefaultSendMsg, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4)
+                )
         ).second;
     }
 
@@ -310,7 +310,7 @@ namespace Evpp
             {
                 if (InitialAccepts(loop, server, client.get()))
                 {
-                    // Í£Ö¹·þÎñÆ÷²»ÔÚ½ÓÊÜÐÂ¿Í»§µ½À´
+                    // åœæ­¢æœåŠ¡å™¨ä¸åœ¨æŽ¥å—æ–°å®¢æˆ·åˆ°æ¥
                     if (ExistsRuning())
                     {
                         return InitialSession(loop, client, index);
@@ -327,7 +327,7 @@ namespace Evpp
     {
         if (nullptr != loop)
         {
-            return loop->RunInLoopEx(std::bind((bool(TcpServer::*)(EventLoop*, socket_stream*, const u96))&TcpServer::DefaultAccepts, this, loop, server, index));
+            return loop->RunInLoopEx(std::bind((bool(TcpServer::*)(EventLoop*, socket_stream*, const u96)) & TcpServer::DefaultAccepts, this, loop, server, index));
         }
         return false;
     }
@@ -431,7 +431,7 @@ namespace Evpp
     const u96 TcpServer::GetPlexingIndex(u96 index)
     {
         std::unique_lock<std::recursive_mutex> lock(tcp_recursive_mutex);
-        {        
+        {
             if (index == 0)
             {
                 return GetPlexingIndex(tcp_index_multiplexing.empty() ? tcp_index.fetch_add(1) : tcp_index_multiplexing.top());
@@ -530,17 +530,17 @@ namespace Evpp
             return false;
         }
 
-        // Ïú»Ù¼àÌý·þÎñ
+        // é”€æ¯ç›‘å¬æœåŠ¡
         if (0 == tcp_listen->DestroyListenService())
         {
             return false;
         }
-        // ÇåÀí»á»°ÁÐ±í
+        // æ¸…ç†ä¼šè¯åˆ—è¡¨
         if (0 == CleanedSession())
         {
             return false;
         }
-        // Ïú»ÙÏß³ÌÁÐ±í
+        // é”€æ¯çº¿ç¨‹åˆ—è¡¨
         if (0 == event_thread_pool->DestroyEventThreadPool())
         {
             return false;

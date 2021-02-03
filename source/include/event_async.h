@@ -1,4 +1,4 @@
-#ifndef __EVENT_ASYNC_H__
+﻿#ifndef __EVENT_ASYNC_H__
 #define __EVENT_ASYNC_H__
 #include <event_config.h>
 #include <event_untlity.h>
@@ -17,8 +17,8 @@ namespace Evpp
         static void OnNotify(event_async* handler);
         void OnNotify();
     private:
-        EventLoop*                                      event_base;
-        event_async*                                    event_async_;
+        EventLoop* event_base;
+        event_async* event_async_;
         Handler                                         cv_handler;
     };
 }

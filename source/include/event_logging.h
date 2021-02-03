@@ -1,4 +1,4 @@
-#ifndef __EVEMT_LOGGING_H__
+﻿#ifndef __EVEMT_LOGGING_H__
 #define __EVEMT_LOGGING_H__
 #include <event_config.h>
 

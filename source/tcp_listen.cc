@@ -1,4 +1,4 @@
-#include <tcp_listen.h>
+﻿#include <tcp_listen.h>
 #include <tcp_server.h>
 #include <event_share.h>
 #include <event_loop.h>
@@ -106,7 +106,7 @@ namespace Evpp
                 {
                     tcp_server.clear();
                     tcp_server.shrink_to_fit();
-                    
+
                 }
             }
             return true;

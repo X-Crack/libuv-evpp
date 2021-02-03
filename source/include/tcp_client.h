@@ -1,4 +1,4 @@
-#ifndef __TCP_CLIENT_H__
+﻿#ifndef __TCP_CLIENT_H__
 #define __TCP_CLIENT_H__
 #include <event_config.h>
 #include <event_status.h>
@@ -55,7 +55,7 @@ namespace Evpp
     private:
         static void DefaultConnect(socket_connect* hanlder, int status);
     private:
-        EventLoop*                                                      event_base;
+        EventLoop* event_base;
         u96                                                             event_index;
         InterfaceConnect                                                socket_connect_;
         InterfaceRestore                                                socket_restore;

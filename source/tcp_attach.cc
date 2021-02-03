@@ -1,11 +1,11 @@
-#include <tcp_attach.h>
+﻿#include <tcp_attach.h>
 #include <tcp_client.h>
 #include <event_loop.h>
 #include <event_timer.h>
 #include <event_status.h>
 namespace Evpp
 {
-    TcpAttach::TcpAttach(EventLoop* loop, TcpClient* client) : 
+    TcpAttach::TcpAttach(EventLoop* loop, TcpClient* client) :
         event_base(loop),
         event_timer(std::make_shared<EventTimer>(loop)),
         socket_client(client),
@@ -88,7 +88,7 @@ namespace Evpp
                 {
                     if (RunInLoopEx(std::bind(&TcpClient::ConnectService, socket_client)))
                     {
-                        if(timer->StopedTimer())
+                        if (timer->StopedTimer())
                         {
                             if (ChangeStatus(Status::Exec, Status::Stop))
                             {

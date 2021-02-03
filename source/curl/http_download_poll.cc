@@ -3,7 +3,7 @@
 #include <event_timer.h>
 namespace Evpp
 {
-    HttpDownloadPoll::HttpDownloadPoll(EventLoop* loop, CURLM* curl,  const i32 fd) :
+    HttpDownloadPoll::HttpDownloadPoll(EventLoop* loop, CURLM* curl, const i32 fd) :
         event_base(loop),
         event_timer(std::make_shared<EventTimer>(loop, std::bind(&HttpDownloadPoll::OnTaskTimer, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3))),
         http_event_poll(new event_poll()),

@@ -1,11 +1,11 @@
-#ifndef __EVENT_QUEUE_H__
+ï»¿#ifndef __EVENT_QUEUE_H__
 #define __EVENT_QUEUE_H__
 #include <event_config.h>
 namespace Evpp
 {
     /*
     * UV_THREADPOOL_SIZE = 1024
-    * Ä¬ÈÏÏß³Ì³Ø´óĞ¡Îª4 ÈçĞè¸ü¶àÇëÍ¨¹ı ÏµÍ³»·¾³±äÁ¿ À´Ôö¼ÓÏß³ÌÊıÁ¿£¨×î´óÈİÁ¿1024£©
+    * é»˜è®¤çº¿ç¨‹æ± å¤§å°ä¸º4 å¦‚éœ€æ›´å¤šè¯·é€šè¿‡ ç³»ç»Ÿç¯å¢ƒå˜é‡ æ¥å¢åŠ çº¿ç¨‹æ•°é‡ï¼ˆæœ€å¤§å®¹é‡1024ï¼‰
     */
     class EventLoop;
     class EventWorkQueue
@@ -26,7 +26,7 @@ namespace Evpp
         static void OnCreaterNotify(event_work* handler);
         static void OnDestroyNotify(event_work* handler, int status);
     private:
-        EventLoop*                                                              event_base;
+        EventLoop* event_base;
         CreaterWorkHandler                                                      creater_callback;
         DestroyWorkHandler                                                      destroy_callback;
     };

@@ -1,4 +1,4 @@
-#include <event_status.h>
+ï»¿#include <event_status.h>
 #include <event_loop.h>
 #include <event_loop_thread_ex.h>
 #include <event_share.h>
@@ -6,15 +6,15 @@
 namespace Evpp
 {
 #ifdef __cpp_coroutines
-    EventLoopThreadEx::EventLoopThreadEx(const u96 index) : 
-        event_base(nullptr), 
+    EventLoopThreadEx::EventLoopThreadEx(const u96 index) :
+        event_base(nullptr),
         event_index(index)
     {
 
     }
 
-    EventLoopThreadEx::EventLoopThreadEx(EventLoop* loop, const std::shared_ptr<EventShare>& share, const u96 index) : 
-        event_base(loop), 
+    EventLoopThreadEx::EventLoopThreadEx(EventLoop* loop, const std::shared_ptr<EventShare>& share, const u96 index) :
+        event_base(loop),
         event_share(share),
         event_index(index),
         event_loop(std::make_shared<EventLoop>(event_share->EventLoop(index), index)),
@@ -43,7 +43,7 @@ namespace Evpp
                     {
                         if (ChangeStatus(Status::None, Status::Init))
                         {
-                            // Æô¶¯Ïß³ÌÐèÒªÂýÆô¶¯£¬ÒòÎª³õÊ¼»¯Êý¾Ý¹ý¶à£¬·ñÔò»áµ¼ÖÂRunInLoopÒì²½°²È«³õÊ¼»¯Ê§°Ü¡£
+                            // å¯åŠ¨çº¿ç¨‹éœ€è¦æ…¢å¯åŠ¨ï¼Œå› ä¸ºåˆå§‹åŒ–æ•°æ®è¿‡å¤šï¼Œå¦åˆ™ä¼šå¯¼è‡´RunInLoopå¼‚æ­¥å®‰å…¨åˆå§‹åŒ–å¤±è´¥ã€‚
                             if (cv_signal.wait_for(lock, std::chrono::milliseconds(8), std::bind(&EventLoopThreadEx::AvailableEvent, this)))
                             {
                                 return true;
@@ -74,7 +74,7 @@ namespace Evpp
         {
             if (uv_loop_alive(event_loop->EventBasic()))
             {
-                if(StopDispatch())
+                if (StopDispatch())
                 {
                     if (loop_exit)
                     {

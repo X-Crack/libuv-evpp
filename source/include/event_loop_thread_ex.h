@@ -1,4 +1,4 @@
-#ifndef __EVENT_LOOP_THREAD_EX_H__
+﻿#ifndef __EVENT_LOOP_THREAD_EX_H__
 #define __EVENT_LOOP_THREAD_EX_H__
 #include <event_config.h>
 #include <functional>
@@ -30,14 +30,14 @@ namespace Evpp
         bool AvailableEvent();
         bool Join();
     private:
-        EventLoop*                                      event_base;
+        EventLoop* event_base;
         std::shared_ptr<EventShare>                     event_share;
         u96                                             event_index;
         std::shared_ptr<EventLoop>                      event_loop;
         std::unique_ptr<std::thread>                    loop_thread;
         std::atomic<u32>                                loop_exit;
-        std::condition_variable							cv_signal;
-        std::mutex										cv_mutex;
+        std::condition_variable                         cv_signal;
+        std::mutex                                      cv_mutex;
     };
 #else
     class EventLoopThreadEx final : public EventStatus
@@ -54,14 +54,14 @@ namespace Evpp
         bool AvailableEvent();
         void Run();
     private:
-        EventLoop*                                      event_base;
+        EventLoop* event_base;
         std::shared_ptr<EventShare>                     event_share;
         u96                                             event_index;
         std::shared_ptr<EventLoop>                      loop;
         std::unique_ptr<std::thread>                    loop_thread;
-        std::condition_variable							cv_signal;
-        std::mutex										cv_mutex;
-};
+        std::condition_variable                         cv_signal;
+        std::mutex                                      cv_mutex;
+    };
 #endif
 }
 #endif // __EVENT_LOOP_THREAD_EX_H__

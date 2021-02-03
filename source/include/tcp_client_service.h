@@ -1,4 +1,4 @@
-#ifndef __TCP_CLIENT_SERVICE_H__
+ï»¿#ifndef __TCP_CLIENT_SERVICE_H__
 #define __TCP_CLIENT_SERVICE_H__
 #include <event_config.h>
 #include <memory>
@@ -18,7 +18,7 @@ namespace Evpp
     public:
         bool ExecDispatch();
         bool ExecDispatch(u32 mode);
-        // »Øµ÷ÓÃÓÚ¿Í»§¶Ë½çÃæÏûÏ¢Ë¢ĞÂ·ÀÖ¹´°¿Ú¼ÙËÀ
+        // å›è°ƒç”¨äºå®¢æˆ·ç«¯ç•Œé¢æ¶ˆæ¯åˆ·æ–°é˜²æ­¢çª—å£å‡æ­»
         bool ExecDispatch(const EventLoopHandler& function, u32 mode = UV_RUN_NOWAIT);
         bool ExecDispatchEx(const EventLoopHandler& function, u32 mode = UV_RUN_ONCE);
         bool ExecDispatchCoroutine(const EventLoopHandler& function, u32 mode = UV_RUN_ONCE);

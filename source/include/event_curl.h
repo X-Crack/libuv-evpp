@@ -1,4 +1,4 @@
-#ifndef __EVENT_CURL_H__
+ï»¿#ifndef __EVENT_CURL_H__
 #define __EVENT_CURL_H__
 #include <event_config.h>
 #ifndef EVENT_USE_CURL
@@ -36,5 +36,5 @@
 #else  // H_OS_WINDOWS
 #endif // EVENT_USE_CURL
 
-// SSL ÎÊÌâ https://www.cnblogs.com/cherishui/p/13997087.html
+// SSL é—®é¢˜ https://www.cnblogs.com/cherishui/p/13997087.html
 #endif // __EVENT_CURL_H__

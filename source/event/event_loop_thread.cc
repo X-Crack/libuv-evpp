@@ -1,4 +1,4 @@
-#include <event_status.h>
+﻿#include <event_status.h>
 #include <event_loop.h>
 #include <event_share.h>
 #include <event_loop_thread.h>
@@ -9,13 +9,13 @@ namespace Evpp
 
     }
 
-    EventLoopThread::EventLoopThread(EventLoop* loop, const std::shared_ptr<EventShare>& share, const u96 index) : 
-        event_base(loop), 
-        event_share(share), 
+    EventLoopThread::EventLoopThread(EventLoop* loop, const std::shared_ptr<EventShare>& share, const u96 index) :
+        event_base(loop),
+        event_share(share),
         event_index(index),
         event_thread_(std::make_unique<uv_thread_t>())
     {
-        
+
     }
 
     EventLoopThread::~EventLoopThread()
@@ -45,7 +45,7 @@ namespace Evpp
 
     bool EventLoopThread::DestroyThread()
     {
-        if(uv_loop_alive(loop->EventBasic()))
+        if (uv_loop_alive(loop->EventBasic()))
         {
             return loop->StopDispatch();
         }

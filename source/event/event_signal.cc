@@ -1,9 +1,9 @@
-#include <event_signal.h>
+﻿#include <event_signal.h>
 #include <event_loop.h>
 namespace Evpp
 {
-    EventSignal::EventSignal(EventLoop* loop, const Handler& function) : 
-        event_base(loop), 
+    EventSignal::EventSignal(EventLoop* loop, const Handler& function) :
+        event_base(loop),
         event_signaler(new event_signal()),
         event_callback(function)
     {

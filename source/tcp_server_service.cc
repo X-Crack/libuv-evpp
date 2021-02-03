@@ -1,4 +1,4 @@
-#include <tcp_server_service.h>
+﻿#include <tcp_server_service.h>
 #include <event_share.h>
 #include <event_loop.h>
 #include <event_timer.h>
@@ -12,7 +12,7 @@ namespace Evpp
         tcp_server(std::make_unique<TcpServer>(event_base.get(), event_share)),
         event_stop_flag(1)
     {
-        
+
     }
 
     TcpServerService::~TcpServerService()
@@ -104,7 +104,7 @@ namespace Evpp
             {
                 try
                 {
-                    EventCoroutine::JoinInTask(std::bind((bool(TcpServerService::*)(const EventLoopHandler&, u32))&TcpServerService::ExecDispatch, this, function, mode));
+                    EventCoroutine::JoinInTask(std::bind((bool(TcpServerService::*)(const EventLoopHandler&, u32)) & TcpServerService::ExecDispatch, this, function, mode));
                 }
                 catch (...)
                 {

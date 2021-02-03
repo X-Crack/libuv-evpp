@@ -1,11 +1,11 @@
-#include <event_work_queue.h>
+﻿#include <event_work_queue.h>
 #include <event_loop.h>
 namespace Evpp
 {
     EventWorkQueue::EventWorkQueue(EventLoop* loop) :
         event_base(loop)
     {
-        
+
     }
 
     EventWorkQueue::~EventWorkQueue()

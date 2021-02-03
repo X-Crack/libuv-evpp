@@ -1,4 +1,4 @@
-#ifndef __EVENT_SHARE_H__
+﻿#ifndef __EVENT_SHARE_H__
 #define __EVENT_SHARE_H__
 #include <event_config.h>
 #include <unordered_map>
@@ -19,9 +19,9 @@ namespace Evpp
         event_loop* EventLoop(const u96 index = 0);
         event_loop* DefaultEventLoop();
     private:
-        event_loop*                                                                 event_base;
+        event_loop* event_base;
         std::unordered_map<u96, std::unique_ptr<event_loop>>                        event_loops;
-        std::mutex										                            event_mutex;
+        std::mutex                                                                  event_mutex;
     };
 }
 #endif // __EVENT_SHARE_H__

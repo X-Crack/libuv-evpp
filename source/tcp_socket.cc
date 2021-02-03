@@ -1,4 +1,4 @@
-#include <tcp_socket.h>
+ï»¿#include <tcp_socket.h>
 namespace Evpp
 {
     TcpSocket::TcpSocket()
@@ -50,7 +50,7 @@ namespace Evpp
     bool TcpSocket::GetSockInfo(socket_tcp* handler, SocketInfoEx* socket)
     {
         String address[256];
-        // »ñÈ¡ÓëÄ³¸öÌ×½Ó×Ö¹ØÁªµÄ±¾µØÐ­ÒéµØÖ·
+        // èŽ·å–ä¸ŽæŸä¸ªå¥—æŽ¥å­—å…³è”çš„æœ¬åœ°åè®®åœ°å€
         if (GetSockName(handler, &socket->sockname.addr, sizeof(struct sockaddr)))
         {
             if (AF_INET == socket->sockname.family)
@@ -81,7 +81,7 @@ namespace Evpp
     bool TcpSocket::GetPeerInfo(socket_tcp* handler, SocketInfoEx* socket)
     {
         String address[256];
-        // »ñÈ¡ÓëÄ³¸öÌ×½Ó×Ö¹ØÁªµÄÍâµØÐ­ÒéµØÖ·
+        // èŽ·å–ä¸ŽæŸä¸ªå¥—æŽ¥å­—å…³è”çš„å¤–åœ°åè®®åœ°å€
         if (GetPeerName(handler, &socket->peername.addr, sizeof(struct sockaddr)))
         {
             if (AF_INET == socket->peername.family)
@@ -104,7 +104,7 @@ namespace Evpp
                 }
             }
 
-            
+
             return true;
         }
 

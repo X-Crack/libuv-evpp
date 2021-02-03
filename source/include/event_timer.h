@@ -1,4 +1,4 @@
-#ifndef __EVENT_TIMER_H__
+﻿#ifndef __EVENT_TIMER_H__
 #define __EVENT_TIMER_H__
 #include <event_config.h>
 namespace Evpp
@@ -33,8 +33,8 @@ namespace Evpp
         static void OnNotify(event_timer* handler);
         void OnNotify();
     private:
-        EventLoop*                                                  event_base;
-        event_timer*                                                event_time;
+        EventLoop* event_base;
+        event_timer* event_time;
         u96                                                         safe_index;
         EventTimerHandle                                            event_callback;
     };

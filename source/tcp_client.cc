@@ -1,4 +1,4 @@
-#include <tcp_client.h>
+ï»¿#include <tcp_client.h>
 #include <tcp_attach.h>
 #include <tcp_connect.h>
 #include <tcp_session.h>
@@ -19,7 +19,7 @@ namespace Evpp
         event_close_flag(0),
         event_close_flag_ex(0)
     {
-        
+
     }
 
     TcpClient::~TcpClient()
@@ -57,7 +57,7 @@ namespace Evpp
             {
                 if (tcp_retry_connection)
                 {
-                    // ¹Ø±Õ¶ÏÏßÖØÁ¬
+                    // å…³é—­æ–­çº¿é‡è¿ž
                     tcp_retry_connection.store(0);
                 }
 
@@ -80,7 +80,7 @@ namespace Evpp
             {
                 if (tcp_retry_connection)
                 {
-                    // ¹Ø±Õ¶ÏÏßÖØÁ¬
+                    // å…³é—­æ–­çº¿é‡è¿ž
                     tcp_retry_connection.store(0);
                 }
 
@@ -229,7 +229,7 @@ namespace Evpp
     {
         if (nullptr != tcp_session)
         {
-            // ÒÑ¾­´æÔÚÁ¬½Ó¶ÔÏó£¬²¢ÇÒÊÇÕý³£±»¶Ï¿ªµÄ×´Ì¬¡£
+            // å·²ç»å­˜åœ¨è¿žæŽ¥å¯¹è±¡ï¼Œå¹¶ä¸”æ˜¯æ­£å¸¸è¢«æ–­å¼€çš„çŠ¶æ€ã€‚
             if (ChangeStatus(Status::Stop, Status::Init))
             {
                 tcp_session.reset();
@@ -241,7 +241,7 @@ namespace Evpp
                 }
             }
 
-            // ÒÑ¾­´æÔÚÁ¬½Ó¶ÔÏó£¬²¢ÇÒ¿Í»§¶ËÖ÷¶¯Ïú»ÙµÄ×´Ì¬¡£
+            // å·²ç»å­˜åœ¨è¿žæŽ¥å¯¹è±¡ï¼Œå¹¶ä¸”å®¢æˆ·ç«¯ä¸»åŠ¨é”€æ¯çš„çŠ¶æ€ã€‚
             if (ExistsStarts(Status::Exit))
             {
                 tcp_session.reset();
@@ -253,7 +253,7 @@ namespace Evpp
         }
 
 
-        // ²»´æÔÚÁ¬½Ó¶ÔÏó£¬²¢ÇÒ·þÎñÆ÷ÎÞ·¨Á¬½Ó£¬·´¸´³¢ÊÔ×´Ì¬¡£
+        // ä¸å­˜åœ¨è¿žæŽ¥å¯¹è±¡ï¼Œå¹¶ä¸”æœåŠ¡å™¨æ— æ³•è¿žæŽ¥ï¼Œåå¤å°è¯•çŠ¶æ€ã€‚
         if (nullptr == tcp_session && ExistsStarts(Status::Init))
         {
             return tcp_attach->CreaterConnect();
@@ -377,7 +377,7 @@ namespace Evpp
                         watcher->DefaultFailure(status);
                         return;
                     }
-                    
+
                     if (watcher->DefaultConnect())
                     {
                         return;

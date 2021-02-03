@@ -1,4 +1,4 @@
-#include <event_untlity.h>
+ï»¿#include <event_untlity.h>
 #include <event_loop.h>
 #include <event_buffer.h>
 #include <tcp_session.h>
@@ -59,7 +59,7 @@ namespace Evpp
             USE_PARAMETER(loop);
             USE_PARAMETER(session);
             USE_PARAMETER(index);
-            EVENT_INFO("ÖØĞÂÁ¬½Ó³É¹¦\n");
+            EVENT_INFO("é‡æ–°è¿æ¥æˆåŠŸ\n");
             return true;
         }
 
@@ -70,7 +70,7 @@ namespace Evpp
             USE_PARAMETER(status);
             USE_PARAMETER(name);
             USE_PARAMETER(msgs);
-            EVENT_INFO("Óë·şÎñÆ÷Á¬½ÓÊ§°Ü - index:%d - status:%d - name:%s - msgs:%s\n", index, status, name, msgs);
+            EVENT_INFO("ä¸æœåŠ¡å™¨è¿æ¥å¤±è´¥ - index:%d - status:%d - name:%s - msgs:%s\n", index, status, name, msgs);
             return true;
         }
     }

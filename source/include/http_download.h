@@ -1,4 +1,4 @@
-#ifndef __HTTP_DOWNLOAD_H__
+﻿#ifndef __HTTP_DOWNLOAD_H__
 #define __HTTP_DOWNLOAD_H__
 #include <event_config.h>
 #include <unordered_map>
@@ -20,7 +20,7 @@ namespace Evpp
     private:
         bool InitialDownload(const u96 index);
     private:
-        EventLoop*                                                                      event_base;
+        EventLoop* event_base;
         std::shared_ptr<EventShare>                                                     event_share;
         std::unique_ptr<EventLoopThreadPool>                                            event_loop_thread_pool;
         std::unordered_map<u96, std::unique_ptr<HttpDownloadMulti>>                     http_download_multi;

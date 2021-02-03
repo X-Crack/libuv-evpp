@@ -1,4 +1,4 @@
-#ifndef __EVENT_TIMER_POOL_H__
+﻿#ifndef __EVENT_TIMER_POOL_H__
 #define __EVENT_TIMER_POOL_H__
 #include <event_config.h>
 #include <unordered_map>
@@ -26,7 +26,7 @@ namespace Evpp
     private:
         bool CreateTimer(const u96 index);
     private:
-        EventLoop*                                                      event_base;
+        EventLoop* event_base;
         std::unordered_map<u96, std::shared_ptr<EventTimer>>            event_timer;
     };
 }

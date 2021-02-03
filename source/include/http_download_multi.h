@@ -1,4 +1,4 @@
-#ifndef __HTTP_DOWNLOAD_MULTI_H__
+﻿#ifndef __HTTP_DOWNLOAD_MULTI_H__
 #define __HTTP_DOWNLOAD_MULTI_H__
 #include <event_config.h>
 #include <memory>
@@ -31,10 +31,10 @@ namespace Evpp
         static i32 DefaultSocket(CURL* easy, curl_socket_t fd, i32 action, void* handler, void* socketp);
         static i32 DefaultTimer(CURLM* multi, i32 timeout_ms, void* handler);
     private:
-        EventLoop*                                                              event_base;
+        EventLoop* event_base;
         std::shared_ptr<EventTimer>                                             event_timer;
         std::unique_ptr<HttpDownloadService>                                    http_download_service;
-        CURLM*                                                                  http_curl_global_handler;
+        CURLM* http_curl_global_handler;
         i32                                                                     http_curl_global_handles;
     };
 }

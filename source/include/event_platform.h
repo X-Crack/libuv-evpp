@@ -1,4 +1,4 @@
-#ifndef __EVENT_PLATFORM_H__
+﻿#ifndef __EVENT_PLATFORM_H__
 #define __EVENT_PLATFORM_H__
 #include <assert.h>
 

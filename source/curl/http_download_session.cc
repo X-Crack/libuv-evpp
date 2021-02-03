@@ -20,7 +20,7 @@ namespace Evpp
     u96 HttpDownloadSession::OnMessage(void* buffer, u96 size, u96 nmemb)
     {
         EVENT_INFO("下载地址:%s 当前下载:%d", http_hosts.c_str(), size * nmemb);
-        return size * nmemb; 
+        return size * nmemb;
     }
 
     u96 HttpDownloadSession::DefaultMessage(void* buffer, u96 size, u96 nmemb, void* handler)

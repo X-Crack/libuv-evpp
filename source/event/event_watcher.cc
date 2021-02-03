@@ -1,4 +1,4 @@
-#include <event_watcher.h>
+﻿#include <event_watcher.h>
 #include <event_loop.h>
 #include <event_async.h>
 #include <blockingconcurrentqueue.h>
@@ -54,7 +54,7 @@ namespace Evpp
         {
             RecvAsyncNotifyEx();
         }
-        
+
         return nolock_queue->size_approx() || nolock_queue_ex->size_approx();
     }
 

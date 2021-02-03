@@ -1,4 +1,4 @@
-#ifndef __EVENT_LOOP_THREAD_H__
+﻿#ifndef __EVENT_LOOP_THREAD_H__
 #define __EVENT_LOOP_THREAD_H__
 #include <event_config.h>
 namespace Evpp
@@ -24,7 +24,7 @@ namespace Evpp
     private:
         static void ThreadRun(void* handler);
     private:
-        EventLoop*                                      event_base;
+        EventLoop* event_base;
         std::shared_ptr<EventShare>                     event_share;
         std::unique_ptr<event_thread>                   event_thread_;
         u96                                             event_index;

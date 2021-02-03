@@ -1,4 +1,4 @@
-#ifndef __TCP_CONNECT_H__
+﻿#ifndef __TCP_CONNECT_H__
 #define __TCP_CONNECT_H__
 #include <event_config.h>
 #include <memory>
@@ -18,7 +18,7 @@ namespace Evpp
         bool InitTcpService();
         bool CreaterConnect(const sockaddr* addr);
     private:
-        EventLoop*                                              event_base;
+        EventLoop* event_base;
         std::shared_ptr<socket_tcp>                             tcp_handler;
         std::unique_ptr<socket_connect>                         tcp_connect;
     };

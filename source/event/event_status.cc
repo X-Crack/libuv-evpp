@@ -1,4 +1,4 @@
-#include <event_status.h>
+﻿#include <event_status.h>
 namespace Evpp
 {
     EventStatus::EventStatus() : status(Status::None)

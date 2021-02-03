@@ -1,4 +1,4 @@
-#ifndef __EVENT_SOCKET_H__
+﻿#ifndef __EVENT_SOCKET_H__
 #define __EVENT_SOCKET_H__
 #include <event_config.h>
 #include <string>

@@ -1,4 +1,4 @@
-#include <http_download.h>
+﻿#include <http_download.h>
 #include <http_download_multi.h>
 #include <event_share.h>
 #include <event_loop_thread_pool.h>
