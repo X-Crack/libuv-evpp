@@ -13,7 +13,7 @@ int main(int argc, char* argv[])
     Sleep(1000);
     Evpp::HttpDownload down(&ev);
     down.InitialCurlGlobal(16);
-    down.CreaterDownload(1, "http://www.baidu.com", 80);
+    down.CreaterDownload(1, "http://mirrors.aliyun.com/centos/8.3.2011/isos/x86_64/CentOS-8.3.2011-x86_64-dvd1.iso", 80);
     //down.CreaterDownload(2, "https://mirrors.aliyun.com/centos/8.3.2011/isos/x86_64/CentOS-8.3.2011-x86_64-dvd1.iso", 443);
     //down.CreaterDownload(3, "https://mirrors.aliyun.com/centos/7.9.2009/isos/x86_64/CentOS-7-x86_64-Everything-2009.iso", 443);
     ev.ExecDispatch();

@@ -23,6 +23,7 @@ namespace Evpp
         static i32 DefaultProgress(void* handler, double count_download_size, double current_download_size, double count_upload_size, double current_upload_size);
     private:
         std::string                                                 http_hosts;
+        double                                                      original_download_size;
     };
 }
 #endif // __HTTP_DOWNLOAD_SESSION_H__

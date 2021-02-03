@@ -2,7 +2,8 @@
 namespace Evpp
 {
     HttpDownloadSession::HttpDownloadSession(const std::string& hosts) :
-        http_hosts(hosts)
+        http_hosts(hosts),
+        original_download_size(0.0F)
     {
 
     }
@@ -24,11 +25,25 @@ namespace Evpp
 
     i32 HttpDownloadSession::OnProgress(double count_download_size, double current_download_size, double count_upload_size, double current_upload_size)
     {
-        if (current_download_size > 0.0F)
+        if (current_download_size == original_download_size)
         {
-            EVENT_INFO("下载地址:%s 当前下载:%.2f%%", http_hosts.c_str(), ((current_download_size * 100.0F) / count_download_size));
             return 0;
         }
+        else
+        {
+            original_download_size = current_download_size;
+        }
+
+        if (current_download_size > 0.000000000001F)
+        {
+            EVENT_INFO("下载地址:%s 当前下载:%.2F%%", http_hosts.c_str(), (current_download_size / count_download_size) * 100.0F);
+        }
+
+        if (0.0F != current_download_size && current_download_size >= count_download_size)
+        {
+            return 1;
+        }
+
         return 0;
     }
 
