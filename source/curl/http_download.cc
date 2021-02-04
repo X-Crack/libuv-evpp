@@ -21,9 +21,9 @@ namespace Evpp
         curl_global_cleanup();
     }
 
-    bool HttpDownload::InitialCurlGlobal(const u96 thread_size, const long flags)
+    bool HttpDownload::InitialCurlGlobal(const u96 thread_max_size, const long flags)
     {
-        if (event_share->CreaterLoops(thread_size))
+        if (event_share->CreaterLoops(thread_max_size))
         {
             return CURLcode::CURLE_OK == curl_global_init(flags);
         }
@@ -154,7 +154,12 @@ namespace Evpp
 
     bool HttpDownload::DestroyEventThread(const u96 index, const bool use_thread_ex)
     {
-        return event_loop_thread_pool->DestroyEventThread(index, use_thread_ex);
+        if (event_loop_thread_pool->DestroyEventThread(index, use_thread_ex))
+        {
+            http_download_task.erase(index);
+            return true;
+        }
+        return false;
     }
 
     void HttpDownload::OnDownloadMessage(const u96 index, const i32 http_curl_handles)

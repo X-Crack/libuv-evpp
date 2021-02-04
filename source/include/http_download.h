@@ -14,7 +14,7 @@ namespace Evpp
         explicit HttpDownload(EventLoop* loop);
         virtual ~HttpDownload();
     public:
-        bool InitialCurlGlobal(const u96 thread_size, const long flags = CURL_GLOBAL_DEFAULT);
+        bool InitialCurlGlobal(const u96 thread_max_size, const long flags = CURL_GLOBAL_DEFAULT);
     public:
         bool CreaterDownload(const u96 index, const String* host, const u32 port = 0);
         bool CreaterDownload(const u96 index, const std::string& host, const u32 port = 0);
