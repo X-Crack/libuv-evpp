@@ -25,6 +25,7 @@ namespace Evpp
         CURL*                                                       http_easy_curl;
         std::string                                                 http_hosts;
         String*                                                     http_curl_hosts;
+        u32                                                         http_curl_response_code;
         double                                                      original_download_size;
     };
 }

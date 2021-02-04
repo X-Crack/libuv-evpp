@@ -109,6 +109,7 @@ namespace Evpp
         }
         case CURL_POLL_REMOVE:
         {
+            // 此处作为异步接口调用 暂时放在这。
             if (0 == uv_poll_stop(http_download_poll->http_event_poll))
             {
                 uv_close(reinterpret_cast<uv_handle_t*>(http_download_poll->http_event_poll), &HttpDownloadPoll::DefaultClose);

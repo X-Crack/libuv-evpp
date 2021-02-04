@@ -15,10 +15,10 @@ namespace Evpp
         friend HttpDownloadMulti;
     private:
         void OnClose(HttpDownloadPoll* handler);
-        void OnCurlPerform(uv_poll_t* handler, int status, int events);
+        void OnCurlPerform(event_poll* handler, int status, int events);
     private:
-        static void DefaultClose(uv_handle_t* handler);
-        static void DefaultCurlPerform(uv_poll_t* handler, int status, int events);
+        static void DefaultClose(event_handle* handler);
+        static void DefaultCurlPerform(event_poll* handler, int status, int events);
     private:
         void DownloadMessage(CURLMsg* message);
     private:

@@ -5,7 +5,10 @@
 
 namespace Evpp
 {
-    HttpDownloadService::HttpDownloadService() : event_base(nullptr)
+    HttpDownloadService::HttpDownloadService() :
+        event_base(nullptr),
+        http_download_proxy(/*"127.0.0.1:64882"*/),
+        http_download_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36")
     {
 
     }
@@ -25,34 +28,42 @@ namespace Evpp
         return CreaterDownload(index, loop, curl_easy_init(), curl_multi_handler, host, port);
     }
 
+    void HttpDownloadService::SetProxy(const std::string& proxy)
+    {
+        http_download_proxy = proxy;
+    }
+
+    void HttpDownloadService::SetUserAgent(const std::string& agent)
+    {
+        http_download_agent = agent;
+    }
+
     bool HttpDownloadService::CreaterDownload(const u96 index, EventLoop* loop, CURL* curl_easy_handler, CURLM* curl_multi_handler, const std::string& host, const u32 port)
     {
         if (CreaterDownloadSession(index, curl_easy_handler, host))
         {
-            curl_easy_setopt(curl_easy_handler, CURLOPT_URL, host.c_str());
-            if (port)
+            if (CURLcode::CURLE_OK == curl_easy_setopt(curl_easy_handler, CURLOPT_URL, host.c_str()) &&
+                CURLcode::CURLE_OK == curl_easy_setopt(curl_easy_handler, CURLOPT_PORT, port) &&
+                CURLcode::CURLE_OK == curl_easy_setopt(curl_easy_handler, CURLOPT_SSL_VERIFYHOST, 0L) &&                                            // 关闭SSL
+                CURLcode::CURLE_OK == curl_easy_setopt(curl_easy_handler, CURLOPT_SSL_VERIFYPEER, 0L) &&                                            // 关闭SSL
+
+                CURLcode::CURLE_OK == curl_easy_setopt(curl_easy_handler, CURLOPT_VERBOSE, 1L) &&
+                CURLcode::CURLE_OK == curl_easy_setopt(curl_easy_handler, CURLOPT_FOLLOWLOCATION, 1L) &&                                            // 返回的头部中有Location(一般直接请求的url没找到)，则继续请求Location对应的数据
+                CURLcode::CURLE_OK == curl_easy_setopt(curl_easy_handler, CURLOPT_CONNECTTIMEOUT, 30L) &&                                           // 连接超时，这个数值如果设置太短可能导致数据请求不到就断开了
+                CURLcode::CURLE_OK == curl_easy_setopt(curl_easy_handler, CURLOPT_TIMEOUT, 3000L) &&
+                CURLcode::CURLE_OK == curl_easy_setopt(curl_easy_handler, CURLOPT_MAXREDIRS, 5L) &&
+                CURLcode::CURLE_OK == curl_easy_setopt(curl_easy_handler, CURLOPT_PROXY, http_download_proxy.c_str()) &&
+                CURLcode::CURLE_OK == curl_easy_setopt(curl_easy_handler, CURLOPT_USERAGENT, http_download_agent.c_str()) &&
+                //CURLcode::CURLE_OK == curl_easy_setopt(curl_easy_handler, CURLOPT_RESUME_FROM_LARGE, 0) &&                                          //断点下载设置
+
+                CURLcode::CURLE_OK == curl_easy_setopt(curl_easy_handler, CURLOPT_NOPROGRESS, 0L) &&                                                // 设置进度响应
+                CURLcode::CURLE_OK == curl_easy_setopt(curl_easy_handler, CURLOPT_XFERINFODATA, GetDownloadSession(index)) &&                       // 进度响应指针
+                CURLcode::CURLE_OK == curl_easy_setopt(curl_easy_handler, CURLOPT_PROGRESSFUNCTION, &HttpDownloadSession::DefaultProgress) &&       // 进度响应函数
+                CURLcode::CURLE_OK == curl_easy_setopt(curl_easy_handler, CURLOPT_WRITEDATA, GetDownloadSession(index)) &&                          // 数据响应指针
+                CURLcode::CURLE_OK == curl_easy_setopt(curl_easy_handler, CURLOPT_WRITEFUNCTION, &HttpDownloadSession::DefaultMessage))             // 数据响应回调
             {
-                curl_easy_setopt(curl_easy_handler, CURLOPT_PORT, port);
+                return CURLMcode::CURLM_OK == curl_multi_add_handle(curl_multi_handler, curl_easy_handler);
             }
-            curl_easy_setopt(curl_easy_handler, CURLOPT_SSL_VERIFYHOST, 0L);                                                        // 关闭SSL
-            curl_easy_setopt(curl_easy_handler, CURLOPT_SSL_VERIFYPEER, 0L);                                                        // 关闭SSL
-
-            curl_easy_setopt(curl_easy_handler, CURLOPT_VERBOSE, 1L);
-            curl_easy_setopt(curl_easy_handler, CURLOPT_FOLLOWLOCATION, 1L);                                                        // 返回的头部中有Location(一般直接请求的url没找到)，则继续请求Location对应的数据
-            curl_easy_setopt(curl_easy_handler, CURLOPT_CONNECTTIMEOUT, 120L);                                                      // 连接超时，这个数值如果设置太短可能导致数据请求不到就断开了
-            curl_easy_setopt(curl_easy_handler, CURLOPT_TIMEOUT, 3000L);
-            //curl_easy_setopt(handler, CURLOPT_NOBODY, 1L);                                                                        // 开启这个将下载失败 原因未知
-            curl_easy_setopt(curl_easy_handler, CURLOPT_MAXREDIRS, 1L);
-
-            curl_easy_setopt(curl_easy_handler, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36");
-
-            curl_easy_setopt(curl_easy_handler, CURLOPT_NOPROGRESS, 0L);                                                            // 设置进度响应
-            curl_easy_setopt(curl_easy_handler, CURLOPT_PROGRESSDATA, GetDownloadSession(index));                                   // 数据传输的对象
-            curl_easy_setopt(curl_easy_handler, CURLOPT_PROGRESSFUNCTION, &HttpDownloadSession::DefaultProgress);                   // 进度响应函数
-            curl_easy_setopt(curl_easy_handler, CURLOPT_WRITEDATA, GetDownloadSession(index));
-            curl_easy_setopt(curl_easy_handler, CURLOPT_WRITEFUNCTION, &HttpDownloadSession::DefaultMessage);
-
-            return CURLMcode::CURLM_OK == curl_multi_add_handle(curl_multi_handler, curl_easy_handler);
         }
         return false;
     }
