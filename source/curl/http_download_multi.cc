@@ -144,11 +144,6 @@ namespace Evpp
 
     i32 HttpDownloadMulti::OnTimer(CURLM* multi, i32 delay)
     {
-        if (delay <= 0)
-        {
-            delay = 1;
-        }
-
         if (delay != ~0)
         {
             event_timer->AssignTimer(delay, 1);

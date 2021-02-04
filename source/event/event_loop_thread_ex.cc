@@ -74,6 +74,8 @@ namespace Evpp
 
         if (ExistsRuning())
         {
+            assert(0 == loop->EventThread());
+
             if (uv_loop_alive(loop->EventBasic()))
             {
                 if (StopDispatch())
@@ -298,7 +300,7 @@ namespace Evpp
                     }
                 }
             }
-        }
     }
+}
 #endif
 }
