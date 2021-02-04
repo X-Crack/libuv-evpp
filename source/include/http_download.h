@@ -7,7 +7,7 @@ namespace Evpp
     class EventShare;
     class EventLoop;
     class EventLoopThreadPool;
-    class HttpDownloadMulti;
+    class HttpDownloadTask;
     class HttpDownload
     {
     public:
@@ -16,16 +16,19 @@ namespace Evpp
     public:
         bool InitialCurlGlobal(const u96 thread_size, const long flags = CURL_GLOBAL_DEFAULT);
     public:
-        bool CreaterDownload(const u96 index, const String* host, const u32 port = 80);
-        bool CreaterDownload(const u96 index, const std::string& host, const u32 port = 80);
+        bool CreaterDownload(const u96 index, const String* host, const u32 port = 0);
+        bool CreaterDownload(const u96 index, const std::string& host, const u32 port = 0);
     private:
-        bool InitialDownload(EventLoop* loop, const u96 index, const std::string& host, const u32 port);
-        bool CreaterDownloadEx(EventLoop* loop, const u96 index, const std::string& host, const u32 port);
+        bool InitialDownload(const u96 index);
+    private:
+        bool CreaterDownload(const u96 index, HttpDownloadTask* downloadtask, const String* host, const u32 port);
+        bool CreaterDownload(const u96 index, HttpDownloadTask* downloadtask, const std::string& host, const u32 port);
+        HttpDownloadTask* GetDownloadTask(const u96 index);
     private:
         EventLoop*                                                                      event_base;
         std::shared_ptr<EventShare>                                                     event_share;
         std::unique_ptr<EventLoopThreadPool>                                            event_loop_thread_pool;
-        std::unordered_map<u96, std::unique_ptr<HttpDownloadMulti>>                     http_download_multi;
+        std::unordered_map<u96, std::unique_ptr<HttpDownloadTask>>                      http_download_task;
     };
 }
 #endif // __HTTP_DOWNLOAD_H__

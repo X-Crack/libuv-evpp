@@ -126,6 +126,9 @@
     <ClCompile Include="..\source\curl\http_download.cc">
       <Filter>socket\curl</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\curl\http_download_task.cc">
+      <Filter>socket\curl</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\include\event_untlity.h">
@@ -249,6 +252,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\source\include\http_download.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\http_download_task.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

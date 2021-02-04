@@ -1,5 +1,6 @@
 ﻿#include <http_download.h>
 #include <http_download_multi.h>
+#include <http_download_task.h>
 #include <event_share.h>
 #include <event_loop.h>
 #include <event_loop_thread_pool.h>
@@ -32,32 +33,58 @@ namespace Evpp
 
     bool HttpDownload::CreaterDownload(const u96 index, const String* host, const u32 port)
     {
-        return CreaterDownload(index, std::string(host), port);
+        return CreaterDownload(index, GetDownloadTask(index), host, port);
     }
 
     bool HttpDownload::CreaterDownload(const u96 index, const std::string& host, const u32 port)
     {
-        return InitialDownload(event_loop_thread_pool->GetEventLoop(index), index, host, port);
+        return CreaterDownload(index, GetDownloadTask(index), host, port);
     }
 
-    bool HttpDownload::InitialDownload(EventLoop* loop, const u96 index, const std::string& host, const u32 port)
+    bool HttpDownload::InitialDownload(const u96 index)
     {
-        if (http_download_multi.find(index) == http_download_multi.end())
+        if (http_download_task.find(index) == http_download_task.end())
         {
-            if (http_download_multi.emplace(index, std::make_unique<HttpDownloadMulti>(loop)).second)
+            if (http_download_task.emplace(index, std::make_unique<HttpDownloadTask>(event_loop_thread_pool->GetEventLoop(index))).second)
             {
-                return CreaterDownloadEx(loop, index, host, port);
+                return true;
             }
         }
         return true;
     }
 
-    bool HttpDownload::CreaterDownloadEx(EventLoop* loop, const u96 index, const std::string& host, const u32 port)
+    bool HttpDownload::CreaterDownload(const u96 index, HttpDownloadTask* downloadtask, const String* host, const u32 port)
     {
-        if (loop->EventThread())
+        if (nullptr == downloadtask)
         {
-            return http_download_multi[index]->InitialDownload() && http_download_multi[index]->CreaterDownload(host, port);
+            if (InitialDownload(index))
+            {
+                return CreaterDownload(index, GetDownloadTask(index), host, port);
+            }
+            return false;
         }
-        return loop->RunInLoopEx(std::bind(&HttpDownload::CreaterDownloadEx, this, loop, index, host, port));
+        return downloadtask->InitialDownload() && downloadtask->CreaterDownload(host, port);
+    }
+
+    bool HttpDownload::CreaterDownload(const u96 index, HttpDownloadTask* downloadtask, const std::string& host, const u32 port)
+    {
+        if (nullptr == downloadtask)
+        {
+            if (InitialDownload(index))
+            {
+                return CreaterDownload(index, GetDownloadTask(index), host, port);
+            }
+            return false;
+        }
+        return downloadtask->InitialDownload() && downloadtask->CreaterDownload(host, port);
+    }
+
+    HttpDownloadTask* HttpDownload::GetDownloadTask(const u96 index)
+    {
+        if (http_download_task.find(index) != http_download_task.end())
+        {
+            return http_download_task[index].get();
+        }
+        return nullptr;
     }
 }

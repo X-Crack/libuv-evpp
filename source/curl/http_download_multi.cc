@@ -10,7 +10,7 @@ namespace Evpp
 {
     HttpDownloadMulti::HttpDownloadMulti(EventLoop* loop) :
         event_base(loop),
-        event_timer(std::make_shared<EventTimer>(loop, std::bind(&HttpDownloadMulti::OnTaskTimer, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3))),
+        event_timer(nullptr),
         http_download_service(std::make_unique<HttpDownloadService>()),
         http_curl_global_handler(nullptr),
         http_curl_global_handles(0)
@@ -20,36 +20,49 @@ namespace Evpp
 
     HttpDownloadMulti::~HttpDownloadMulti()
     {
-        if (CURLMcode::CURLM_OK != curl_multi_cleanup(http_curl_global_handler))
+        if (nullptr != http_curl_global_handler)
         {
-            EVENT_INFO("cleanup curl error");
-        }
-    }
-
-    bool HttpDownloadMulti::InitialDownload()
-    {
-        if (nullptr == http_curl_global_handler)
-        {
-            http_curl_global_handler = curl_multi_init();
+            if (CURLMcode::CURLM_OK != curl_multi_cleanup(http_curl_global_handler))
             {
-                curl_multi_setopt(http_curl_global_handler, CURLMOPT_SOCKETDATA, this);
-                curl_multi_setopt(http_curl_global_handler, CURLMOPT_TIMERDATA, this);
-                curl_multi_setopt(http_curl_global_handler, CURLMOPT_SOCKETFUNCTION, &HttpDownloadMulti::DefaultSocket);
-                curl_multi_setopt(http_curl_global_handler, CURLMOPT_TIMERFUNCTION, &HttpDownloadMulti::DefaultTimer);
+                EVENT_INFO("cleanup curl error");
             }
-            return true;
         }
-        return true;
     }
 
-    bool HttpDownloadMulti::CreaterDownload(const String* host, const u32 port)
+    bool HttpDownloadMulti::InitialDownload(CURLM* multi)
     {
-        return CreaterDownload(std::string(host), port);
+        if (nullptr != event_base)
+        {
+            if (nullptr == http_curl_global_handler)
+            {
+                http_curl_global_handler = multi;
+            }
+
+            if (nullptr == event_timer)
+            {
+                event_timer.reset(new EventTimer(event_base, std::bind(&HttpDownloadMulti::OnTaskTimer, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)));
+            }
+
+            if (nullptr != http_curl_global_handler)
+            {
+                return
+                    CURLMcode::CURLM_OK == curl_multi_setopt(http_curl_global_handler, CURLMOPT_SOCKETDATA, this) &&
+                    CURLMcode::CURLM_OK == curl_multi_setopt(http_curl_global_handler, CURLMOPT_TIMERDATA, this) &&
+                    CURLMcode::CURLM_OK == curl_multi_setopt(http_curl_global_handler, CURLMOPT_SOCKETFUNCTION, &HttpDownloadMulti::DefaultSocket) &&
+                    CURLMcode::CURLM_OK == curl_multi_setopt(http_curl_global_handler, CURLMOPT_TIMERFUNCTION, &HttpDownloadMulti::DefaultTimer);
+            }
+        }
+        return false;
     }
 
-    bool HttpDownloadMulti::CreaterDownload(const std::string& host, const u32 port)
+    bool HttpDownloadMulti::CreaterDownload(const u96 index, const String* host, const u32 port)
     {
-        return http_download_service->CreaterDownload(event_base, http_curl_global_handler, host, port);
+        return http_download_service->CreaterDownload(index, event_base, http_curl_global_handler, host, port);
+    }
+
+    bool HttpDownloadMulti::CreaterDownload(const u96 index, const std::string& host, const u32 port)
+    {
+        return http_download_service->CreaterDownload(index, event_base, http_curl_global_handler, host, port);
     }
 
     void HttpDownloadMulti::OnTaskTimer(EventLoop* loop, const std::shared_ptr<EventTimer>& timer, const u96 index)

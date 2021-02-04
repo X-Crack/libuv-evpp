@@ -24,6 +24,7 @@
     <ClCompile Include="..\source\curl\http_download_poll.cc" />
     <ClCompile Include="..\source\curl\http_download_service.cc" />
     <ClCompile Include="..\source\curl\http_download_session.cc" />
+    <ClCompile Include="..\source\curl\http_download_task.cc" />
     <ClCompile Include="..\source\event\event_coroutine.cc" />
     <ClCompile Include="..\source\event\event_explicit.cc" />
     <ClCompile Include="..\source\event\event_loop.cc" />
@@ -82,6 +83,7 @@
     <ClInclude Include="..\source\include\http_download_poll.h" />
     <ClInclude Include="..\source\include\http_download_service.h" />
     <ClInclude Include="..\source\include\http_download_session.h" />
+    <ClInclude Include="..\source\include\http_download_task.h" />
     <ClInclude Include="..\source\include\tcp_attach.h" />
     <ClInclude Include="..\source\include\tcp_client.h" />
     <ClInclude Include="..\source\include\tcp_client_service.h" />
