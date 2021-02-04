@@ -3,8 +3,8 @@
 #include <event_platform.h>
 #include <uv.h>
 #include <event_curl.h>
-#include <event_logging.h>
 #include <event_stdint.h>
+#include <event_logging.h>
 #include <event_untlity.h>
 
 

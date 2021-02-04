@@ -36,16 +36,13 @@ namespace Evpp
             {
                 for (u96 i = 0; i < size; ++i)
                 {
-                    std::unique_lock<std::mutex> lock(event_pool_lock);
+                    if (CreaterEventThread(i, use_thread_ex))
                     {
-                        if (use_thread_ex)
-                        {
-                            event_pool_ex.emplace(i, std::make_unique<EventLoopThreadEx>(event_base, event_share, i));
-                        }
-                        else
-                        {
-                            event_pool.emplace(i, std::make_unique<EventLoopThread>(event_base, event_share, i));
-                        }
+                        continue;
+                    }
+                    else
+                    {
+                        return false;
                     }
                 }
                 return InitialEventThreadPool(size, use_thread_ex);
@@ -59,24 +56,13 @@ namespace Evpp
     {
         for (u96 i = 0; i < (use_thread_ex ? event_pool_ex.size() : event_pool.size()); ++i)
         {
-            std::unique_lock<std::mutex> lock(event_pool_lock);
+            if (DestroyEventThread(i, use_thread_ex))
             {
-                if (use_thread_ex)
-                {
-                    if (event_pool_ex[i]->DestroyThread())
-                    {
-                        continue;
-                    }
-                    return false;
-                }
-                else
-                {
-                    if (event_pool[i]->DestroyThread())
-                    {
-                        continue;
-                    }
-                    return false;
-                }
+                continue;
+            }
+            else
+            {
+                return false;
             }
         }
 
@@ -91,26 +77,60 @@ namespace Evpp
         return true;
     }
 
+    bool EventLoopThreadPool::CreaterEventThread(const u96 index, const bool use_thread_ex)
+    {
+        std::unique_lock<std::mutex> lock(event_pool_lock);
+        if (use_thread_ex)
+        {
+            return event_pool_ex.emplace(index, std::make_unique<EventLoopThreadEx>(event_base, event_share, index)).second;
+        }
+        else
+        {
+            return event_pool.emplace(index, std::make_unique<EventLoopThread>(event_base, event_share, index)).second;
+        }
+        return false;
+    }
+
+    bool EventLoopThreadPool::DestroyEventThread(const u96 index, const bool use_thread_ex)
+    {
+        std::unique_lock<std::mutex> lock(event_pool_lock);
+        if (use_thread_ex)
+        {
+            if (event_pool_ex[index]->DestroyThread())
+            {
+                event_pool_ex.erase(index);
+                return true;
+            }
+        }
+        else
+        {
+            if (event_pool[index]->DestroyThread())
+            {
+                event_pool.erase(index);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    bool EventLoopThreadPool::InitialEventThread(const u96 index, const bool use_thread_ex)
+    {
+        if (use_thread_ex)
+        {
+            return event_pool_ex[index]->CreaterSubThread();
+        }
+
+        return event_pool[index]->CreaterSubThread();
+    }
+
     bool EventLoopThreadPool::InitialEventThreadPool(const u96 size, const bool use_thread_ex)
     {
         for (u96 i = 0; i < size; ++i)
         {
-            if (use_thread_ex)
-            {
-                if (event_pool_ex[i]->CreaterSubThread())
-                {
-                    continue;
-                }
-
-                return false;
-            }
-
-            if (event_pool[i]->CreaterSubThread())
+            if (InitialEventThread(i, use_thread_ex))
             {
                 continue;
             }
-
-            return false;
         }
         return true;
     }
@@ -124,10 +144,11 @@ namespace Evpp
         return GetEventLoop(event_loop_thread_next.fetch_add(1));
     }
 
-    EventLoop* EventLoopThreadPool::GetEventLoop(const u96 index)
+    EventLoop* EventLoopThreadPool::GetEventLoop(u96 index)
     {
         std::unique_lock<std::mutex> lock(event_pool_lock);
         {
+
             if (event_pool.empty() && event_pool_ex.empty())
             {
                 return event_base;

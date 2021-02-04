@@ -20,6 +20,10 @@ namespace Evpp
         bool InitialDownload(CURLM* multi);
         bool CreaterDownload(const u96 index, const String* host, const u32 port);
         bool CreaterDownload(const u96 index, const std::string& host, const u32 port);
+    public:
+        void SetMessageCallback(const u96 index, const CurlMessageHandler& message);
+        void SetProgressCallback(const u96 index, const CurlProgressHandler& progress);
+        void SetTaskMessageCallback(const CurlMessageTaskHandler& task_message);
     private:
         void OnTaskTimer(EventLoop* loop, const std::shared_ptr<EventTimer>& timer, const u96 index);
     private:
@@ -36,6 +40,7 @@ namespace Evpp
         std::unique_ptr<HttpDownloadService>                                    http_download_service;
         CURLM*                                                                  http_curl_global_handler;
         i32                                                                     http_curl_global_handles;
+        CurlMessageTaskHandler                                                  http_curl_task_message;
     };
 }
 #endif // __HTTP_DOWNLOAD_MULTI_H__

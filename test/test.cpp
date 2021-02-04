@@ -14,9 +14,12 @@ int main(int argc, char* argv[])
 
     Evpp::HttpDownload dow(&ev);
     dow.InitialCurlGlobal(8);
-    dow.CreaterDownload(1, "https://www.google.com");
+    dow.CreaterDownload(0, "https://www.baidu.com");
+    dow.CreaterDownload(0, "https://www.qq.com");
+    dow.CreaterDownload(0, "https://www.163.com");
+    dow.CreaterDownload(0, "https://www.126.com");
+    //dow.CreaterDownload(1, "https://www.88.com");
     //dow.CreaterDownload(1, "https://mirrors.aliyun.com/centos/8.3.2011/isos/x86_64/CentOS-8.3.2011-x86_64-dvd1.iso", 443);
-    //dow.CreaterDownload(2, "https://mirrors.aliyun.com/centos/8.3.2011/isos/x86_64/CentOS-8.3.2011-x86_64-dvd1.iso", 443);
     //     Evpp::HttpDownloadMulti down(&ev);
     //     down.CreaterDownload("https://github.com/v2ray/v2ray-core/releases/download/v4.28.2/v2ray-linux-mips32.zip");
     ev.ExecDispatch();

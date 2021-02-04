@@ -131,9 +131,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\include\event_untlity.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\include\event_status.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -256,6 +253,12 @@
     </ClInclude>
     <ClInclude Include="..\source\include\http_download_task.h">
       <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\event_curl_untlity.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\event_untlity.h">
+      <Filter>core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -38,6 +38,22 @@ namespace Evpp
         http_download_agent = agent;
     }
 
+    void HttpDownloadService::SetMessageCallback(const u96 index, const CurlMessageHandler& message)
+    {
+        if (nullptr != message)
+        {
+            return GetDownloadSession(index)->SetMessageCallback(message);
+        }
+    }
+
+    void HttpDownloadService::SetProgressCallback(const u96 index, const CurlProgressHandler& progress)
+    {
+        if (nullptr != progress)
+        {
+            return GetDownloadSession(index)->SetProgressCallback(progress);
+        }
+    }
+
     bool HttpDownloadService::CreaterDownload(const u96 index, EventLoop* loop, CURL* curl_easy_handler, CURLM* curl_multi_handler, const std::string& host, const u32 port)
     {
         if (CreaterDownloadSession(index, curl_easy_handler, host))
@@ -72,9 +88,19 @@ namespace Evpp
     {
         if (http_download_session.find(index) == http_download_session.end())
         {
-            return http_download_session.emplace(index, std::make_shared<HttpDownloadSession>(handler, host)).second;
+            return http_download_session.emplace(index, std::make_shared<HttpDownloadSession>(index, handler, host)).second;
         }
         return false;
+    }
+
+    bool HttpDownloadService::DestroyDownloadSession(const u96 index)
+    {
+        if (http_download_session.find(index) == http_download_session.end())
+        {
+            http_download_session.erase(index);
+            return true;
+        }
+        return true;
     }
 
     HttpDownloadSession* HttpDownloadService::GetDownloadSession(const u96 index)

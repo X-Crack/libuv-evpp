@@ -65,6 +65,24 @@ namespace Evpp
         return http_download_service->CreaterDownload(index, event_base, http_curl_global_handler, host, port);
     }
 
+    void HttpDownloadMulti::SetMessageCallback(const u96 index, const CurlMessageHandler& message)
+    {
+        return http_download_service->SetMessageCallback(index, message);
+    }
+
+    void HttpDownloadMulti::SetProgressCallback(const u96 index, const CurlProgressHandler& progress)
+    {
+        return http_download_service->SetProgressCallback(index, progress);
+    }
+
+    void HttpDownloadMulti::SetTaskMessageCallback(const CurlMessageTaskHandler& task_message)
+    {
+        if (nullptr == http_curl_task_message)
+        {
+            http_curl_task_message = task_message;
+        }
+    }
+
     void HttpDownloadMulti::OnTaskTimer(EventLoop* loop, const std::shared_ptr<EventTimer>& timer, const u96 index)
     {
         USE_PARAMETER(loop);
@@ -84,7 +102,7 @@ namespace Evpp
     {
         if (nullptr == http_download_poll)
         {
-            http_download_poll = new HttpDownloadPoll(event_base, http_curl_global_handler, fd);
+            http_download_poll = new HttpDownloadPoll(event_base, http_curl_global_handler, fd, http_curl_task_message);
         }
         return InitialSocket(easy, fd, action, http_download_poll);
     }
@@ -112,7 +130,7 @@ namespace Evpp
             // 此处作为异步接口调用 暂时放在这。
             if (0 == uv_poll_stop(http_download_poll->http_event_poll))
             {
-                uv_close(reinterpret_cast<uv_handle_t*>(http_download_poll->http_event_poll), &HttpDownloadPoll::DefaultClose);
+                uv_close(reinterpret_cast<event_handle*>(http_download_poll->http_event_poll), &HttpDownloadPoll::DefaultClose);
             }
 
             if (CURLMcode::CURLM_OK != curl_multi_assign(http_curl_global_handler, fd, nullptr))
@@ -133,7 +151,7 @@ namespace Evpp
 
         if (delay != ~0)
         {
-            event_timer->AssignTimer(delay, 0);
+            event_timer->AssignTimer(delay, 1);
         }
         else
         {

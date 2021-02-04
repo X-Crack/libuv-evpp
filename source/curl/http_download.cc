@@ -13,7 +13,9 @@ namespace Evpp
     {
 
     }
+
     // 断点下载 https://www.cnblogs.com/chang290/archive/2012/08/12/2634858.html
+
     HttpDownload::~HttpDownload()
     {
         curl_global_cleanup();
@@ -23,10 +25,7 @@ namespace Evpp
     {
         if (event_share->CreaterLoops(thread_size))
         {
-            if (event_loop_thread_pool->CreaterEventThreadPool(thread_size))
-            {
-                return CURLcode::CURLE_OK == curl_global_init(flags);
-            }
+            return CURLcode::CURLE_OK == curl_global_init(flags);
         }
         return false;
     }
@@ -41,13 +40,67 @@ namespace Evpp
         return CreaterDownload(index, GetDownloadTask(index), host, port);
     }
 
+    void HttpDownload::SetMessageCallback(const u96 index, const CurlMessageHandler& message)
+    {
+        return GetDownloadTask(index)->SetMessageCallback(index, message);
+    }
+
+    void HttpDownload::SetProgressCallback(const u96 index, const CurlProgressHandler& progress)
+    {
+        return GetDownloadTask(index)->SetProgressCallback(index, progress);
+    }
+
+    void HttpDownload::SetTaskMessageCallback(const u96 index)
+    {
+        GetDownloadTask(index)->SetTaskMessageCallback(std::bind(&HttpDownload::OnDownloadMessage, this, std::placeholders::_1, std::placeholders::_2));
+    }
+
+    bool HttpDownload::RunInLoop(const Functor& function)
+    {
+        if (nullptr != event_base)
+        {
+            return event_base->RunInLoop(function);
+        }
+        return false;
+    }
+
+    bool HttpDownload::RunInLoop(Functor&& function)
+    {
+        if (nullptr != event_base)
+        {
+            return event_base->RunInLoop(std::move(function));
+        }
+        return false;
+    }
+
+    bool HttpDownload::RunInLoopEx(const Handler& function)
+    {
+        if (nullptr != event_base)
+        {
+            return event_base->RunInLoopEx(function);
+        }
+        return false;
+    }
+
+    bool HttpDownload::RunInLoopEx(Handler&& function)
+    {
+        if (nullptr != event_base)
+        {
+            return event_base->RunInLoopEx(std::move(function));
+        }
+        return false;
+    }
+
     bool HttpDownload::InitialDownload(const u96 index)
     {
         if (http_download_task.find(index) == http_download_task.end())
         {
-            if (http_download_task.emplace(index, std::make_unique<HttpDownloadTask>(event_loop_thread_pool->GetEventLoop(index))).second)
+            if (CreaterEventThread(index, true))
             {
-                return true;
+                if (http_download_task.emplace(index, std::make_unique<HttpDownloadTask>(event_loop_thread_pool->GetEventLoop(index))).second)
+                {
+                    return true;
+                }
             }
         }
         return true;
@@ -59,7 +112,10 @@ namespace Evpp
         {
             if (InitialDownload(index))
             {
-                return CreaterDownload(index, GetDownloadTask(index), host, port);
+                SetTaskMessageCallback(index);
+                {
+                    return CreaterDownload(index, GetDownloadTask(index), host, port);
+                }
             }
             return false;
         }
@@ -72,7 +128,10 @@ namespace Evpp
         {
             if (InitialDownload(index))
             {
-                return CreaterDownload(index, GetDownloadTask(index), host, port);
+                SetTaskMessageCallback(index);
+                {
+                    return CreaterDownload(index, GetDownloadTask(index), host, port);
+                }
             }
             return false;
         }
@@ -86,5 +145,27 @@ namespace Evpp
             return http_download_task[index].get();
         }
         return nullptr;
+    }
+
+    bool HttpDownload::CreaterEventThread(const u96 index, const bool use_thread_ex)
+    {
+        return event_loop_thread_pool->CreaterEventThread(index, use_thread_ex) && event_loop_thread_pool->InitialEventThread(index, use_thread_ex);
+    }
+
+    bool HttpDownload::DestroyEventThread(const u96 index, const bool use_thread_ex)
+    {
+        return event_loop_thread_pool->DestroyEventThread(index, use_thread_ex);
+    }
+
+    void HttpDownload::OnDownloadMessage(const u96 index, const i32 http_curl_handles)
+    {
+        if (0 == http_curl_handles)
+        {
+            if (RunInLoopEx(std::bind(&HttpDownload::DestroyEventThread, this, index, true)))
+            {
+                EVENT_INFO("线程：%d 剩余任务：%d", index, http_curl_handles);
+                EVENT_INFO("停止线程：%d", GetCurrentThreadId());
+            }
+        }
     }
 }

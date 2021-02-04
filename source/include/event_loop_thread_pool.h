@@ -24,13 +24,17 @@ namespace Evpp
 #else 
         bool CreaterEventThreadPool(const u96 size, const bool use_thread_ex = false);
 #endif
+
+        bool CreaterEventThread(const u96 index, const bool use_thread_ex);
+        bool DestroyEventThread(const u96 index, const bool use_thread_ex);
+        bool InitialEventThread(const u96 index, const bool use_thread_ex);
     private:
         bool InitialEventThreadPool(const u96 size, const bool use_thread_ex);
     public:
         u96  GetEventThreadLoopSize() { return event_pool.size(); };
     public:
         EventLoop* GetEventLoop();
-        EventLoop* GetEventLoop(const u96 index);
+        EventLoop* GetEventLoop(u96 index);
         EventLoop* GetEventLoopEx(event_loop* loop);
         EventLoop* GetEventLoopEx(const u96 index);
         std::unique_ptr<EventLoopThread>& GetEventLoopThread(const u96 index);

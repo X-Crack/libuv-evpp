@@ -3,11 +3,12 @@
 #include <event_timer.h>
 namespace Evpp
 {
-    HttpDownloadPoll::HttpDownloadPoll(EventLoop* loop, CURLM* curl_handler, const i32 fd) :
+    HttpDownloadPoll::HttpDownloadPoll(EventLoop* loop, CURLM* curl_handler, const i32 fd, const CurlMessageTaskHandler& task_message) :
         event_base(loop),
         http_event_poll(new event_poll),
         http_curl_handler(curl_handler),
         http_fd(fd),
+        http_curl_task_message(task_message),
         http_curl_queue(0),
         http_curl_handles(0),
         http_curl_hosts(0)
@@ -24,6 +25,14 @@ namespace Evpp
         {
             delete http_event_poll;
             http_event_poll = nullptr;
+        }
+    }
+
+    void HttpDownloadPoll::SetTaskMessageCallback(const CurlMessageTaskHandler& task_message)
+    {
+        if (nullptr == http_curl_task_message)
+        {
+            http_curl_task_message = task_message;
         }
     }
 
@@ -58,7 +67,12 @@ namespace Evpp
 
         if (CURLMcode::CURLM_OK == curl_multi_socket_action(http_curl_handler, handler->socket, events, &http_curl_handles))
         {
-            DownloadMessage(curl_multi_info_read(http_curl_handler, &http_curl_queue));
+            if (nullptr != http_curl_task_message)
+            {
+                http_curl_task_message(event_base->GetEventIndex(), http_curl_handles);
+            }
+
+            DownloadMessage(curl_multi_info_read(http_curl_handler, &http_curl_queue), http_curl_handles);
         }
     }
 
@@ -90,7 +104,7 @@ namespace Evpp
         }
     }
 
-    void HttpDownloadPoll::DownloadMessage(CURLMsg* message)
+    void HttpDownloadPoll::DownloadMessage(CURLMsg* message, int handles)
     {
         if (nullptr != message)
         {
@@ -100,8 +114,11 @@ namespace Evpp
                 {
                     if (CURLMcode::CURLM_OK == curl_multi_remove_handle(http_curl_handler, message->easy_handle))
                     {
-                        EVENT_INFO("下载任务完成：%s", http_curl_hosts);
-                        curl_easy_cleanup(message->easy_handle);
+                        if (nullptr != message->easy_handle)
+                        {
+                            EVENT_INFO("下载任务完成：%s", http_curl_hosts);
+                            curl_easy_cleanup(message->easy_handle);
+                        }
                     }
                 }
             }

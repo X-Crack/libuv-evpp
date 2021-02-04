@@ -1,9 +1,11 @@
 ﻿#include <http_download_session.h>
 namespace Evpp
 {
-    HttpDownloadSession::HttpDownloadSession(CURL* easy_cyrl, const std::string& hosts) :
+    HttpDownloadSession::HttpDownloadSession(const u96 index, CURL* easy_cyrl, const std::string& hosts) :
+        http_index(index),
         http_easy_curl(easy_cyrl),
         http_hosts(hosts),
+        http_curl_hosts(nullptr),
         http_curl_response_code(0),
         original_download_size(0)
     {
@@ -15,6 +17,22 @@ namespace Evpp
 
     }
 
+    void HttpDownloadSession::SetMessageCallback(const CurlMessageHandler& message)
+    {
+        if (nullptr == http_curl_message)
+        {
+            http_curl_message = message;
+        }
+    }
+
+    void HttpDownloadSession::SetProgressCallback(const CurlProgressHandler& progress)
+    {
+        if (nullptr == http_curl_progress)
+        {
+            http_curl_progress = progress;
+        }
+    }
+
     const std::string& HttpDownloadSession::GetDownloadHosts()
     {
         return http_hosts;
@@ -22,6 +40,10 @@ namespace Evpp
 
     u96 HttpDownloadSession::OnMessage(void* buffer, u96 size, u96 nmemb)
     {
+        if (nullptr != http_curl_message)
+        {
+            return http_curl_message(http_index, buffer, size, nmemb);
+        }
         return size * nmemb;
     }
 
@@ -84,12 +106,27 @@ namespace Evpp
                         original_download_size = current_download_size;
                     }
 
-                    if (current_download_size > 0.000000000001F)
+                    if (0 == count_download_size)
                     {
-                        EVENT_INFO("下载地址:%s 当前下载:%.2F%%", http_curl_hosts, (current_download_size / count_download_size) * 100.0F);
+                        count_download_size = current_download_size;
                     }
 
-                    if (0.0F != current_download_size && current_download_size >= count_download_size)
+                    if (current_download_size > 0)
+                    {
+                        if (nullptr != http_curl_progress)
+                        {
+                            if (http_curl_progress(http_index, count_download_size, current_download_size, count_upload_size, current_upload_size))
+                            {
+                                return 1;
+                            }
+                        }
+                        else
+                        {
+                            EVENT_INFO("下载地址:%s 当前下载:%.2F%%", http_curl_hosts, (current_download_size * 100.0F) / count_download_size);
+                        }
+                    }
+
+                    if (0 != current_download_size && current_download_size >= count_download_size)
                     {
                         return 1;
                     }

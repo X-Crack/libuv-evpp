@@ -1,6 +1,6 @@
 ﻿#ifndef __EVENT_CURL_H__
 #define __EVENT_CURL_H__
-#include <event_config.h>
+#include <event_platform.h>
 #ifndef EVENT_USE_CURL
 
 #       ifndef CURL_STATICLIB
@@ -29,6 +29,7 @@
 
 #       include <event_curl_config.h>
 #       include <curl/curl.h>
+#       include <event_curl_untlity.h>
 
 #ifdef H_OS_WINDOWS
 #       pragma comment(lib, "crypt32.lib")

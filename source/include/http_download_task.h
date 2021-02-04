@@ -7,16 +7,21 @@ namespace Evpp
 {
     class EventLoop;
     class EventStatus;
+    class EventLoopThreadEx;
     class HttpDownloadMulti;
     class HttpDownloadTask : public EventStatus
     {
     public:
-        explicit HttpDownloadTask(EventLoop* loop);
+        explicit HttpDownloadTask(EventLoop* base);
         virtual ~HttpDownloadTask();
     public:
         bool InitialDownload();
         bool CreaterDownload(const String* host, const u32 port);
         bool CreaterDownload(const std::string& host, const u32 port);
+    public:
+        void SetMessageCallback(const u96 index, const CurlMessageHandler& message);
+        void SetProgressCallback(const u96 index, const CurlProgressHandler& progress);
+        void SetTaskMessageCallback(const CurlMessageTaskHandler& task_message);
     private:
         bool RunInLoop(const Functor& function);
         bool RunInLoop(Functor&& function);

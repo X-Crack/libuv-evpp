@@ -14,8 +14,8 @@ namespace Evpp
     class EventLoopThreadEx final : public EventStatus
     {
     public:
-        explicit EventLoopThreadEx(const u96 index);
-        explicit EventLoopThreadEx(EventLoop* loop, const std::shared_ptr<EventShare>& share, const u96 index);
+        explicit EventLoopThreadEx(EventLoop* base, event_loop* loop, const u96 index);
+        explicit EventLoopThreadEx(EventLoop* base, const std::shared_ptr<EventShare>& share, const u96 index);
         virtual ~EventLoopThreadEx();
     public:
         bool CreaterSubThread();
@@ -33,7 +33,7 @@ namespace Evpp
         EventLoop* event_base;
         std::shared_ptr<EventShare>                     event_share;
         u96                                             event_index;
-        std::shared_ptr<EventLoop>                      event_loop;
+        std::shared_ptr<EventLoop>                      loop;
         std::unique_ptr<std::thread>                    loop_thread;
         std::atomic<u32>                                loop_exit;
         std::condition_variable                         cv_signal;

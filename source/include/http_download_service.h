@@ -18,12 +18,17 @@ namespace Evpp
     public:
         bool CreaterDownload(const u96 index, EventLoop* loop, CURLM* curl_multi_handler, const String* host, const u32 port);
         bool CreaterDownload(const u96 index, EventLoop* loop, CURLM* curl_multi_handler, const std::string& host, const u32 port);
+    public:
         void SetProxy(const std::string& proxy);
         void SetUserAgent(const std::string& agent);
+    public:
+        void SetMessageCallback(const u96 index, const CurlMessageHandler& message);
+        void SetProgressCallback(const u96 index, const CurlProgressHandler& progress);
     private:
         bool CreaterDownload(const u96 index, EventLoop* loop, CURL* curl_easy_handler, CURLM* curl_multi_handler, const std::string& host, const u32 port);
     private:
         bool CreaterDownloadSession(const u96 index, CURL* handler, const std::string& host);
+        bool DestroyDownloadSession(const u96 index);
         HttpDownloadSession* GetDownloadSession(const u96 index);
     private:
         EventLoop*                                                                      event_base;
