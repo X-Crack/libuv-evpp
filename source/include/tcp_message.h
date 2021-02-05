@@ -31,7 +31,7 @@ namespace Evpp
     private:
         void OnSend(socket_write* request, int status);
         bool OnClose(event_handle* handler);
-        bool OnShutdown(socket_shutdown* shutdown, int status);
+        void OnShutdown(socket_shutdown* shutdown, int status);
         void OnMallocEx(event_handle* handler, size_t suggested_size, socket_data* buf);
         bool OnMessages(socket_stream* stream, i96 nread, const socket_data* buf);
     private:
