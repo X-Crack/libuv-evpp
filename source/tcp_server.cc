@@ -272,9 +272,8 @@ namespace Evpp
                         {
                             return true;
                         }
-
-                        return Close(index);
                     }
+                    return Close(index);
                 }
             }
             return SystemShutdown(reinterpret_cast<socket_stream*>(client.get()));

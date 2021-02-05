@@ -217,7 +217,7 @@ namespace Evpp
         ///
         void appendInt64(int64_t x)
         {
-            int64_t be64 = bswap_64(x);
+            int64_t be64 = ___bswap_64(x);
             append(&be64, sizeof be64);
         }
 
@@ -226,13 +226,13 @@ namespace Evpp
         ///
         void appendInt32(int32_t x)
         {
-            int32_t be32 = bswap_32(x);
+            int32_t be32 = ___bswap_32(x);
             append(&be32, sizeof be32);
         }
 
         void appendInt16(int16_t x)
         {
-            int16_t be16 = bswap_16(x);
+            int16_t be16 = ___bswap_16(x);
             append(&be16, sizeof be16);
         }
 
@@ -286,7 +286,7 @@ namespace Evpp
             assert(readableBytes() >= sizeof(int64_t));
             int64_t be64 = 0;
             ::memcpy(&be64, peek(), sizeof be64);
-            return bswap_64(be64);
+            return ___bswap_64(be64);
         }
 
         ///
@@ -298,7 +298,7 @@ namespace Evpp
             assert(readableBytes() >= sizeof(int32_t));
             int32_t be32 = 0;
             ::memcpy(&be32, peek(), sizeof be32);
-            return bswap_32(be32);
+            return ___bswap_32(be32);
         }
 
         int16_t peekInt16() const
@@ -306,7 +306,7 @@ namespace Evpp
             assert(readableBytes() >= sizeof(int16_t));
             int16_t be16 = 0;
             ::memcpy(&be16, peek(), sizeof be16);
-            return bswap_16(be16);
+            return ___bswap_16(be16);
         }
 
         int8_t peekInt8() const
@@ -321,7 +321,7 @@ namespace Evpp
         ///
         void prependInt64(int64_t x)
         {
-            int64_t be64 = bswap_64(x);
+            int64_t be64 = ___bswap_64(x);
             prepend(&be64, sizeof be64);
         }
 
@@ -330,13 +330,13 @@ namespace Evpp
         ///
         void prependInt32(int32_t x)
         {
-            int32_t be32 = bswap_32(x);
+            int32_t be32 = ___bswap_32(x);
             prepend(&be32, sizeof be32);
         }
 
         void prependInt16(int16_t x)
         {
-            int16_t be16 = bswap_16(x);
+            int16_t be16 = ___bswap_16(x);
             prepend(&be16, sizeof be16);
         }
 

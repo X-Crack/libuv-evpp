@@ -58,8 +58,8 @@ namespace Evpp
                 if (0 == uv_ip4_name(&socket->sockname.addr4, address, std::size(address)))
                 {
                     socket->sockname.host = address;
-                    socket->sockname.port = socket->sockname.addr4.sin_port;
-                    EVENT_INFO("new client enters localhost address: %s localhost port: %u", address, socket->sockname.addr4.sin_port);
+                    socket->sockname.port = ntohs(socket->sockname.addr4.sin_port);
+                    EVENT_INFO("new client enters localhost address: %s localhost port: %u", address, socket->sockname.port);
                 }
             }
 
@@ -68,8 +68,8 @@ namespace Evpp
                 if (0 == uv_ip6_name(&socket->sockname.addr6, address, std::size(address)))
                 {
                     socket->sockname.host = address;
-                    socket->sockname.port = socket->sockname.addr6.sin6_port;
-                    EVENT_INFO("new client enters localhost address: %s localhost port: %u", address, socket->sockname.addr6.sin6_port);
+                    socket->sockname.port = ntohs(socket->sockname.addr6.sin6_port);
+                    EVENT_INFO("new client enters localhost address: %s localhost port: %u", address, socket->sockname.port);
                 }
             }
 
@@ -89,8 +89,8 @@ namespace Evpp
                 if (0 == uv_ip4_name(&socket->peername.addr4, address, std::size(address)))
                 {
                     socket->peername.host = address;
-                    socket->peername.port = socket->peername.addr4.sin_port;
-                    EVENT_INFO("new client enters remote address: %s remote port: %u", address, socket->sockname.addr4.sin_port);
+                    socket->peername.port = ntohs(socket->peername.addr4.sin_port);
+                    EVENT_INFO("new client enters remote address: %s remote port: %u", address, socket->peername.port);
                 }
             }
 
@@ -99,15 +99,13 @@ namespace Evpp
                 if (0 == uv_ip6_name(&socket->peername.addr6, address, std::size(address)))
                 {
                     socket->peername.host = address;
-                    socket->peername.port = socket->peername.addr6.sin6_port;
-                    EVENT_INFO("new client enters remote address: %s remote port: %u", address, socket->sockname.addr6.sin6_port);
+                    socket->peername.port = ntohs(socket->peername.addr6.sin6_port);
+                    EVENT_INFO("new client enters remote address: %s remote port: %u", address, socket->peername.port);
                 }
             }
 
-
             return true;
         }
-
         return false;
     }
 
