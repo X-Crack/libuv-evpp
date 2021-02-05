@@ -69,7 +69,7 @@ namespace Evpp
         return false;
     }
 
-    bool TcpServerService::ExecDispatch(const u32 mode)
+    bool TcpServerService::ExecDispatch(const i32 mode)
     {
         if (nullptr != event_base)
         {
@@ -78,7 +78,7 @@ namespace Evpp
         return false;
     }
 
-    bool TcpServerService::ExecDispatch(const EventLoopHandler& function, u32 mode)
+    bool TcpServerService::ExecDispatch(const EventLoopHandler& function, i32 mode)
     {
         if (nullptr != event_base)
         {
@@ -87,7 +87,7 @@ namespace Evpp
         return false;
     }
 
-    bool TcpServerService::ExecDispatchEx(const EventLoopHandler& function, u32 mode)
+    bool TcpServerService::ExecDispatchEx(const EventLoopHandler& function, i32 mode)
     {
         if (nullptr != event_base)
         {
@@ -96,7 +96,7 @@ namespace Evpp
         return false;
     }
 
-    bool TcpServerService::ExecDispatchCoroutine(const EventLoopHandler& function, u32 mode)
+    bool TcpServerService::ExecDispatchCoroutine(const EventLoopHandler& function, i32 mode)
     {
         if (nullptr != event_base)
         {
@@ -104,7 +104,7 @@ namespace Evpp
             {
                 try
                 {
-                    EventCoroutine::JoinInTask(std::bind((bool(TcpServerService::*)(const EventLoopHandler&, u32)) & TcpServerService::ExecDispatch, this, function, mode));
+                    EventCoroutine::JoinInTask(std::bind((bool(TcpServerService::*)(const EventLoopHandler&, i32)) & TcpServerService::ExecDispatch, this, function, mode));
                 }
                 catch (...)
                 {

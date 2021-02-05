@@ -19,10 +19,10 @@ namespace Evpp
         bool CreaterServer(const u96 thread_size);
         bool DestroyServer();
         bool ExecDispatch();
-        bool ExecDispatch(const u32 mode);
-        bool ExecDispatch(const EventLoopHandler& function, u32 mode = UV_RUN_NOWAIT);
-        bool ExecDispatchEx(const EventLoopHandler& function, u32 mode = UV_RUN_ONCE);
-        bool ExecDispatchCoroutine(const EventLoopHandler& function, u32 mode = UV_RUN_ONCE);
+        bool ExecDispatch(const i32 mode);
+        bool ExecDispatch(const EventLoopHandler& function, i32 mode = UV_RUN_NOWAIT);
+        bool ExecDispatchEx(const EventLoopHandler& function, i32 mode = UV_RUN_ONCE);
+        bool ExecDispatchCoroutine(const EventLoopHandler& function, i32 mode = UV_RUN_ONCE);
     public:
         bool Send(const u96 index, const char* buf, u96 len, u32 nbufs = 1);
         bool Send(const u96 index, const std::string& buf, u32 nbufs = 1);

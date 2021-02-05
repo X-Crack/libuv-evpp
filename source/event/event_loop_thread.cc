@@ -16,9 +16,8 @@ namespace Evpp
 
     EventLoopThread::EventLoopThread(EventLoop* base, const std::shared_ptr<EventShare>& share, const u96 index) :
         event_base(base),
-        event_share(share),
         event_index(index),
-        loop(std::make_shared<EventLoop>(event_share->EventLoop(index), index)),
+        loop(std::make_shared<EventLoop>(share->EventLoop(index), index)),
 #ifndef EVPP_USE_STL_THREAD
         loop_thread(std::make_unique<event_thread>()),
 #endif
@@ -35,7 +34,7 @@ namespace Evpp
         }
     }
 
-    bool EventLoopThread::CreaterSubThread()
+    bool EventLoopThread::CreaterThread()
     {
         if (ExistsNoneed() && nullptr != event_base)
         {
@@ -66,7 +65,7 @@ namespace Evpp
                 }
                 return false;
             }
-            return event_base->RunInLoop(std::bind(&EventLoopThread::CreaterSubThread, this));
+            return event_base->RunInLoop(std::bind(&EventLoopThread::CreaterThread, this));
         }
         return false;
     }

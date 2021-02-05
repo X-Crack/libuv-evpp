@@ -62,7 +62,7 @@ namespace Evpp
         return false;
     }
 
-    bool EventLoop::ExecDispatch(u32 mode)
+    bool EventLoop::ExecDispatch(i32 mode)
     {
         if (nullptr != event_base)
         {
@@ -75,7 +75,7 @@ namespace Evpp
         return false;
     }
 
-    bool EventLoop::ExecDispatch(const EventLoopHandler& function, u32 mode)
+    bool EventLoop::ExecDispatch(const EventLoopHandler& function, i32 mode)
     {
         if (nullptr != event_base)
         {
@@ -92,7 +92,7 @@ namespace Evpp
     }
 
 
-    bool EventLoop::ExecDispatchEx(const EventLoopHandler& function, u32 mode)
+    bool EventLoop::ExecDispatchEx(const EventLoopHandler& function, i32 mode)
     {
         if (nullptr != event_base)
         {
@@ -309,7 +309,7 @@ namespace Evpp
     u32 EventLoop::EventThreadSelf()
     {
         return event_thread;
-}
+    }
 
     EventLoop* EventLoop::AddRefer()
     {

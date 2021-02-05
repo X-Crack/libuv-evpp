@@ -85,7 +85,7 @@ namespace Evpp
 
     bool EventLoopThreadPool::InitialEventThread(const u96 index)
     {
-        return event_pool[index]->CreaterSubThread();
+        return event_pool[index]->CreaterThread();
     }
 
     bool EventLoopThreadPool::InitialEventThreadPool(const u96 size)

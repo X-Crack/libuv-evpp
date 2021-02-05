@@ -1,7 +1,6 @@
 ﻿#ifndef __EVENT_LOOP_THREAD_H__
 #define __EVENT_LOOP_THREAD_H__
 #include <event_config.h>
-//#define EVPP_USE_UV_THREAD 1
 namespace Evpp
 {
     class EventLoop;
@@ -14,7 +13,7 @@ namespace Evpp
         explicit EventLoopThread(EventLoop* base, const std::shared_ptr<EventShare>& share, const u96 index);
         virtual ~EventLoopThread();
     public:
-        bool CreaterSubThread();
+        bool CreaterThread();
         bool DestroyThread();
         EventLoop* GetEventLoop();
     private:
@@ -29,7 +28,6 @@ namespace Evpp
         static void WatcherCoroutineInThread(void* handler);
     private:
         EventLoop*                                      event_base;
-        std::shared_ptr<EventShare>                     event_share;
         u96                                             event_index;
         std::shared_ptr<EventLoop>                      loop;
 #ifdef EVPP_USE_STL_THREAD
