@@ -1,4 +1,5 @@
 ﻿#include <event_status.h>
+#include <event_mutex.h>
 #include <event_loop.h>
 #include <event_share.h>
 #include <event_loop_thread.h>
@@ -8,8 +9,7 @@ namespace Evpp
     EventLoopThread::EventLoopThread(EventLoop* base, event_loop* loop, const u96 index) :
         event_base(base),
         event_index(index),
-        loop(std::make_shared<EventLoop>(loop, index)),
-        loop_exit(1)
+        loop(std::make_shared<EventLoop>(loop, index))
     {
 
     }
@@ -21,7 +21,7 @@ namespace Evpp
 #ifndef EVPP_USE_STL_THREAD
         loop_thread(std::make_unique<event_thread>()),
 #endif
-        loop_exit(1)
+        loop_mutex(std::make_unique<EventMutex>())
     {
 
     }
@@ -85,11 +85,10 @@ namespace Evpp
             {
                 if (StopDispatch())
                 {
-                    if (loop_exit)
+                    if (loop_mutex->try_unlock())
                     {
-                        loop_exit.store(0, std::memory_order_release);
+                        return Join();
                     }
-                    return Join();
                 }
             }
         }
@@ -131,14 +130,14 @@ namespace Evpp
         {
             if (loop->InitialEvent())
             {
-                for (; loop_exit.load(std::memory_order_acquire);)
+                for (; loop_mutex->try_lock();)
                 {
                     if (uv_loop_alive(loop->EventBasic()))
                     {
 #if defined(EVPP_USE_STL_COROUTINES)
                         try
                         {
-                            EventCoroutine::JoinInTask(std::bind(&EventLoopThread::CoroutineDispatch, this));
+                            EventCoroutine::JoinInTaskEx(std::bind(&EventLoopThread::CoroutineDispatch, this));
                         }
                         catch (...)
                         {
@@ -151,6 +150,7 @@ namespace Evpp
                             continue;
                         }
 #endif
+                        EVPP_THREAD_YIELD();
                     }
                 }
                 if (ChangeStatus(Status::Exec, Status::Stop))

@@ -9,7 +9,7 @@ namespace Evpp
     struct Traits : public moodycamel::ConcurrentQueueDefaultTraits
     {
     public:
-        static const size_t BLOCK_SIZE = 4096;
+        static const size_t BLOCK_SIZE = 2048;
         static const size_t EXPLICIT_INITIAL_INDEX_SIZE = 256;
         static const size_t IMPLICIT_INITIAL_INDEX_SIZE = 256;
         static const std::uint32_t EXPLICIT_CONSUMER_CONSUMPTION_QUOTA_BEFORE_ROTATE = 1024;
@@ -94,7 +94,7 @@ namespace Evpp
     {
         if (nullptr != event_async_)
         {
-            while (false == nolock_queue->try_enqueue(function));
+            while (false == nolock_queue->try_enqueue(function)) { EVPP_THREAD_YIELD(); };
 
             return event_async_->ExecNotify();
         }
@@ -107,9 +107,14 @@ namespace Evpp
 
         while (nolock_queue->try_dequeue(function))
         {
-            if (!function())
+            try
             {
-                //LOG_FATAL << "The queue failed, please check your code logic in time.";
+                EventCoroutine::JoinInTask(std::bind(function));
+            }
+            catch (...)
+            {
+                EVENT_INFO("during the operation of the coroutine there may be some problems please check carefully");
+                break;
             }
         }
     }
@@ -118,7 +123,7 @@ namespace Evpp
     {
         if (nullptr != event_async_ex_)
         {
-            while (false == nolock_queue_ex->try_enqueue(function));
+            while (false == nolock_queue_ex->try_enqueue(function)) { EVPP_THREAD_YIELD(); };
 
             return event_async_ex_->ExecNotify();
         }
@@ -131,7 +136,15 @@ namespace Evpp
 
         while (nolock_queue_ex->try_dequeue(function))
         {
-            function();
+            try
+            {
+                EventCoroutine::JoinInTask(std::bind(function));
+            }
+            catch (...)
+            {
+                EVENT_INFO("during the operation of the coroutine there may be some problems please check carefully");
+                break;
+            }
         }
     }
 }

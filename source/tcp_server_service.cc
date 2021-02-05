@@ -48,13 +48,16 @@ namespace Evpp
     {
         if (nullptr != tcp_server)
         {
-            if (tcp_server->DestroyServer() && event_base->StopDispatchEx())
+            if (tcp_server->DestroyServer())
             {
-                if (event_stop_flag)
+                if (event_base->StopDispatch())
                 {
-                    event_stop_flag.store(0, std::memory_order_release);
+                    if (event_stop_flag)
+                    {
+                        event_stop_flag.store(0, std::memory_order_release);
+                    }
+                    return true;
                 }
-                return true;
             }
         }
         return false;

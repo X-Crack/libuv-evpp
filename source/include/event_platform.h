@@ -15,6 +15,12 @@
 #define USE_PARAMETER(P) (P)
 
 #ifdef H_OS_WINDOWS
+#   define EVPP_THREAD_YIELD SwitchToThread
+#else
+#   define EVPP_THREAD_YIELD std::this_thread::yield
+#endif
+
+#ifdef H_OS_WINDOWS
 #pragma warning( disable: 4005 )
 #pragma warning( disable: 4251 )
 #pragma warning( disable: 4996 )

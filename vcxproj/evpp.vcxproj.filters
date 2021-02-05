@@ -126,6 +126,9 @@
     <ClCompile Include="..\source\curl\http_download_task.cc">
       <Filter>socket\curl</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\event\event_mutex.cc">
+      <Filter>event</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\include\event_status.h">
@@ -253,6 +256,9 @@
     </ClInclude>
     <ClInclude Include="..\source\include\event_untlity.h">
       <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\event_mutex.h">
+      <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

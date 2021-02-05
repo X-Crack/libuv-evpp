@@ -20,21 +20,47 @@ namespace Evpp
             auto initial_suspend() { return std::experimental::suspend_never{}; };
             auto final_suspend() { return std::experimental::suspend_never{}; };
             void unhandled_exception() { throw; };
-            auto yield_value(const bool var) { value = var; return std::experimental::suspend_always{}; };
+            auto yield_value(const bool var) { return std::experimental::suspend_always{}; };
             void return_void() { };
-            bool                                                        value;
         };
 
-        bool get() { return true; };
-        static EventCoroutine JoinInTask(const std::function<bool()>& callback);
-        handle_type                                                     handler;
+        static EventCoroutine JoinInTask(const std::function<void()>& callback);
+        static EventCoroutine JoinInTaskEx(const std::function<bool()>& callback);
     };
 
     struct EventCoroutineTask
     {
     public:
-        explicit EventCoroutineTask() : function(nullptr), result(false) {};
-        explicit EventCoroutineTask(std::function<bool()> callback) : function(callback), result(false) {};
+        explicit EventCoroutineTask() : function(nullptr) {};
+        explicit EventCoroutineTask(std::function<void()> callback) : function(callback) {};
+    public:
+        bool await_ready() const
+        {
+            return false;
+        }
+
+        bool await_resume()
+        {
+            return true;
+        }
+
+        void await_suspend(std::experimental::coroutine_handle<> handle)
+        {
+            if (nullptr != function)
+            {
+                function();
+            }
+            handle.resume();
+        }
+    public:
+        std::function<void()>                                                                       function;
+    };
+
+    struct EventCoroutineTaskEx
+    {
+    public:
+        explicit EventCoroutineTaskEx() : function(nullptr), result(false) {};
+        explicit EventCoroutineTaskEx(std::function<bool()> callback) : function(callback), result(false) {};
     public:
         bool await_ready() const
         {

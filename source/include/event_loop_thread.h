@@ -6,6 +6,7 @@ namespace Evpp
     class EventLoop;
     class EventShare;
     class EventStatus;
+    class EventMutex;
     class EventLoopThread final : public EventStatus
     {
     public:
@@ -36,7 +37,7 @@ namespace Evpp
 #else
         std::unique_ptr<event_thread>                   loop_thread;
 #endif
-        std::atomic<u32>                                loop_exit;
+        std::unique_ptr<EventMutex>                     loop_mutex;
         std::condition_variable                         cv_signal;
         std::mutex                                      cv_mutex;
     };

@@ -98,11 +98,14 @@ namespace Evpp
         {
             if (ChangeStatus(Status::Init, Status::Exec))
             {
-                for (; 0 == event_base->stop_flag && event_stop_flag;)
+                for (; 0 == event_base->stop_flag && 1 == event_stop_flag.load(std::memory_order_acquire);)
                 {
-                    if (ExecDispatch(function, mode))
+                    EVPP_THREAD_YIELD();
                     {
-                        continue;
+                        if (ExecDispatch(function, mode))
+                        {
+                            continue;
+                        }
                     }
                 }
 
@@ -121,16 +124,16 @@ namespace Evpp
     {
         if (nullptr != event_base)
         {
-            if (EventThread() && ExistsRuning())
+            if (ExistsRuning())
             {
-                while (event_watcher->DestroyQueue());
+                if (0 == event_base->stop_flag && 1 == event_stop_flag.load(std::memory_order_acquire))
+                {
+                    uv_stop(event_base);
 
-                uv_stop(event_base);
-
+                    event_stop_flag.store(0, std::memory_order_release);
+                }
                 return ChangeStatus(Status::Exec, Status::Stop);
             }
-
-            return RunInLoopEx(std::bind(&EventLoop::StopDispatch, this));
         }
         return false;
     }
@@ -141,9 +144,12 @@ namespace Evpp
         {
             if (EventThread() && ExistsRuning())
             {
-                while (event_watcher->DestroyQueue());
+                while (event_watcher->DestroyQueue()) { EVPP_THREAD_YIELD(); };
 
-                uv_stop(event_base);
+                if (0 == event_base->stop_flag)
+                {
+                    uv_stop(event_base);
+                }
 
                 if (event_stop_flag)
                 {

@@ -5,6 +5,7 @@
 #include <event_status.h>
 #include <memory>
 #include <atomic>
+#include <mutex>
 #include <any>
 namespace Evpp
 {
@@ -50,7 +51,7 @@ namespace Evpp
         u96 GetEventIndex() { return event_index; };
         EventLoop* AddRefer();
     private:
-        event_loop* event_base;
+        event_loop*                                                         event_base;
         u96                                                                 event_index;
         std::atomic<u32>                                                    event_refer;        // 当前 Loop session 个数 -> 用于动态线程判断分配新的线程使用
         std::unique_ptr<EventWatcher>                                       event_watcher;
@@ -58,6 +59,7 @@ namespace Evpp
         std::unordered_map<u96, std::unique_ptr<std::any>>                  event_context;
         u32                                                                 event_thread;
         std::atomic<u32>                                                    event_stop_flag;
+        std::recursive_mutex                                                event_stop_mutex;
     };
 }
 #endif // __EVENT_LOOP_H__
