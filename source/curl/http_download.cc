@@ -149,12 +149,12 @@ namespace Evpp
 
     bool HttpDownload::CreaterEventThread(const u96 index, const bool use_thread_ex)
     {
-        return event_loop_thread_pool->CreaterEventThread(index, use_thread_ex) && event_loop_thread_pool->InitialEventThread(index, use_thread_ex);
+        return event_loop_thread_pool->CreaterEventThread(index) && event_loop_thread_pool->InitialEventThread(index);
     }
 
     bool HttpDownload::DestroyEventThread(const u96 index, const bool use_thread_ex)
     {
-        if (event_loop_thread_pool->DestroyEventThread(index, use_thread_ex))
+        if (event_loop_thread_pool->DestroyEventThread(index))
         {
             http_download_task.erase(index);
             return true;

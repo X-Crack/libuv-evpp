@@ -87,9 +87,6 @@
     <ClCompile Include="..\source\event\event_work_queue.cc">
       <Filter>event</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\event\event_loop_thread_ex.cc">
-      <Filter>event</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\event\event_loop_thread.cc">
       <Filter>event</Filter>
     </ClCompile>
@@ -186,9 +183,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\source\include\event_work_queue.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\include\event_loop_thread_ex.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\source\include\event_coroutine.h">

@@ -8,6 +8,14 @@
 #include <event_untlity.h>
 
 
+#if defined(_HAS_CXX20) || defined(__cpp_coroutines) && defined(__cpp_impl_coroutine)
+#       define EVPP_USE_STL_COROUTINES
+#endif
+
+
+#ifndef EVPP_USE_STL_THREAD
+#       define EVPP_USE_STL_THREAD
+#endif
 
 
 #ifndef __bswap_constant_16

@@ -13,7 +13,6 @@
 #include <event_timer_pool.h>
 #include <event_loop.h>
 #include <event_loop_thread.h>
-#include <event_loop_thread_ex.h>
 #include <event_loop_thread_pool.h>
 #include <event_signal.h>
 #include <event_socket.h>

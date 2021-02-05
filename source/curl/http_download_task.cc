@@ -1,7 +1,6 @@
 ﻿#include <http_download_task.h>
 #include <http_download_multi.h>
 #include <event_loop.h>
-#include <event_loop_thread_ex.h>
 namespace Evpp
 {
     HttpDownloadTask::HttpDownloadTask(EventLoop* base) :

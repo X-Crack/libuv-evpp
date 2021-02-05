@@ -19,17 +19,17 @@ namespace Evpp
     public:
         bool CreaterEventThreadPool();
 #ifdef H_OS_WINDOWS 
-        bool CreaterEventThreadPool(const u96 size, const bool use_thread_ex = true);
-        bool DestroyEventThreadPool(const bool use_thread_ex = true);
+        bool CreaterEventThreadPool(const u96 size);
+        bool DestroyEventThreadPool();
 #else 
-        bool CreaterEventThreadPool(const u96 size, const bool use_thread_ex = false);
+        bool CreaterEventThreadPool(const u96 size);
 #endif
 
-        bool CreaterEventThread(const u96 index, const bool use_thread_ex);
-        bool DestroyEventThread(const u96 index, const bool use_thread_ex);
-        bool InitialEventThread(const u96 index, const bool use_thread_ex);
+        bool CreaterEventThread(const u96 index);
+        bool DestroyEventThread(const u96 index);
+        bool InitialEventThread(const u96 index);
     private:
-        bool InitialEventThreadPool(const u96 size, const bool use_thread_ex);
+        bool InitialEventThreadPool(const u96 size);
     public:
         u96  GetEventThreadLoopSize() { return event_pool.size(); };
     public:
@@ -38,13 +38,11 @@ namespace Evpp
         EventLoop* GetEventLoopEx(event_loop* loop);
         EventLoop* GetEventLoopEx(const u96 index);
         std::unique_ptr<EventLoopThread>& GetEventLoopThread(const u96 index);
-        std::unique_ptr<EventLoopThreadEx>& GetEventLoopThreadEx(const u96 index);
     private:
-        EventLoop* event_base;
+        EventLoop*                                                                              event_base;
         std::shared_ptr<EventShare>                                                             event_share;
         u96                                                                                     event_size;
         std::unordered_map<u96, std::unique_ptr<EventLoopThread>>                               event_pool;
-        std::unordered_map<u96, std::unique_ptr<EventLoopThreadEx>>                             event_pool_ex;
         // 线程池高级实现，逐渐开发。
         std::atomic<u32>                                                                        event_pool_min;         // 最小线程
         std::atomic<u32>                                                                        event_pool_max;         // 最大线程

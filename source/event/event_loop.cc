@@ -49,7 +49,7 @@ namespace Evpp
         {
             if (ChangeStatus(Status::Init, Status::Exec))
             {
-                if (0 == ExecDispatch(UV_RUN_DEFAULT))
+                if (ExecDispatch(UV_RUN_DEFAULT))
                 {
                     return ChangeStatus(Status::Exec, Status::Stop);
                 }
@@ -70,8 +70,7 @@ namespace Evpp
             {
                 ChangeStatus(Status::Exec);
             }
-
-            return 0 == uv_run(event_base, static_cast<uv_run_mode>(mode));
+            return (UV_RUN_ONCE || UV_RUN_NOWAIT == mode ? 1 : 0) == uv_run(event_base, static_cast<uv_run_mode>(mode));
         }
         return false;
     }
@@ -80,7 +79,7 @@ namespace Evpp
     {
         if (nullptr != event_base)
         {
-            if (0 == ExecDispatch(mode))
+            if (ExecDispatch(mode))
             {
                 if (nullptr != function)
                 {
@@ -310,7 +309,7 @@ namespace Evpp
     u32 EventLoop::EventThreadSelf()
     {
         return event_thread;
-    }
+}
 
     EventLoop* EventLoop::AddRefer()
     {
