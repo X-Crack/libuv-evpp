@@ -193,10 +193,13 @@ namespace Evpp
     {
         if (tcp_session.size())
         {
-            tcp_socket->DelSockInfo(index);
+            std::unique_lock<std::recursive_mutex> lock(tcp_recursive_mutex);
             {
-                std::unique_lock<std::recursive_mutex> lock(tcp_recursive_mutex);
-                tcp_session.erase(index);
+                if (tcp_session.find(index) != tcp_session.end())
+                {
+                    tcp_socket->DelSockInfo(index);
+                    tcp_session.erase(index);
+                }
                 tcp_index_multiplexing.emplace(index);
             }
         }
@@ -273,8 +276,8 @@ namespace Evpp
                             return true;
                         }
                     }
-                    return Close(index);
                 }
+                return Close(index);
             }
             return SystemShutdown(reinterpret_cast<socket_stream*>(client.get()));
         }
@@ -342,10 +345,10 @@ namespace Evpp
 #else
                 return DefaultAcceptsEx(event_thread_pool->GetEventLoopEx(server->loop), server, index);
 #endif
-            }
         }
-        return false;
     }
+        return false;
+}
 
     void TcpServer::DefaultDiscons(EventLoop* loop, const u96 index)
     {

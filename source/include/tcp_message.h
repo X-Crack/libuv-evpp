@@ -41,7 +41,7 @@ namespace Evpp
         static void DefaultMakesram(event_handle* handle, size_t suggested_size, socket_data* buf);
         static void DefaultMessages(socket_stream* handler, ssize_t nread, const socket_data* buf);
     private:
-        EventLoop* event_base;
+        EventLoop*                                                      event_base;
         SystemDiscons                                                   system_discons;
         SystemMessage                                                   system_message;
         SystemSendMsg                                                   system_sendmsg;

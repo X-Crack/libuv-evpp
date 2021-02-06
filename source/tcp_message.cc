@@ -122,9 +122,9 @@ namespace Evpp
 
     bool TcpMessage::DefaultSend(const socket_data bufs, u32 nbufs)
     {
-        if (uv_is_active(reinterpret_cast<event_handle*>(tcp_socket.get())))
+        if (uv_is_active(reinterpret_cast<event_handle*>(tcp_socket.get())) && 0 == uv_is_closing(reinterpret_cast<event_handle*>(tcp_socket.get())))
         {
-            return 0 == uv_write(event_write.get(), reinterpret_cast<socket_stream*>(tcp_socket.get()), &bufs, nbufs, &TcpMessage::DefaultSend);
+            return 0 == uv_write(event_write.get(), reinterpret_cast<socket_stream*>(tcp_socket.get()), std::addressof(bufs), nbufs, &TcpMessage::DefaultSend);
         }
         return false;
     }

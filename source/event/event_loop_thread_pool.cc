@@ -53,16 +53,16 @@ namespace Evpp
 
     bool EventLoopThreadPool::DestroyEventThreadPool()
     {
-        for (u96 i = 0; i < event_pool.size(); ++i)
+        std::unique_lock<std::mutex> lock(event_pool_lock);
         {
-            if (DestroyEventThread(i))
+            for (u96 i = 0; i < event_pool.size(); ++i)
             {
-                continue;
+                if (DestroyEventThread(i))
+                {
+                    continue;
+                }
             }
-        }
 
-        {
-            std::unique_lock<std::mutex> lock(event_pool_lock);
             event_pool.clear();
         }
         return true;
@@ -129,17 +129,16 @@ namespace Evpp
 
     EventLoop* EventLoopThreadPool::GetEventLoopEx(event_loop* loop)
     {
-        for (u96 i = 0; i < event_pool.size(); ++i)
+        std::unique_lock<std::mutex> lock(event_pool_lock);
         {
-            std::unique_lock<std::mutex> lock(event_pool_lock);
+            for (const auto & [index, base] : event_pool)
             {
-                if (loop == event_pool[i]->GetEventLoop()->EventBasic())
+                if (loop == base->GetEventLoop()->EventBasic())
                 {
-                    return event_pool[i]->GetEventLoop();
+                    return base->GetEventLoop();
                 }
             }
         }
-
         return nullptr;
     }
 

@@ -107,6 +107,7 @@ namespace Evpp
 
         while (nolock_queue->try_dequeue(function))
         {
+#if defined(EVPP_USE_STL_COROUTINES)
             try
             {
                 EventCoroutine::JoinInTask(std::bind(function));
@@ -116,6 +117,9 @@ namespace Evpp
                 EVENT_INFO("during the operation of the coroutine there may be some problems please check carefully");
                 break;
             }
+#else
+            function();
+#endif
         }
     }
 
@@ -136,6 +140,7 @@ namespace Evpp
 
         while (nolock_queue_ex->try_dequeue(function))
         {
+#if defined(EVPP_USE_STL_COROUTINES)
             try
             {
                 EventCoroutine::JoinInTask(std::bind(function));
@@ -145,6 +150,9 @@ namespace Evpp
                 EVENT_INFO("during the operation of the coroutine there may be some problems please check carefully");
                 break;
             }
+#else
+            function();
+#endif
         }
     }
 }

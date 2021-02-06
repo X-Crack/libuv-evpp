@@ -28,7 +28,11 @@ namespace Evpp
         {
             return;
         }
-        tcp_info.erase(index);
+
+        if (tcp_info.find(index) != tcp_info.end(index))
+        {
+            tcp_info.erase(index);
+        }
     }
 
     SocketInfoEx* TcpSocket::GetSockInfo(const u96 index)
