@@ -32,9 +32,9 @@ namespace Evpp
 
     bool EventWatcher::CreaterQueue()
     {
-        if (event_async_->CreatePipe())
+        if (event_async_->CreaterAsync())
         {
-            if (event_async_ex_->CreatePipe())
+            if (event_async_ex_->CreaterAsync())
             {
                 return true;
             }
@@ -56,6 +56,11 @@ namespace Evpp
         }
 
         return nolock_queue->size_approx() || nolock_queue_ex->size_approx();
+    }
+
+    bool EventWatcher::DestroyAsync()
+    {
+        return event_async_->DestroyAsync() && event_async_ex_->DestroyAsync();
     }
 
     bool EventWatcher::RunInLoop(const Functor& function)

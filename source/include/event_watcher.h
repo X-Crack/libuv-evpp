@@ -21,6 +21,7 @@ namespace Evpp
     public:
         bool CreaterQueue();
         bool DestroyQueue();
+        bool DestroyAsync();
     public:
         bool RunInLoop(const Functor& function);
         bool RunInLoop(Functor&& function);

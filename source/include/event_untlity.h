@@ -50,7 +50,6 @@ namespace Evpp
         // 服务端拥有 DefaultAccepts DefaultDiscons DefaultMessage DefaultSendMsg
     };
 
-
     struct SocketInfo final
     {
         union

@@ -11,7 +11,8 @@ namespace Evpp
         explicit EventAsync(EventLoop* loop, const Handler& handler);
         virtual ~EventAsync();
     public:
-        bool CreatePipe();
+        bool CreaterAsync();
+        bool DestroyAsync();
         bool ExecNotify();
     private:
         static void OnNotify(event_async* handler);

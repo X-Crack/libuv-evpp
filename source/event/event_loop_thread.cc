@@ -117,6 +117,19 @@ namespace Evpp
         return false;
     }
 
+    void on_uv_close1(uv_handle_t* handle)
+    {
+        if (handle != NULL)
+        {
+            delete handle;
+        }
+    }
+
+    void on_uv_walk1(uv_handle_t* handle, void* arg)
+    {
+        uv_close(handle, on_uv_close1);
+    }
+
     void EventLoopThread::CoroutineInThread()
     {
         if (nullptr == loop)
@@ -150,6 +163,11 @@ namespace Evpp
 #endif
                         EVPP_THREAD_YIELD();
                     }
+                }
+
+                if (UV_EBUSY == uv_loop_close(loop->EventBasic()))
+                {
+                    assert(0);
                 }
 
                 if (ChangeStatus(Status::Exec, Status::Stop))
@@ -215,4 +233,4 @@ namespace Evpp
             }
         }
     }
-}
+    }

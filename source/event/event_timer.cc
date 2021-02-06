@@ -161,7 +161,7 @@ namespace Evpp
     {
         if (nullptr != handler)
         {
-            delete handler;
+            delete reinterpret_cast<event_timer*>(handler);
             handler = nullptr;
         }
     }
