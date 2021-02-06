@@ -47,7 +47,7 @@ namespace Evpp
         std::atomic<u32>                                                                        event_pool_min;         // 最小线程
         std::atomic<u32>                                                                        event_pool_max;         // 最大线程
         std::atomic<u32>                                                                        event_pool_let;         // 空闲线程
-        std::mutex                                                                              event_pool_lock;
+        std::recursive_mutex                                                                    event_pool_lock;
 
         std::atomic<u96>                                                                        event_loop_thread_next;
     };

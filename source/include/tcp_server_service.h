@@ -28,10 +28,10 @@ namespace Evpp
         bool Send(const u96 index, const std::string& buf, u32 nbufs = 1);
         bool Close(const u96 index);
     public:
-        void SetAcceptsCallback(const InterfaceAccepts& accepts);
-        void SetDisconsCallback(const InterfaceDiscons& discons);
-        void SetMessageCallback(const InterfaceMessage& message);
-        void SetSendMsgCallback(const InterfaceSendMsg& sendmsg);
+        void SetAcceptsCallback(const InterfaceAccepts& accepts = Import::DefaultAccepts);
+        void SetDisconsCallback(const InterfaceDiscons& discons = Import::DefaultDiscons);
+        void SetMessageCallback(const InterfaceMessage& message = Import::DefaultMessage);
+        void SetSendMsgCallback(const InterfaceSendMsg& sendmsg = Import::DefaultSendMsg);
     private:
         std::shared_ptr<EventShare>                                     event_share;
         std::shared_ptr<EventLoop>                                      event_base;

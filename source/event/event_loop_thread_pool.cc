@@ -53,11 +53,11 @@ namespace Evpp
 
     bool EventLoopThreadPool::DestroyEventThreadPool()
     {
-        std::unique_lock<std::mutex> lock(event_pool_lock);
+        std::unique_lock<std::recursive_mutex> lock(event_pool_lock);
         {
-            for (u96 i = 0; i < event_pool.size(); ++i)
+            for (const auto & [index, var] : event_pool)
             {
-                if (DestroyEventThread(i))
+                if (var->DestroyThread())
                 {
                     continue;
                 }
@@ -70,15 +70,19 @@ namespace Evpp
 
     bool EventLoopThreadPool::CreaterEventThread(const u96 index)
     {
-        std::unique_lock<std::mutex> lock(event_pool_lock);
+        std::unique_lock<std::recursive_mutex> lock(event_pool_lock);
         return event_pool.emplace(index, std::make_unique<EventLoopThread>(event_base, event_share, index)).second;
     }
 
     bool EventLoopThreadPool::DestroyEventThread(const u96 index)
     {
-        if (event_pool[index]->DestroyThread())
+        std::unique_lock<std::recursive_mutex> lock(event_pool_lock);
         {
-            return true;
+            if (event_pool[index]->DestroyThread())
+            {
+                event_pool.erase(index);
+                return true;
+            }
         }
         return false;
     }
@@ -111,9 +115,8 @@ namespace Evpp
 
     EventLoop* EventLoopThreadPool::GetEventLoop(u96 index)
     {
-        std::unique_lock<std::mutex> lock(event_pool_lock);
+        std::unique_lock<std::recursive_mutex> lock(event_pool_lock);
         {
-
             if (event_pool.empty())
             {
                 return event_base;
@@ -129,7 +132,7 @@ namespace Evpp
 
     EventLoop* EventLoopThreadPool::GetEventLoopEx(event_loop* loop)
     {
-        std::unique_lock<std::mutex> lock(event_pool_lock);
+        std::unique_lock<std::recursive_mutex> lock(event_pool_lock);
         {
             for (const auto & [index, base] : event_pool)
             {
@@ -144,7 +147,7 @@ namespace Evpp
 
     EventLoop* EventLoopThreadPool::GetEventLoopEx(const u96 index)
     {
-        std::unique_lock<std::mutex> lock(event_pool_lock);
+        std::unique_lock<std::recursive_mutex> lock(event_pool_lock);
         {
             if (event_pool.empty())
             {
@@ -161,7 +164,7 @@ namespace Evpp
 
     std::unique_ptr<EventLoopThread>& EventLoopThreadPool::GetEventLoopThread(const u96 index)
     {
-        std::unique_lock<std::mutex> lock(event_pool_lock);
+        std::unique_lock<std::recursive_mutex> lock(event_pool_lock);
         return event_pool[index];
     }
 }

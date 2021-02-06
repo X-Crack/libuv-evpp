@@ -2,6 +2,7 @@
 #define __HTTP_DOWNLOAD_H__
 #include <event_config.h>
 #include <unordered_map>
+#include <mutex>
 namespace Evpp
 {
     class EventShare;
@@ -34,8 +35,8 @@ namespace Evpp
         bool CreaterDownload(const u96 index, HttpDownloadTask* downloadtask, const std::string& host, const u32 port);
         HttpDownloadTask* GetDownloadTask(const u96 index);
     private:
-        bool CreaterEventThread(const u96 index, const bool use_thread_ex);
-        bool DestroyEventThread(const u96 index, const bool use_thread_ex);
+        bool CreaterEventThread(const u96 index);
+        bool DestroyEventThread(const u96 index);
     private:
         void OnDownloadMessage(const u96 index, const i32 http_curl_handles);
     private:
@@ -43,6 +44,7 @@ namespace Evpp
         std::shared_ptr<EventShare>                                                     event_share;
         std::unique_ptr<EventLoopThreadPool>                                            event_loop_thread_pool;
         std::unordered_map<u96, std::unique_ptr<HttpDownloadTask>>                      http_download_task;
+        std::mutex                                                                      http_download_task_mutex;
     };
 }
 #endif // __HTTP_DOWNLOAD_H__

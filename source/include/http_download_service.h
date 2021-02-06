@@ -35,6 +35,8 @@ namespace Evpp
         std::string                                                                     http_download_proxy;
         std::string                                                                     http_download_agent;
         std::unordered_map<u96, std::shared_ptr<HttpDownloadSession>>                   http_download_session;
+        CurlMessageHandler                                                              http_curl_message;
+        CurlProgressHandler                                                             http_curl_progress;
     };
 }
 #endif // __HTTP_DOWNLOAD_SERVICE_H__

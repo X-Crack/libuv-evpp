@@ -100,22 +100,24 @@ namespace Evpp
             {
                 for (; 0 == event_base->stop_flag && 1 == event_stop_flag.load(std::memory_order_acquire);)
                 {
-                    EVPP_THREAD_YIELD();
+                    if (ExecDispatch(function, mode))
                     {
-                        if (ExecDispatch(function, mode))
-                        {
-                            continue;
-                        }
+                        continue;
                     }
                 }
 
                 EVENT_INFO("cyclic event stop running this: %p", this);
 
-                if (0 == event_stop_flag.load(std::memory_order_acquire))
+                if (1 == event_base->stop_flag || 0 == event_stop_flag.load(std::memory_order_acquire))
                 {
+                    if (0 == event_stop_flag.exchange(1, std::memory_order_release))
+                    {
+                        event_stop_flag.notify_one();
+                    }
                     return ChangeStatus(Status::Exec, Status::Stop);
                 }
             }
+            assert(0);
         }
         return false;
     }
@@ -131,8 +133,9 @@ namespace Evpp
                     uv_stop(event_base);
 
                     event_stop_flag.store(0, std::memory_order_release);
+                    event_stop_flag.wait(0, std::memory_order_relaxed);
                 }
-                return ChangeStatus(Status::Exec, Status::Stop);
+                return ChangeStatus(Status::Stop, Status::Exit);
             }
         }
         return false;
@@ -157,7 +160,7 @@ namespace Evpp
                     event_stop_flag.notify_one();
                 }
 
-                return true;
+                return ChangeStatus(Status::Exec, Status::Stop);
             }
 
             if (RunInLoopEx(std::bind(&EventLoop::StopDispatchEx, this)))

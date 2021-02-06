@@ -16,7 +16,7 @@
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="循环控制器" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
-          <stringProp name="LoopController.loops">1</stringProp>
+          <intProp name="LoopController.loops">-1</intProp>
         </elementProp>
         <stringProp name="ThreadGroup.num_threads">10000</stringProp>
         <stringProp name="ThreadGroup.ramp_time">0</stringProp>
@@ -33,7 +33,7 @@
         <TCPSampler guiclass="TCPSamplerGui" testclass="TCPSampler" testname="TCP取样器" enabled="true">
           <stringProp name="TCPSampler.server">127.0.0.1</stringProp>
           <boolProp name="TCPSampler.reUseConnection">true</boolProp>
-          <stringProp name="TCPSampler.port">8888</stringProp>
+          <stringProp name="TCPSampler.port">5555</stringProp>
           <boolProp name="TCPSampler.nodelay">true</boolProp>
           <stringProp name="TCPSampler.timeout">0</stringProp>
           <stringProp name="TCPSampler.ctimeout">10000</stringProp>

@@ -40,17 +40,17 @@ namespace Evpp
 
     void HttpDownloadService::SetMessageCallback(const u96 index, const CurlMessageHandler& message)
     {
-        if (nullptr != message)
+        if (nullptr == http_curl_message && nullptr != message)
         {
-            return GetDownloadSession(index)->SetMessageCallback(message);
+            http_curl_message = message;
         }
     }
 
     void HttpDownloadService::SetProgressCallback(const u96 index, const CurlProgressHandler& progress)
     {
-        if (nullptr != progress)
+        if (nullptr == http_curl_progress && nullptr != progress)
         {
-            return GetDownloadSession(index)->SetProgressCallback(progress);
+            http_curl_progress = progress;
         }
     }
 
@@ -88,7 +88,7 @@ namespace Evpp
     {
         if (http_download_session.find(index) == http_download_session.end())
         {
-            return http_download_session.emplace(index, std::make_shared<HttpDownloadSession>(index, handler, host)).second;
+            return http_download_session.emplace(index, std::make_shared<HttpDownloadSession>(index, handler, host, http_curl_message, http_curl_progress)).second;
         }
         return false;
     }

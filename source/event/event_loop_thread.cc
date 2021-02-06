@@ -28,10 +28,7 @@ namespace Evpp
 
     EventLoopThread::~EventLoopThread()
     {
-        //if (Join())
-        {
-            EVENT_INFO("Release Class EventLoopThreadEx");
-        }
+        EVENT_INFO("Release Class EventLoopThreadEx");
     }
 
     bool EventLoopThread::CreaterThread()
@@ -89,6 +86,7 @@ namespace Evpp
                     {
                         return Join();
                     }
+                    return false;
                 }
             }
         }
@@ -153,9 +151,10 @@ namespace Evpp
                         EVPP_THREAD_YIELD();
                     }
                 }
+
                 if (ChangeStatus(Status::Exec, Status::Stop))
                 {
-                    assert(loop->ExistsRuning());
+                    assert(loop->ExistsStoped());
                 }
             }
         }

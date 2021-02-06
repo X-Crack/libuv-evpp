@@ -93,9 +93,10 @@ namespace Evpp
 
     bool HttpDownload::InitialDownload(const u96 index)
     {
+        std::unique_lock<std::mutex> lock(http_download_task_mutex);
         if (http_download_task.find(index) == http_download_task.end())
         {
-            if (CreaterEventThread(index, true))
+            if (CreaterEventThread(index))
             {
                 if (http_download_task.emplace(index, std::make_unique<HttpDownloadTask>(event_loop_thread_pool->GetEventLoop(index))).second)
                 {
@@ -140,6 +141,7 @@ namespace Evpp
 
     HttpDownloadTask* HttpDownload::GetDownloadTask(const u96 index)
     {
+        std::unique_lock<std::mutex> lock(http_download_task_mutex);
         if (http_download_task.find(index) != http_download_task.end())
         {
             return http_download_task[index].get();
@@ -147,18 +149,23 @@ namespace Evpp
         return nullptr;
     }
 
-    bool HttpDownload::CreaterEventThread(const u96 index, const bool use_thread_ex)
+    bool HttpDownload::CreaterEventThread(const u96 index)
     {
         return event_loop_thread_pool->CreaterEventThread(index) && event_loop_thread_pool->InitialEventThread(index);
     }
 
-    bool HttpDownload::DestroyEventThread(const u96 index, const bool use_thread_ex)
+    bool HttpDownload::DestroyEventThread(const u96 index)
     {
-        if (event_loop_thread_pool->DestroyEventThread(index))
+        std::unique_lock<std::mutex> lock(http_download_task_mutex);
+        if (http_download_task.find(index) != http_download_task.end())
         {
-            http_download_task.erase(index);
-            return true;
+            if (event_loop_thread_pool->DestroyEventThread(index))
+            {
+                http_download_task.erase(index);
+                return true;
+            }
         }
+
         return false;
     }
 
@@ -166,7 +173,7 @@ namespace Evpp
     {
         if (0 == http_curl_handles)
         {
-            if (RunInLoopEx(std::bind(&HttpDownload::DestroyEventThread, this, index, true)))
+            if (RunInLoopEx(std::bind(&HttpDownload::DestroyEventThread, this, index)))
             {
                 EVENT_INFO("线程：%d 剩余任务：%d", index, http_curl_handles);
                 EVENT_INFO("停止线程：%d", GetCurrentThreadId());

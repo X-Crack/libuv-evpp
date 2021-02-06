@@ -94,7 +94,7 @@ namespace Evpp
     {
         if (nullptr != event_async_)
         {
-            while (false == nolock_queue->try_enqueue(function)) { EVPP_THREAD_YIELD(); };
+            while (false == nolock_queue->try_enqueue(function));
 
             return event_async_->ExecNotify();
         }
@@ -114,7 +114,6 @@ namespace Evpp
             }
             catch (...)
             {
-                EVENT_INFO("during the operation of the coroutine there may be some problems please check carefully");
                 break;
             }
 #else
@@ -127,7 +126,7 @@ namespace Evpp
     {
         if (nullptr != event_async_ex_)
         {
-            while (false == nolock_queue_ex->try_enqueue(function)) { EVPP_THREAD_YIELD(); };
+            while (false == nolock_queue_ex->enqueue(function));
 
             return event_async_ex_->ExecNotify();
         }
@@ -147,7 +146,6 @@ namespace Evpp
             }
             catch (...)
             {
-                EVENT_INFO("during the operation of the coroutine there may be some problems please check carefully");
                 break;
             }
 #else

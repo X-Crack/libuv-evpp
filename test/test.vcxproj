@@ -28,8 +28,8 @@
     <ProjectReference Include="..\..\libuv\vsprojects\uv_a.vcxproj">
       <Project>{271f0c53-971b-3471-a1f8-1c2a3209445c}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\openssl\crypto_static\vsprojects\crypto_static.vcxproj">
-      <Project>{8c9e408d-7deb-4124-9ffb-6c9385d5992d}</Project>
+    <ProjectReference Include="..\..\openssl\crypto\vsprojects\crypto_a.vcxproj">
+      <Project>{8c1bd5e7-091e-4a2b-ac52-731516c26ccb}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\openssl\ssl_static\vsprojects\ssl_static.vcxproj">
       <Project>{6ff39cd8-d57e-42fe-8f62-009dda98d520}</Project>
@@ -81,8 +81,7 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
-  <ImportGroup Label="Shared">
-  </ImportGroup>
+  <ImportGroup Label="Shared" />
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
@@ -152,7 +151,7 @@
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

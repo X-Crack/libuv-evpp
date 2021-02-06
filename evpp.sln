@@ -11,21 +11,15 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "uv_a", "..\libuv\vsprojects
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "examples", "examples\examples.vcxproj", "{DC95161C-3C16-492D-ACC7-F427C6E2B445}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glog", "..\glog\vsprojects\glog.vcxproj", "{90F986D2-3F78-3B7F-A88B-7283B79E08EF}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "openssl", "openssl", "{02F55A32-1274-4240-8B46-6CA6C0C48472}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ssl_static", "..\openssl\ssl_static\vsprojects\ssl_static.vcxproj", "{6FF39CD8-D57E-42FE-8F62-009DDA98D520}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "crypto_static", "..\openssl\crypto_static\vsprojects\crypto_static.vcxproj", "{8C9E408D-7DEB-4124-9FFB-6C9385D5992D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "zlib", "zlib", "{51113E54-9698-4159-9950-25C290801A8A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "curl", "curl", "{6466EE97-0D5A-48CE-A409-F4068E3B516E}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libcurl", "..\curl\vsprojects\lib\libcurl.vcxproj", "{5689BDBE-E93B-3B97-9F8E-643C3C180172}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlibstatic", "..\zlib\vsprojects\zlibstatic.vcxproj", "{A55BDC8A-3299-3625-ADBD-6F55C06869A5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "logging", "logging", "{D4EA3A35-ACEB-455C-98AD-0A28EAF243D6}"
 EndProject
@@ -35,10 +29,16 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "crypto", "..\openssl\crypto
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ssl", "..\openssl\ssl_static\vsprojects\ssl.vcxitems", "{C09CFE60-7FF9-4B4E-8EAE-805BB0CCA121}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glog", "..\glog\vsprojects\glog.vcxproj", "{90F986D2-3F78-3B7F-A88B-7283B79E08EF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlibstatic", "..\zlib\vsprojects\zlibstatic.vcxproj", "{A55BDC8A-3299-3625-ADBD-6F55C06869A5}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "crypto_a", "..\openssl\crypto\vsprojects\crypto_a.vcxproj", "{8C1BD5E7-091E-4A2B-AC52-731516C26CCB}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		..\openssl\ssl_static\vsprojects\ssl.vcxitems*{6ff39cd8-d57e-42fe-8f62-009dda98d520}*SharedItemsImports = 4
-		..\openssl\crypto_static\vsprojects\crypto.vcxitems*{8c9e408d-7deb-4124-9ffb-6c9385d5992d}*SharedItemsImports = 4
+		..\openssl\crypto_static\vsprojects\crypto.vcxitems*{8c1bd5e7-091e-4a2b-ac52-731516c26ccb}*SharedItemsImports = 4
 		..\openssl\crypto_static\vsprojects\crypto.vcxitems*{9d6beeb4-2f48-444e-a43a-5c17839dbe2d}*SharedItemsImports = 9
 		..\openssl\ssl_static\vsprojects\ssl.vcxitems*{c09cfe60-7ff9-4b4e-8eae-805bb0cca121}*SharedItemsImports = 9
 	EndGlobalSection
@@ -81,13 +81,6 @@ Global
 		{DC95161C-3C16-492D-ACC7-F427C6E2B445}.Release|x64.Build.0 = Release|x64
 		{DC95161C-3C16-492D-ACC7-F427C6E2B445}.Release|x86.ActiveCfg = Release|Win32
 		{DC95161C-3C16-492D-ACC7-F427C6E2B445}.Release|x86.Build.0 = Release|Win32
-		{90F986D2-3F78-3B7F-A88B-7283B79E08EF}.Debug|x64.ActiveCfg = Debug|x64
-		{90F986D2-3F78-3B7F-A88B-7283B79E08EF}.Debug|x64.Build.0 = Debug|x64
-		{90F986D2-3F78-3B7F-A88B-7283B79E08EF}.Debug|x86.ActiveCfg = Debug|Win32
-		{90F986D2-3F78-3B7F-A88B-7283B79E08EF}.Debug|x86.Build.0 = Debug|Win32
-		{90F986D2-3F78-3B7F-A88B-7283B79E08EF}.Release|x64.ActiveCfg = Release|Win32
-		{90F986D2-3F78-3B7F-A88B-7283B79E08EF}.Release|x86.ActiveCfg = Release|Win32
-		{90F986D2-3F78-3B7F-A88B-7283B79E08EF}.Release|x86.Build.0 = Release|Win32
 		{6FF39CD8-D57E-42FE-8F62-009DDA98D520}.Debug|x64.ActiveCfg = Debug|x64
 		{6FF39CD8-D57E-42FE-8F62-009DDA98D520}.Debug|x64.Build.0 = Debug|x64
 		{6FF39CD8-D57E-42FE-8F62-009DDA98D520}.Debug|x86.ActiveCfg = Debug|Win32
@@ -96,14 +89,6 @@ Global
 		{6FF39CD8-D57E-42FE-8F62-009DDA98D520}.Release|x64.Build.0 = Release|x64
 		{6FF39CD8-D57E-42FE-8F62-009DDA98D520}.Release|x86.ActiveCfg = Release|Win32
 		{6FF39CD8-D57E-42FE-8F62-009DDA98D520}.Release|x86.Build.0 = Release|Win32
-		{8C9E408D-7DEB-4124-9FFB-6C9385D5992D}.Debug|x64.ActiveCfg = Debug|x64
-		{8C9E408D-7DEB-4124-9FFB-6C9385D5992D}.Debug|x64.Build.0 = Debug|x64
-		{8C9E408D-7DEB-4124-9FFB-6C9385D5992D}.Debug|x86.ActiveCfg = Debug|Win32
-		{8C9E408D-7DEB-4124-9FFB-6C9385D5992D}.Debug|x86.Build.0 = Debug|Win32
-		{8C9E408D-7DEB-4124-9FFB-6C9385D5992D}.Release|x64.ActiveCfg = Release|x64
-		{8C9E408D-7DEB-4124-9FFB-6C9385D5992D}.Release|x64.Build.0 = Release|x64
-		{8C9E408D-7DEB-4124-9FFB-6C9385D5992D}.Release|x86.ActiveCfg = Release|Win32
-		{8C9E408D-7DEB-4124-9FFB-6C9385D5992D}.Release|x86.Build.0 = Release|Win32
 		{5689BDBE-E93B-3B97-9F8E-643C3C180172}.Debug|x64.ActiveCfg = Debug|x64
 		{5689BDBE-E93B-3B97-9F8E-643C3C180172}.Debug|x64.Build.0 = Debug|x64
 		{5689BDBE-E93B-3B97-9F8E-643C3C180172}.Debug|x86.ActiveCfg = Debug|Win32
@@ -112,6 +97,14 @@ Global
 		{5689BDBE-E93B-3B97-9F8E-643C3C180172}.Release|x64.Build.0 = Release|x64
 		{5689BDBE-E93B-3B97-9F8E-643C3C180172}.Release|x86.ActiveCfg = Release|Win32
 		{5689BDBE-E93B-3B97-9F8E-643C3C180172}.Release|x86.Build.0 = Release|Win32
+		{90F986D2-3F78-3B7F-A88B-7283B79E08EF}.Debug|x64.ActiveCfg = Debug|x64
+		{90F986D2-3F78-3B7F-A88B-7283B79E08EF}.Debug|x64.Build.0 = Debug|x64
+		{90F986D2-3F78-3B7F-A88B-7283B79E08EF}.Debug|x86.ActiveCfg = Debug|Win32
+		{90F986D2-3F78-3B7F-A88B-7283B79E08EF}.Debug|x86.Build.0 = Debug|Win32
+		{90F986D2-3F78-3B7F-A88B-7283B79E08EF}.Release|x64.ActiveCfg = Release|x64
+		{90F986D2-3F78-3B7F-A88B-7283B79E08EF}.Release|x64.Build.0 = Release|x64
+		{90F986D2-3F78-3B7F-A88B-7283B79E08EF}.Release|x86.ActiveCfg = Release|Win32
+		{90F986D2-3F78-3B7F-A88B-7283B79E08EF}.Release|x86.Build.0 = Release|Win32
 		{A55BDC8A-3299-3625-ADBD-6F55C06869A5}.Debug|x64.ActiveCfg = Debug|x64
 		{A55BDC8A-3299-3625-ADBD-6F55C06869A5}.Debug|x64.Build.0 = Debug|x64
 		{A55BDC8A-3299-3625-ADBD-6F55C06869A5}.Debug|x86.ActiveCfg = Debug|Win32
@@ -120,19 +113,27 @@ Global
 		{A55BDC8A-3299-3625-ADBD-6F55C06869A5}.Release|x64.Build.0 = Release|x64
 		{A55BDC8A-3299-3625-ADBD-6F55C06869A5}.Release|x86.ActiveCfg = Release|Win32
 		{A55BDC8A-3299-3625-ADBD-6F55C06869A5}.Release|x86.Build.0 = Release|Win32
+		{8C1BD5E7-091E-4A2B-AC52-731516C26CCB}.Debug|x64.ActiveCfg = Debug|x64
+		{8C1BD5E7-091E-4A2B-AC52-731516C26CCB}.Debug|x64.Build.0 = Debug|x64
+		{8C1BD5E7-091E-4A2B-AC52-731516C26CCB}.Debug|x86.ActiveCfg = Debug|Win32
+		{8C1BD5E7-091E-4A2B-AC52-731516C26CCB}.Debug|x86.Build.0 = Debug|Win32
+		{8C1BD5E7-091E-4A2B-AC52-731516C26CCB}.Release|x64.ActiveCfg = Release|x64
+		{8C1BD5E7-091E-4A2B-AC52-731516C26CCB}.Release|x64.Build.0 = Release|x64
+		{8C1BD5E7-091E-4A2B-AC52-731516C26CCB}.Release|x86.ActiveCfg = Release|Win32
+		{8C1BD5E7-091E-4A2B-AC52-731516C26CCB}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{271F0C53-971B-3471-A1F8-1C2A3209445C} = {8385693B-C0ED-44E4-A173-617139CCD08A}
-		{90F986D2-3F78-3B7F-A88B-7283B79E08EF} = {D4EA3A35-ACEB-455C-98AD-0A28EAF243D6}
 		{6FF39CD8-D57E-42FE-8F62-009DDA98D520} = {02F55A32-1274-4240-8B46-6CA6C0C48472}
-		{8C9E408D-7DEB-4124-9FFB-6C9385D5992D} = {02F55A32-1274-4240-8B46-6CA6C0C48472}
 		{5689BDBE-E93B-3B97-9F8E-643C3C180172} = {6466EE97-0D5A-48CE-A409-F4068E3B516E}
-		{A55BDC8A-3299-3625-ADBD-6F55C06869A5} = {51113E54-9698-4159-9950-25C290801A8A}
 		{9D6BEEB4-2F48-444E-A43A-5C17839DBE2D} = {02F55A32-1274-4240-8B46-6CA6C0C48472}
 		{C09CFE60-7FF9-4B4E-8EAE-805BB0CCA121} = {02F55A32-1274-4240-8B46-6CA6C0C48472}
+		{90F986D2-3F78-3B7F-A88B-7283B79E08EF} = {D4EA3A35-ACEB-455C-98AD-0A28EAF243D6}
+		{A55BDC8A-3299-3625-ADBD-6F55C06869A5} = {51113E54-9698-4159-9950-25C290801A8A}
+		{8C1BD5E7-091E-4A2B-AC52-731516C26CCB} = {02F55A32-1274-4240-8B46-6CA6C0C48472}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AC1F4BEE-B623-4199-9AA5-CA91048820A6}

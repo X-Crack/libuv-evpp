@@ -1,12 +1,14 @@
 ﻿#include <http_download_session.h>
 namespace Evpp
 {
-    HttpDownloadSession::HttpDownloadSession(const u96 index, CURL* easy_cyrl, const std::string& hosts) :
+    HttpDownloadSession::HttpDownloadSession(const u96 index, CURL* easy_cyrl, const std::string& hosts, const CurlMessageHandler& message, const CurlProgressHandler& progress) :
         http_index(index),
         http_easy_curl(easy_cyrl),
         http_hosts(hosts),
         http_curl_hosts(nullptr),
         http_curl_response_code(0),
+        http_curl_message(message),
+        http_curl_progress(progress),
         original_download_size(0)
     {
 

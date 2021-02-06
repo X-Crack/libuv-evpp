@@ -58,6 +58,7 @@ namespace Evpp
                     }
                     return true;
                 }
+                assert(0);
             }
         }
         return false;
