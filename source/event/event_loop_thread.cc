@@ -4,6 +4,7 @@
 #include <event_share.h>
 #include <event_loop_thread.h>
 #include <event_coroutine.h>
+#include <future>
 namespace Evpp
 {
     EventLoopThread::EventLoopThread(EventLoop* base, event_loop* loop, const u96 index) :
@@ -48,7 +49,7 @@ namespace Evpp
                         if (ChangeStatus(Status::None, Status::Init))
                         {
                             // 启动线程需要慢启动，因为初始化数据过多，否则会导致RunInLoop异步安全初始化失败。
-                            if (cv_signal.wait_for(lock, std::chrono::milliseconds(16), std::bind(&EventLoopThread::AvailableEvent, this)))
+                            if (cv_signal.wait_for(lock, std::chrono::milliseconds(0), std::bind(&EventLoopThread::AvailableEvent, this)))
                             {
                                 return true;
                             }
@@ -197,9 +198,17 @@ namespace Evpp
             return false;
         }
 
-        if (ExistsRuning())
+        while (1)
         {
-            return 0 != loop->EventBasic()->active_handles;
+            if (ExistsRuning())
+            {
+                if (0 != loop->EventBasic()->active_handles)
+                {
+                    cv_signal.notify_one();
+                    return true;
+                }
+            }
+            EVPP_THREAD_YIELD();
         }
 
         return false;
@@ -215,8 +224,7 @@ namespace Evpp
         }
         return false;
 #else
-        // ERROR_INVALID_HANDLE:              return UV_EBADF;
-        return UV_EBADF || 0 == uv_thread_join(loop_thread.get());
+        return 0 == uv_thread_join(loop_thread.get());
 #endif
     }
 

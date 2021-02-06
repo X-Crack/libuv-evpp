@@ -15,7 +15,7 @@
 
 // Use STL-based multi-threaded running mode (std::thread) to close this macro, and use libuv_thread to run multi-threaded
 #ifndef EVPP_USE_STL_THREAD
-#       define EVPP_USE_STL_THREAD
+//#       define EVPP_USE_STL_THREAD
 #endif
 
 
