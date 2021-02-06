@@ -227,9 +227,6 @@
     <ClInclude Include="..\source\include\event_curl.h">
       <Filter>core</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\include\event_evpp.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\include\event_curl_config.h">
       <Filter>core</Filter>
     </ClInclude>
@@ -259,6 +256,9 @@
     </ClInclude>
     <ClInclude Include="..\source\include\event_mutex.h">
       <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\event_evpp.h">
+      <Filter>core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

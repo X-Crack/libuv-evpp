@@ -6,6 +6,7 @@
 #   ifndef H_OS_WINDOWS
 #       define H_OS_WINDOWS
 #       define WIN32_LEAN_AND_MEAN
+#       define _CRT_SECURE_NO_WARNINGS
 #   endif
 #   ifndef H_WINDOWS_API
 #       define H_WINDOWS_API

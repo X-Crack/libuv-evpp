@@ -199,7 +199,7 @@ namespace Evpp
 
         if (ExistsRuning())
         {
-            return 0 == loop->EventBasic()->stop_flag;
+            return 0 != loop->EventBasic()->active_handles;
         }
 
         return false;
@@ -233,4 +233,4 @@ namespace Evpp
             }
         }
     }
-    }
+}

@@ -1,5 +1,6 @@
 ﻿#ifndef __EVENT_CONFIG_H__
 #define __EVENT_CONFIG_H__
+
 #include <event_platform.h>
 #include <uv.h>
 #include <event_curl.h>
@@ -58,8 +59,6 @@
 #define ntohs               ___bswap_16
 #define htonl               ___bswap_32
 #define htons               ___bswap_16
-
-
 
 using event_loop = uv_loop_t;
 using event_async = uv_async_t;

@@ -10,7 +10,8 @@ namespace Evpp
         event_watcher(std::make_unique<EventWatcher>(this)),
         event_timer_pool(std::make_unique<EventTimerPool>(this)),
         event_thread(0),
-        event_stop_flag(1)
+        event_stop_flag(1),
+        event_stop_flag_ex(1)
     {
 
     }
@@ -97,7 +98,7 @@ namespace Evpp
         {
             if (ChangeStatus(Status::Init, Status::Exec))
             {
-                for (; 0 == event_base->stop_flag && 1 == event_stop_flag.load(std::memory_order_acquire);)
+                for (; 0 != event_base->active_handles && 1 == event_stop_flag.load(std::memory_order_acquire);)
                 {
                     if (ExecDispatch(function, mode))
                     {
@@ -107,25 +108,22 @@ namespace Evpp
 
                 EVENT_INFO("cyclic event stop running this: %p", this);
 
-                if (1 == event_base->stop_flag || 0 == event_stop_flag.load(std::memory_order_acquire))
+                if (0 == event_stop_flag.exchange(1, std::memory_order_release))
                 {
-                    if (0 == event_stop_flag.exchange(1, std::memory_order_release))
+                    if (0 == event_base->active_handles && 0 == uv_loop_close(event_base))
                     {
                         if (ChangeStatus(Status::Exec, Status::Stop))
                         {
-                            if (0 == uv_loop_close(event_base))
-                            {
-                                event_stop_flag.notify_one();
-                            }
-                            else
-                            {
-                                assert(0);
-                            }
-                            return true;
+                            event_stop_flag.notify_one();
                         }
-                        return false;
                     }
+                    else
+                    {
+                        assert(0);
+                    }
+                    return true;
                 }
+                return false;
             }
             assert(0);
         }
@@ -168,10 +166,10 @@ namespace Evpp
                         uv_stop(event_base);
                     }
 
-                    if (event_stop_flag)
+                    if (event_stop_flag_ex)
                     {
-                        event_stop_flag.store(0, std::memory_order_release);
-                        event_stop_flag.notify_one();
+                        event_stop_flag_ex.store(0, std::memory_order_release);
+                        event_stop_flag_ex.notify_one();
                     }
 
                     return ChangeStatus(Status::Exec, Status::Stop);
@@ -180,7 +178,7 @@ namespace Evpp
 
             if (RunInLoopEx(std::bind(&EventLoop::StopDispatchEx, this)))
             {
-                event_stop_flag.wait(1, std::memory_order_relaxed);
+                event_stop_flag_ex.wait(1, std::memory_order_relaxed);
             }
             return true;
         }
