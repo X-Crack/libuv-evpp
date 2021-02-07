@@ -12,7 +12,14 @@ namespace Evpp
         virtual ~EventTimer();
     public:
         bool InitedTimer();
-        bool AssignTimer(const u64 timer, const u64 retimer);
+        bool AssignTimer(const std::chrono::nanoseconds& delay, const std::chrono::nanoseconds& repeat);
+        bool AssignTimer(const std::chrono::microseconds& delay, const std::chrono::microseconds& repeat);
+        bool AssignTimer(const std::chrono::milliseconds& delay, const std::chrono::milliseconds& repeat);
+        bool AssignTimer(const std::chrono::seconds& delay, const std::chrono::seconds& repeat);
+        bool AssignTimer(const std::chrono::minutes& delay, const std::chrono::minutes& repeat);
+        bool AssignTimer(const std::chrono::hours& delay, const std::chrono::hours& repeat);
+        bool AssignTimer(const struct timeval& delay, const struct timeval& repeat);
+        bool AssignTimer(const u64 delay, const u64 repeat);
     public:
         bool StopedTimer();
         void KilledTimer();

@@ -49,19 +49,52 @@ namespace Evpp
         return false;
     }
 
-    bool EventTimer::AssignTimer(const u64 timer, const u64 retimer)
+    bool EventTimer::AssignTimer(const std::chrono::nanoseconds& delay, const std::chrono::nanoseconds& repeat)
+    {
+        return AssignTimer(static_cast<u64>(delay.count()), static_cast<u64>(repeat.count()));
+    }
+
+    bool EventTimer::AssignTimer(const std::chrono::microseconds& delay, const std::chrono::microseconds& repeat)
+    {
+        return AssignTimer(static_cast<u64>(delay.count()), static_cast<u64>(repeat.count()));
+    }
+
+    bool EventTimer::AssignTimer(const std::chrono::milliseconds& delay, const std::chrono::milliseconds& repeat)
+    {
+        return AssignTimer(static_cast<u64>(delay.count()), static_cast<u64>(repeat.count()));
+    }
+
+    bool EventTimer::AssignTimer(const std::chrono::seconds& delay, const std::chrono::seconds& repeat)
+    {
+        return AssignTimer(static_cast<u64>(delay.count()), static_cast<u64>(repeat.count()));
+    }
+
+    bool EventTimer::AssignTimer(const std::chrono::minutes& delay, const std::chrono::minutes& repeat)
+    {
+        return AssignTimer(static_cast<u64>(delay.count()), static_cast<u64>(repeat.count()));
+    }
+
+    bool EventTimer::AssignTimer(const std::chrono::hours& delay, const std::chrono::hours& repeat)
+    {
+        return AssignTimer(static_cast<u64>(delay.count()), static_cast<u64>(repeat.count()));
+    }
+
+    bool EventTimer::AssignTimer(const struct timeval& delay, const struct timeval& repeat)
+    {
+        return AssignTimer(static_cast<u64>(std::chrono::duration_cast<std::chrono::milliseconds>(delay).count()), static_cast<u64>(std::chrono::duration_cast<std::chrono::milliseconds>(repeat).count()));
+    }
+
+    bool EventTimer::AssignTimer(const u64 delay, const u64 repeat)
     {
         if (nullptr != event_base && nullptr != event_time)
         {
             if (ExistsInited() || ExistsStoped())
             {
-                if (0 == uv_is_active(reinterpret_cast<event_handle*>(event_time)))
+                if (uv_is_active(reinterpret_cast<event_handle*>(event_time)) || uv_timer_start(event_time, &EventTimer::OnNotify, delay, repeat))
                 {
-                    if (0 == uv_timer_start(event_time, &EventTimer::OnNotify, timer, retimer))
-                    {
-                        return ChangeStatus(Status::Exec);
-                    }
+                    return false;
                 }
+                return ChangeStatus(Status::Exec);
             }
         }
         return false;
