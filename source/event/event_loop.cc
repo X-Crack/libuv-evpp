@@ -83,12 +83,18 @@ namespace Evpp
             {
                 for (; 0 == SwitchDispatch();)
                 {
+#if defined(EVPP_USE_STL_COROUTINES)
                     if (JoinInTaskEx(std::bind(&EventLoop::ExecDispatchEvent, this, mode)).get())
                     {
                         EVENT_INFO("cyclic event stop running this: %p", this);
                         continue;
                     }
-
+#else
+                    if (ExecDispatchEvent(mode))
+                    {
+                        continue;
+                    }
+#endif
                     if (nullptr != function)
                     {
                         function(this);
@@ -304,7 +310,7 @@ namespace Evpp
 #else
         return static_cast<u32>(uv_thread_self());
 #endif
-    }
+}
 
     u32 EventLoop::EventThreadSelf()
     {
