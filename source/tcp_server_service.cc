@@ -99,10 +99,17 @@ namespace Evpp
             {
                 try
                 {
+#if defined(EVPP_USE_STL_COROUTINES)
                     if (JoinInTaskEx(std::bind((bool(TcpServerService::*)(const EventLoopHandler&, i32)) & TcpServerService::ExecDispatch, this, function, mode)).get())
                     {
                         break; // 说明LOOP结束
                     }
+#else
+                    if (ExecDispatch(function, mode))
+                    {
+                        break; // 说明LOOP结束
+                    }
+#endif
                 }
                 catch (...)
                 {

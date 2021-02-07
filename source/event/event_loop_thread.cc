@@ -150,7 +150,7 @@ namespace Evpp
 #else
                         if (CoroutineDispatch())
                         {
-                            continue;
+                            break;
                         }
 #endif
                     }
