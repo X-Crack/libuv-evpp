@@ -16,7 +16,7 @@ void stop_server(Evpp::TcpServerService* server)
 
 void printf_ex(Evpp::EventLoop* loop)
 {
-
+    EVENT_INFO("%d", loop->GetEventIndex());
 }
 
 int main(int argc, char* argv[])
@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
     server->SetMessageCallback();
     server->SetSendMsgCallback();
     std::thread T1(std::bind(&stop_server, server.get()));
-    server->ExecDispatchCoroutine(printf_ex);
+    server->ExecDispatchEx(printf_ex);
     T1.join();
     printf("exit\n");
     server.reset();

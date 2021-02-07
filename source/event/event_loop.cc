@@ -2,6 +2,7 @@
 #include <event_watcher.h>
 #include <event_timer_pool.h>
 #include <event_mutex.h>
+#include <event_coroutine.h>
 namespace Evpp
 {
     EventLoop::EventLoop(event_loop* loop, const u96 index) :
@@ -49,7 +50,7 @@ namespace Evpp
     {
         if (nullptr != event_base)
         {
-            if (ExecDispatchEx(mode))
+            if (ExecDispatchEvent(mode))
             {
                 return SwitchDispatch();
             }
@@ -62,7 +63,7 @@ namespace Evpp
     {
         if (nullptr != event_base)
         {
-            if (ExecDispatchEx(mode))
+            if (ExecDispatchEvent(mode))
             {
                 if (nullptr != function)
                 {
@@ -74,7 +75,7 @@ namespace Evpp
         return false;
     }
 
-    bool EventLoop::ExecLoopDispatch(const EventLoopHandler& function, i32 mode)
+    bool EventLoop::ExecDispatchEx(const EventLoopHandler& function, i32 mode)
     {
         if (nullptr != event_base)
         {
@@ -82,16 +83,19 @@ namespace Evpp
             {
                 for (; 0 == SwitchDispatch();)
                 {
-                    if (ExecDispatchEx(mode))
+                    if (JoinInTaskEx(std::bind(&EventLoop::ExecDispatchEvent, this, mode)).get())
                     {
-                        if (nullptr != function)
-                        {
-                            function(this);
-                        }
+                        EVENT_INFO("cyclic event stop running this: %p", this);
+                        continue;
                     }
-                }
 
-                EVENT_INFO("cyclic event stop running this: %p", this);
+                    if (nullptr != function)
+                    {
+                        function(this);
+                    }
+
+                    duration_sleep_until(0.00001);
+                }
                 return true;
             }
             assert(0);
@@ -318,7 +322,7 @@ namespace Evpp
         return this;
     }
 
-    bool EventLoop::ExecDispatchEx(i32 mode)
+    bool EventLoop::ExecDispatchEvent(i32 mode)
     {
         if (nullptr != event_base)
         {
@@ -327,7 +331,7 @@ namespace Evpp
                 ChangeStatus(Status::Exec);
             }
 
-            return (UV_RUN_DEFAULT == mode ? 0 : UV_RUN_ONCE || UV_RUN_NOWAIT == mode ? 1 : 0) == uv_run(event_base, static_cast<uv_run_mode>(mode));
+            return (UV_RUN_DEFAULT || UV_RUN_NOWAIT == mode ? 0 : UV_RUN_ONCE == mode ? 1 : 0) == uv_run(event_base, static_cast<uv_run_mode>(mode));
         }
         return false;
     }

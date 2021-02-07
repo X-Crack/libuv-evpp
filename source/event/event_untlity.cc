@@ -88,4 +88,21 @@ namespace Evpp
         }
         return false;
     }
+#ifdef H_OS_WINDOWS
+    void DoDispatchEvent()
+    {
+        MSG msg;
+        for (; PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE);)
+        {
+            if (GetMessage(&msg, NULL, 0, 0))
+            {
+                if (TranslateMessage(&msg) && DispatchMessage(&msg))
+                {
+                    continue;
+                }
+            }
+            break;
+        }
+    }
+#endif
 }

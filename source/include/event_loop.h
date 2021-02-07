@@ -21,7 +21,7 @@ namespace Evpp
         bool ExecDispatch(i32 mode = UV_RUN_DEFAULT);
         // TODO: TranslateMessage DispatchMessage
         bool ExecDispatch(const EventLoopHandler& function, i32 mode = UV_RUN_ONCE);
-        bool ExecLoopDispatch(const EventLoopHandler& function, i32 mode = UV_RUN_ONCE);
+        bool ExecDispatchEx(const EventLoopHandler& function, i32 mode = UV_RUN_ONCE);
         bool StopDispatch();
         bool StopDispatchEx();
     public:
@@ -49,7 +49,7 @@ namespace Evpp
         u96 GetEventIndex() { return event_index; };
         EventLoop* AddRefer();
     private:
-        NOFORCEINLINE bool ExecDispatchEx(i32 mode);
+        NOFORCEINLINE bool ExecDispatchEvent(i32 mode);
         NOFORCEINLINE bool SwitchDispatch();
     private:
         event_loop*                                                         event_base;

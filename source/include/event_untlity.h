@@ -70,6 +70,7 @@ namespace Evpp
     };
 
     NOFORCEINLINE bool EventLoopAlive(event_loop* loop);
+    NOFORCEINLINE void DoDispatchEvent();
 }
 
 #endif // __EVENT_UNTILITY_H__

@@ -15,23 +15,22 @@ namespace Evpp
         struct promise_type;
         using handle_type = std::experimental::coroutine_handle<promise_type>;
     public:
-        explicit EventCoroutine(handle_type handler_t) :handle(handler_t) { }
+        explicit EventCoroutine(handle_type handler_t) :handler(handler_t) { }
         virtual ~EventCoroutine()
         {
-            if (nullptr != handle)
+            if (nullptr != handler)
             {
-                handle.destroy();
+                handler.destroy();
             }
         }
         bool get()
         {
-            if (!(this->handle.done()))
+            if (0 == this->handler.done())
             {
-                handle.resume();
+                handler.resume();
                 {
-                    return handle.promise().value;
+                    return handler.promise().value;
                 }
-
             }
             return 0;
         }
@@ -75,10 +74,10 @@ namespace Evpp
                 throw;
             }
         private:
-            bool value;
+            bool                                                                        value;
         };
     private:
-        handle_type handle;
+        handle_type                                                                     handler;
     };
 
     struct EventCoroutineTask

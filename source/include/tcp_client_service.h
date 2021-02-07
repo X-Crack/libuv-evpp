@@ -19,7 +19,7 @@ namespace Evpp
         bool ExecDispatch(i32 mode = UV_RUN_DEFAULT);
         // 回调用于客户端界面消息刷新防止窗口假死
         bool ExecDispatch(const EventLoopHandler& function, i32 mode = UV_RUN_NOWAIT);
-        bool ExecLoopDispatch(const EventLoopHandler& function, i32 mode = UV_RUN_ONCE);
+        bool ExecDispatchEx(const EventLoopHandler& function, i32 mode = UV_RUN_ONCE);
         bool ExecDispatchCoroutine(const EventLoopHandler& function, i32 mode = UV_RUN_ONCE);
         bool StopDispatchEx();
     public:
