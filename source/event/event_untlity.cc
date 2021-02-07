@@ -74,4 +74,18 @@ namespace Evpp
             return true;
         }
     }
+
+    bool EventLoopAlive(event_loop* loop)
+    {
+        if (loop->active_handles == ~0U && loop->active_reqs.count == ~0U && loop->endgame_handles == reinterpret_cast<event_handle*>(~0))
+        {
+            return false;
+        }
+
+        if (loop->active_handles > 0 || loop->active_reqs.count > 0 || loop->endgame_handles != nullptr)
+        {
+            return true;
+        }
+        return false;
+    }
 }

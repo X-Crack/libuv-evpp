@@ -31,6 +31,14 @@ namespace Evpp
     {
         std::unique_lock<std::mutex> lock(event_mutex);
         {
+            for (u96 i = 0; i < event_loops.size(); ++i)
+            {
+                if (EventLoopAlive(event_loops[i].get()))
+                {
+                    assert(0);
+                }
+            }
+
             event_loops.clear();
         }
         return true;

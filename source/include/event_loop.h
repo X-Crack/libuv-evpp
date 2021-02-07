@@ -9,7 +9,6 @@
 namespace Evpp
 {
     class EventWatcher;
-    class EventSemaphore;
     class EventTimerPool;
     class EventLoop : public EventStatus, public std::enable_shared_from_this<EventLoop>
     {
@@ -45,13 +44,13 @@ namespace Evpp
         u32  EventThreadId();
         u32  EventThreadSelf();
     public:
-        event_loop* EventBasic() { return event_base; };
+        event_loop* EventBasic();
     public:
         u96 GetEventIndex() { return event_index; };
         EventLoop* AddRefer();
     private:
-        bool ExecDispatchEx(i32 mode);
-        bool SwitchDispatch();
+        NOFORCEINLINE bool ExecDispatchEx(i32 mode);
+        NOFORCEINLINE bool SwitchDispatch();
     private:
         event_loop*                                                         event_base;
         u96                                                                 event_index;
@@ -62,7 +61,6 @@ namespace Evpp
         u32                                                                 event_thread;
         std::atomic<u32>                                                    event_stop_flag;
         std::atomic<u32>                                                    event_stop_flag_ex;
-        std::unique_ptr<EventSemaphore>                                     event_mutex;
     };
 }
 #endif // __EVENT_LOOP_H__

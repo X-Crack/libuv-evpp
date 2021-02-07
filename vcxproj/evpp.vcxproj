@@ -61,8 +61,10 @@
     <ClInclude Include="..\source\include\event_curl.h" />
     <ClInclude Include="..\source\include\event_curl_config.h" />
     <ClInclude Include="..\source\include\event_curl_untlity.h" />
+    <ClInclude Include="..\source\include\event_duration.h" />
     <ClInclude Include="..\source\include\event_evpp.h" />
     <ClInclude Include="..\source\include\event_explicit.h" />
+    <ClInclude Include="..\source\include\event_libuv.h" />
     <ClInclude Include="..\source\include\event_logging.h" />
     <ClInclude Include="..\source\include\event_loop.h" />
     <ClInclude Include="..\source\include\event_loop_thread.h" />

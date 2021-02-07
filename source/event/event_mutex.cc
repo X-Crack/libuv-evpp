@@ -48,7 +48,7 @@ namespace Evpp
 
     void EventSemaphore::lock()
     {
-        semaphore.try_acquire_for(std::chrono::milliseconds(1000));
+        semaphore.acquire();
     }
 
     void EventSemaphore::unlock()

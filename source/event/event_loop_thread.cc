@@ -79,7 +79,7 @@ namespace Evpp
         {
             assert(0 == loop->EventThread());
 
-            if (uv_loop_alive(loop->EventBasic()))
+            if (EventLoopAlive(loop->EventBasic()))
             {
                 if (StopDispatch())
                 {
@@ -131,7 +131,7 @@ namespace Evpp
             {
                 for (; loop_mutex->try_lock();)
                 {
-                    if (uv_loop_alive(loop->EventBasic()))
+                    if (EventLoopAlive(loop->EventBasic()))
                     {
 #if defined(EVPP_USE_STL_COROUTINES)
                         try
@@ -149,7 +149,6 @@ namespace Evpp
                             continue;
                         }
 #endif
-                        EVPP_THREAD_YIELD();
                     }
                 }
 
@@ -172,7 +171,7 @@ namespace Evpp
     {
         if (nullptr != loop)
         {
-            if (uv_loop_alive(loop->EventBasic()))
+            if (EventLoopAlive(loop->EventBasic()))
             {
                 return loop->ExecDispatch(UV_RUN_ONCE);
             }
@@ -210,7 +209,7 @@ namespace Evpp
         {
             loop_thread->join();
             return true;
-}
+        }
         return false;
 #else
         return 0 == uv_thread_join(loop_thread.get());

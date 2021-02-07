@@ -2,7 +2,6 @@
 #include <event_watcher.h>
 #include <event_timer_pool.h>
 #include <event_mutex.h>
-#include <event_coroutine.h>
 namespace Evpp
 {
     EventLoop::EventLoop(event_loop* loop, const u96 index) :
@@ -15,7 +14,7 @@ namespace Evpp
         event_stop_flag(1),
         event_stop_flag_ex(1)
     {
-        event_mutex = std::make_unique<EventSemaphore>();
+
     }
 
     EventLoop::~EventLoop()
@@ -106,7 +105,7 @@ namespace Evpp
         {
             if (ExistsRuning())
             {
-                if (1 == uv_loop_alive(event_base) && 1 == event_stop_flag.load(std::memory_order_acquire))
+                if (EventLoopAlive(event_base) && 1 == event_stop_flag.load(std::memory_order_acquire))
                 {
                     if (RunInLoopEx(std::bind(&EventWatcher::DestroyAsync, event_watcher.get())))
                     {
@@ -127,7 +126,7 @@ namespace Evpp
         {
             if (EventThread() && ExistsRuning())
             {
-                if (0 == uv_loop_alive(event_base))
+                if (0 == EventLoopAlive(event_base))
                 {
                     return ChangeStatus(Status::Exec, Status::Stop);
                 }
@@ -308,6 +307,11 @@ namespace Evpp
         return event_thread;
     }
 
+    event_loop* EventLoop::EventBasic()
+    {
+        return event_base;
+    }
+
     EventLoop* EventLoop::AddRefer()
     {
         ++event_refer;
@@ -330,26 +334,31 @@ namespace Evpp
 
     bool EventLoop::SwitchDispatch()
     {
-        if (0 == uv_loop_alive(event_base))
+        if (EventLoopAlive(event_base))
         {
-            if (0 == event_stop_flag.load(std::memory_order_acquire))
-            {
-                if (0 == event_stop_flag.exchange(1, std::memory_order_release))
-                {
-                    if (0 == event_base->active_handles && 0 == uv_loop_close(event_base))
-                    {
-                        if (ChangeStatus(Status::Exec, Status::Stop))
-                        {
-                            event_stop_flag.notify_one();
-                            return true;
-                        }
-                        else
-                        {
-                            assert(0);
-                        }
-                    }
-                }
-            }
+            return false;
+        }
+
+        if (event_stop_flag.load(std::memory_order_acquire))
+        {
+            return false;
+        }
+
+        if (event_stop_flag.exchange(1, std::memory_order_release))
+        {
+            return false;
+        }
+
+        if (0 != event_base->active_handles || 0 != uv_loop_close(event_base))
+        {
+            assert(0);
+            return false;
+        }
+
+        if (ChangeStatus(Status::Exec, Status::Stop))
+        {
+            event_stop_flag.notify_one();
+            return true;
         }
         return false;
     }

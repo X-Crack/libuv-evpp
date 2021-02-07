@@ -260,5 +260,11 @@
     <ClInclude Include="..\source\include\event_evpp.h">
       <Filter>core</Filter>
     </ClInclude>
+    <ClInclude Include="..\source\include\event_libuv.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\event_duration.h">
+      <Filter>core</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -19,15 +19,15 @@ namespace Evpp
         explicit EventStatus();
         virtual ~EventStatus();
     public:
-        bool ChangeStatus(Status original, const Status other);
-        bool ChangeStatus(const Status other);
-        bool ExistsStarts(const Status other);
+        NOFORCEINLINE bool ChangeStatus(Status original, const Status other);
+        NOFORCEINLINE bool ChangeStatus(const Status other);
+        NOFORCEINLINE bool ExistsStarts(const Status other);
     public:
-        bool ExistsNoneed();
-        bool ExistsInited();
-        bool ExistsRuning();
-        bool ExistsStoped();
-        bool ExistsExited();
+        NOFORCEINLINE bool ExistsNoneed();
+        NOFORCEINLINE bool ExistsInited();
+        NOFORCEINLINE bool ExistsRuning();
+        NOFORCEINLINE bool ExistsStoped();
+        NOFORCEINLINE bool ExistsExited();
     protected:
         std::atomic<Status>                                      status;
     };

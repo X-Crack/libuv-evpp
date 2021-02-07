@@ -113,6 +113,8 @@ namespace Evpp
                 {
                     event_callback_ex(event_base, socket_list);
                 }
+
+                uv_freeaddrinfo(hints);
             }
         }
     }

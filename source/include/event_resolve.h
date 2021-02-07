@@ -22,7 +22,7 @@ namespace Evpp
         EventResolveHandler                                                         event_callback;
         EventResolveExHandler                                                       event_callback_ex;
         std::vector<std::string>                                                    socket_list;
-        socket_getaddrinfo* socket_resolve;
+        socket_getaddrinfo*                                                         socket_resolve;
         addrinfo                                                                    socket_hints;
     };
 }
