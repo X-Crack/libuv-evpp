@@ -38,6 +38,7 @@ namespace Evpp
         {
             if (event_base->EventThread())
             {
+
 #ifdef EVPP_USE_STL_THREAD
                 loop_thread.reset(new std::thread(std::bind(&EventLoopThread::WatcherCoroutineInThread, this)));
 #else
@@ -136,7 +137,10 @@ namespace Evpp
 #if defined(EVPP_USE_STL_COROUTINES)
                         try
                         {
-                            EventCoroutine::JoinInTaskEx(std::bind(&EventLoopThread::CoroutineDispatch, this));
+                            if (JoinInTaskEx(std::bind(&EventLoopThread::CoroutineDispatch, this)).get())
+                            {
+                                break; // 说明Loop退出了。
+                            }
                         }
                         catch (...)
                         {

@@ -9,8 +9,7 @@
 void stop_server(Evpp::TcpServerService* server)
 {
     Sleep(3000);
-    using namespace Evpp;
-    EVENT_COMPUTE_DURATION(stop_server);
+
     server->DestroyServer();
     printf("OK\n");
 }
@@ -23,12 +22,12 @@ void printf_ex(Evpp::EventLoop* loop)
 int main(int argc, char* argv[])
 {
     using namespace Evpp;
-
+    /*EVENT_COMPUTE_DURATION(main);*/
     std::unique_ptr<TcpServerService> server = std::make_unique<TcpServerService>();
     server->AddListenPort("0.0.0.0", 5555);
     server->AddListenPort("0.0.0.0", 6666);
     server->AddListenPort("0.0.0.0", 7777);
-    server->CreaterServer(1);
+    server->CreaterServer(8);
     server->SetAcceptsCallback();
     server->SetDisconsCallback();
     server->SetMessageCallback();

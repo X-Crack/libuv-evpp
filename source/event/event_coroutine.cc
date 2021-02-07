@@ -2,14 +2,17 @@
 namespace Evpp
 {
 #if defined(EVPP_USE_STL_COROUTINES)
-    EventCoroutine EventCoroutine::JoinInTask(const std::function<void()>& callback)
+    EventCoroutine JoinInTask(std::function<void()> callback)
     {
-        const bool var = co_await EventCoroutineTask(callback);
+        co_await EventCoroutineTask(callback);
+        co_return true;
     }
 
-    EventCoroutine EventCoroutine::JoinInTaskEx(const std::function<bool()>& callback)
+    EventCoroutine JoinInTaskEx(std::function<bool()> callback)
     {
-        const bool var = co_await EventCoroutineTaskEx(callback);
+        bool value = co_await EventCoroutineTaskEx(callback);
+
+        co_return value;
     }
 #endif
 }

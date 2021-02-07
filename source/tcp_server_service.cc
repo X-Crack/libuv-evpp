@@ -99,7 +99,10 @@ namespace Evpp
             {
                 try
                 {
-                    EventCoroutine::JoinInTask(std::bind((bool(TcpServerService::*)(const EventLoopHandler&, i32)) & TcpServerService::ExecDispatch, this, function, mode));
+                    if (JoinInTaskEx(std::bind((bool(TcpServerService::*)(const EventLoopHandler&, i32)) & TcpServerService::ExecDispatch, this, function, mode)).get())
+                    {
+                        break; // 说明LOOP结束
+                    }
                 }
                 catch (...)
                 {

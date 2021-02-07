@@ -116,17 +116,20 @@ namespace Evpp
 #if defined(EVPP_USE_STL_COROUTINES)
             try
             {
-                EventCoroutine::JoinInTask(std::bind(function));
+                if (JoinInTask(std::bind(function)).get())
+                {
+                    continue;
+                }
             }
             catch (...)
             {
                 break;
-            }
+        }
 #else
             function();
 #endif
-        }
     }
+}
 
     bool EventWatcher::SendAsyncNotifyEx(const Handler& function)
     {
@@ -148,7 +151,10 @@ namespace Evpp
 #if defined(EVPP_USE_STL_COROUTINES)
             try
             {
-                EventCoroutine::JoinInTask(std::bind(function));
+                if (JoinInTask(std::bind(function)).get())
+                {
+                    continue;
+                }
             }
             catch (...)
             {
@@ -157,6 +163,6 @@ namespace Evpp
 #else
             function();
 #endif
+                }
+            }
         }
-    }
-}
