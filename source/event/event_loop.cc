@@ -106,7 +106,7 @@ namespace Evpp
         {
             if (ExistsRuning())
             {
-                if (0 == event_base->stop_flag && 1 == event_stop_flag.load(std::memory_order_acquire))
+                if (1 == uv_loop_alive(event_base) && 1 == event_stop_flag.load(std::memory_order_acquire))
                 {
                     if (RunInLoopEx(std::bind(&EventWatcher::DestroyAsync, event_watcher.get())))
                     {
@@ -127,6 +127,11 @@ namespace Evpp
         {
             if (EventThread() && ExistsRuning())
             {
+                if (0 == uv_loop_alive(event_base))
+                {
+                    return ChangeStatus(Status::Exec, Status::Stop);
+                }
+
                 if (event_watcher->DestroyAsync())
                 {
                     while (event_watcher->DestroyQueue()) { EVPP_THREAD_YIELD(); };
@@ -348,4 +353,4 @@ namespace Evpp
         }
         return false;
     }
-    }
+}

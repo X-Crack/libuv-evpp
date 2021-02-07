@@ -21,27 +21,28 @@ void printf_ex(Evpp::EventLoop* loop)
 int main(int argc, char* argv[])
 {
     using namespace Evpp;
-    std::unique_ptr<TcpServerService> server = std::make_unique<TcpServerService>();
-    server->AddListenPort("0.0.0.0", 5555);
-    server->AddListenPort("0.0.0.0", 6666);
-    server->AddListenPort("0.0.0.0", 7777);
-    server->CreaterServer(1);
-    server->SetAcceptsCallback();
-    server->SetDisconsCallback();
-    server->SetMessageCallback();
-    server->SetSendMsgCallback();
-    std::thread T1(std::bind(&stop_server, server.get()));
-    server->ExecDispatchCoroutine(printf_ex);
-    T1.join();
-    printf("exit\n");
-    server.reset();
-    getchar();
-    //     EventLoop ev;
-    //     ev.InitialEvent();
-    //     Evpp::HttpDownload dow(&ev);
-    //     dow.InitialCurlGlobal(16);
-    //     dow.CreaterDownload(0, "https://www.163.com");
-    //     dow.CreaterDownload(0, "https://www.baidu.com");
+
+    //     std::unique_ptr<TcpServerService> server = std::make_unique<TcpServerService>();
+    //     server->AddListenPort("0.0.0.0", 5555);
+    //     server->AddListenPort("0.0.0.0", 6666);
+    //     server->AddListenPort("0.0.0.0", 7777);
+    //     server->CreaterServer(1);
+    //     server->SetAcceptsCallback();
+    //     server->SetDisconsCallback();
+    //     server->SetMessageCallback();
+    //     server->SetSendMsgCallback();
+    //     //std::thread T1(std::bind(&stop_server, server.get()));
+    //     server->ExecDispatchCoroutine(printf_ex);
+    //     //T1.join();
+    //     printf("exit\n");
+    //     server.reset();
+    //     getchar();
+    EventLoop ev;
+    ev.InitialEvent();
+    Evpp::HttpDownload dow(&ev);
+    dow.InitialCurlGlobal(16);
+    dow.CreaterDownload(0, "https://www.163.com");
+    dow.CreaterDownload(0, "https://www.baidu.com");
     //     dow.CreaterDownload(0, "https://www.baidu.com");
     //     dow.CreaterDownload(1, "https://www.163.com");
     //     dow.CreaterDownload(1, "https://www.qq.com");
@@ -70,11 +71,11 @@ int main(int argc, char* argv[])
     //     dow.CreaterDownload(15, "https://www.126.com");
     //     dow.CreaterDownload(15, "https://www.126.com");
     //     dow.CreaterDownload(15, "https://www.126.com");
-    //     ev.ExecDispatch();
-        //dow.CreaterDownload(1, "https://www.88.com");
-        //dow.CreaterDownload(1, "https://mirrors.aliyun.com/centos/8.3.2011/isos/x86_64/CentOS-8.3.2011-x86_64-dvd1.iso", 443);
-        //     Evpp::HttpDownloadMulti down(&ev);
-        //     down.CreaterDownload("https://github.com/v2ray/v2ray-core/releases/download/v4.28.2/v2ray-linux-mips32.zip");
+    ev.ExecDispatch();
+    //dow.CreaterDownload(1, "https://www.88.com");
+    //dow.CreaterDownload(1, "https://mirrors.aliyun.com/centos/8.3.2011/isos/x86_64/CentOS-8.3.2011-x86_64-dvd1.iso", 443);
+    //     Evpp::HttpDownloadMulti down(&ev);
+    //     down.CreaterDownload("https://github.com/v2ray/v2ray-core/releases/download/v4.28.2/v2ray-linux-mips32.zip");
 
     return 0;
     //     using namespace cpps; 
