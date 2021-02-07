@@ -1,6 +1,8 @@
 ﻿#include <event_loop.h>
 #include <event_watcher.h>
 #include <event_timer_pool.h>
+#include <event_mutex.h>
+#include <event_coroutine.h>
 namespace Evpp
 {
     EventLoop::EventLoop(event_loop* loop, const u96 index) :
@@ -13,7 +15,7 @@ namespace Evpp
         event_stop_flag(1),
         event_stop_flag_ex(1)
     {
-
+        event_mutex = std::make_unique<EventSemaphore>();
     }
 
     EventLoop::~EventLoop()
@@ -44,34 +46,15 @@ namespace Evpp
         return false;
     }
 
-    bool EventLoop::ExecDispatch()
-    {
-        if (nullptr != event_base)
-        {
-            if (ChangeStatus(Status::Init, Status::Exec))
-            {
-                if (ExecDispatch(UV_RUN_DEFAULT))
-                {
-                    return ChangeStatus(Status::Exec, Status::Stop);
-                }
-
-                EVENT_INFO("the cyclic event stopped running and an unexpected error occurred this: %p", this);
-
-                assert(0);
-            }
-        }
-        return false;
-    }
-
     bool EventLoop::ExecDispatch(i32 mode)
     {
         if (nullptr != event_base)
         {
-            if (ExistsInited())
+            if (ExecDispatchEx(mode))
             {
-                ChangeStatus(Status::Exec);
+                return SwitchDispatch();
             }
-            return (UV_RUN_ONCE || UV_RUN_NOWAIT == mode ? 1 : 0) == uv_run(event_base, static_cast<uv_run_mode>(mode));
+            return true;
         }
         return false;
     }
@@ -80,50 +63,37 @@ namespace Evpp
     {
         if (nullptr != event_base)
         {
-            if (ExecDispatch(mode))
+            if (ExecDispatchEx(mode))
             {
                 if (nullptr != function)
                 {
                     function(this);
                 }
             }
-            return true;
+            return SwitchDispatch();
         }
         return false;
     }
 
-    bool EventLoop::ExecDispatchEx(const EventLoopHandler& function, i32 mode)
+    bool EventLoop::ExecLoopDispatch(const EventLoopHandler& function, i32 mode)
     {
         if (nullptr != event_base)
         {
             if (ChangeStatus(Status::Init, Status::Exec))
             {
-                for (; 0 != event_base->active_handles && 1 == event_stop_flag.load(std::memory_order_acquire);)
+                for (; 0 == SwitchDispatch();)
                 {
-                    if (ExecDispatch(function, mode))
+                    if (ExecDispatchEx(mode))
                     {
-                        continue;
+                        if (nullptr != function)
+                        {
+                            function(this);
+                        }
                     }
                 }
 
                 EVENT_INFO("cyclic event stop running this: %p", this);
-
-                if (0 == event_stop_flag.exchange(1, std::memory_order_release))
-                {
-                    if (0 == event_base->active_handles && 0 == uv_loop_close(event_base))
-                    {
-                        if (ChangeStatus(Status::Exec, Status::Stop))
-                        {
-                            event_stop_flag.notify_one();
-                        }
-                    }
-                    else
-                    {
-                        assert(0);
-                    }
-                    return true;
-                }
-                return false;
+                return true;
             }
             assert(0);
         }
@@ -138,11 +108,11 @@ namespace Evpp
             {
                 if (0 == event_base->stop_flag && 1 == event_stop_flag.load(std::memory_order_acquire))
                 {
-                    if (event_watcher->DestroyAsync())
+                    if (RunInLoopEx(std::bind(&EventWatcher::DestroyAsync, event_watcher.get())))
                     {
-                        uv_stop(event_base);
                         event_stop_flag.store(0, std::memory_order_release);
                         event_stop_flag.wait(0, std::memory_order_relaxed);
+                        return true;
                     }
                 }
                 return ChangeStatus(Status::Stop, Status::Exit);
@@ -338,4 +308,44 @@ namespace Evpp
         ++event_refer;
         return this;
     }
-}
+
+    bool EventLoop::ExecDispatchEx(i32 mode)
+    {
+        if (nullptr != event_base)
+        {
+            if (ExistsInited())
+            {
+                ChangeStatus(Status::Exec);
+            }
+
+            return (UV_RUN_DEFAULT == mode ? 0 : UV_RUN_ONCE || UV_RUN_NOWAIT == mode ? 1 : 0) == uv_run(event_base, static_cast<uv_run_mode>(mode));
+        }
+        return false;
+    }
+
+    bool EventLoop::SwitchDispatch()
+    {
+        if (0 == uv_loop_alive(event_base))
+        {
+            if (0 == event_stop_flag.load(std::memory_order_acquire))
+            {
+                if (0 == event_stop_flag.exchange(1, std::memory_order_release))
+                {
+                    if (0 == event_base->active_handles && 0 == uv_loop_close(event_base))
+                    {
+                        if (ChangeStatus(Status::Exec, Status::Stop))
+                        {
+                            event_stop_flag.notify_one();
+                            return true;
+                        }
+                        else
+                        {
+                            assert(0);
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    }

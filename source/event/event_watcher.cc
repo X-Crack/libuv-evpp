@@ -4,6 +4,7 @@
 #include <blockingconcurrentqueue.h>
 #include <concurrentqueue.h>
 #include <event_coroutine.h>
+#include <future>
 namespace Evpp
 {
     struct Traits : public moodycamel::ConcurrentQueueDefaultTraits

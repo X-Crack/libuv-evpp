@@ -118,19 +118,6 @@ namespace Evpp
         return false;
     }
 
-    void on_uv_close1(uv_handle_t* handle)
-    {
-        if (handle != NULL)
-        {
-            delete handle;
-        }
-    }
-
-    void on_uv_walk1(uv_handle_t* handle, void* arg)
-    {
-        uv_close(handle, on_uv_close1);
-    }
-
     void EventLoopThread::CoroutineInThread()
     {
         if (nullptr == loop)
@@ -166,17 +153,19 @@ namespace Evpp
                     }
                 }
 
-                if (UV_EBUSY == uv_loop_close(loop->EventBasic()))
+                // uv_walk?
+                if (0 == uv_loop_close(loop->EventBasic()))
                 {
-                    assert(0);
+                    if (ChangeStatus(Status::Exec, Status::Stop))
+                    {
+                        return;
+                    }
                 }
-
-                if (ChangeStatus(Status::Exec, Status::Stop))
-                {
-                    assert(loop->ExistsStoped());
-                }
+                assert(0);
             }
+            return;
         }
+        assert(0);
     }
 
     bool EventLoopThread::CoroutineDispatch()
@@ -202,7 +191,7 @@ namespace Evpp
         {
             if (ExistsRuning())
             {
-                if (0 != loop->EventBasic()->active_handles)
+                if (2 == loop->EventBasic()->active_handles)
                 {
                     cv_signal.notify_one();
                     return true;
@@ -221,7 +210,7 @@ namespace Evpp
         {
             loop_thread->join();
             return true;
-        }
+}
         return false;
 #else
         return 0 == uv_thread_join(loop_thread.get());

@@ -129,7 +129,7 @@ namespace Evpp
         if (nullptr != socket && nullptr != server)
         {
 #ifdef H_OS_WINDOWS
-            if (!InitEventThreadPools(size))
+            if (0 == InitEventThreadPools(size))
             {
                 return false;
             }

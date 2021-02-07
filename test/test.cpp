@@ -25,13 +25,13 @@ int main(int argc, char* argv[])
     server->AddListenPort("0.0.0.0", 5555);
     server->AddListenPort("0.0.0.0", 6666);
     server->AddListenPort("0.0.0.0", 7777);
-    server->CreaterServer(8);
+    server->CreaterServer(1);
     server->SetAcceptsCallback();
     server->SetDisconsCallback();
     server->SetMessageCallback();
     server->SetSendMsgCallback();
     std::thread T1(std::bind(&stop_server, server.get()));
-    server->ExecDispatchEx(printf_ex);
+    server->ExecDispatchCoroutine(printf_ex);
     T1.join();
     printf("exit\n");
     server.reset();

@@ -64,15 +64,6 @@ namespace Evpp
         return false;
     }
 
-    bool TcpServerService::ExecDispatch()
-    {
-        if (nullptr != event_base)
-        {
-            return event_base->ExecDispatch();
-        }
-        return false;
-    }
-
     bool TcpServerService::ExecDispatch(const i32 mode)
     {
         if (nullptr != event_base)
@@ -91,11 +82,11 @@ namespace Evpp
         return false;
     }
 
-    bool TcpServerService::ExecDispatchEx(const EventLoopHandler& function, i32 mode)
+    bool TcpServerService::ExecLoopDispatch(const EventLoopHandler& function, i32 mode)
     {
         if (nullptr != event_base)
         {
-            return event_base->ExecDispatchEx(function, mode);
+            return event_base->ExecLoopDispatch(function, mode);
         }
         return false;
     }

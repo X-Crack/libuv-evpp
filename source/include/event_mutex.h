@@ -2,7 +2,6 @@
 #define __EVENT_MUTEX_H__
 #include <event_config.h>
 #include <atomic>
-#include <condition_variable>
 #include <semaphore>
 namespace Evpp
 {
@@ -23,10 +22,9 @@ namespace Evpp
     {
     public:
         explicit EventSemaphore();
-        virtual ~EventSemaphore() = delete;
     public:
-        void lock() noexcept;
-        void unlock() noexcept;
+        void lock();
+        void unlock();
     private:
         std::binary_semaphore                                           semaphore;
     };

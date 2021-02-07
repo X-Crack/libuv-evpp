@@ -41,17 +41,17 @@ namespace Evpp
     }
 
 
-    EventSemaphore::EventSemaphore() : semaphore(1)
+    EventSemaphore::EventSemaphore() : semaphore(0)
     {
 
     }
 
-    void EventSemaphore::lock() noexcept
+    void EventSemaphore::lock()
     {
-        semaphore.acquire();
+        semaphore.try_acquire_for(std::chrono::milliseconds(1000));
     }
 
-    void EventSemaphore::unlock() noexcept
+    void EventSemaphore::unlock()
     {
         semaphore.release();
     }

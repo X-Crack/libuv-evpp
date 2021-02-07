@@ -1,5 +1,4 @@
-﻿#pragma once
-#ifndef __EVENT_LOOP_H__
+﻿#ifndef __EVENT_LOOP_H__
 #define __EVENT_LOOP_H__
 #include <event_config.h>
 #include <event_status.h>
@@ -10,6 +9,7 @@
 namespace Evpp
 {
     class EventWatcher;
+    class EventSemaphore;
     class EventTimerPool;
     class EventLoop : public EventStatus, public std::enable_shared_from_this<EventLoop>
     {
@@ -19,11 +19,10 @@ namespace Evpp
     public:
         bool InitialEvent();
     public:
-        bool ExecDispatch();
-        bool ExecDispatch(i32 mode);
+        bool ExecDispatch(i32 mode = UV_RUN_DEFAULT);
         // TODO: TranslateMessage DispatchMessage
         bool ExecDispatch(const EventLoopHandler& function, i32 mode = UV_RUN_ONCE);
-        bool ExecDispatchEx(const EventLoopHandler& function, i32 mode = UV_RUN_ONCE);
+        bool ExecLoopDispatch(const EventLoopHandler& function, i32 mode = UV_RUN_ONCE);
         bool StopDispatch();
         bool StopDispatchEx();
     public:
@@ -51,6 +50,9 @@ namespace Evpp
         u96 GetEventIndex() { return event_index; };
         EventLoop* AddRefer();
     private:
+        bool ExecDispatchEx(i32 mode);
+        bool SwitchDispatch();
+    private:
         event_loop*                                                         event_base;
         u96                                                                 event_index;
         std::atomic<u32>                                                    event_refer;        // 当前 Loop session 个数 -> 用于动态线程判断分配新的线程使用
@@ -60,6 +62,7 @@ namespace Evpp
         u32                                                                 event_thread;
         std::atomic<u32>                                                    event_stop_flag;
         std::atomic<u32>                                                    event_stop_flag_ex;
+        std::unique_ptr<EventSemaphore>                                     event_mutex;
     };
 }
 #endif // __EVENT_LOOP_H__
