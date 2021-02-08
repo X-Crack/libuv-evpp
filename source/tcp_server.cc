@@ -75,6 +75,8 @@ namespace Evpp
     {
         if (nullptr != event_base)
         {
+            while (0 == ExistsRuning());
+
             if (event_base->EventThread())
             {
                 if (ChangeStatus(Status::Exec, Status::Stop))
@@ -345,10 +347,10 @@ namespace Evpp
 #else
                 return DefaultAcceptsEx(event_thread_pool->GetEventLoopEx(server->loop), server, index);
 #endif
+            }
         }
-    }
         return false;
-}
+    }
 
     void TcpServer::DefaultDiscons(EventLoop* loop, const u96 index)
     {

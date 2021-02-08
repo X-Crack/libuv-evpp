@@ -9,10 +9,7 @@ namespace Evpp
 
     EventShare::~EventShare()
     {
-        if (this->DestroyLoops())
-        {
-
-        }
+        this->DestroyLoops();
     }
 
     bool EventShare::CreaterLoops(const u96 size)
@@ -43,7 +40,6 @@ namespace Evpp
         }
         return true;
     }
-
 
     u32 EventShare::GetHardwareThreads()
     {

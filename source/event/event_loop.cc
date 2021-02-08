@@ -322,8 +322,16 @@ namespace Evpp
                 ChangeStatus(Status::Exec);
             }
 
-            return 0 == uv_run(event_base, static_cast<uv_run_mode>(mode));
-            //return (UV_RUN_DEFAULT || UV_RUN_NOWAIT == mode ? 0 : UV_RUN_ONCE == mode ? 1 : 0) == uv_run(event_base, static_cast<uv_run_mode>(mode));
+            if (ExistsStoped() || ExistsExited())
+            {
+                return true;
+            }
+
+            if (EventLoopAlive(event_base))
+            {
+                return 0 == uv_run(event_base, static_cast<uv_run_mode>(mode));
+            }
+            return true;
         }
         return false;
     }
@@ -334,6 +342,11 @@ namespace Evpp
 
     bool EventLoop::SwitchDispatch()
     {
+        if (ExistsStoped() || ExistsExited())
+        {
+            return true;
+        }
+
         if (EventLoopAlive(event_base))
         {
             return false;
@@ -344,11 +357,6 @@ namespace Evpp
             return false;
         }
 
-        if (0 == event_base->stop_flag)
-        {
-            uv_stop(event_base);
-        }
-
         if (1 != event_stop_flag.exchange(0, std::memory_order_release))
         {
             return false;
@@ -356,12 +364,23 @@ namespace Evpp
 
         if (ChangeStatus(Status::Exec, Status::Stop))
         {
-            event_stop_flag.notify_one();
+            if (0 == event_base->stop_flag)
             {
-                if (0 != event_base->active_handles || 0 != uv_loop_close(event_base))
-                {
-                    uv_walk(event_base, &EventLoop::ObserveHandler, 0);
-                }
+                uv_stop(event_base);
+            }
+
+            if (nullptr != event_base->data)
+            {
+                event_base->data = nullptr;
+            }
+
+            if (0 == uv_loop_close(event_base))
+            {
+                event_stop_flag.notify_one();
+            }
+            else
+            {
+                uv_walk(event_base, &EventLoop::ObserveHandler, 0);
             }
             return true;
         }

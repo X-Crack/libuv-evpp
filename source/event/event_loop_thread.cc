@@ -38,7 +38,6 @@ namespace Evpp
         {
             if (event_base->EventThread())
             {
-
 #ifdef EVPP_USE_STL_THREAD
                 loop_thread.reset(new std::thread(std::bind(&EventLoopThread::WatcherCoroutineInThread, this)));
 #else

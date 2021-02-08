@@ -8,10 +8,12 @@
 
 void stop_server(Evpp::TcpServerService* server)
 {
-    Sleep(3000);
-
-    server->DestroyServer();
-    printf("OK\n");
+    if (server->DestroyServer())
+    {
+        printf("OK\n");
+        return;
+    }
+    assert(0);
 }
 
 void printf_ex(Evpp::EventLoop* loop)
@@ -23,23 +25,35 @@ int main(int argc, char* argv[])
 {
     using namespace Evpp;
 
-    std::unique_ptr<TcpServerService> server = std::make_unique<TcpServerService>();
-    server->AddListenPort("0.0.0.0", 5555);
-    server->AddListenPort("0.0.0.0", 6666);
-    server->AddListenPort("0.0.0.0", 7777);
-    server->AddListenPort("::1", 5555);
-    server->AddListenPort("::1", 6666);
-    server->AddListenPort("::1", 7777);
-    server->CreaterServer(2);
-    server->SetAcceptsCallback();
-    server->SetDisconsCallback();
-    server->SetMessageCallback();
-    server->SetSendMsgCallback();
-    std::thread T1(std::bind(&stop_server, server.get()));
-    server->ExecDispatchCoroutine(printf_ex);
-    T1.join();
-    printf("exit\n");
-    server.reset();
+    while (true)
+    {
+        std::unique_ptr<TcpServerService> server = std::make_unique<TcpServerService>();
+        server->AddListenPort("0.0.0.0", 5555);
+        server->AddListenPort("0.0.0.0", 6666);
+        server->AddListenPort("0.0.0.0", 7777);
+        server->AddListenPort("::1", 5555);
+        server->AddListenPort("::1", 6666);
+        server->AddListenPort("::1", 7777);
+        if (0 == server->CreaterServer(8))
+        {
+            assert(0);
+        }
+        else
+        {
+            //Sleep(1000);
+        }
+        server->SetAcceptsCallback();
+        server->SetDisconsCallback();
+        server->SetMessageCallback();
+        server->SetSendMsgCallback();
+        std::thread T1(std::bind(&stop_server, server.get()));
+        server->ExecDispatchCoroutine(printf_ex);
+        T1.join();
+        printf("exit\n");
+        server.reset();
+
+    }
+
     getchar();
     //     EventLoop ev;
     //     ev.InitialEvent();

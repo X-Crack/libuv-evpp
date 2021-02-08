@@ -124,12 +124,12 @@ namespace Evpp
             catch (...)
             {
                 break;
-        }
+            }
 #else
             function();
 #endif
+        }
     }
-}
 
     bool EventWatcher::SendAsyncNotifyEx(const Handler& function)
     {
@@ -163,6 +163,6 @@ namespace Evpp
 #else
             function();
 #endif
-                }
-            }
         }
+    }
+}
