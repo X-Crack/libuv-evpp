@@ -62,8 +62,6 @@ namespace Evpp
         const u96 GetPlexingIndex(u96 index = 0);
         const u96 GetClientIndex();
     private:
-        void DefaultClose(event_handle* handler);
-    private:
         static void OnDefaultAccepts(socket_stream* handler, int status);
         static void OnDefaultClose(event_handle* handler);
         static void OnDefaultShutdown(socket_shutdown* request, int status);
