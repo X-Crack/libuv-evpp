@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
 {
     using namespace Evpp;
 
-    while (true)
+    //while (true)
     {
         std::unique_ptr<TcpServerService> server = std::make_unique<TcpServerService>();
         server->AddListenPort("0.0.0.0", 5555);
@@ -46,9 +46,9 @@ int main(int argc, char* argv[])
         server->SetDisconsCallback();
         server->SetMessageCallback();
         server->SetSendMsgCallback();
-        std::thread T1(std::bind(&stop_server, server.get()));
+        //std::thread T1(std::bind(&stop_server, server.get()));
         server->ExecDispatchCoroutine(printf_ex);
-        T1.join();
+        //T1.join();
         printf("exit\n");
         server.reset();
 

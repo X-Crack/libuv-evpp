@@ -289,25 +289,19 @@ namespace Evpp
     {
         if (nullptr != loop && nullptr != client)
         {
-            if (0 == uv_tcp_init(loop->EventBasic(), client))
-            {
-                if (0 == uv_accept(server, reinterpret_cast<socket_stream*>(client)))
-                {
-                    if (!ExistsRuning())
-                    {
-                        return 0 == uv_tcp_keepalive(client, 1, tcp_keepalive.load());
-                    }
-                    
-                    if (loop->RunInLoopEx(std::bind(&TcpServer::SystemShutdown, this, client)))
-                    {
-                        return false;
-                    }
-                }
-            }
-
-            if (loop->RunInLoopEx(std::bind(&TcpServer::SystemClose, this, client)))
+            if (uv_tcp_init(loop->EventBasic(), client))
             {
                 return false;
+            }
+
+            if (uv_accept(server, reinterpret_cast<socket_stream*>(client)))
+            {
+                return false;
+            }
+
+            if (ExistsRuning())
+            {
+                return 0 == uv_tcp_keepalive(client, 1, tcp_keepalive.load());
             }
         }
         return false;
@@ -323,12 +317,9 @@ namespace Evpp
             {
                 if (InitialAccepts(loop, server, client))
                 {
-                    if (ExistsRuning())
-                    {
-                        return InitialSession(loop, client, index);
-                    }
-                    return loop->RunInLoopEx(std::bind(&TcpServer::SystemShutdown, this, client));
+                    return InitialSession(loop, client, index);
                 }
+                return loop->RunInLoopEx(std::bind(&TcpServer::SystemShutdown, this, client));
             }
 #ifndef H_OS_WINDOWS
         }
