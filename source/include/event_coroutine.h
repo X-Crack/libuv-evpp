@@ -83,7 +83,7 @@ namespace Evpp
     struct EventCoroutineTask
     {
     public:
-        explicit EventCoroutineTask(std::function<void()> callback) : function(callback) { }
+        explicit EventCoroutineTask(std::function<void()>&& callback) : function(std::move(callback)) { }
     public:
         bool await_ready()
         {
@@ -106,7 +106,7 @@ namespace Evpp
     struct EventCoroutineTaskEx
     {
     public:
-        explicit EventCoroutineTaskEx(std::function<bool()> callback) : function(callback) { }
+        explicit EventCoroutineTaskEx(std::function<bool()>&& callback) : function(std::move(callback)) { }
     public:
         bool await_ready()
         {
@@ -126,8 +126,8 @@ namespace Evpp
         std::function<bool()>                                            function;
     };
 
-    EventCoroutine JoinInTask(std::function<void()> callback);
-    EventCoroutine JoinInTaskEx(std::function<bool()> callback);
+    EventCoroutine JoinInTask(std::function<void()>&& callback);
+    EventCoroutine JoinInTaskEx(std::function<bool()>&& callback);
 #endif
 }
 #endif // __EVENT_COROUTINE_H__
