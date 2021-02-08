@@ -22,6 +22,7 @@ namespace Evpp
         bool GetPeerInfo(socket_tcp* handler, SocketInfoEx* socket);
     private:
         bool GetSockName(socket_tcp* handler, struct sockaddr* addr, i32 size);
+        bool GetSockName6(socket_tcp* handler, struct sockaddr* addr, i32 size);
         bool GetPeerName(socket_tcp* handler, struct sockaddr* addr, i32 size);
     private:
         std::unordered_map<u96, std::shared_ptr<SocketInfoEx>>                                          tcp_info;

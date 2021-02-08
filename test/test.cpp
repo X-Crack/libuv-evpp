@@ -27,6 +27,9 @@ int main(int argc, char* argv[])
     server->AddListenPort("0.0.0.0", 5555);
     server->AddListenPort("0.0.0.0", 6666);
     server->AddListenPort("0.0.0.0", 7777);
+    server->AddListenPort("::1", 5555);
+    server->AddListenPort("::1", 6666);
+    server->AddListenPort("::1", 7777);
     server->CreaterServer(2);
     server->SetAcceptsCallback();
     server->SetDisconsCallback();

@@ -55,6 +55,7 @@ namespace Evpp
         union
         {
             u16                 family;
+            sockaddr_storage    addr_storage;
             sockaddr            addr;
             sockaddr_in         addr4;
             sockaddr_in6        addr6;

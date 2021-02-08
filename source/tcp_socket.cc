@@ -55,7 +55,7 @@ namespace Evpp
     {
         String address[256];
         // 获取与某个套接字关联的本地协议地址
-        if (GetSockName(handler, &socket->sockname.addr, sizeof(struct sockaddr)))
+        if (GetSockName(handler, reinterpret_cast<struct sockaddr *>(&socket->sockname.addr_storage), sizeof(struct sockaddr_storage)))
         {
             if (AF_INET == socket->sockname.family)
             {
@@ -86,7 +86,7 @@ namespace Evpp
     {
         String address[256];
         // 获取与某个套接字关联的外地协议地址
-        if (GetPeerName(handler, &socket->peername.addr, sizeof(struct sockaddr)))
+        if (GetSockName(handler, reinterpret_cast<struct sockaddr *>(&socket->sockname.addr_storage), sizeof(struct sockaddr_storage)))
         {
             if (AF_INET == socket->peername.family)
             {
@@ -114,6 +114,15 @@ namespace Evpp
     }
 
     bool TcpSocket::GetSockName(socket_tcp* handler, struct sockaddr* addr, i32 size)
+    {
+        if (nullptr != handler)
+        {
+            return 0 == uv_tcp_getsockname(handler, addr, &size);
+        }
+        return false;
+    }
+
+    bool GetSockName6(socket_tcp* handler, struct sockaddr* addr, i32 size)
     {
         if (nullptr != handler)
         {
