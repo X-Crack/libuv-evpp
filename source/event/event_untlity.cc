@@ -86,6 +86,7 @@ namespace Evpp
         {
             return true;
         }
+
         return false;
     }
 #ifdef H_OS_WINDOWS

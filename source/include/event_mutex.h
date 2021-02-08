@@ -23,8 +23,8 @@ namespace Evpp
     public:
         explicit EventSemaphore();
     public:
-        void lock();
-        void unlock();
+        void lock() noexcept;
+        void unlock() noexcept;
     private:
         std::binary_semaphore                                           semaphore;
     };

@@ -13,8 +13,7 @@ namespace Evpp
         event_watcher(std::make_unique<EventWatcher>(this)),
         event_timer_pool(std::make_unique<EventTimerPool>(this)),
         event_thread(0),
-        event_stop_flag(1),
-        event_stop_flag_ex(1)
+        event_stop_flag(1)
     {
 
     }
@@ -97,6 +96,7 @@ namespace Evpp
                         function(this);
                     }
                 }
+
                 return true;
             }
             assert(0);
@@ -110,16 +110,20 @@ namespace Evpp
         {
             if (ExistsRuning())
             {
-                if (EventLoopAlive(event_base) && 1 == event_stop_flag.load(std::memory_order_acquire))
+                if (0 == EventLoopAlive(event_base))
+                {
+                    return ChangeStatus(Status::Stop, Status::Exit);
+                }
+
+                if (1 == event_stop_flag.load(std::memory_order_acquire))
                 {
                     if (RunInLoopEx(std::bind(&EventWatcher::DestroyAsync, event_watcher.get())))
                     {
-                        event_stop_flag.store(0, std::memory_order_release);
-                        event_stop_flag.wait(0, std::memory_order_relaxed);
-                        return true;
+                        event_stop_flag.wait(1, std::memory_order_relaxed);
+                        return ChangeStatus(Status::Stop, Status::Exit);
                     }
                 }
-                return ChangeStatus(Status::Stop, Status::Exit);
+                assert(0);
             }
         }
         return false;
@@ -133,31 +137,28 @@ namespace Evpp
             {
                 if (0 == EventLoopAlive(event_base))
                 {
-                    return ChangeStatus(Status::Exec, Status::Stop);
+                    return ChangeStatus(Status::Stop, Status::Exit);
                 }
 
-                if (event_watcher->DestroyAsync())
+                if (1 == event_stop_flag.load(std::memory_order_acquire))
                 {
-                    while (event_watcher->DestroyQueue()) { EVPP_THREAD_YIELD(); };
-
-                    if (0 == event_base->stop_flag)
+                    if (event_watcher->DestroyAsync())
                     {
-                        uv_stop(event_base);
-                    }
+                        while (event_watcher->DestroyQueue()) { EVPP_THREAD_YIELD(); };
 
-                    if (event_stop_flag_ex)
-                    {
-                        event_stop_flag_ex.store(0, std::memory_order_release);
-                        event_stop_flag_ex.notify_one();
+                        if (0 == event_base->stop_flag)
+                        {
+                            uv_stop(event_base);
+                        }
+                        return ChangeStatus(Status::Stop, Status::Exit);
                     }
-
-                    return ChangeStatus(Status::Exec, Status::Stop);
                 }
+                return false;
             }
 
             if (RunInLoopEx(std::bind(&EventLoop::StopDispatchEx, this)))
             {
-                event_stop_flag_ex.wait(1, std::memory_order_relaxed);
+                event_stop_flag.wait(1, std::memory_order_relaxed);
             }
             return true;
         }
@@ -331,8 +332,8 @@ namespace Evpp
             {
                 ChangeStatus(Status::Exec);
             }
-
-            return (UV_RUN_DEFAULT || UV_RUN_NOWAIT == mode ? 0 : UV_RUN_ONCE == mode ? 1 : 0) == uv_run(event_base, static_cast<uv_run_mode>(mode));
+            return 0 == uv_run(event_base, static_cast<uv_run_mode>(mode));
+            //return (UV_RUN_DEFAULT || UV_RUN_NOWAIT == mode ? 0 : UV_RUN_ONCE == mode ? 1 : 0) == uv_run(event_base, static_cast<uv_run_mode>(mode));
         }
         return false;
     }
@@ -344,25 +345,26 @@ namespace Evpp
             return false;
         }
 
-        if (event_stop_flag.load(std::memory_order_acquire))
+        if (0 == event_stop_flag.load(std::memory_order_acquire))
         {
             return false;
         }
 
-        if (event_stop_flag.exchange(1, std::memory_order_release))
+        if (1 != event_stop_flag.exchange(0, std::memory_order_release))
         {
-            return false;
-        }
-
-        if (0 != event_base->active_handles || 0 != uv_loop_close(event_base))
-        {
-            assert(0);
             return false;
         }
 
         if (ChangeStatus(Status::Exec, Status::Stop))
         {
             event_stop_flag.notify_one();
+            {
+                if (0 != event_base->active_handles || 0 != uv_loop_close(event_base))
+                {
+                    assert(0);
+                    return false;
+                }
+            }
             return true;
         }
         return false;

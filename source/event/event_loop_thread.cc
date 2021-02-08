@@ -132,39 +132,34 @@ namespace Evpp
             {
                 for (; loop_mutex->try_lock();)
                 {
-                    if (EventLoopAlive(loop->EventBasic()))
-                    {
 #if defined(EVPP_USE_STL_COROUTINES)
-                        try
+                    try
+                    {
+                        if (JoinInTaskEx(std::bind(&EventLoopThread::CoroutineDispatch, this)).get())
                         {
-                            if (JoinInTaskEx(std::bind(&EventLoopThread::CoroutineDispatch, this)).get())
+                            if (0 == EventLoopAlive(loop->EventBasic()))
                             {
-                                break; // 说明Loop退出了。
+                                continue;
                             }
                         }
-                        catch (...)
-                        {
-                            EVENT_INFO("during the operation of the coroutine there may be some problems please check carefully");
-                            break;
-                        }
-#else
-                        if (CoroutineDispatch())
-                        {
-                            break;
-                        }
-#endif
                     }
+                    catch (...)
+                    {
+                        EVENT_INFO("during the operation of the coroutine there may be some problems please check carefully");
+                        break;
+                    }
+#else
+                    if (CoroutineDispatch())
+                    {
+                        break;
+                    }
+#endif
                 }
 
-                // uv_walk?
-                if (0 == uv_loop_close(loop->EventBasic()))
+                if (ChangeStatus(Status::Exec, Status::Stop))
                 {
-                    if (ChangeStatus(Status::Exec, Status::Stop))
-                    {
-                        return;
-                    }
+                    return;
                 }
-                assert(0);
             }
             return;
         }
@@ -175,10 +170,7 @@ namespace Evpp
     {
         if (nullptr != loop)
         {
-            if (EventLoopAlive(loop->EventBasic()))
-            {
-                return loop->ExecDispatch(UV_RUN_ONCE);
-            }
+            return loop->ExecDispatch(UV_RUN_ONCE);
         }
         return false;
     }
@@ -232,5 +224,5 @@ namespace Evpp
                 }
             }
         }
-    }
+}
 }

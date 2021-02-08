@@ -46,12 +46,12 @@ namespace Evpp
 
     }
 
-    void EventSemaphore::lock()
+    void EventSemaphore::lock() noexcept
     {
         semaphore.acquire();
     }
 
-    void EventSemaphore::unlock()
+    void EventSemaphore::unlock() noexcept
     {
         semaphore.release();
     }

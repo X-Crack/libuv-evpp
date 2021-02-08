@@ -60,7 +60,6 @@ namespace Evpp
         std::unordered_map<u96, std::unique_ptr<std::any>>                  event_context;
         u32                                                                 event_thread;
         std::atomic<u32>                                                    event_stop_flag;
-        std::atomic<u32>                                                    event_stop_flag_ex;
     };
 }
 #endif // __EVENT_LOOP_H__
