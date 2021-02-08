@@ -75,31 +75,26 @@ namespace Evpp
     {
         if (nullptr != event_base)
         {
-            if (ChangeStatus(Status::Init, Status::Exec))
+            for (; 0 == SwitchDispatch();)
             {
-                for (; 0 == SwitchDispatch();)
-                {
 #if defined(EVPP_USE_STL_COROUTINES)
-                    if (JoinInTaskEx(std::bind(&EventLoop::ExecDispatchEvent, this, mode)).get())
-                    {
-                        EVENT_INFO("cyclic event stop running this: %p", this);
-                        continue; // uv_run 的生命结束 因为没有handlers存活
-                    }
-#else
-                    if (ExecDispatchEvent(mode))
-                    {
-                        continue;
-                    }
-#endif
-                    if (nullptr != function)
-                    {
-                        function(this);
-                    }
+                if (JoinInTaskEx(std::bind(&EventLoop::ExecDispatchEvent, this, mode)).get())
+                {
+                    EVENT_INFO("cyclic event stop running this: %p", this);
+                    continue; // uv_run 的生命结束 因为没有handlers存活
                 }
-
-                return true;
+#else
+                if (ExecDispatchEvent(mode))
+                {
+                    continue;
+                }
+#endif
+                if (nullptr != function)
+                {
+                    function(this);
+                }
             }
-            assert(0);
+            return true;
         }
         return false;
     }
@@ -145,11 +140,6 @@ namespace Evpp
                     if (event_watcher->DestroyAsync())
                     {
                         while (event_watcher->DestroyQueue()) { EVPP_THREAD_YIELD(); };
-
-                        if (0 == event_base->stop_flag)
-                        {
-                            uv_stop(event_base);
-                        }
                         return ChangeStatus(Status::Stop, Status::Exit);
                     }
                 }
@@ -337,6 +327,10 @@ namespace Evpp
         }
         return false;
     }
+    void uv_walk_cb(uv_handle_t* handle, void* arg)
+    {
+
+    }
 
     bool EventLoop::SwitchDispatch()
     {
@@ -350,6 +344,11 @@ namespace Evpp
             return false;
         }
 
+        if (0 == event_base->stop_flag)
+        {
+            uv_stop(event_base);
+        }
+
         if (1 != event_stop_flag.exchange(0, std::memory_order_release))
         {
             return false;
@@ -361,12 +360,20 @@ namespace Evpp
             {
                 if (0 != event_base->active_handles || 0 != uv_loop_close(event_base))
                 {
-                    assert(0);
-                    return false;
+                    uv_walk(event_base, &EventLoop::ObserveHandler, 0);
                 }
             }
             return true;
         }
         return false;
+    }
+
+    void EventLoop::ObserveHandler(event_handle* handler, void* arg)
+    {
+        if (nullptr != handler)
+        {
+            EVENT_INFO("%s not closed check your code", uv_handle_type_name(handler->type));
+            assert(0);
+        }
     }
 }

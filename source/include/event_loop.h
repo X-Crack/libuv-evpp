@@ -51,6 +51,7 @@ namespace Evpp
     private:
         NOFORCEINLINE bool ExecDispatchEvent(i32 mode);
         NOFORCEINLINE bool SwitchDispatch();
+        static void ObserveHandler(event_handle* handler, void* arg);
     private:
         event_loop*                                                         event_base;
         u96                                                                 event_index;

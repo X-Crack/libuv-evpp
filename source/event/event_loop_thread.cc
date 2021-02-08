@@ -82,7 +82,7 @@ namespace Evpp
 
             if (EventLoopAlive(loop->EventBasic()))
             {
-                if (StopDispatch())
+                if (loop->StopDispatchEx())
                 {
                     if (loop_mutex->try_unlock())
                     {
@@ -108,15 +108,6 @@ namespace Evpp
         }
 
         return nullptr;
-    }
-
-    bool EventLoopThread::StopDispatch()
-    {
-        if (nullptr != loop)
-        {
-            return loop->StopDispatchEx();
-        }
-        return false;
     }
 
     void EventLoopThread::CoroutineInThread()
@@ -224,5 +215,5 @@ namespace Evpp
                 }
             }
         }
-}
+    }
 }

@@ -20,11 +20,14 @@ namespace Evpp
 
     HttpDownloadMulti::~HttpDownloadMulti()
     {
-        if (nullptr != http_curl_global_handler)
+        if (DestroyDownload())
         {
-            if (CURLMcode::CURLM_OK != curl_multi_cleanup(http_curl_global_handler))
+            if (nullptr != http_curl_global_handler)
             {
-                EVENT_INFO("cleanup curl error");
+                if (CURLMcode::CURLM_OK != curl_multi_cleanup(http_curl_global_handler))
+                {
+                    EVENT_INFO("cleanup curl error");
+                }
             }
         }
     }
@@ -63,6 +66,12 @@ namespace Evpp
     bool HttpDownloadMulti::CreaterDownload(const u96 index, const std::string& host, const u32 port)
     {
         return http_download_service->CreaterDownload(index, event_base, http_curl_global_handler, host, port);
+    }
+
+    bool HttpDownloadMulti::DestroyDownload()
+    {
+        event_timer->KilledTimer();
+        return true;
     }
 
     void HttpDownloadMulti::SetMessageCallback(const u96 index, const CurlMessageHandler& message)

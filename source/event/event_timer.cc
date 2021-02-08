@@ -120,7 +120,7 @@ namespace Evpp
 
     void EventTimer::KilledTimer()
     {
-        if (StopedTimer())
+        if (ExistsStoped())
         {
             if (ChangeStatus(Status::Stop, Status::Exit))
             {

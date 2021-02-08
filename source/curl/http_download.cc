@@ -159,10 +159,12 @@ namespace Evpp
         std::unique_lock<std::mutex> lock(http_download_task_mutex);
         if (http_download_task.find(index) != http_download_task.end())
         {
-            if (event_loop_thread_pool->DestroyEventThread(index))
+            http_download_task.erase(index);
             {
-                http_download_task.erase(index);
-                return true;
+                if (event_loop_thread_pool->DestroyEventThread(index))
+                {
+                    return true;
+                }
             }
         }
 

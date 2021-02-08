@@ -20,6 +20,7 @@ namespace Evpp
         bool InitialDownload(CURLM* multi);
         bool CreaterDownload(const u96 index, const String* host, const u32 port);
         bool CreaterDownload(const u96 index, const std::string& host, const u32 port);
+        bool DestroyDownload();
     public:
         void SetMessageCallback(const u96 index, const CurlMessageHandler& message);
         void SetProgressCallback(const u96 index, const CurlProgressHandler& progress);
