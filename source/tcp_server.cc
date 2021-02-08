@@ -261,33 +261,37 @@ namespace Evpp
 
     bool TcpServer::InitialSession(EventLoop* loop, socket_tcp* client, const u96 index)
     {
-        if (loop->EventThread())
+        if (nullptr != loop && nullptr != client)
         {
-            if (ExistsRuning())
+            if (loop->EventThread())
             {
-                if (CreaterSession(loop, client, index))
+                if (ExistsRuning())
                 {
-                    if (tcp_socket->AddSockInfo(client, index))
+                    if (CreaterSession(loop, client, index))
                     {
-                        if (nullptr != socket_accepts)
+                        if (tcp_socket->AddSockInfo(client, index))
                         {
-                            if (socket_accepts(loop, GetSession(index), index))
+                            if (nullptr != socket_accepts)
                             {
-                                return true;
+                                if (socket_accepts(loop, GetSession(index), index))
+                                {
+                                    return true;
+                                }
                             }
                         }
+                        return Close(index);
                     }
-                    return Close(index);
                 }
+                return SystemShutdown(client);
             }
-            return SystemShutdown(client);
+            return loop->RunInLoopEx(std::bind(&TcpServer::InitialSession, this, loop, client, index));
         }
-        return loop->RunInLoopEx(std::bind(&TcpServer::InitialSession, this, loop, client, index));
+        return false;
     }
 
     bool TcpServer::InitialAccepts(EventLoop* loop, socket_stream* server, socket_tcp* client)
     {
-        if (nullptr != loop && nullptr != client)
+        if (nullptr != loop && nullptr != server && nullptr != client)
         {
             if (uv_tcp_init(loop->EventBasic(), client))
             {
@@ -313,11 +317,14 @@ namespace Evpp
         if (loop->EventThread())
         {
 #endif
-            if (nullptr != event_thread_pool && nullptr != loop && nullptr != server)
+            if (nullptr != loop && nullptr != server && nullptr != client)
             {
                 if (InitialAccepts(loop, server, client))
                 {
-                    return InitialSession(loop, client, index);
+                    if (InitialSession(loop, client, index))
+                    {
+                        return true;
+                    }
                 }
                 return loop->RunInLoopEx(std::bind(&TcpServer::SystemShutdown, this, client));
             }
