@@ -86,7 +86,7 @@ namespace Evpp
     {
         String address[256];
         // 获取与某个套接字关联的外地协议地址
-        if (GetSockName(handler, reinterpret_cast<struct sockaddr *>(&socket->sockname.addr_storage), sizeof(struct sockaddr_storage)))
+        if (GetSockName(handler, reinterpret_cast<struct sockaddr *>(&socket->peername.addr_storage), sizeof(struct sockaddr_storage)))
         {
             if (AF_INET == socket->peername.family)
             {
