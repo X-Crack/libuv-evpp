@@ -139,6 +139,7 @@ namespace Evpp
                     if (event_watcher->DestroyAsync())
                     {
                         while (event_watcher->DestroyQueue()) { EVPP_THREAD_YIELD(); };
+
                         return ChangeStatus(Status::Stop, Status::Exit);
                     }
                 }
@@ -364,7 +365,7 @@ namespace Evpp
 
         if (ChangeStatus(Status::Exec, Status::Stop))
         {
-            if (0 == event_base->stop_flag)
+            if (0 == event_base->stop_flag || ~0 == event_base->stop_flag)
             {
                 uv_stop(event_base);
             }
@@ -382,6 +383,7 @@ namespace Evpp
             {
                 uv_walk(event_base, &EventLoop::ObserveHandler, 0);
             }
+
             return true;
         }
         return false;

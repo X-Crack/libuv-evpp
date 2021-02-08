@@ -56,13 +56,9 @@ namespace Evpp
                     if (event_thread_pool->CreaterEventThreadPool(tcp_socket->GetSocketPoolSize()))
 #endif
                     {
-                        if (ChangeStatus(Status::Init, Status::Exec))
+                        if (tcp_listen->CreaterListenService(event_socket.get(), this))
                         {
-                            if (tcp_listen->CreaterListenService(event_socket.get(), this))
-                            {
-                                EVENT_INFO("server started successfully");
-                                return true;
-                            }
+                            return ChangeStatus(Status::Init, Status::Exec);
                         }
                     }
                 }
@@ -269,13 +265,16 @@ namespace Evpp
         {
             if (CreaterSession(loop, client, index))
             {
-                if (tcp_socket->AddSockInfo(client.get(), index))
+                if (ExistsRuning())
                 {
-                    if (nullptr != socket_accepts)
+                    if (tcp_socket->AddSockInfo(client.get(), index))
                     {
-                        if (socket_accepts(loop, GetSession(index), index))
+                        if (nullptr != socket_accepts)
                         {
-                            return true;
+                            if (socket_accepts(loop, GetSession(index), index))
+                            {
+                                return true;
+                            }
                         }
                     }
                 }
@@ -314,14 +313,8 @@ namespace Evpp
             {
                 if (InitialAccepts(loop, server, client.get()))
                 {
-                    // 停止服务器不在接受新客户到来
-                    if (ExistsRuning())
-                    {
-                        return InitialSession(loop, client, index);
-                    }
+                    return InitialSession(loop, client, index);
                 }
-
-                return SystemClose(reinterpret_cast<socket_stream*>(client.get()));
             }
         }
         return false;
@@ -350,7 +343,7 @@ namespace Evpp
             }
         }
         return false;
-    }
+            }
 
     void TcpServer::DefaultDiscons(EventLoop* loop, const u96 index)
     {
@@ -570,4 +563,4 @@ namespace Evpp
         }
         return false;
     }
-}
+        }
