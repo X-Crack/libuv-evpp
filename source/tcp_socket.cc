@@ -122,15 +122,6 @@ namespace Evpp
         return false;
     }
 
-    bool GetSockName6(socket_tcp* handler, struct sockaddr* addr, i32 size)
-    {
-        if (nullptr != handler)
-        {
-            return 0 == uv_tcp_getsockname(handler, addr, &size);
-        }
-        return false;
-    }
-
     bool TcpSocket::GetPeerName(socket_tcp* handler, struct sockaddr* addr, i32 size)
     {
         if (nullptr != handler)
