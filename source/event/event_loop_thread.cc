@@ -177,7 +177,7 @@ namespace Evpp
         {
             if (ExistsRuning())
             {
-                if (2 == loop->EventBasic()->active_handles)
+                if (EventLoopAlive(loop->EventBasic()))
                 {
                     cv_signal.notify_one();
                     return true;

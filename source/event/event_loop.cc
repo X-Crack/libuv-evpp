@@ -50,7 +50,6 @@ namespace Evpp
             {
                 return SwitchDispatch();
             }
-            return true;
         }
         return false;
     }
@@ -322,6 +321,7 @@ namespace Evpp
             {
                 ChangeStatus(Status::Exec);
             }
+
             return 0 == uv_run(event_base, static_cast<uv_run_mode>(mode));
             //return (UV_RUN_DEFAULT || UV_RUN_NOWAIT == mode ? 0 : UV_RUN_ONCE == mode ? 1 : 0) == uv_run(event_base, static_cast<uv_run_mode>(mode));
         }
