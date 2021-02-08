@@ -71,22 +71,22 @@ namespace Evpp
         bool DestroySyncEvent(const bool wait = true);
     private:
         EventLoop* event_base;
-        std::shared_ptr<EventShare>                                     event_share;
-        std::atomic<u32>                                                event_close_flag;
-        std::atomic<u32>                                                event_close_flag_ex;
-        std::shared_ptr<EventLoopThreadPool>                            event_thread_pool;
-        std::unique_ptr<EventSocketPool>                                event_socket;
-        InterfaceAccepts                                                socket_accepts;
-        InterfaceDiscons                                                socket_discons;
-        InterfaceMessage                                                socket_message;
-        InterfaceSendMsg                                                socket_sendmsg;
-        std::unique_ptr<TcpSocket>                                      tcp_socket;
-        std::unique_ptr<TcpListen>                                      tcp_listen;
-        std::atomic<u96>                                                tcp_index;
-        std::atomic<u32>                                                tcp_keepalive;
-        std::unordered_map<u96, std::shared_ptr<TcpSession>>            tcp_session;
-        std::priority_queue<u96>                                        tcp_index_multiplexing;
-        std::recursive_mutex                                            tcp_recursive_mutex;
+        std::shared_ptr<EventShare>                                             event_share;
+        std::atomic<u32>                                                        event_close_flag;
+        std::atomic<u32>                                                        event_close_flag_ex;
+        std::shared_ptr<EventLoopThreadPool>                                    event_thread_pool;
+        std::unique_ptr<EventSocketPool>                                        event_socket;
+        InterfaceAccepts                                                        socket_accepts;
+        InterfaceDiscons                                                        socket_discons;
+        InterfaceMessage                                                        socket_message;
+        InterfaceSendMsg                                                        socket_sendmsg;
+        std::unique_ptr<TcpSocket>                                              tcp_socket;
+        std::unique_ptr<TcpListen>                                              tcp_listen;
+        std::atomic<u96>                                                        tcp_index;
+        std::atomic<u32>                                                        tcp_keepalive;
+        std::unordered_map<u96, std::shared_ptr<TcpSession>>                    tcp_session;
+        std::priority_queue<u96, std::deque<u96>, std::greater<u96>>            tcp_index_multiplexing;
+        std::recursive_mutex                                                    tcp_recursive_mutex;
     };
 }
 #endif // __TCP_SERVER_H__

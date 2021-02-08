@@ -293,13 +293,21 @@ namespace Evpp
             {
                 if (0 == uv_accept(server, reinterpret_cast<socket_stream*>(client)))
                 {
-                    if (ExistsRuning())
+                    if (!ExistsRuning())
                     {
                         return 0 == uv_tcp_keepalive(client, 1, tcp_keepalive.load());
                     }
-                    return SystemShutdown(client);
+                    
+                    if (loop->RunInLoopEx(std::bind(&TcpServer::SystemShutdown, this, client)))
+                    {
+                        return false;
+                    }
                 }
-                return SystemClose(client);
+            }
+
+            if (loop->RunInLoopEx(std::bind(&TcpServer::SystemClose, this, client)))
+            {
+                return false;
             }
         }
         return false;
@@ -319,7 +327,7 @@ namespace Evpp
                     {
                         return InitialSession(loop, client, index);
                     }
-                    return SystemShutdown(client);
+                    return loop->RunInLoopEx(std::bind(&TcpServer::SystemShutdown, this, client));
                 }
             }
 #ifndef H_OS_WINDOWS
@@ -406,11 +414,7 @@ namespace Evpp
     {
         if (CheckStatus(handler))
         {
-            if (nullptr == handler->data)
-            {
-                handler->data = handler;
-                uv_close(reinterpret_cast<event_handle*>(handler), &TcpServer::OnDefaultClose);
-            }
+            uv_close(reinterpret_cast<event_handle*>(handler), &TcpServer::OnDefaultClose);
             return true;
         }
         return false;
@@ -475,11 +479,8 @@ namespace Evpp
     {
         if (nullptr != handler)
         {
-            if (nullptr != handler->data)
-            {
-                delete static_cast<socket_tcp*>(handler->data);
-                handler->data = nullptr;
-            }
+            delete reinterpret_cast<socket_tcp*>(handler);
+            handler = nullptr;
         }
     }
 
@@ -491,10 +492,6 @@ namespace Evpp
             {
                 if (nullptr != request->handle)
                 {
-                    if (nullptr == request->handle->data)
-                    {
-                        request->handle->data = request->data;
-                    }
                     uv_close(reinterpret_cast<event_handle*>(request->handle), &TcpServer::OnDefaultClose);
                 }
 
