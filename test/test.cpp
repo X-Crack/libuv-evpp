@@ -16,7 +16,7 @@ void stop_server(Evpp::TcpServerService* server)
 
 void printf_ex(Evpp::EventLoop* loop)
 {
-    EVENT_INFO("%d", loop->GetEventIndex());
+    //EVENT_INFO("%d", loop->GetEventIndex());
 }
 
 int main(int argc, char* argv[])
@@ -27,14 +27,14 @@ int main(int argc, char* argv[])
     server->AddListenPort("0.0.0.0", 5555);
     server->AddListenPort("0.0.0.0", 6666);
     server->AddListenPort("0.0.0.0", 7777);
-    server->CreaterServer(8);
+    server->CreaterServer(2);
     server->SetAcceptsCallback();
     server->SetDisconsCallback();
     server->SetMessageCallback();
     server->SetSendMsgCallback();
-    std::thread T1(std::bind(&stop_server, server.get()));
+    //std::thread T1(std::bind(&stop_server, server.get()));
     server->ExecDispatchEx(printf_ex);
-    T1.join();
+    //T1.join();
     printf("exit\n");
     server.reset();
     getchar();

@@ -1,5 +1,6 @@
 ﻿#include <event_loop.h>
 #include <event_watcher.h>
+#include <event_idle.h>
 #include <event_timer_pool.h>
 #include <event_mutex.h>
 #include <event_coroutine.h>
@@ -29,13 +30,9 @@ namespace Evpp
         {
             if (0 == uv_loop_init(event_base))
             {
-                if (event_base)
+                if (nullptr == event_base->data)
                 {
-                    uv_loop_set_data(event_base, this);
-                }
-
-                if (0 == event_thread)
-                {
+                    event_base->data = this;
                     event_thread = EventThreadId();
                 }
                 return event_watcher->CreaterQueue();
@@ -99,8 +96,6 @@ namespace Evpp
                     {
                         function(this);
                     }
-
-                    duration_sleep_until(0.00001);
                 }
                 return true;
             }
@@ -310,12 +305,12 @@ namespace Evpp
 #else
         return static_cast<u32>(uv_thread_self());
 #endif
-}
+    }
 
     u32 EventLoop::EventThreadSelf()
     {
         return event_thread;
-    }
+}
 
     event_loop* EventLoop::EventBasic()
     {
@@ -372,4 +367,4 @@ namespace Evpp
         }
         return false;
     }
-}
+    }

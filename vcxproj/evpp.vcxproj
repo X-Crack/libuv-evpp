@@ -25,13 +25,16 @@
     <ClCompile Include="..\source\curl\http_download_service.cc" />
     <ClCompile Include="..\source\curl\http_download_session.cc" />
     <ClCompile Include="..\source\curl\http_download_task.cc" />
+    <ClCompile Include="..\source\event\event_check.cc" />
     <ClCompile Include="..\source\event\event_coroutine.cc" />
     <ClCompile Include="..\source\event\event_explicit.cc" />
+    <ClCompile Include="..\source\event\event_idle.cc" />
     <ClCompile Include="..\source\event\event_loop.cc" />
     <ClCompile Include="..\source\event\event_loop_thread.cc" />
     <ClCompile Include="..\source\event\event_loop_thread_pool.cc" />
     <ClCompile Include="..\source\event\event_async.cc" />
     <ClCompile Include="..\source\event\event_mutex.cc" />
+    <ClCompile Include="..\source\event\event_prepare.cc" />
     <ClCompile Include="..\source\event\event_work_queue.cc" />
     <ClCompile Include="..\source\event\event_watcher.cc" />
     <ClCompile Include="..\source\event\event_resolve.cc" />
@@ -56,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\include\event_buffer.h" />
+    <ClInclude Include="..\source\include\event_check.h" />
     <ClInclude Include="..\source\include\event_config.h" />
     <ClInclude Include="..\source\include\event_coroutine.h" />
     <ClInclude Include="..\source\include\event_curl.h" />
@@ -64,6 +68,7 @@
     <ClInclude Include="..\source\include\event_duration.h" />
     <ClInclude Include="..\source\include\event_evpp.h" />
     <ClInclude Include="..\source\include\event_explicit.h" />
+    <ClInclude Include="..\source\include\event_idle.h" />
     <ClInclude Include="..\source\include\event_libuv.h" />
     <ClInclude Include="..\source\include\event_logging.h" />
     <ClInclude Include="..\source\include\event_loop.h" />
@@ -71,6 +76,7 @@
     <ClInclude Include="..\source\include\event_loop_thread_pool.h" />
     <ClInclude Include="..\source\include\event_async.h" />
     <ClInclude Include="..\source\include\event_mutex.h" />
+    <ClInclude Include="..\source\include\event_prepare.h" />
     <ClInclude Include="..\source\include\event_work_queue.h" />
     <ClInclude Include="..\source\include\event_watcher.h" />
     <ClInclude Include="..\source\include\event_resolve.h" />

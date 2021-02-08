@@ -12,6 +12,9 @@ namespace Evpp
     using event_thread = uv_thread_t;
     using event_work = uv_work_t;
     using event_poll = uv_poll_t;
+    using event_idle = uv_idle_t;
+    using event_prepare = uv_prepare_t;
+    using event_check = uv_check_t;
     using socket_tcp = uv_tcp_t;
     using socket_stream = uv_stream_t;
     using socket_data = uv_buf_t;

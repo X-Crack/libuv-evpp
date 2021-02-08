@@ -9,7 +9,7 @@
 #include <event_duration.h>
 
 // Use CXX20 coroutine to assist EventLoop operation.
-#if defined(_HAS_CXX20) || defined(__cpp_coroutines) && defined(__cpp_impl_coroutine)
+#if defined(__cpp_coroutines) && !defined(__cpp_impl_coroutine) || defined(_HAS_CXX20)
 #       define EVPP_USE_STL_COROUTINES
 #endif
 
@@ -17,7 +17,6 @@
 #ifndef EVPP_USE_STL_THREAD
 #       define EVPP_USE_STL_THREAD
 #endif
-
 
 #ifndef ___bswap_constant_16
 #       define ___bswap_constant_16(x) ((((uint16_t)(x) >> 8) & 0xff) | (((uint16_t)(x) & 0xff) << 8))

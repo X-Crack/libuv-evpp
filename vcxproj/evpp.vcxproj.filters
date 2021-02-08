@@ -129,6 +129,15 @@
     <ClCompile Include="..\source\event\event_mutex.cc">
       <Filter>event</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\event\event_idle.cc">
+      <Filter>event</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\event\event_prepare.cc">
+      <Filter>event</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\event\event_check.cc">
+      <Filter>event</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\include\event_status.h">
@@ -265,6 +274,15 @@
     </ClInclude>
     <ClInclude Include="..\source\include\event_duration.h">
       <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\event_idle.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\event_prepare.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\event_check.h">
+      <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
