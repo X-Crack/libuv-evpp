@@ -102,12 +102,12 @@ namespace Evpp
 #if defined(EVPP_USE_STL_COROUTINES)
                     if (JoinInTaskEx(std::bind((bool(TcpServerService::*)(const EventLoopHandler&, i32)) & TcpServerService::ExecDispatch, this, function, mode)).get())
                     {
-                        break; // 说明LOOP结束
+                        continue; // 说明LOOP结束 跳到 for 判断一下是否有退出的条件
                     }
 #else
                     if (ExecDispatch(function, mode))
                     {
-                        break; // 说明LOOP结束
+                        continue;
                     }
 #endif
                 }

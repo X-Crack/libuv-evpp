@@ -84,7 +84,7 @@ namespace Evpp
                     if (JoinInTaskEx(std::bind(&EventLoop::ExecDispatchEvent, this, mode)).get())
                     {
                         EVENT_INFO("cyclic event stop running this: %p", this);
-                        continue;
+                        continue; // uv_run 的生命结束 因为没有handlers存活
                     }
 #else
                     if (ExecDispatchEvent(mode))
@@ -310,7 +310,7 @@ namespace Evpp
     u32 EventLoop::EventThreadSelf()
     {
         return event_thread;
-}
+    }
 
     event_loop* EventLoop::EventBasic()
     {
@@ -367,4 +367,4 @@ namespace Evpp
         }
         return false;
     }
-    }
+}
