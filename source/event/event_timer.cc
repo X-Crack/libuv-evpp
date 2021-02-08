@@ -11,7 +11,7 @@ namespace Evpp
     EventTimer::EventTimer(EventLoop* loop, const EventTimerHandle& callback, const u96 index) :
         event_base(loop),
         event_time(new event_timer()),
-        safe_index(index),
+        timer_index(index),
         event_callback(callback)
     {
         if (nullptr == event_time->data)
@@ -217,7 +217,7 @@ namespace Evpp
     {
         if (nullptr != event_callback)
         {
-            event_callback(event_base, shared_from_this(), safe_index);
+            event_callback(event_base, shared_from_this(), timer_index);
         }
     }
 }

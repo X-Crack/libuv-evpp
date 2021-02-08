@@ -29,7 +29,7 @@ namespace Evpp
         bool ReStarTimerEx(const u64 delay, const u64 repeat);
     public:
         const u64 GetTimerduein();
-        const u96 GetTimerIndex() { return safe_index; };
+        const u96 GetTimerIndex() { return timer_index; };
     public:
         void SetEventTimerCallback(const EventTimerHandle& callback);
     private:
@@ -42,7 +42,7 @@ namespace Evpp
     private:
         EventLoop* event_base;
         event_timer* event_time;
-        u96                                                         safe_index;
+        u96                                                         timer_index;
         EventTimerHandle                                            event_callback;
     };
 }
