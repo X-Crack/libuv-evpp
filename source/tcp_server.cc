@@ -343,7 +343,7 @@ namespace Evpp
             }
         }
         return false;
-            }
+    }
 
     void TcpServer::DefaultDiscons(EventLoop* loop, const u96 index)
     {
@@ -563,4 +563,4 @@ namespace Evpp
         }
         return false;
     }
-        }
+}
