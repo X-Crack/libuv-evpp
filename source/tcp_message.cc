@@ -4,7 +4,7 @@
 
 namespace Evpp
 {
-    TcpMessage::TcpMessage(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const SystemDiscons& discons, const SystemMessage& message, const SystemSendMsg& sendmsg) :
+    TcpMessage::TcpMessage(EventLoop* loop, socket_tcp* client, const SystemDiscons& discons, const SystemMessage& message, const SystemSendMsg& sendmsg) :
         event_base(loop),
         system_discons(discons),
         system_message(message),
@@ -29,7 +29,7 @@ namespace Evpp
             event_write->data = this;
         }
 
-        if (uv_read_start(reinterpret_cast<socket_stream*>(client.get()), &TcpMessage::DefaultMakesram, &TcpMessage::DefaultMessages))
+        if (uv_read_start(reinterpret_cast<socket_stream*>(client), &TcpMessage::DefaultMakesram, &TcpMessage::DefaultMessages))
         {
             printf("init read error\n");
         }
@@ -66,7 +66,7 @@ namespace Evpp
             {
                 if (nullptr != tcp_socket)
                 {
-                    return SystemClose(reinterpret_cast<socket_stream*>(tcp_socket.get()));
+                    return SystemClose(tcp_socket);
                 }
                 return false;
             }
@@ -77,7 +77,7 @@ namespace Evpp
 
     bool TcpMessage::SetSendBlocking(const u32 value)
     {
-        return 0 == uv_stream_set_blocking(reinterpret_cast<socket_stream*>(tcp_socket.get()), value);
+        return 0 == uv_stream_set_blocking(reinterpret_cast<socket_stream*>(tcp_socket), value);
     }
 
     bool TcpMessage::Send(const char* buf, u32 len, u32 nbufs)
@@ -122,14 +122,14 @@ namespace Evpp
 
     bool TcpMessage::DefaultSend(const socket_data bufs, u32 nbufs)
     {
-        if (uv_is_active(reinterpret_cast<event_handle*>(tcp_socket.get())) && 0 == uv_is_closing(reinterpret_cast<event_handle*>(tcp_socket.get())))
+        if (uv_is_active(reinterpret_cast<event_handle*>(tcp_socket)) && 0 == uv_is_closing(reinterpret_cast<event_handle*>(tcp_socket)))
         {
-            return 0 == uv_write(event_write.get(), reinterpret_cast<socket_stream*>(tcp_socket.get()), std::addressof(bufs), nbufs, &TcpMessage::DefaultSend);
+            return 0 == uv_write(event_write.get(), reinterpret_cast<socket_stream*>(tcp_socket), std::addressof(bufs), nbufs, &TcpMessage::DefaultSend);
         }
         return false;
     }
 
-    bool TcpMessage::CheckClose(socket_stream* handler)
+    bool TcpMessage::CheckClose(socket_tcp* handler)
     {
         if (nullptr != handler)
         {
@@ -145,20 +145,20 @@ namespace Evpp
         return false;
     }
 
-    bool TcpMessage::SystemShutdown(socket_stream* stream)
+    bool TcpMessage::SystemShutdown(socket_tcp* handler)
     {
-        if (CheckClose(stream))
+        if (CheckClose(handler))
         {
-            return 0 == uv_shutdown(event_shutdown.get(), stream, &TcpMessage::DefaultShutdown);
+            return 0 == uv_shutdown(event_shutdown.get(), reinterpret_cast<socket_stream*>(handler), &TcpMessage::DefaultShutdown);
         }
         return false;
     }
 
-    bool TcpMessage::SystemClose(socket_stream* stream)
+    bool TcpMessage::SystemClose(socket_tcp* handler)
     {
-        if (CheckClose(stream))
+        if (CheckClose(handler))
         {
-            uv_close(reinterpret_cast<event_handle*>(stream), &TcpMessage::DefaultClose);
+            uv_close(reinterpret_cast<event_handle*>(handler), &TcpMessage::DefaultClose);
             {
                 return true;
             }
@@ -177,7 +177,7 @@ namespace Evpp
                     return;
                 }
 
-                if (SystemClose(reinterpret_cast<socket_stream*>(tcp_socket.get())))
+                if (SystemClose(tcp_socket))
                 {
                     return;
                 }
@@ -198,6 +198,12 @@ namespace Evpp
                 tcp_socket->data = nullptr;
             }
 
+            if (nullptr != tcp_socket)
+            {
+                delete tcp_socket;
+                tcp_socket = nullptr;
+            }
+
             if (nullptr != system_discons)
             {
                 return RunInLoopEx(std::bind(system_discons));
@@ -213,7 +219,7 @@ namespace Evpp
             {
                 if (nullptr != shutdown->handle)
                 {
-                    uv_close(reinterpret_cast<event_handle*>(tcp_socket.get()), &TcpMessage::DefaultClose);
+                    uv_close(reinterpret_cast<event_handle*>(tcp_socket), &TcpMessage::DefaultClose);
                 }
             }
         }
@@ -269,9 +275,9 @@ namespace Evpp
 
         if (UV_EOF == nread || UV_ECONNRESET == nread)
         {
-            return SystemClose(stream);
+            return SystemClose(reinterpret_cast<socket_tcp*>(stream));
         }
-        return SystemShutdown(stream);
+        return SystemShutdown(reinterpret_cast<socket_tcp*>(stream));
     }
 
     void TcpMessage::DefaultSend(socket_write* handler, int status)

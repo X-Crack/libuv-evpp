@@ -10,7 +10,7 @@ namespace Evpp
     TcpClient::TcpClient(EventLoop* loop, const u96 index) :
         event_base(loop),
         event_index(index),
-        socket_handler(std::make_shared<socket_tcp>()),
+        socket_handler(new socket_tcp()),
         tcp_socket(std::make_unique<EventSocket>()),
         tcp_connect(std::make_unique<TcpConnect>(loop, socket_handler, this)),
         tcp_attach(std::make_unique<TcpAttach>(loop, this)),
@@ -204,7 +204,7 @@ namespace Evpp
         }
     }
 
-    bool TcpClient::InitialSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const u96 index)
+    bool TcpClient::InitialSession(EventLoop* loop, socket_tcp* client, const u96 index)
     {
         if (nullptr == tcp_session)
         {

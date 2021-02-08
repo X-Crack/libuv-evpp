@@ -4,7 +4,7 @@
 #include <event_loop.h>
 namespace Evpp
 {
-    TcpConnect::TcpConnect(EventLoop* loop, const std::shared_ptr<socket_tcp>& handler, TcpClient* client) :
+    TcpConnect::TcpConnect(EventLoop* loop, socket_tcp* handler, TcpClient* client) :
         event_base(loop),
         tcp_handler(handler),
         tcp_connect(std::make_unique<socket_connect>())
@@ -26,7 +26,7 @@ namespace Evpp
         {
             if (InitTcpService())
             {
-                if (uv_tcp_nodelay(tcp_handler.get(), 1))
+                if (uv_tcp_nodelay(tcp_handler, 1))
                 {
                     printf("初始化失败\n");
                 }
@@ -39,11 +39,11 @@ namespace Evpp
 
     bool TcpConnect::InitTcpService()
     {
-        return 0 == uv_tcp_init(event_base->EventBasic(), tcp_handler.get());
+        return 0 == uv_tcp_init(event_base->EventBasic(), tcp_handler);
     }
 
     bool TcpConnect::CreaterConnect(const sockaddr* addr)
     {
-        return 0 == uv_tcp_connect(tcp_connect.get(), tcp_handler.get(), addr, &TcpClient::DefaultConnect);
+        return 0 == uv_tcp_connect(tcp_connect.get(), tcp_handler, addr, &TcpClient::DefaultConnect);
     }
 }

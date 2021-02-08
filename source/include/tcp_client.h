@@ -42,7 +42,7 @@ namespace Evpp
         void SetMessageCallback(const InterfaceMessage& message = &Evpp::Import::DefaultMessage);
         void SetSendMsgCallback(const InterfaceSendMsg& sendmsg = &Evpp::Import::DefaultSendMsg);
     private:
-        bool InitialSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const u96 index);
+        bool InitialSession(EventLoop* loop, socket_tcp* client, const u96 index);
         bool DeletedSession();
     private:
         bool ConnectService();
@@ -63,7 +63,7 @@ namespace Evpp
         InterfaceDiscons                                                socket_discons;
         InterfaceMessage                                                socket_message;
         InterfaceSendMsg                                                socket_sendmsg;
-        std::shared_ptr<socket_tcp>                                     socket_handler;
+        socket_tcp*                                                     socket_handler;
         std::unique_ptr<EventSocket>                                    tcp_socket;
         std::unique_ptr<TcpConnect>                                     tcp_connect;
         std::shared_ptr<TcpSession>                                     tcp_session;

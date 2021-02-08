@@ -15,7 +15,7 @@ namespace Evpp
         typedef std::function<bool(EventLoop*, const std::shared_ptr<TcpSession>&, const std::shared_ptr<EventBuffer>&, const u96)> SystemMessage;
         typedef std::function<bool(EventLoop*, const std::shared_ptr<TcpSession>&, const u96, const i32)>                           SystemSendMsg;
     public:
-        explicit TcpSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const u96 index, const SystemDiscons& discons, const SystemMessage& message, const SystemSendMsg& sendmsg);
+        explicit TcpSession(EventLoop* loop, socket_tcp* client, const u96 index, const SystemDiscons& discons, const SystemMessage& message, const SystemSendMsg& sendmsg);
         virtual ~TcpSession();
     public:
         bool Send(const char* buf, u96 len, u32 nbufs = 1);
@@ -45,7 +45,7 @@ namespace Evpp
         SystemDiscons                                                   system_discons;
         SystemMessage                                                   system_message;
         SystemSendMsg                                                   system_sendmsg;
-        std::shared_ptr<socket_tcp>                                     tcp_socket;
+        socket_tcp*                                                     tcp_socket;
         std::unique_ptr<TcpMessage>                                     tcp_message;
         std::unique_ptr<EventTimerPool>                                 event_timer_pool;
     };

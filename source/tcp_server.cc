@@ -240,7 +240,7 @@ namespace Evpp
     }
 
 
-    bool TcpServer::CreaterSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const u96 index)
+    bool TcpServer::CreaterSession(EventLoop* loop, socket_tcp* client, const u96 index)
     {
         std::unique_lock<std::recursive_mutex> lock(tcp_recursive_mutex);
         return tcp_session.emplace
@@ -259,7 +259,7 @@ namespace Evpp
         ).second;
     }
 
-    bool TcpServer::InitialSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const u96 index)
+    bool TcpServer::InitialSession(EventLoop* loop, socket_tcp* client, const u96 index)
     {
         if (loop->EventThread())
         {
@@ -267,7 +267,7 @@ namespace Evpp
             {
                 if (ExistsRuning())
                 {
-                    if (tcp_socket->AddSockInfo(client.get(), index))
+                    if (tcp_socket->AddSockInfo(client, index))
                     {
                         if (nullptr != socket_accepts)
                         {
@@ -280,7 +280,7 @@ namespace Evpp
                 }
                 return Close(index);
             }
-            return SystemShutdown(reinterpret_cast<socket_stream*>(client.get()));
+            return SystemShutdown(client);
         }
         return loop->RunInLoopEx(std::bind(&TcpServer::InitialSession, this, loop, client, index));
     }
@@ -296,50 +296,44 @@ namespace Evpp
                     return 0 == uv_tcp_keepalive(client, 1, tcp_keepalive.load());
                 }
 
-                if (SystemShutdown(reinterpret_cast<socket_stream*>(client)))
-                {
-                    return false;
-                }
+                return SystemClose(client);
             }
         }
         return false;
     }
-
-    bool TcpServer::DefaultAccepts(EventLoop* loop, socket_stream* server, const u96 index)
+#ifdef H_OS_WINDOWS
+    bool TcpServer::DefaultAccepts(EventLoop* loop, socket_stream* server, socket_tcp* client, const u96 index)
     {
         if (nullptr != event_thread_pool && nullptr != loop && nullptr != server)
         {
-            std::shared_ptr<socket_tcp> client = std::make_shared<socket_tcp>();
+            if (InitialAccepts(loop, server, client))
             {
-                if (InitialAccepts(loop, server, client.get()))
+                if (ExistsRuning())
                 {
                     return InitialSession(loop, client, index);
                 }
+                return SystemShutdown(client);
             }
         }
         return false;
     }
-
-    bool TcpServer::DefaultAcceptsEx(EventLoop* loop, socket_stream* server, const u96 index)
+#else
+    bool TcpServer::DefaultAccepts(EventLoop* loop, socket_stream* server, socket_tcp* client, const u96 index)
     {
         if (nullptr != loop)
         {
-            return loop->RunInLoopEx(std::bind((bool(TcpServer::*)(EventLoop*, socket_stream*, const u96)) & TcpServer::DefaultAccepts, this, loop, server, index));
+            return loop->RunInLoopEx(std::bind((bool(TcpServer::*)(EventLoop*, socket_stream*, const u96)) & TcpServer::DefaultAccepts, this, loop, server, client, index));
         }
         return false;
     }
-
+#endif
     bool TcpServer::DefaultAccepts(socket_stream* server, i32 status)
     {
         if (0 == status && nullptr != server)
         {
             u96 index = GetPlexingIndex();
             {
-#ifdef H_OS_WINDOWS
-                return DefaultAccepts(event_thread_pool->GetEventLoop(index), server, index);
-#else
-                return DefaultAcceptsEx(event_thread_pool->GetEventLoopEx(server->loop), server, index);
-#endif
+                return DefaultAccepts(event_thread_pool->GetEventLoop(index), server, new socket_tcp(), index);
             }
         }
         return false;
@@ -384,7 +378,7 @@ namespace Evpp
         return true;
     }
 
-    bool TcpServer::CheckStatus(socket_stream* handler)
+    bool TcpServer::CheckStatus(socket_tcp* handler)
     {
         if (nullptr != handler)
         {
@@ -397,29 +391,31 @@ namespace Evpp
         return false;
     }
 
-    bool TcpServer::SystemClose(socket_stream* stream)
+    bool TcpServer::SystemClose(socket_tcp* handler)
     {
-        if (CheckStatus(stream))
+        if (CheckStatus(handler))
         {
-            uv_close(reinterpret_cast<uv_handle_t*>(stream), &TcpServer::OnDefaultClose);
+            if (nullptr == handler->data)
             {
-                return true;
+                handler->data = handler;
+                uv_close(reinterpret_cast<event_handle*>(handler), &TcpServer::OnDefaultClose);
             }
+            return true;
         }
         return false;
     }
 
-    bool TcpServer::SystemShutdown(socket_stream* stream)
+    bool TcpServer::SystemShutdown(socket_tcp* handler)
     {
-        if (CheckStatus(stream))
+        if (CheckStatus(handler))
         {
             socket_shutdown* shutdown = new socket_shutdown();
             {
                 if (nullptr == shutdown->data)
                 {
-                    shutdown->data = this;
+                    shutdown->data = handler;
                 }
-                return 0 == uv_shutdown(shutdown, stream, &TcpServer::OnDefaultShutdown);
+                return 0 == uv_shutdown(shutdown, reinterpret_cast<socket_stream*>(handler), &TcpServer::OnDefaultShutdown);
             }
         }
         return false;
@@ -476,12 +472,10 @@ namespace Evpp
     {
         if (nullptr != handler)
         {
-            TcpServer* watcher = static_cast<TcpServer*>(handler->data);
+            if (nullptr != handler->data)
             {
-                if (nullptr != watcher)
-                {
-                    watcher->DefaultClose(handler);
-                }
+                delete static_cast<socket_tcp*>(handler->data);
+                handler->data = nullptr;
             }
         }
     }
@@ -494,7 +488,11 @@ namespace Evpp
             {
                 if (nullptr != request->handle)
                 {
-                    uv_close(reinterpret_cast<uv_handle_t*>(request->handle), &TcpServer::OnDefaultClose);
+                    if (nullptr == request->handle->data)
+                    {
+                        request->handle->data = request->data;
+                    }
+                    uv_close(reinterpret_cast<event_handle*>(request->handle), &TcpServer::OnDefaultClose);
                 }
 
                 if (nullptr != request)

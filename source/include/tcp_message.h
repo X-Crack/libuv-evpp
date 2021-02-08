@@ -13,7 +13,7 @@ namespace Evpp
         typedef std::function<bool(const std::shared_ptr<EventBuffer>&)>        SystemMessage;
         typedef std::function<bool(const i32)>                                  SystemSendMsg;
     public:
-        explicit TcpMessage(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const SystemDiscons& discons, const SystemMessage& message, const SystemSendMsg& sendmsg);
+        explicit TcpMessage(EventLoop* loop, socket_tcp* client, const SystemDiscons& discons, const SystemMessage& message, const SystemSendMsg& sendmsg);
         virtual ~TcpMessage();
     public:
         bool RunInLoop(const Functor& function);
@@ -25,9 +25,9 @@ namespace Evpp
     private:
         bool DefaultSend(const socket_data bufs, u32 nbufs);
     private:
-        bool CheckClose(socket_stream* handler);
-        bool SystemShutdown(socket_stream* stream);
-        bool SystemClose(socket_stream* stream);
+        bool CheckClose(socket_tcp* handler);
+        bool SystemShutdown(socket_tcp* handler);
+        bool SystemClose(socket_tcp* handler);
     private:
         void OnSend(socket_write* request, int status);
         bool OnClose(event_handle* handler);
@@ -45,7 +45,7 @@ namespace Evpp
         SystemDiscons                                                   system_discons;
         SystemMessage                                                   system_message;
         SystemSendMsg                                                   system_sendmsg;
-        std::shared_ptr<socket_tcp>                                     tcp_socket;
+        socket_tcp*                                                     tcp_socket;
         std::shared_ptr<EventBuffer>                                    tcp_buffer;
         std::unique_ptr<socket_shutdown>                                event_shutdown;
         std::unique_ptr<socket_write>                                   event_write;

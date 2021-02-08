@@ -6,7 +6,7 @@
 
 namespace Evpp
 {
-    TcpSession::TcpSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const u96 index, const SystemDiscons& discons, const SystemMessage& message, const SystemSendMsg& sendmsg) :
+    TcpSession::TcpSession(EventLoop* loop, socket_tcp* client, const u96 index, const SystemDiscons& discons, const SystemMessage& message, const SystemSendMsg& sendmsg) :
         event_base(loop),
         self_index(index),
         system_discons(discons),

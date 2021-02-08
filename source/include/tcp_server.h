@@ -41,24 +41,24 @@ namespace Evpp
         bool RunInLoop(const Functor& function);
         bool RunInLoopEx(const Handler& function);
     private:
-        bool CreaterSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const u96 index);
-        bool InitialSession(EventLoop* loop, const std::shared_ptr<socket_tcp>& client, const u96 index);
+        bool CreaterSession(EventLoop* loop, socket_tcp* client, const u96 index);
+        bool InitialSession(EventLoop* loop, socket_tcp* client, const u96 index);
         bool InitialAccepts(EventLoop* loop, socket_stream* server, socket_tcp* client);
         void DeletedSession(const u96 index);
         bool CleanedSession();
         const std::shared_ptr<TcpSession>& GetSession(const u96 index);
     private:
-        bool DefaultAccepts(EventLoop* loop, socket_stream* server, const u96 index);
-        bool DefaultAcceptsEx(EventLoop* loop, socket_stream* server, const u96 index);
+        bool DefaultAccepts(EventLoop* loop, socket_stream* server, socket_tcp* client, const u96 index);
+        //bool DefaultAccepts(EventLoop* loop, socket_stream* server, const u96 index);
         bool DefaultAccepts(socket_stream* server, i32 status);
     private:
         void DefaultDiscons(EventLoop* loop, const u96 index);
         bool DefaultMessage(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const std::shared_ptr<EventBuffer>& buffer, const u96 index);
         bool DefaultSendMsg(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const u96 index, const i32 status);
     private:
-        bool CheckStatus(socket_stream* handler);
-        bool SystemClose(socket_stream* stream);
-        bool SystemShutdown(socket_stream* stream);
+        bool CheckStatus(socket_tcp* handler);
+        bool SystemClose(socket_tcp* handler);
+        bool SystemShutdown(socket_tcp* handler);
         const u96 GetPlexingIndex(u96 index = 0);
         const u96 GetClientIndex();
     private:
