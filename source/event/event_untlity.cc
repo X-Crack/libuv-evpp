@@ -106,37 +106,4 @@ namespace Evpp
         }
     }
 #endif
-
-    void OnSocketShutdown(socket_shutdown* handler, int status)
-    {
-        if (0 == status)
-        {
-            if (nullptr != handler)
-            {
-                if (nullptr != handler->handle)
-                {
-                    uv_close(reinterpret_cast<event_handle*>(handler->handle), &Evpp::OnSocketClose);
-                }
-
-                if (nullptr != handler)
-                {
-                    delete handler;
-                    handler = nullptr;
-                }
-            }
-        }
-    }
-
-    void OnSocketClose(event_handle* handler)
-    {
-        if (nullptr != handler)
-        {
-            if (nullptr != handler->data)
-            {
-                handler->data;
-            }
-            delete handler;
-            handler = nullptr;
-        }
-    }
 }
