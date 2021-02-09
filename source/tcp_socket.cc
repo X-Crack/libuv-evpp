@@ -55,7 +55,7 @@ namespace Evpp
             {
                 if (0 == uv_ip4_name(std::addressof(socket->sockname.addr4), socket->sockname.host_address, std::size(socket->sockname.host_address)))
                 {
-                    socket->sockname.host = socket->sockname.host_address;
+                    socket->sockname.host = std::move(socket->sockname.host_address);
                     socket->sockname.port = ntohs(socket->sockname.addr4.sin_port);
                     EVENT_INFO("new client enters localhost address: %s localhost port: %u", socket->sockname.host.c_str(), socket->sockname.port);
                 }
@@ -65,7 +65,7 @@ namespace Evpp
             {
                 if (0 == uv_ip6_name(std::addressof(socket->sockname.addr6), socket->sockname.host_address, std::size(socket->sockname.host_address)))
                 {
-                    socket->sockname.host = socket->sockname.host_address;
+                    socket->sockname.host = std::move(socket->sockname.host_address);
                     socket->sockname.port = ntohs(socket->sockname.addr6.sin6_port);
                     EVENT_INFO("new client enters localhost address: %s localhost port: %u", socket->sockname.host.c_str(), socket->sockname.port);
                 }
