@@ -429,14 +429,7 @@ namespace Evpp
     {
         if (CheckStatus(handler))
         {
-            socket_shutdown* shutdown = new socket_shutdown();
-            {
-                if (nullptr == shutdown->data)
-                {
-                    shutdown->data = handler;
-                }
-                return 0 == uv_shutdown(shutdown, reinterpret_cast<socket_stream*>(handler), &TcpServer::OnDefaultShutdown);
-            }
+            return 0 == uv_shutdown(new socket_shutdown({ handler }), reinterpret_cast<socket_stream*>(handler), &TcpServer::OnDefaultShutdown);
         }
         return false;
     }
