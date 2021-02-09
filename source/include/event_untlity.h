@@ -62,6 +62,7 @@ namespace Evpp
         };
         std::string             host;
         u16                     port;
+        String                  host_address[256];
     };
 
     struct SocketInfoEx
@@ -72,9 +73,6 @@ namespace Evpp
 
     NOFORCEINLINE bool EventLoopAlive(event_loop* loop);
     void DoDispatchEvent();
-
-    void OnSocketShutdown(socket_shutdown* handler, int status);
-    void OnSocketClose(event_handle* handler);
 
     template <class _Ty>
     bool SocketStatus(_Ty* handler)

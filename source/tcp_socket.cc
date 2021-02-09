@@ -48,27 +48,26 @@ namespace Evpp
 
     bool TcpSocket::GetSockInfo(socket_tcp* handler, const std::shared_ptr<SocketInfoEx>& socket)
     {
-        String address[256];
         // 获取与某个套接字关联的本地协议地址
-        if (GetSockName(handler, reinterpret_cast<struct sockaddr *>(&socket->sockname.addr_storage), sizeof(struct sockaddr_storage)))
+        if (GetSockName(handler, reinterpret_cast<struct sockaddr *>(std::addressof(socket->sockname.addr_storage)), sizeof(struct sockaddr_storage)))
         {
             if (AF_INET == socket->sockname.family)
             {
-                if (0 == uv_ip4_name(&socket->sockname.addr4, address, std::size(address)))
+                if (0 == uv_ip4_name(std::addressof(socket->sockname.addr4), socket->sockname.host_address, std::size(socket->sockname.host_address)))
                 {
-                    socket->sockname.host = address;
+                    socket->sockname.host = socket->sockname.host_address;
                     socket->sockname.port = ntohs(socket->sockname.addr4.sin_port);
-                    EVENT_INFO("new client enters localhost address: %s localhost port: %u", address, socket->sockname.port);
+                    EVENT_INFO("new client enters localhost address: %s localhost port: %u", socket->sockname.host.c_str(), socket->sockname.port);
                 }
             }
 
             if (AF_INET6 == socket->sockname.family)
             {
-                if (0 == uv_ip6_name(&socket->sockname.addr6, address, std::size(address)))
+                if (0 == uv_ip6_name(std::addressof(socket->sockname.addr6), socket->sockname.host_address, std::size(socket->sockname.host_address)))
                 {
-                    socket->sockname.host = address;
+                    socket->sockname.host = socket->sockname.host_address;
                     socket->sockname.port = ntohs(socket->sockname.addr6.sin6_port);
-                    EVENT_INFO("new client enters localhost address: %s localhost port: %u", address, socket->sockname.port);
+                    EVENT_INFO("new client enters localhost address: %s localhost port: %u", socket->sockname.host.c_str(), socket->sockname.port);
                 }
             }
 
@@ -79,27 +78,26 @@ namespace Evpp
 
     bool TcpSocket::GetPeerInfo(socket_tcp* handler, const std::shared_ptr<SocketInfoEx>& socket)
     {
-        String address[256];
         // 获取与某个套接字关联的外地协议地址
-        if (GetPeerName(handler, reinterpret_cast<struct sockaddr *>(&socket->peername.addr_storage), sizeof(struct sockaddr_storage)))
+        if (GetPeerName(handler, reinterpret_cast<struct sockaddr *>(std::addressof(socket->peername.addr_storage)), sizeof(struct sockaddr_storage)))
         {
             if (AF_INET == socket->peername.family)
             {
-                if (0 == uv_ip4_name(&socket->peername.addr4, address, std::size(address)))
+                if (0 == uv_ip4_name(std::addressof(socket->peername.addr4), socket->peername.host_address, std::size(socket->peername.host_address)))
                 {
-                    socket->peername.host = address;
+                    socket->peername.host = std::move(socket->peername.host_address);
                     socket->peername.port = ntohs(socket->peername.addr4.sin_port);
-                    EVENT_INFO("new client enters remote address: %s remote port: %u", address, socket->peername.port);
+                    EVENT_INFO("new client enters remote address: %s remote port: %u", socket->peername.host.c_str(), socket->peername.port);
                 }
             }
 
             if (AF_INET6 == socket->peername.family)
             {
-                if (0 == uv_ip6_name(&socket->peername.addr6, address, std::size(address)))
+                if (0 == uv_ip6_name(std::addressof(socket->peername.addr6), socket->peername.host_address, std::size(socket->peername.host_address)))
                 {
-                    socket->peername.host = address;
+                    socket->peername.host = std::move(socket->peername.host_address);
                     socket->peername.port = ntohs(socket->peername.addr6.sin6_port);
-                    EVENT_INFO("new client enters remote address: %s remote port: %u", address, socket->peername.port);
+                    EVENT_INFO("new client enters remote address: %s remote port: %u", socket->peername.host.c_str(), socket->peername.port);
                 }
             }
 
