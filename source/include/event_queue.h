@@ -50,8 +50,10 @@ namespace Evpp
 #endif
         Handler                                                                             event_queue_nolock_function;
         Handler                                                                             event_queue_lock_function;
+#ifndef EVPP_USE_CAMERON314_CONCURRENTQUEUE
         std::mutex                                                                          event_queue_nolock_mutex;
         std::mutex                                                                          event_queue_lock_mutex;
+#endif
     };
 }
 
