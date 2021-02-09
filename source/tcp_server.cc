@@ -289,7 +289,7 @@ namespace Evpp
                         return Close(index);
                     }
                 }
-                return SystemShutdown(client);
+                return SocketShutdown(client);
             }
             return loop->RunInLoopEx(std::bind(&TcpServer::InitialSession, this, loop, client, index));
         }
@@ -333,7 +333,7 @@ namespace Evpp
                         return true;
                     }
                 }
-                return loop->RunInLoopEx(std::bind(&TcpServer::SystemShutdown, this, client));
+                return loop->RunInLoopEx(std::bind(&TcpServer::SocketShutdown, this, client));
             }
 #ifndef H_OS_WINDOWS
         }
@@ -402,34 +402,28 @@ namespace Evpp
         return true;
     }
 
-    bool TcpServer::CheckStatus(socket_tcp* handler)
+    bool TcpServer::SocketClose(socket_tcp* handler)
     {
         if (nullptr != handler)
         {
-            if (uv_is_active(reinterpret_cast<event_handle*>(handler)))
+            if (0 == SocketStatus(handler))
             {
-                return 0 == uv_is_closing(reinterpret_cast<event_handle*>(handler));
+                return false;
             }
-            return true;
+            return Evpp::SocketClose(handler, &TcpServer::OnDefaultClose);
         }
         return false;
     }
 
-    bool TcpServer::SystemClose(socket_tcp* handler)
+    bool TcpServer::SocketShutdown(socket_tcp* handler)
     {
-        if (CheckStatus(handler))
+        if (nullptr != handler)
         {
-            uv_close(reinterpret_cast<event_handle*>(handler), &TcpServer::OnDefaultClose);
-            return true;
-        }
-        return false;
-    }
-
-    bool TcpServer::SystemShutdown(socket_tcp* handler)
-    {
-        if (CheckStatus(handler))
-        {
-            return 0 == uv_shutdown(new socket_shutdown({ handler }), reinterpret_cast<socket_stream*>(handler), &TcpServer::OnDefaultShutdown);
+            if (0 == SocketStatus(handler))
+            {
+                return false;
+            }
+            return Evpp::SocketShutdown(handler, &TcpServer::OnDefaultShutdown);
         }
         return false;
     }
@@ -482,21 +476,21 @@ namespace Evpp
         }
     }
 
-    void TcpServer::OnDefaultShutdown(socket_shutdown* request, int status)
+    void TcpServer::OnDefaultShutdown(socket_shutdown* shutdown, int status)
     {
         if (0 == status)
         {
-            if (nullptr != request)
+            if (nullptr != shutdown)
             {
-                if (nullptr != request->handle)
+                if (nullptr != shutdown->handle)
                 {
-                    uv_close(reinterpret_cast<event_handle*>(request->handle), &TcpServer::OnDefaultClose);
+                    uv_close(reinterpret_cast<event_handle*>(shutdown->handle), &TcpServer::OnDefaultClose);
                 }
 
-                if (nullptr != request)
+                if (nullptr != shutdown)
                 {
-                    delete request;
-                    request = nullptr;
+                    delete shutdown;
+                    shutdown = nullptr;
                 }
             }
         }

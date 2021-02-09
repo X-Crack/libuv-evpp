@@ -71,7 +71,47 @@ namespace Evpp
     };
 
     NOFORCEINLINE bool EventLoopAlive(event_loop* loop);
-    NOFORCEINLINE void DoDispatchEvent();
-}
+    void DoDispatchEvent();
 
+    void OnSocketShutdown(socket_shutdown* handler, int status);
+    void OnSocketClose(event_handle* handler);
+
+    template <class _Ty>
+    bool SocketStatus(_Ty* handler)
+    {
+        if (nullptr != handler)
+        {
+            if (uv_is_active(reinterpret_cast<event_handle*>(handler)))
+            {
+                return 0 == uv_is_closing(reinterpret_cast<event_handle*>(handler));
+            }
+            return true;
+        }
+        return false;
+    }
+
+    template <class _Ty>
+    bool SocketShutdown(_Ty* handler, uv_shutdown_cb callback)
+    {
+        if (nullptr != handler)
+        {
+            // 不指定 .data = handler 即为默认第一个参数 如指定 .data = handler 既需要 C++2A
+            return 0 == uv_shutdown(new socket_shutdown({ handler }), reinterpret_cast<socket_stream*>(handler), callback);
+        }
+        return false;
+    }
+
+    template <class _Ty>
+    bool SocketClose(_Ty* handler, uv_close_cb callback)
+    {
+        if (nullptr != handler)
+        {
+            uv_close(reinterpret_cast<event_handle*>(handler), callback);
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+}
 #endif // __EVENT_UNTILITY_H__

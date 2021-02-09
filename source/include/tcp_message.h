@@ -25,9 +25,8 @@ namespace Evpp
     private:
         bool DefaultSend(const socket_data bufs, u32 nbufs);
     private:
-        bool CheckClose(socket_tcp* handler);
-        bool SystemShutdown(socket_tcp* handler);
-        bool SystemClose(socket_tcp* handler);
+        bool SocketShutdown(socket_tcp* handler);
+        bool SocketClose(socket_tcp* handler);
     private:
         void OnSend(socket_write* request, int status);
         bool OnClose(event_handle* handler);
@@ -47,7 +46,6 @@ namespace Evpp
         SystemSendMsg                                                   system_sendmsg;
         socket_tcp*                                                     tcp_socket;
         std::shared_ptr<EventBuffer>                                    tcp_buffer;
-        std::unique_ptr<socket_shutdown>                                event_shutdown;
         std::unique_ptr<socket_write>                                   event_write;
         std::vector<char>                                               event_data;
     };

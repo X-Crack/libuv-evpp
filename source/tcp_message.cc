@@ -11,17 +11,11 @@ namespace Evpp
         system_sendmsg(sendmsg),
         tcp_socket(client),
         tcp_buffer(std::make_shared<EventBuffer>()),
-        event_shutdown(std::make_unique<socket_shutdown>()),
         event_write(std::make_unique<socket_write>())
     {
         if (nullptr == client->data)
         {
             client->data = this;
-        }
-
-        if (nullptr == event_shutdown->data)
-        {
-            event_shutdown->data = this;
         }
 
         if (nullptr == event_write->data)
@@ -66,7 +60,7 @@ namespace Evpp
             {
                 if (nullptr != tcp_socket)
                 {
-                    return SystemClose(tcp_socket);
+                    return SocketClose(tcp_socket);
                 }
                 return false;
             }
@@ -129,38 +123,32 @@ namespace Evpp
         return false;
     }
 
-    bool TcpMessage::CheckClose(socket_tcp* handler)
+    bool TcpMessage::SocketShutdown(socket_tcp* handler)
     {
         if (nullptr != handler)
         {
-            if (uv_is_active(reinterpret_cast<event_handle*>(handler)))
+            if (0 == SocketStatus(handler))
             {
-                if (uv_is_closing(reinterpret_cast<event_handle*>(handler)))
-                {
-                    return 0 == uv_read_stop(reinterpret_cast<socket_stream*>(handler));
-                }
+                return false;
             }
-            return 0 == uv_read_stop(reinterpret_cast<socket_stream*>(handler));
+
+            return Evpp::SocketShutdown(handler, &TcpMessage::DefaultShutdown);
         }
         return false;
     }
 
-    bool TcpMessage::SystemShutdown(socket_tcp* handler)
+    bool TcpMessage::SocketClose(socket_tcp* handler)
     {
-        if (CheckClose(handler))
+        if (nullptr != handler)
         {
-            return 0 == uv_shutdown(event_shutdown.get(), reinterpret_cast<socket_stream*>(handler), &TcpMessage::DefaultShutdown);
-        }
-        return false;
-    }
-
-    bool TcpMessage::SystemClose(socket_tcp* handler)
-    {
-        if (CheckClose(handler))
-        {
-            uv_close(reinterpret_cast<event_handle*>(handler), &TcpMessage::DefaultClose);
+            if (0 == SocketStatus(handler))
             {
-                return true;
+                return false;
+            }
+
+            if (0 == uv_read_stop(reinterpret_cast<socket_stream*>(handler)))
+            {
+                return Evpp::SocketClose(handler, &TcpMessage::DefaultClose);
             }
         }
         return false;
@@ -177,7 +165,7 @@ namespace Evpp
                     return;
                 }
 
-                if (SystemClose(tcp_socket))
+                if (SocketClose(tcp_socket))
                 {
                     return;
                 }
@@ -213,13 +201,22 @@ namespace Evpp
 
     void TcpMessage::OnShutdown(socket_shutdown* shutdown, int status)
     {
-        if (0 == status)
+        if (0 == status && shutdown->data == this)
         {
             if (nullptr != shutdown)
             {
                 if (nullptr != shutdown->handle)
                 {
-                    uv_close(reinterpret_cast<event_handle*>(tcp_socket), &TcpMessage::DefaultClose);
+                    if (0 == SocketClose(reinterpret_cast<socket_tcp*>(shutdown->handle)))
+                    {
+                        EVENT_INFO("the session has been closed");
+                    }
+                }
+
+                if (nullptr != shutdown)
+                {
+                    delete shutdown;
+                    shutdown = nullptr;
                 }
             }
         }
@@ -275,9 +272,9 @@ namespace Evpp
 
         if (UV_EOF == nread || UV_ECONNRESET == nread)
         {
-            return SystemClose(reinterpret_cast<socket_tcp*>(stream));
+            return SocketClose(reinterpret_cast<socket_tcp*>(stream));
         }
-        return SystemShutdown(reinterpret_cast<socket_tcp*>(stream));
+        return SocketShutdown(reinterpret_cast<socket_tcp*>(stream));
     }
 
     void TcpMessage::DefaultSend(socket_write* handler, int status)
