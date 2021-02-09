@@ -6,6 +6,7 @@
 #include <concurrentqueue.h>
 namespace Evpp
 {
+#ifdef EVPP_USE_CAMERON314_CONCURRENTQUEUE
     class EventQueueTraits : public moodycamel::ConcurrentQueueDefaultTraits
     {
     public:
@@ -14,14 +15,16 @@ namespace Evpp
         static const size_t IMPLICIT_INITIAL_INDEX_SIZE = 1024;
         static const std::uint32_t EXPLICIT_CONSUMER_CONSUMPTION_QUOTA_BEFORE_ROTATE = 4096;
     };
-
-    EventQueue::EventQueue(EventLoop* base) :
-        event_base(base),
-        event_queue(std::make_unique<EventAsync>(base, std::bind(&EventQueue::EventNotify, this))),
-        event_queue_ex(std::make_unique<EventAsync>(base, std::bind(&EventQueue::EventNotifyEx, this))),
-        event_queue_mutex(std::make_unique<EventMutex>()),
-        event_queue_nolock(std::make_unique<moodycamel::ConcurrentQueue<Handler, EventQueueTraits>>()),
-        event_queue_lock(std::make_unique<moodycamel::ConcurrentQueue<Handler, EventQueueTraits>>())
+#endif
+    EventQueue::EventQueue(EventLoop* base)
+        : event_base(base)
+        , event_queue(std::make_unique<EventAsync>(base, std::bind(&EventQueue::EventNotify, this)))
+        , event_queue_ex(std::make_unique<EventAsync>(base, std::bind(&EventQueue::EventNotifyEx, this)))
+        , event_queue_mutex(std::make_unique<EventMutex>())
+#ifdef EVPP_USE_CAMERON314_CONCURRENTQUEUE
+        , event_queue_nolock(std::make_unique<moodycamel::ConcurrentQueue<Handler, EventQueueTraits>>())
+        , event_queue_lock(std::make_unique<moodycamel::ConcurrentQueue<Handler, EventQueueTraits>>())
+#endif
     {
 
     }
@@ -42,19 +45,30 @@ namespace Evpp
         {
             if (event_queue->DestroyAsync() && event_queue_ex->DestroyAsync())
             {
+#ifdef EVPP_USE_CAMERON314_CONCURRENTQUEUE
                 while (event_queue_nolock->size_approx()) { EventNotify(); };
                 while (event_queue_lock->size_approx()) { EventNotifyEx(); };
+#else
+                if (event_queue_nolock.size())
+                {
+                    EventNotify();
+                }
 
+                if (event_queue_lock.size())
+                {
+                    EventNotifyEx();
+                }
+#endif
                 return true;
             }
             return false;
         }
-        return RunInLoopEx(std::bind(&EventQueue::DestroyQueue, this));
+        return RunInQueue(std::bind(&EventQueue::DestroyQueue, this));
     }
 
     bool EventQueue::RunInLoop(const Handler& function)
     {
-        if (nullptr != event_base && nullptr != event_queue && nullptr != event_queue_nolock)
+        if (nullptr != event_base && nullptr != event_queue)
         {
             if (event_base->EventThread())
             {
@@ -71,7 +85,7 @@ namespace Evpp
 
     bool EventQueue::RunInLoopEx(const Handler& function)
     {
-        if (nullptr != event_base && nullptr != event_queue_ex && nullptr != event_queue_lock)
+        if (nullptr != event_base && nullptr != event_queue_ex)
         {
             if (EmplaceQueueEx(function))
             {
@@ -87,7 +101,7 @@ namespace Evpp
 
     bool EventQueue::RunInQueue(const Handler& function)
     {
-        if (nullptr != event_base && nullptr != event_queue && nullptr != event_queue_nolock)
+        if (nullptr != event_base && nullptr != event_queue)
         {
             return EmplaceQueue(function);
         }
@@ -96,10 +110,16 @@ namespace Evpp
 
     bool EventQueue::EmplaceQueue(const Handler& function)
     {
-        if (nullptr != event_base && nullptr != event_queue && nullptr != event_queue_nolock)
+        if (nullptr != event_base && nullptr != event_queue)
         {
+#if defined(EVPP_USE_CAMERON314_CONCURRENTQUEUE)
             while (0 == event_queue_nolock->try_enqueue(function));
-
+#else
+            {
+                std::lock_guard<std::mutex> lock(event_queue_nolock_mutex);
+                event_queue_nolock.emplace_back(function);
+            }
+#endif
             return event_queue->ExecNotify();
         }
         return false;
@@ -107,9 +127,16 @@ namespace Evpp
 
     bool EventQueue::EmplaceQueueEx(const Handler& function)
     {
-        if (nullptr != event_base && nullptr != event_queue_ex && nullptr != event_queue_lock)
+        if (nullptr != event_base && nullptr != event_queue_ex)
         {
+#if defined(EVPP_USE_CAMERON314_CONCURRENTQUEUE)
             while (0 == event_queue_lock->try_enqueue(function));
+#else
+            {
+                std::lock_guard<std::mutex> lock(event_queue_lock_mutex);
+                event_queue_lock.emplace_back(function);
+            }
+#endif
 
             return event_queue_ex->ExecNotify();
         }
@@ -118,6 +145,7 @@ namespace Evpp
 
     void EventQueue::EventNotify()
     {
+#if defined(EVPP_USE_CAMERON314_CONCURRENTQUEUE)
         while (event_queue_nolock->try_dequeue(event_queue_nolock_function))
         {
             if (nullptr != event_queue_nolock_function)
@@ -139,10 +167,39 @@ namespace Evpp
 #endif
             }
         }
+#else
+        std::lock_guard<std::mutex> lock(event_queue_nolock_mutex);
+        {
+            std::vector<Handler> functors;
+            {
+                functors.swap(event_queue_nolock);
+            }
+
+            for (const auto& function : functors)
+            {
+#if defined(EVPP_USE_STL_COROUTINES)
+                try
+                {
+                    if (JoinInTask(std::bind(function)).get())
+                    {
+                        continue;
+                    }
+                }
+                catch (...)
+                {
+                    assert(0);
+                }
+#else
+                function();
+#endif
+            }
+        }
+#endif
     }
 
     void EventQueue::EventNotifyEx()
     {
+#if defined(EVPP_USE_CAMERON314_CONCURRENTQUEUE)
         while (event_queue_lock->try_dequeue(event_queue_lock_function))
         {
             if (nullptr != event_queue_lock_function)
@@ -164,7 +221,34 @@ namespace Evpp
 #endif
             }
         }
+#else
+        std::lock_guard<std::mutex> lock(event_queue_lock_mutex);
+        {
+            std::vector<Handler> functors;
+            {
+                functors.swap(event_queue_lock);
+            }
 
+            for (const auto& function : functors)
+            {
+#if defined(EVPP_USE_STL_COROUTINES)
+                try
+                {
+                    if (JoinInTask(std::bind(function)).get())
+                    {
+                        continue;
+                    }
+                }
+                catch (...)
+                {
+                    assert(0);
+                }
+#else
+                function();
+#endif
+            }
+        }
+#endif
         if (event_base->EventThread())
         {
             if (event_queue_mutex->unlock())

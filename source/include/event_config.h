@@ -18,6 +18,11 @@
 #       define EVPP_USE_STL_THREAD
 #endif
 
+// Use https://github.com/cameron314/concurrentqueue
+#ifndef EVPP_USE_CAMERON314_CONCURRENTQUEUE
+//#       define EVPP_USE_CAMERON314_CONCURRENTQUEUE
+#endif
+
 #ifndef ___bswap_constant_16
 #       define ___bswap_constant_16(x) ((((uint16_t)(x) >> 8) & 0xff) | (((uint16_t)(x) & 0xff) << 8))
 #endif

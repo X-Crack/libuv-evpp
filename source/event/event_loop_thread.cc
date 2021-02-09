@@ -122,7 +122,7 @@ namespace Evpp
             {
                 for (; loop_mutex->try_lock();)
                 {
-#if defined(EVPP_USE_STL_COROUTINES)
+#ifdef EVPP_USE_STL_COROUTINES
                     try
                     {
                         if (JoinInTaskEx(std::bind(&EventLoopThread::CoroutineDispatch, this)).get())

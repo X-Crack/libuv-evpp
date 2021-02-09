@@ -3,13 +3,15 @@
 #include <event_config.h>
 #include <memory>
 #include <atomic>
-
+#include <mutex>
+#ifdef EVPP_USE_CAMERON314_CONCURRENTQUEUE
 namespace moodycamel
 {
     struct ConcurrentQueueDefaultTraits;
     template<typename T, typename Traits> class ConcurrentQueue;
     template<typename T, typename Traits> class BlockingConcurrentQueue;
 }
+#endif
 
 namespace Evpp
 {
@@ -39,10 +41,17 @@ namespace Evpp
         std::unique_ptr<EventAsync>                                                         event_queue;         // “Ï≤Ω
         std::unique_ptr<EventAsync>                                                         event_queue_ex;      // Õ¨≤Ω
         std::unique_ptr<EventMutex>                                                         event_queue_mutex;
+#ifdef EVPP_USE_CAMERON314_CONCURRENTQUEUE
         std::unique_ptr<moodycamel::ConcurrentQueue<Handler, EventQueueTraits>>             event_queue_nolock;
         std::unique_ptr<moodycamel::ConcurrentQueue<Handler, EventQueueTraits>>             event_queue_lock;
+#else
+        std::vector<Handler>                                                                event_queue_nolock;
+        std::vector<Handler>                                                                event_queue_lock;
+#endif
         Handler                                                                             event_queue_nolock_function;
         Handler                                                                             event_queue_lock_function;
+        std::mutex                                                                          event_queue_nolock_mutex;
+        std::mutex                                                                          event_queue_lock_mutex;
     };
 }
 
