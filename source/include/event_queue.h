@@ -44,13 +44,11 @@ namespace Evpp
 #ifdef EVPP_USE_CAMERON314_CONCURRENTQUEUE
         std::unique_ptr<moodycamel::ConcurrentQueue<Handler, EventQueueTraits>>             event_queue_nolock;
         std::unique_ptr<moodycamel::ConcurrentQueue<Handler, EventQueueTraits>>             event_queue_lock;
+        Handler                                                                             event_queue_nolock_function;
+        Handler                                                                             event_queue_lock_function;
 #else
         std::vector<Handler>                                                                event_queue_nolock;
         std::vector<Handler>                                                                event_queue_lock;
-#endif
-        Handler                                                                             event_queue_nolock_function;
-        Handler                                                                             event_queue_lock_function;
-#ifndef EVPP_USE_CAMERON314_CONCURRENTQUEUE
         std::mutex                                                                          event_queue_nolock_mutex;
         std::mutex                                                                          event_queue_lock_mutex;
 #endif
