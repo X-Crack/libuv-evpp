@@ -25,12 +25,13 @@ namespace Evpp
     public:
         bool SetSendBlocking(const u32 value = 0);
     public:
-        bool RunInLoop(const Functor& function);
+        bool RunInLoop(const Handler& function);
         bool RunInLoopEx(const Handler& function);
+        bool RunInQueue(const Handler& function);
     public:
         bool AssignTimer(const u96 index, const u64 delay, const u64 repeat);
         bool StopedTimer(const u96 index);
-        void KilledTimer(const u96 index);
+        bool KilledTimer(const u96 index);
         void ModiyRepeat(const u96 index, const u64 repeat);
         bool ReStarTimer(const u96 index);
         bool ReStarTimerEx(const u96 index, const u64 delay, const u64 repeat);

@@ -40,8 +40,9 @@ namespace Evpp
         void SetMessageCallback(const InterfaceMessage& message);
         void SetSendMsgCallback(const InterfaceSendMsg& sendmsg);
     public:
-        bool RunInLoop(const Functor& function);
+        bool RunInLoop(const Handler& function);
         bool RunInLoopEx(const Handler& function);
+        bool RunInQueue(const Handler& function);
     private:
         bool CreaterSession(EventLoop* loop, socket_tcp* client, const u96 index);
         bool InitialSession(EventLoop* loop, socket_tcp* client, const u96 index);

@@ -1,5 +1,5 @@
-﻿#ifndef __EVENT_QUEUE_H__
-#define __EVENT_QUEUE_H__
+﻿#ifndef __EVENT_WORK_QUEUE_H__
+#define __EVENT_WORK_QUEUE_H__
 #include <event_config.h>
 namespace Evpp
 {
@@ -31,4 +31,4 @@ namespace Evpp
         DestroyWorkHandler                                                      destroy_callback;
     };
 }
-#endif // __EVENT_QUEUE_H__
+#endif // __EVENT_WORK_QUEUE_H__

@@ -176,7 +176,7 @@ namespace Evpp
         }
     }
 
-    bool TcpServer::RunInLoop(const Functor& function)
+    bool TcpServer::RunInLoop(const Handler& function)
     {
         if (nullptr != event_base)
         {
@@ -186,6 +186,15 @@ namespace Evpp
     }
 
     bool TcpServer::RunInLoopEx(const Handler& function)
+    {
+        if (nullptr != event_base)
+        {
+            return event_base->RunInLoopEx(function);
+        }
+        return false;
+    }
+
+    bool TcpServer::RunInQueue(const Handler& function)
     {
         if (nullptr != event_base)
         {
@@ -291,7 +300,7 @@ namespace Evpp
                 }
                 return SocketShutdown(client);
             }
-            return loop->RunInLoopEx(std::bind(&TcpServer::InitialSession, this, loop, client, index));
+            return loop->RunInQueue(std::bind(&TcpServer::InitialSession, this, loop, client, index));
         }
         return false;
     }
@@ -333,7 +342,7 @@ namespace Evpp
                         return true;
                     }
                 }
-                return loop->RunInLoopEx(std::bind(&TcpServer::SocketShutdown, this, client));
+                return loop->RunInQueue(std::bind(&TcpServer::SocketShutdown, this, client));
             }
 #ifndef H_OS_WINDOWS
         }

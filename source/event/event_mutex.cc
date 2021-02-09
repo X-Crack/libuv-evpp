@@ -9,22 +9,24 @@ namespace Evpp
 
     bool EventMutex::try_lock() noexcept
     {
-        std::atomic_thread_fence(std::memory_order_acquire);
         return 0 == counter.load(std::memory_order_relaxed);
     }
 
     bool EventMutex::try_unlock() noexcept
     {
-        std::atomic_thread_fence(std::memory_order_release);
         return 0 == counter.exchange(1, std::memory_order_acquire);
     }
 
-    bool EventMutex::lock() noexcept
+    bool EventMutex::lock(u96 original, const u96 other) noexcept
     {
-        if (0 == counter.exchange(1, std::memory_order_acquire))
+        while (0 == counter.compare_exchange_weak(original, other, std::memory_order_acquire));
+
+        if (other == counter.load(std::memory_order_acquire))
         {
-            counter.wait(1, std::memory_order_relaxed);
-            return true;
+            counter.wait(other, std::memory_order_relaxed);
+            {
+                return true;
+            }
         }
         return false;
     }

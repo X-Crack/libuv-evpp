@@ -25,6 +25,12 @@
     <Filter Include="socket\curl">
       <UniqueIdentifier>{cce95809-4eed-4ce6-9cab-d34e759ab5fa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\curl">
+      <UniqueIdentifier>{dadbbb4c-c9d5-4558-b4e7-cab9f6ac55e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\tcp">
+      <UniqueIdentifier>{69ff858e-f924-4fb8-aef5-d84f40a38347}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\event\event_loop.cc">
@@ -76,9 +82,6 @@
       <Filter>socket\tcp\server</Filter>
     </ClCompile>
     <ClCompile Include="..\source\event\event_resolve.cc">
-      <Filter>event</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\event\event_watcher.cc">
       <Filter>event</Filter>
     </ClCompile>
     <ClCompile Include="..\source\event\event_async.cc">
@@ -138,6 +141,9 @@
     <ClCompile Include="..\source\event\event_check.cc">
       <Filter>event</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\event\event_queue.cc">
+      <Filter>event</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\include\event_status.h">
@@ -152,25 +158,10 @@
     <ClInclude Include="..\source\include\event_loop_thread_pool.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\include\tcp_server.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\include\tcp_session.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\include\tcp_message.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\include\event_timer.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\source\include\event_signal.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\include\tcp_client.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\include\tcp_connect.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\source\include\event_socket.h">
@@ -179,16 +170,7 @@
     <ClInclude Include="..\source\include\event_socket_pool.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\include\tcp_listen.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\include\tcp_server_service.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\include\event_resolve.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\include\event_watcher.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\source\include\event_async.h">
@@ -204,15 +186,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\source\include\event_loop_thread.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\include\tcp_socket.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\include\tcp_attach.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\include\tcp_client_service.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\source\include\event_logging.h">
@@ -239,24 +212,6 @@
     <ClInclude Include="..\source\include\event_curl_config.h">
       <Filter>core</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\include\http_download_session.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\include\http_download_service.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\include\http_download_poll.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\include\http_download_multi.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\include\http_download.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\include\http_download_task.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\include\event_curl_untlity.h">
       <Filter>core</Filter>
     </ClInclude>
@@ -282,6 +237,57 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\source\include\event_check.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\http_download.h">
+      <Filter>include\curl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\http_download_multi.h">
+      <Filter>include\curl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\http_download_poll.h">
+      <Filter>include\curl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\http_download_service.h">
+      <Filter>include\curl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\http_download_session.h">
+      <Filter>include\curl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\http_download_task.h">
+      <Filter>include\curl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\tcp_socket.h">
+      <Filter>include\tcp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\tcp_attach.h">
+      <Filter>include\tcp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\tcp_client.h">
+      <Filter>include\tcp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\tcp_client_service.h">
+      <Filter>include\tcp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\tcp_connect.h">
+      <Filter>include\tcp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\tcp_listen.h">
+      <Filter>include\tcp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\tcp_message.h">
+      <Filter>include\tcp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\tcp_server.h">
+      <Filter>include\tcp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\tcp_server_service.h">
+      <Filter>include\tcp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\tcp_session.h">
+      <Filter>include\tcp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\event_queue.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

@@ -24,7 +24,7 @@ namespace Evpp
         bool AssignTimer(const u64 delay, const u64 repeat);
     public:
         bool StopedTimer();
-        void KilledTimer();
+        bool KilledTimer();
     public:
         void ModiyRepeat(const u64 repeat);
         bool ReStarTimer();

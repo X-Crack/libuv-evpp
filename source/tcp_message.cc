@@ -34,7 +34,7 @@ namespace Evpp
 
     }
 
-    bool TcpMessage::RunInLoop(const Functor& function)
+    bool TcpMessage::RunInLoop(const Handler& function)
     {
         if (nullptr != event_base)
         {
@@ -52,6 +52,15 @@ namespace Evpp
         return false;
     }
 
+    bool TcpMessage::RunInQueue(const Handler& function)
+    {
+        if (nullptr != event_base)
+        {
+            return event_base->RunInQueue(function);
+        }
+        return false;
+    }
+
     bool TcpMessage::Close()
     {
         if (nullptr != event_base)
@@ -64,7 +73,7 @@ namespace Evpp
                 }
                 return false;
             }
-            return RunInLoopEx(std::bind(&TcpMessage::Close, this));
+            return RunInLoop(std::bind(&TcpMessage::Close, this));
         }
         return false;
     }
@@ -89,7 +98,7 @@ namespace Evpp
 #endif
                 }
             }
-            return RunInLoopEx(std::bind((bool(TcpMessage::*)(const char*, u32, u32)) & TcpMessage::Send, this, buf, len, nbufs));
+            return RunInLoop(std::bind((bool(TcpMessage::*)(const char*, u32, u32)) & TcpMessage::Send, this, buf, len, nbufs));
         }
         return false;
     }
@@ -109,7 +118,7 @@ namespace Evpp
 #endif
                 }
             }
-            return RunInLoopEx(std::bind((bool(TcpMessage::*)(const std::string&, u32)) & TcpMessage::Send, this, buf, nbufs));
+            return RunInLoop(std::bind((bool(TcpMessage::*)(const std::string&, u32)) & TcpMessage::Send, this, buf, nbufs));
         }
         return false;
     }
@@ -194,7 +203,7 @@ namespace Evpp
 
             if (nullptr != system_discons)
             {
-                return RunInLoopEx(std::bind(system_discons));
+                return RunInQueue(std::bind(system_discons));
             }
         }
     }

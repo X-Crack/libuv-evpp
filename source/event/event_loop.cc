@@ -1,5 +1,5 @@
 ﻿#include <event_loop.h>
-#include <event_watcher.h>
+#include <event_queue.h>
 #include <event_idle.h>
 #include <event_timer_pool.h>
 #include <event_mutex.h>
@@ -10,7 +10,7 @@ namespace Evpp
         event_base(loop),
         event_index(index),
         event_refer(0),
-        event_watcher(std::make_unique<EventWatcher>(this)),
+        event_queue(std::make_unique<EventQueue>(this)),
         event_timer_pool(std::make_unique<EventTimerPool>(this)),
         event_thread(0),
         event_stop_flag(1)
@@ -34,7 +34,7 @@ namespace Evpp
                     event_base->data = this;
                     event_thread = EventThreadId();
                 }
-                return event_watcher->CreaterQueue();
+                return event_queue->CreaterQueue();
             }
 
             EVENT_INFO("an error occurred during the initialization loop this: %p", this);
@@ -112,7 +112,7 @@ namespace Evpp
 
                 if (1 == event_stop_flag.load(std::memory_order_acquire))
                 {
-                    if (RunInLoopEx(std::bind(&EventWatcher::DestroyAsync, event_watcher.get())))
+                    if (event_queue->DestroyQueue())
                     {
                         event_stop_flag.wait(1, std::memory_order_relaxed);
                         return ChangeStatus(Status::Stop, Status::Exit);
@@ -138,10 +138,8 @@ namespace Evpp
 
                 if (1 == event_stop_flag.load(std::memory_order_acquire))
                 {
-                    if (event_watcher->DestroyAsync())
+                    if (event_queue->DestroyQueue())
                     {
-                        while (event_watcher->DestroyQueue()) { EVPP_THREAD_YIELD(); };
-
                         return ChangeStatus(Status::Stop, Status::Exit);
                     }
                 }
@@ -157,25 +155,13 @@ namespace Evpp
         return false;
     }
 
-    bool EventLoop::RunInLoop(const Functor& function)
+    bool EventLoop::RunInLoop(const Handler& function)
     {
-        if (nullptr != event_watcher)
+        if (nullptr != event_queue)
         {
             if (ExistsRuning() || ExistsInited())
             {
-                return event_watcher->RunInLoop(function);
-            }
-        }
-        return false;
-    }
-
-    bool EventLoop::RunInLoop(Functor&& function)
-    {
-        if (nullptr != event_watcher)
-        {
-            if (ExistsRuning() || ExistsInited())
-            {
-                return event_watcher->RunInLoop(std::move(function));
+                return event_queue->RunInLoop(function);
             }
         }
         return false;
@@ -183,23 +169,23 @@ namespace Evpp
 
     bool EventLoop::RunInLoopEx(const Handler& function)
     {
-        if (nullptr != event_watcher)
+        if (nullptr != event_queue)
         {
             if (ExistsRuning() || ExistsInited())
             {
-                return event_watcher->RunInLoopEx(function);
+                return event_queue->RunInLoopEx(function);
             }
         }
         return false;
     }
 
-    bool EventLoop::RunInLoopEx(Handler&& function)
+    bool EventLoop::RunInQueue(const Handler& function)
     {
-        if (nullptr != event_watcher)
+        if (nullptr != event_queue)
         {
             if (ExistsRuning() || ExistsInited())
             {
-                return event_watcher->RunInLoopEx(std::move(function));
+                return event_queue->RunInQueue(function);
             }
         }
         return false;
@@ -229,7 +215,7 @@ namespace Evpp
         return false;
     }
 
-    void EventLoop::KilledTimer(const u96 index)
+    bool EventLoop::KilledTimer(const u96 index)
     {
         if (nullptr != event_timer_pool)
         {
@@ -238,6 +224,7 @@ namespace Evpp
                 return event_timer_pool->KilledTimer(index);
             }
         }
+        return false;
     }
 
     void EventLoop::ModiyRepeat(const u96 index, const u64 repeat)
@@ -337,10 +324,6 @@ namespace Evpp
             return true;
         }
         return false;
-    }
-    void uv_walk_cb(uv_handle_t* handle, void* arg)
-    {
-
     }
 
     bool EventLoop::SwitchDispatch()

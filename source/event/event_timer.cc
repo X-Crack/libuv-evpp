@@ -27,13 +27,12 @@ namespace Evpp
 
     EventTimer::~EventTimer()
     {
-        if (nullptr != event_time->data)
+        if (KilledTimer())
         {
-            event_time->data = nullptr;
-        }
-
-        {
-            KilledTimer();
+            if (nullptr != event_time->data)
+            {
+                event_time->data = nullptr;
+            }
         }
     }
 
@@ -124,15 +123,19 @@ namespace Evpp
         return false;
     }
 
-    void EventTimer::KilledTimer()
+    bool EventTimer::KilledTimer()
     {
         if (ExistsStoped())
         {
             if (ChangeStatus(Status::Stop, Status::Exit))
             {
-                return uv_close(reinterpret_cast<event_handle*>(event_time), &EventTimer::DefaultClose);
+                uv_close(reinterpret_cast<event_handle*>(event_time), &EventTimer::DefaultClose);
+                {
+                    return true;
+                }
             }
         }
+        return false;
     }
 
     void EventTimer::ModiyRepeat(const u64 repeat)

@@ -56,7 +56,7 @@ namespace Evpp
         return tcp_message->SetSendBlocking(value);
     }
 
-    bool TcpSession::RunInLoop(const Functor& function)
+    bool TcpSession::RunInLoop(const Handler& function)
     {
         if (nullptr != event_base)
         {
@@ -70,6 +70,15 @@ namespace Evpp
         if (nullptr != event_base)
         {
             return event_base->RunInLoopEx(function);
+        }
+        return false;
+    }
+
+    bool TcpSession::RunInQueue(const Handler& function)
+    {
+        if (nullptr != event_base)
+        {
+            return event_base->RunInQueue(function);
         }
         return false;
     }
@@ -98,7 +107,7 @@ namespace Evpp
         return RunInLoop(std::bind(&TcpSession::StopedTimer, this, index));
     }
 
-    void TcpSession::KilledTimer(const u96 index)
+    bool TcpSession::KilledTimer(const u96 index)
     {
         if (event_base->EventThread())
         {
@@ -107,11 +116,7 @@ namespace Evpp
                 return event_timer_pool->KilledTimer(index);
             }
         }
-
-        if (RunInLoopEx(std::bind(&TcpSession::KilledTimer, this, index)))
-        {
-            return;
-        }
+        return RunInLoop(std::bind(&TcpSession::KilledTimer, this, index));
     }
 
     void TcpSession::ModiyRepeat(const u96 index, const u64 repeat)

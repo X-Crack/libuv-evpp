@@ -12,7 +12,7 @@ namespace Evpp
     public:
         bool try_lock() noexcept;
         bool try_unlock() noexcept;
-        bool lock() noexcept;
+        bool lock(u96 original = 0, const u96 other = 1) noexcept;
         bool unlock() noexcept;
     private:
         std::atomic<u96>                                                counter;

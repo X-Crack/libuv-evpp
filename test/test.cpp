@@ -2,7 +2,7 @@
 //
 #include <iostream>
 #include <event_evpp.h>
-
+#include <event_queue.h>
 #include <http_download_multi.h>
 #include <http_download.h>
 
@@ -21,39 +21,48 @@ void printf_ex(Evpp::EventLoop* loop)
     EVENT_INFO("%d", loop->GetEventIndex());
 }
 
+
+
 int main(int argc, char* argv[])
 {
     using namespace Evpp;
-
-    //while (true)
-    {
-        EVENT_COMPUTE_DURATION(全程耗时);
-        std::unique_ptr<TcpServerService> server = std::make_unique<TcpServerService>();
-        server->AddListenPort("0.0.0.0", 5555);
-        server->AddListenPort("0.0.0.0", 6666);
-        server->AddListenPort("0.0.0.0", 7777);
-        server->AddListenPort("::1", 5555);
-        server->AddListenPort("::1", 6666);
-        server->AddListenPort("::1", 7777);
-        if (0 == server->CreaterServer(32))
-        {
-            assert(0);
-        }
-        else
-        {
-            //Sleep(1000);
-        }
-        server->SetAcceptsCallback();
-        server->SetDisconsCallback();
-        server->SetMessageCallback();
-        server->SetSendMsgCallback();
-        //std::thread T1(std::bind(&stop_server, server.get()));
-        server->ExecDispatchCoroutine(printf_ex);
-        //T1.join();
-        printf("exit\n");
-        server.reset();
-
-    }
+//     EventLoop ev;
+//     EventQueue queue(&ev);
+//     ev.InitialEvent();
+//     queue.CreaterQueue();
+//     queue.RunInQueueEx(std::bind(printf_ex, &ev));
+//     //std::thread T1(std::bind(&asdjkajsdjasd, &ev, &queue));
+//     //T1.detach();
+//     ev.ExecDispatch();
+     while (true)
+     {
+         EVENT_COMPUTE_DURATION(全程耗时);
+         std::unique_ptr<TcpServerService> server = std::make_unique<TcpServerService>();
+         server->AddListenPort("0.0.0.0", 5555);
+         server->AddListenPort("0.0.0.0", 6666);
+         server->AddListenPort("0.0.0.0", 7777);
+         server->AddListenPort("::1", 5555);
+         server->AddListenPort("::1", 6666);
+         server->AddListenPort("::1", 7777);
+         if (0 == server->CreaterServer(32))
+         {
+             assert(0);
+         }
+         else
+         {
+             Sleep(30);
+         }
+         server->SetAcceptsCallback();
+         server->SetDisconsCallback();
+         server->SetMessageCallback();
+         server->SetSendMsgCallback();
+         std::thread T1(std::bind(&stop_server, server.get()));
+         server->ExecDispatchCoroutine(printf_ex);
+         T1.join();
+         printf("exit\n");
+         server.reset();
+// 
+     }
 
     getchar();
     //     EventLoop ev;

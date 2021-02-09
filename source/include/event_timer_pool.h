@@ -16,7 +16,7 @@ namespace Evpp
         bool AssignTimer(const u96 index, const u64 delay, const u64 repeat);
     public:
         bool StopedTimer(const u96 index);
-        void KilledTimer(const u96 index);
+        bool KilledTimer(const u96 index);
     public:
         void ModiyRepeat(const u96 index, const u64 repeat);
         bool ReStarTimer(const u96 index);

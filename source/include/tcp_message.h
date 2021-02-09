@@ -16,8 +16,10 @@ namespace Evpp
         explicit TcpMessage(EventLoop* loop, socket_tcp* client, const SystemDiscons& discons, const SystemMessage& message, const SystemSendMsg& sendmsg);
         virtual ~TcpMessage();
     public:
-        bool RunInLoop(const Functor& function);
+        bool RunInLoop(const Handler& function);
         bool RunInLoopEx(const Handler& function);
+        bool RunInQueue(const Handler& function);
+    public:
         bool Close();
         bool SetSendBlocking(const u32 value = 0);
         bool Send(const char* buf, u32 len, u32 nbufs = 1);

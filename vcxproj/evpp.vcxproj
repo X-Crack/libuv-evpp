@@ -35,8 +35,8 @@
     <ClCompile Include="..\source\event\event_async.cc" />
     <ClCompile Include="..\source\event\event_mutex.cc" />
     <ClCompile Include="..\source\event\event_prepare.cc" />
+    <ClCompile Include="..\source\event\event_queue.cc" />
     <ClCompile Include="..\source\event\event_work_queue.cc" />
-    <ClCompile Include="..\source\event\event_watcher.cc" />
     <ClCompile Include="..\source\event\event_resolve.cc" />
     <ClCompile Include="..\source\event\event_share.cc" />
     <ClCompile Include="..\source\event\event_signal.cc" />
@@ -77,8 +77,8 @@
     <ClInclude Include="..\source\include\event_async.h" />
     <ClInclude Include="..\source\include\event_mutex.h" />
     <ClInclude Include="..\source\include\event_prepare.h" />
+    <ClInclude Include="..\source\include\event_queue.h" />
     <ClInclude Include="..\source\include\event_work_queue.h" />
-    <ClInclude Include="..\source\include\event_watcher.h" />
     <ClInclude Include="..\source\include\event_resolve.h" />
     <ClInclude Include="..\source\include\event_share.h" />
     <ClInclude Include="..\source\include\event_signal.h" />

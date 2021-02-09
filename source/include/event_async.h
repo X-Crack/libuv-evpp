@@ -1,7 +1,7 @@
 ﻿#ifndef __EVENT_ASYNC_H__
 #define __EVENT_ASYNC_H__
 #include <event_config.h>
-#include <event_untlity.h>
+#include <atomic>
 namespace Evpp
 {
     class EventLoop;
@@ -18,9 +18,13 @@ namespace Evpp
         static void OnNotify(event_async* handler);
         void OnNotify();
     private:
-        EventLoop*                                      event_base;
-        event_async*                                    event_async_;
-        Handler                                         cv_handler;
+        static void DefaultClose(event_handle* handler);
+        void OnClose(event_handle* handler);
+    private:
+        EventLoop*                                              event_base;
+        event_async*                                            event_queue;
+        std::atomic<u32>                                        event_stop_flag;
+        Handler                                                 event_handler;
     };
 }
 #endif // __EVENT_ASYNC_H__
