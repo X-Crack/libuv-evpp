@@ -35,23 +35,18 @@ namespace Evpp
         }
     }
 
-    SocketInfoEx* TcpSocket::GetSockInfo(const u96 index)
+    const std::shared_ptr<SocketInfoEx>& TcpSocket::GetSockInfo(const u96 index)
     {
         std::unique_lock<std::recursive_mutex> lock(tcp_mutex);
-        if (tcp_info.empty())
-        {
-            return nullptr;
-        }
-
-        return tcp_info[index].get();
+        return std::cref(tcp_info[index]);
     }
 
-    bool TcpSocket::InitialSockInfo(socket_tcp* handler, SocketInfoEx* socket)
+    bool TcpSocket::InitialSockInfo(socket_tcp* handler, const std::shared_ptr<SocketInfoEx>& socket)
     {
         return GetSockInfo(handler, socket) && GetPeerInfo(handler, socket);
     }
 
-    bool TcpSocket::GetSockInfo(socket_tcp* handler, SocketInfoEx* socket)
+    bool TcpSocket::GetSockInfo(socket_tcp* handler, const std::shared_ptr<SocketInfoEx>& socket)
     {
         String address[256];
         // 获取与某个套接字关联的本地协议地址
@@ -82,11 +77,11 @@ namespace Evpp
         return false;
     }
 
-    bool TcpSocket::GetPeerInfo(socket_tcp* handler, SocketInfoEx* socket)
+    bool TcpSocket::GetPeerInfo(socket_tcp* handler, const std::shared_ptr<SocketInfoEx>& socket)
     {
         String address[256];
         // 获取与某个套接字关联的外地协议地址
-        if (GetSockName(handler, reinterpret_cast<struct sockaddr *>(&socket->peername.addr_storage), sizeof(struct sockaddr_storage)))
+        if (GetPeerName(handler, reinterpret_cast<struct sockaddr *>(&socket->peername.addr_storage), sizeof(struct sockaddr_storage)))
         {
             if (AF_INET == socket->peername.family)
             {

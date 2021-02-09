@@ -243,7 +243,7 @@ namespace Evpp
     const std::shared_ptr<TcpSession>& TcpServer::GetSession(const u96 index)
     {
         std::unique_lock<std::recursive_mutex> lock(tcp_recursive_mutex);
-        return tcp_session[index];
+        return std::cref(tcp_session[index]);
     }
 
 

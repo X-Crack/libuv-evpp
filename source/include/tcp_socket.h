@@ -14,12 +14,12 @@ namespace Evpp
     public:
         bool AddSockInfo(socket_tcp* handler, const u96 index);
         void DelSockInfo(const u96 index);
-        SocketInfoEx* GetSockInfo(const u96 index);
+        const std::shared_ptr<SocketInfoEx>& GetSockInfo(const u96 index);
     private:
-        bool InitialSockInfo(socket_tcp* handler, SocketInfoEx* socket);
+        bool InitialSockInfo(socket_tcp* handler, const std::shared_ptr<SocketInfoEx>& socket);
     private:
-        bool GetSockInfo(socket_tcp* handler, SocketInfoEx* socket);
-        bool GetPeerInfo(socket_tcp* handler, SocketInfoEx* socket);
+        bool GetSockInfo(socket_tcp* handler, const std::shared_ptr<SocketInfoEx>& socket);
+        bool GetPeerInfo(socket_tcp* handler, const std::shared_ptr<SocketInfoEx>& socket);
     private:
         bool GetSockName(socket_tcp* handler, struct sockaddr* addr, i32 size);
         bool GetPeerName(socket_tcp* handler, struct sockaddr* addr, i32 size);
