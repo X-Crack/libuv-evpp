@@ -41,9 +41,9 @@ namespace Evpp
         void SetMessageCallback(const InterfaceMessage& message = &Evpp::Import::DefaultMessage);
         void SetSendMsgCallback(const InterfaceSendMsg& sendmsg = &Evpp::Import::DefaultSendMsg);
     private:
-        std::shared_ptr<EventLoop>                      event_base;
-        std::unique_ptr<TcpClient>                      tcp_client;
-        std::atomic<u32>                                event_stop_flag;
+        std::shared_ptr<EventLoop>                                          event_base;
+        std::unique_ptr<TcpClient>                                          tcp_client;
+        std::atomic<u32>                                                    event_stop_flag;
     };
 }
 #endif // __TCP_CLIENT_SERVICE_H__

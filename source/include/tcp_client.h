@@ -55,7 +55,7 @@ namespace Evpp
     private:
         static void DefaultConnect(socket_connect* hanlder, int status);
     private:
-        EventLoop* event_base;
+        EventLoop*                                                      event_base;
         u96                                                             event_index;
         InterfaceConnect                                                socket_connect_;
         InterfaceRestore                                                socket_restore;

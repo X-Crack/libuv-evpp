@@ -18,7 +18,7 @@ namespace Evpp
         void DefaultGetaddrInfo(struct addrinfo* hints);
         static void DefaultGetaddrInfo(socket_getaddrinfo* request, int status, struct addrinfo* hints);
     private:
-        EventLoop* event_base;
+        EventLoop*                                                                  event_base;
         EventResolveHandler                                                         event_callback;
         EventResolveExHandler                                                       event_callback_ex;
         std::vector<std::string>                                                    socket_list;

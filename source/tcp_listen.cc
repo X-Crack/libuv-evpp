@@ -32,7 +32,7 @@ namespace Evpp
 #endif
     TcpListen::~TcpListen()
     {
-
+        
     }
 
     bool TcpListen::CreaterListenService(EventSocketPool* socket, TcpServer* server)
@@ -110,7 +110,6 @@ namespace Evpp
                 {
                     tcp_server.clear();
                     tcp_server.shrink_to_fit();
-
                 }
             }
             return true;

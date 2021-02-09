@@ -33,7 +33,7 @@ namespace Evpp
         bool SendAsyncNotifyEx(const Handler& function);
         void RecvAsyncNotifyEx();
     private:
-        EventLoop* event_base;
+        EventLoop*                                                                                          event_base;
         std::unique_ptr<EventAsync>                                                                         event_async_;
         std::unique_ptr<EventAsync>                                                                         event_async_ex_;
         std::unique_ptr<moodycamel::ConcurrentQueue<Functor, Traits>>                                       nolock_queue;

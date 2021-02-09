@@ -34,14 +34,14 @@ namespace Evpp
         void ModiyRepeat(const u96 index, const u64 repeat);
         bool ReStarTimer(const u96 index);
         bool ReStarTimerEx(const u96 index, const u64 delay, const u64 repeat);
-        u96  GetSelfIndex() { return self_index; };
+        u96  GetSelfIndex() { return event_index; };
     private:
         void OnSystemDiscons();
         bool OnSystemMessage(const std::shared_ptr<EventBuffer>& Buffer);
         bool OnSystemSendMsg(const i32 status);
     private:
-        EventLoop* event_base;
-        u96                                                             self_index;
+        EventLoop*                                                      event_base;
+        u96                                                             event_index;
         SystemDiscons                                                   system_discons;
         SystemMessage                                                   system_message;
         SystemSendMsg                                                   system_sendmsg;

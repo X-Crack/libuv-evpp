@@ -26,9 +26,9 @@ namespace Evpp
     private:
         void OnTimer(EventLoop* loop, const std::shared_ptr<EventTimer>& timer, const u96 index);
     private:
-        EventLoop* event_base;
+        EventLoop*                                          event_base;
         std::shared_ptr<EventTimer>                         event_timer;
-        TcpClient* socket_client;
+        TcpClient*                                          socket_client;
         std::atomic<u64>                                    attach_delay;
         std::atomic<u64>                                    attach_timer;
     };

@@ -18,8 +18,8 @@ namespace Evpp
         static void OnNotify(event_async* handler);
         void OnNotify();
     private:
-        EventLoop* event_base;
-        event_async* event_async_;
+        EventLoop*                                      event_base;
+        event_async*                                    event_async_;
         Handler                                         cv_handler;
     };
 }

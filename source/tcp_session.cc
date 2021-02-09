@@ -8,7 +8,7 @@ namespace Evpp
 {
     TcpSession::TcpSession(EventLoop* loop, socket_tcp* client, const u96 index, const SystemDiscons& discons, const SystemMessage& message, const SystemSendMsg& sendmsg) :
         event_base(loop),
-        self_index(index),
+        event_index(index),
         system_discons(discons),
         system_message(message),
         system_sendmsg(sendmsg),
@@ -151,7 +151,7 @@ namespace Evpp
     {
         if (nullptr != system_discons)
         {
-            system_discons(event_base, self_index);
+            system_discons(event_base, event_index);
         }
     }
 
@@ -159,7 +159,7 @@ namespace Evpp
     {
         if (nullptr != system_message)
         {
-            return system_message(event_base, std::weak_ptr<TcpSession>(shared_from_this()).lock(), Buffer, self_index);
+            return system_message(event_base, std::weak_ptr<TcpSession>(shared_from_this()).lock(), Buffer, event_index);
         }
         return false;
     }
@@ -168,7 +168,7 @@ namespace Evpp
     {
         if (nullptr != system_sendmsg)
         {
-            return system_sendmsg(event_base, std::weak_ptr<TcpSession>(shared_from_this()).lock(), self_index, status);
+            return system_sendmsg(event_base, std::weak_ptr<TcpSession>(shared_from_this()).lock(), event_index, status);
         }
         return false;
     }

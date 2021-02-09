@@ -70,7 +70,7 @@ namespace Evpp
         bool DestroyService(const bool wait = true);
         bool DestroySyncEvent(const bool wait = true);
     private:
-        EventLoop* event_base;
+        EventLoop*                                                              event_base;
         std::shared_ptr<EventShare>                                             event_share;
         std::atomic<u32>                                                        event_close_flag;
         std::atomic<u32>                                                        event_close_flag_ex;

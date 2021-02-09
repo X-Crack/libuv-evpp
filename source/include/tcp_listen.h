@@ -40,7 +40,7 @@ namespace Evpp
     private:
         void OnClose();
     private:
-        EventLoop* event_base;
+        EventLoop*                                                      event_base;
         std::atomic<u32>                                                event_close_flag;
         std::atomic<u32>                                                event_close_flag_ex;
         std::atomic<u32>                                                event_start_flag;

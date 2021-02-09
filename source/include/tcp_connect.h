@@ -18,9 +18,9 @@ namespace Evpp
         bool InitTcpService();
         bool CreaterConnect(const sockaddr* addr);
     private:
-        EventLoop*                                              event_base;
-        socket_tcp*                                             tcp_handler;
-        std::unique_ptr<socket_connect>                         tcp_connect;
+        EventLoop*                                                      event_base;
+        socket_tcp*                                                     tcp_handler;
+        std::unique_ptr<socket_connect>                                 tcp_connect;
     };
 }
 #endif // __TCP_CONNECT_H__

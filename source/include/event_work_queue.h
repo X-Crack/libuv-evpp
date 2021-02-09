@@ -26,7 +26,7 @@ namespace Evpp
         static void OnCreaterNotify(event_work* handler);
         static void OnDestroyNotify(event_work* handler, int status);
     private:
-        EventLoop* event_base;
+        EventLoop*                                                              event_base;
         CreaterWorkHandler                                                      creater_callback;
         DestroyWorkHandler                                                      destroy_callback;
     };
