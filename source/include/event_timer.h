@@ -12,6 +12,8 @@ namespace Evpp
         virtual ~EventTimer();
     public:
         bool InitedTimer();
+        template <class _Rep, class _Period>
+        bool AssignTimer(const std::chrono::duration<_Rep, _Period>& delay, const std::chrono::duration<_Rep, _Period>& repeat);
         bool AssignTimer(const std::chrono::nanoseconds& delay, const std::chrono::nanoseconds& repeat);
         bool AssignTimer(const std::chrono::microseconds& delay, const std::chrono::microseconds& repeat);
         bool AssignTimer(const std::chrono::milliseconds& delay, const std::chrono::milliseconds& repeat);

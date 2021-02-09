@@ -100,6 +100,7 @@ namespace Evpp
 
     bool EventLoop::StopDispatch()
     {
+        EVENT_COMPUTE_DURATION(StopDispatch);
         if (nullptr != event_base)
         {
             if (ExistsRuning())
@@ -125,6 +126,7 @@ namespace Evpp
 
     bool EventLoop::StopDispatchEx()
     {
+        EVENT_COMPUTE_DURATION(StopDispatchEx);
         if (nullptr != event_base)
         {
             if (EventThread() && ExistsRuning())

@@ -53,12 +53,21 @@ namespace std
             return detail::posix_duration_cast<struct timeval, Duration>::cast(tv);
         }
     }
+
 }
 
 namespace Evpp
 {
+    using namespace std::literals::chrono_literals;
+
     using milliseconds = std::chrono::duration<double, std::ratio<1, 1000>>;
     using microseconds = std::chrono::duration<double, std::ratio<1, 10000>>;
+
+    template <class _Rep, class _Period>
+    void duration_sleep_for(const std::chrono::duration<_Rep, _Period>& _Rel_time)
+    {
+        std::this_thread::sleep_until(std::chrono::steady_clock::now() + _Rel_time);
+    }
 
     static void duration_sleep_until(const double v)
     {
@@ -100,7 +109,6 @@ namespace Evpp
         std::string                                 m_name;
         milliseconds                                m_time;
     };
-
-}
 #   define EVENT_COMPUTE_DURATION(x) ComputeDuration t(#x)
+}
 #endif // __EVENT_DURATION_H__

@@ -49,6 +49,12 @@ namespace Evpp
         return false;
     }
 
+    template <class _Rep, class _Period>
+    bool EventTimer::AssignTimer(const std::chrono::duration<_Rep, _Period>& delay, const std::chrono::duration<_Rep, _Period>& repeat)
+    {
+        return AssignTimer(static_cast<u64>(delay.count()), static_cast<u64>(repeat.count()));
+    }
+
     bool EventTimer::AssignTimer(const std::chrono::nanoseconds& delay, const std::chrono::nanoseconds& repeat)
     {
         return AssignTimer(static_cast<u64>(delay.count()), static_cast<u64>(repeat.count()));

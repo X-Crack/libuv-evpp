@@ -71,10 +71,17 @@ namespace Evpp
     {
         if (nullptr != event_base)
         {
+            if (0 == ExistsRuning())
+            {
+                return true;
+            }
+
+            // be sure to wait until the server is fully started before cleaning up
             while (0 == ExistsRuning());
 
             if (event_base->EventThread())
             {
+                // make changes to the status immediately to prevent new sessions from joining during the cleaning process.
                 if (ChangeStatus(Status::Exec, Status::Stop))
                 {
                     EVENT_INFO("The server is stopping please be patient...");

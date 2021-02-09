@@ -25,6 +25,8 @@ namespace Evpp
         friend TcpListen;
     public:
         bool CreaterServer(const u96 thread_size);
+        // you can not use the main thread to clean up work, start a new thread to clean up
+        // to ensure that the cleanup can be completed smoothly, please use blocking mode as much as possible.
         bool DestroyServer(const bool wait = true);
         bool AddListenPort(const std::string& server_address, const u16 port);
         bool Send(const u96 index, const char* buf, u96 len, u32 nbufs = 1);
