@@ -190,6 +190,7 @@ namespace Evpp
 
     bool EventLoopThread::Join()
     {
+        while (0 == ChangeStatus(Status::Stop, Status::Exit));
 #ifdef EVPP_USE_STL_THREAD
         if (loop_thread && loop_thread->joinable())
         {

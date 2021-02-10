@@ -12,7 +12,6 @@ namespace Evpp
         event_base(loop),
         event_close_flag(1),
         event_close_flag_ex(1),
-        event_start_flag(1),
         tcp_proble(proble),
         event_share(std::make_shared<EventShare>()),
         event_thread_pool(std::make_shared<EventLoopThreadPool>(loop, event_share))
@@ -56,6 +55,11 @@ namespace Evpp
     {
         if (event_base->EventThread())
         {
+            if (ExistsStoped() || ExistsNoneed() || ExistsInited())
+            {
+                return true;
+            }
+
             if (ExistsRuning())
             {
                 if (0 == DeletedListenService())
@@ -68,22 +72,18 @@ namespace Evpp
                     return event_thread_pool->DestroyEventThreadPool();
                 }
             }
-            return false;
+            return true;
         }
         return event_base->RunInLoopEx(std::bind<bool(TcpListen::*)(void)>(&TcpListen::DestroyListenService, this));
     }
 
     bool TcpListen::DestroyListenService(EventLoop* loop, socket_tcp* server)
     {
-        if (nullptr != loop)
+        if (nullptr != loop && nullptr != server && loop->EventBasic() == server->loop)
         {
             if (loop->EventThread())
             {
-                if (nullptr != server && loop->EventBasic() == server->loop)
-                {
-                    uv_close(reinterpret_cast<event_handle*>(server), &TcpServer::OnDefaultListen);
-                }
-                return true;
+                return Evpp::SocketClose(server, &TcpServer::OnDefaultListen);
             }
             return loop->RunInLoopEx(std::bind<bool(TcpListen::*)(EventLoop*, socket_tcp*)>(&TcpListen::DestroyListenService, this, loop, server));
         }
@@ -132,7 +132,7 @@ namespace Evpp
                 {
                     tcp_server.emplace(tcp_server.begin() + i, std::make_unique<socket_tcp>(std::move(socket_tcp{ .data = server })));
                     {
-                        if (ExecuteListenService(event_thread_pool->GetEventLoop(i), tcp_server[i].get(), &socket->GetEventSocket(i)->GetSocketInfo()->addr))
+                        if (ExecuteListenService(event_thread_pool->GetEventLoop(i), tcp_server[i].get(), &socket->GetEventSocket(i)->GetSocketInfo()->addr, size, i))
                         {
                             EVENT_INFO("the server is starting, listening address: %s listening port: %u", socket->GetEventSocket(i)->GetSocketInfo()->host.c_str(), socket->GetEventSocket(i)->GetSocketInfo()->port);
                             continue;
@@ -141,7 +141,6 @@ namespace Evpp
                         return false;
                     }
                 }
-
                 return ChangeStatus(Status::Init, Status::Exec);
             }
         }
@@ -160,7 +159,7 @@ namespace Evpp
         return false;
     }
 
-    bool TcpListen::ExecuteListenService(EventLoop* loop, socket_tcp* server, const sockaddr* addr)
+    bool TcpListen::ExecuteListenService(EventLoop* loop, socket_tcp* server, const sockaddr* addr, const u96 size, const u96 index)
     {
         if (loop->EventThread())
         {
@@ -192,7 +191,7 @@ namespace Evpp
             }
             return false;
         }
-        return loop->RunInLoopEx(std::bind(&TcpListen::ExecuteListenService, this, loop, server, addr));
+        return loop->RunInLoopEx(std::bind(&TcpListen::ExecuteListenService, this, loop, server, addr, size, index));
     }
 
     bool TcpListen::InitTcpService(EventLoop* loop, socket_tcp* server)

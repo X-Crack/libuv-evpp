@@ -69,19 +69,22 @@ namespace Evpp
 
     bool TcpServer::DestroyServer()
     {
-        if (nullptr != event_base && ExistsRuning())
+        if (nullptr != event_base)
         {
-            if (event_base->EventThread())
+            if (ExistsRuning())
             {
-                // make changes to the status immediately to prevent new sessions from joining during the cleaning process.
-                if (ChangeStatus(Status::Exec, Status::Stop))
+                if (event_base->EventThread())
                 {
-                    EVENT_INFO("The server is stopping please be patient...");
-                    return DestroyService();
+                    // make changes to the status immediately to prevent new sessions from joining during the cleaning process.
+                    if (ChangeStatus(Status::Exec, Status::Stop))
+                    {
+                        EVENT_INFO("The server is stopping please be patient...");
+                        return DestroyService();
+                    }
+                    return false;
                 }
-                return false;
+                return RunInLoopEx(std::bind(&TcpServer::DestroyServer, this));
             }
-            return RunInLoopEx(std::bind(&TcpServer::DestroyServer, this));
         }
         return false;
     }
