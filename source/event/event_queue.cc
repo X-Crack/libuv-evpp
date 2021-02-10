@@ -168,10 +168,11 @@ namespace Evpp
             }
         }
 #else
-        std::lock_guard<std::mutex> lock(event_queue_nolock_mutex);
+        
         {
             std::vector<Handler> functors;
             {
+                std::lock_guard<std::mutex> lock(event_queue_nolock_mutex);
                 functors.swap(event_queue_nolock);
             }
 
@@ -222,10 +223,11 @@ namespace Evpp
             }
         }
 #else
-        std::lock_guard<std::mutex> lock(event_queue_lock_mutex);
+        
         {
             std::vector<Handler> functors;
             {
+                std::lock_guard<std::mutex> lock(event_queue_lock_mutex);
                 functors.swap(event_queue_lock);
             }
 
