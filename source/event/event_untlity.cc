@@ -124,9 +124,12 @@ namespace Evpp
 
     bool CheckServiceAccept(socket_stream* server)
     {
-        if (nullptr != reinterpret_cast<socket_tcp*>(server)->tcp.serv.pending_accepts)
+        if (nullptr != server)
         {
-            return INVALID_SOCKET == reinterpret_cast<socket_accept*>(reinterpret_cast<socket_tcp*>(server)->tcp.serv.pending_accepts)->accept_socket;
+            if (nullptr != reinterpret_cast<socket_tcp*>(server)->tcp.serv.pending_accepts)
+            {
+                return INVALID_SOCKET == reinterpret_cast<socket_accept*>(reinterpret_cast<socket_tcp*>(server)->tcp.serv.pending_accepts)->accept_socket;
+            }
         }
         return true;
     }

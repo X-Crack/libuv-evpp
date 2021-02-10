@@ -307,14 +307,12 @@ namespace Evpp
             {
                 if (0 == uv_accept(server, reinterpret_cast<socket_stream*>(client)))
                 {
-                    if (0 == ExistsRuning())
+                    if (ExistsRuning())
                     {
-                        return false;
-                    }
-
-                    if (0 == uv_tcp_keepalive(client, 1, tcp_keepalive.load()))
-                    {
-                        return InitialSession(loop, client, index);
+                        if (0 == uv_tcp_keepalive(client, 1, tcp_keepalive.load()))
+                        {
+                            return InitialSession(loop, client, index);
+                        }
                     }
                 }
             }
