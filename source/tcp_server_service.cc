@@ -113,7 +113,7 @@ namespace Evpp
                 }
                 catch (...)
                 {
-
+                    assert(0);
                 }
             }
             return true;
