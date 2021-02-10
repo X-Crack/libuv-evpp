@@ -303,22 +303,29 @@ namespace Evpp
     {
         if (nullptr != loop && nullptr != server && nullptr != client)
         {
-            if (uv_tcp_init(loop->EventBasic(), client))
+            if (0 == uv_tcp_init(loop->EventBasic(), client))
             {
-                return false;
+                if (0 == uv_accept(server, reinterpret_cast<socket_stream*>(client)))
+                {
+                    if (0 == ExistsRuning())
+                    {
+                        return false;
+                    }
+
+                    if (0 == uv_tcp_keepalive(client, 1, tcp_keepalive.load()))
+                    {
+                        return InitialSession(loop, client, index);
+                    }
+                }
             }
 
-            if (0 == uv_accept(server, reinterpret_cast<socket_stream*>(client)))
+            if (CheckServiceAccept(server))
             {
-                if (0 == ExistsRuning())
+                if (nullptr != client)
                 {
-                    return false;
+                    delete client;
                 }
-
-                if (0 == uv_tcp_keepalive(client, 1, tcp_keepalive.load()))
-                {
-                    return InitialSession(loop, client, index);
-                }
+                return false;
             }
 
             switch (errno)

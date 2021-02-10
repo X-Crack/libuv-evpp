@@ -16,6 +16,7 @@ namespace Evpp
     using event_prepare = uv_prepare_t;
     using event_check = uv_check_t;
     using socket_tcp = uv_tcp_t;
+    using socket_accept = uv_tcp_accept_t;
     using socket_stream = uv_stream_t;
     using socket_data = uv_buf_t;
     using socket_shutdown = uv_shutdown_t;

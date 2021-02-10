@@ -84,7 +84,7 @@ namespace Evpp
     };
 
     bool SocketFormatErrorString(u32 code, String* format_string);
-    
+    bool CheckServiceAccept(socket_stream* server);
     template <class _Ty>
     bool SocketStatus(_Ty* handler)
     {

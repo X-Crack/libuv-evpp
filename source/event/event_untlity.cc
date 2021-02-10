@@ -121,4 +121,13 @@ namespace Evpp
         return FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, code, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), format_string, sizeof(*format_string), NULL);
     }
 #endif
+
+    bool CheckServiceAccept(socket_stream* server)
+    {
+        if (nullptr != reinterpret_cast<socket_tcp*>(server)->tcp.serv.pending_accepts)
+        {
+            return INVALID_SOCKET == reinterpret_cast<socket_accept*>(reinterpret_cast<socket_tcp*>(server)->tcp.serv.pending_accepts)->accept_socket;
+        }
+        return true;
+    }
 }
