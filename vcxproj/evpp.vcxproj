@@ -18,96 +18,6 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\source\curl\http_download.cc" />
-    <ClCompile Include="..\source\curl\http_download_multi.cc" />
-    <ClCompile Include="..\source\curl\http_download_poll.cc" />
-    <ClCompile Include="..\source\curl\http_download_service.cc" />
-    <ClCompile Include="..\source\curl\http_download_session.cc" />
-    <ClCompile Include="..\source\curl\http_download_task.cc" />
-    <ClCompile Include="..\source\event\event_check.cc" />
-    <ClCompile Include="..\source\event\event_coroutine.cc" />
-    <ClCompile Include="..\source\event\event_explicit.cc" />
-    <ClCompile Include="..\source\event\event_idle.cc" />
-    <ClCompile Include="..\source\event\event_loop.cc" />
-    <ClCompile Include="..\source\event\event_loop_thread.cc" />
-    <ClCompile Include="..\source\event\event_loop_thread_pool.cc" />
-    <ClCompile Include="..\source\event\event_async.cc" />
-    <ClCompile Include="..\source\event\event_mutex.cc" />
-    <ClCompile Include="..\source\event\event_prepare.cc" />
-    <ClCompile Include="..\source\event\event_queue.cc" />
-    <ClCompile Include="..\source\event\event_work_queue.cc" />
-    <ClCompile Include="..\source\event\event_resolve.cc" />
-    <ClCompile Include="..\source\event\event_share.cc" />
-    <ClCompile Include="..\source\event\event_signal.cc" />
-    <ClCompile Include="..\source\event\event_socket.cc" />
-    <ClCompile Include="..\source\event\event_socket_pool.cc" />
-    <ClCompile Include="..\source\event\event_status.cc" />
-    <ClCompile Include="..\source\event\event_timer.cc" />
-    <ClCompile Include="..\source\event\event_timer_pool.cc" />
-    <ClCompile Include="..\source\event\event_untlity.cc" />
-    <ClCompile Include="..\source\tcp_attach.cc" />
-    <ClCompile Include="..\source\tcp_client.cc" />
-    <ClCompile Include="..\source\tcp_client_service.cc" />
-    <ClCompile Include="..\source\tcp_connect.cc" />
-    <ClCompile Include="..\source\tcp_listen.cc" />
-    <ClCompile Include="..\source\tcp_message.cc" />
-    <ClCompile Include="..\source\tcp_server.cc" />
-    <ClCompile Include="..\source\tcp_server_service.cc" />
-    <ClCompile Include="..\source\tcp_session.cc" />
-    <ClCompile Include="..\source\tcp_socket.cc" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\source\include\event_arch.h" />
-    <ClInclude Include="..\source\include\event_buffer.h" />
-    <ClInclude Include="..\source\include\event_check.h" />
-    <ClInclude Include="..\source\include\event_config.h" />
-    <ClInclude Include="..\source\include\event_coroutine.h" />
-    <ClInclude Include="..\source\include\event_curl.h" />
-    <ClInclude Include="..\source\include\event_curl_config.h" />
-    <ClInclude Include="..\source\include\event_curl_untlity.h" />
-    <ClInclude Include="..\source\include\event_duration.h" />
-    <ClInclude Include="..\source\include\event_evpp.h" />
-    <ClInclude Include="..\source\include\event_explicit.h" />
-    <ClInclude Include="..\source\include\event_idle.h" />
-    <ClInclude Include="..\source\include\event_libuv.h" />
-    <ClInclude Include="..\source\include\event_logging.h" />
-    <ClInclude Include="..\source\include\event_loop.h" />
-    <ClInclude Include="..\source\include\event_loop_thread.h" />
-    <ClInclude Include="..\source\include\event_loop_thread_pool.h" />
-    <ClInclude Include="..\source\include\event_async.h" />
-    <ClInclude Include="..\source\include\event_mutex.h" />
-    <ClInclude Include="..\source\include\event_prepare.h" />
-    <ClInclude Include="..\source\include\event_queue.h" />
-    <ClInclude Include="..\source\include\event_work_queue.h" />
-    <ClInclude Include="..\source\include\event_resolve.h" />
-    <ClInclude Include="..\source\include\event_share.h" />
-    <ClInclude Include="..\source\include\event_signal.h" />
-    <ClInclude Include="..\source\include\event_status.h" />
-    <ClInclude Include="..\source\include\event_timer.h" />
-    <ClInclude Include="..\source\include\event_timer_pool.h" />
-    <ClInclude Include="..\source\include\event_untlity.h" />
-    <ClInclude Include="..\source\include\event_platform.h" />
-    <ClInclude Include="..\source\include\http_download.h" />
-    <ClInclude Include="..\source\include\http_download_multi.h" />
-    <ClInclude Include="..\source\include\http_download_poll.h" />
-    <ClInclude Include="..\source\include\http_download_service.h" />
-    <ClInclude Include="..\source\include\http_download_session.h" />
-    <ClInclude Include="..\source\include\http_download_task.h" />
-    <ClInclude Include="..\source\include\tcp_attach.h" />
-    <ClInclude Include="..\source\include\tcp_client.h" />
-    <ClInclude Include="..\source\include\tcp_client_service.h" />
-    <ClInclude Include="..\source\include\tcp_connect.h" />
-    <ClInclude Include="..\source\include\tcp_listen.h" />
-    <ClInclude Include="..\source\include\tcp_message.h" />
-    <ClInclude Include="..\source\include\tcp_server.h" />
-    <ClInclude Include="..\source\include\tcp_server_service.h" />
-    <ClInclude Include="..\source\include\tcp_session.h" />
-    <ClInclude Include="..\source\include\event_socket.h" />
-    <ClInclude Include="..\source\include\event_socket_pool.h" />
-    <ClInclude Include="..\source\include\tcp_socket.h" />
-    <ClInclude Include="..\source\include\event_stdint.h" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -146,6 +56,7 @@
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="Shared">
+    <Import Project="..\share\share.vcxitems" Label="Shared" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />

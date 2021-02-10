@@ -35,12 +35,16 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlibstatic", "..\zlib\vspro
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "crypto_a", "..\openssl\crypto\vsprojects\crypto_a.vcxproj", "{8C1BD5E7-091E-4A2B-AC52-731516C26CCB}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "evpp_share", "share\share.vcxitems", "{C17C55C1-1084-4C6A-9C61-7B9B6DFD2CA9}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		share\share.vcxitems*{2af40e9d-5653-4eb4-94c9-d2235733ddae}*SharedItemsImports = 4
 		..\openssl\ssl_static\vsprojects\ssl.vcxitems*{6ff39cd8-d57e-42fe-8f62-009dda98d520}*SharedItemsImports = 4
 		..\openssl\crypto_static\vsprojects\crypto.vcxitems*{8c1bd5e7-091e-4a2b-ac52-731516c26ccb}*SharedItemsImports = 4
 		..\openssl\crypto_static\vsprojects\crypto.vcxitems*{9d6beeb4-2f48-444e-a43a-5c17839dbe2d}*SharedItemsImports = 9
 		..\openssl\ssl_static\vsprojects\ssl.vcxitems*{c09cfe60-7ff9-4b4e-8eae-805bb0cca121}*SharedItemsImports = 9
+		share\share.vcxitems*{c17c55c1-1084-4c6a-9c61-7b9b6dfd2ca9}*SharedItemsImports = 9
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64

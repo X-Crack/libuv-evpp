@@ -2,7 +2,6 @@
 #define __EVENT_CONFIG_H__
 #include <event_platform.h>
 #include <event_libuv.h>
-#include <event_curl.h>
 #include <event_stdint.h>
 #include <event_logging.h>
 #include <event_untlity.h>

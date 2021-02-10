@@ -3,8 +3,7 @@
 #include <iostream>
 #include <event_evpp.h>
 #include <event_queue.h>
-#include <http_download_multi.h>
-#include <http_download.h>
+
 
 void stop_server(Evpp::TcpServerService* server)
 {
@@ -19,24 +18,6 @@ void stop_server(Evpp::TcpServerService* server)
 void printf_ex(Evpp::EventLoop* loop)
 {
     EVENT_INFO("%d", loop->GetEventIndex());
-}
-
-uint32_t popcount(uint32_t v)
-{
-    v = v - ((v >> 1) & 0x55555555);                    // reuse input as temporary
-    v = (v & 0x33333333) + ((v >> 2) & 0x33333333);     // temp
-    uint32_t c = ((v + ((v >> 4) & 0xF0F0F0F)) * 0x1010101) >> 24; // count
-
-    return c;
-}
-
-int countbits(uint32_t v)
-{
-    v = v - ((v >> 1) & 0x55555555);                    // reuse input as temporary
-    v = (v & 0x33333333) + ((v >> 2) & 0x33333333);     // temp
-    int c = ((v + ((v >> 4) & 0xF0F0F0F)) * 0x1010101) >> 24; // count
-
-    return c;
 }
 
 int main(int argc, char* argv[])

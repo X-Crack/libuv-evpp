@@ -250,7 +250,6 @@ namespace Evpp
         return std::cref(tcp_session[index]);
     }
 
-
     bool TcpServer::CreaterSession(EventLoop* loop, socket_tcp* client, const u96 index)
     {
         std::unique_lock<std::recursive_mutex> lock(tcp_recursive_mutex);
