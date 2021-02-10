@@ -324,8 +324,8 @@ namespace Evpp
             switch (errno)
             {
             case NO_ERROR: break;
-            case WSAEWOULDBLOCK:
-            case WSAENOTCONN:
+            case WSAEWOULDBLOCK:    // A non-blocking socket operation could not be completed immediately.
+            case WSAENOTCONN:       // A request to send or receive data was disallowed because the socket is not connected and (when sending on a datagram socket using a sendto call) no address was supplied.
             {
                 return false;
             }
