@@ -46,7 +46,7 @@ namespace Evpp
     private:
         bool CreaterSession(EventLoop* loop, socket_tcp* client, const u96 index);
         bool InitialSession(EventLoop* loop, socket_tcp* client, const u96 index);
-        bool InitialAccepts(EventLoop* loop, socket_stream* server, socket_tcp* client);
+        bool InitialAccepts(EventLoop* loop, socket_stream* server, socket_tcp* client, const u96 index);
         void DeletedSession(const u96 index);
         bool CleanedSession();
         const std::shared_ptr<TcpSession>& GetSession(const u96 index);

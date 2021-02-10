@@ -115,4 +115,10 @@ namespace Evpp
         }
         return hash_mask ^ 0x7ffffff;
     }
+#ifdef H_OS_WINDOWS
+    bool SocketFormatErrorString(u32 code, String* format_string)
+    {
+        return FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, code, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), format_string, sizeof(*format_string), NULL);
+    }
+#endif
 }

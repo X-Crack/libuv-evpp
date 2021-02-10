@@ -299,7 +299,7 @@ namespace Evpp
         return false;
     }
 
-    bool TcpServer::InitialAccepts(EventLoop* loop, socket_stream* server, socket_tcp* client)
+    bool TcpServer::InitialAccepts(EventLoop* loop, socket_stream* server, socket_tcp* client, const u96 index)
     {
         if (nullptr != loop && nullptr != server && nullptr != client)
         {
@@ -308,15 +308,34 @@ namespace Evpp
                 return false;
             }
 
-            if (uv_accept(server, reinterpret_cast<socket_stream*>(client)))
+            if (0 == uv_accept(server, reinterpret_cast<socket_stream*>(client)))
+            {
+                if (0 == ExistsRuning())
+                {
+                    return false;
+                }
+
+                if (0 == uv_tcp_keepalive(client, 1, tcp_keepalive.load()))
+                {
+                    return InitialSession(loop, client, index);
+                }
+            }
+
+            switch (errno)
+            {
+            case WSAEWOULDBLOCK:
+            case WSAENOTCONN:
             {
                 return false;
             }
-
-            if (ExistsRuning())
+            default:
             {
-                return 0 == uv_tcp_keepalive(client, 1, tcp_keepalive.load());
+                EVENT_INFO("accept error %d %s", errno, strerror(errno));
+                break;
             }
+            }
+            
+            return loop->RunInQueue(std::bind(&TcpServer::SocketShutdown, this, client));
         }
         return false;
     }
@@ -329,14 +348,7 @@ namespace Evpp
 #endif
             if (nullptr != loop && nullptr != server && nullptr != client)
             {
-                if (InitialAccepts(loop, server, client))
-                {
-                    if (InitialSession(loop, client, index))
-                    {
-                        return true;
-                    }
-                }
-                return loop->RunInQueue(std::bind(&TcpServer::SocketShutdown, this, client));
+                return InitialAccepts(loop, server, client, index);
             }
 #ifndef H_OS_WINDOWS
         }
