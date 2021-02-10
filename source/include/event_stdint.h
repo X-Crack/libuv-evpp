@@ -19,7 +19,7 @@ typedef unsigned int                u32;
 typedef unsigned long long          u64;
 #ifdef _WIN64
 typedef __int64                     i96;
-typedef unsigned __int64            u96;
+typedef unsigned long long          u96;
 #else
 typedef int                         i96;
 typedef unsigned int                u96;

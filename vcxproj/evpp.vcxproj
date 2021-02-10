@@ -58,6 +58,7 @@
     <ClCompile Include="..\source\tcp_socket.cc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\source\include\event_arch.h" />
     <ClInclude Include="..\source\include\event_buffer.h" />
     <ClInclude Include="..\source\include\event_check.h" />
     <ClInclude Include="..\source\include\event_config.h" />

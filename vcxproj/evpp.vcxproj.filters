@@ -290,5 +290,8 @@
     <ClInclude Include="..\source\include\event_queue.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\source\include\event_arch.h">
+      <Filter>core</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

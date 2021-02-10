@@ -1,19 +1,6 @@
 ﻿#ifndef __EVENT_PLATFORM_H__
 #define __EVENT_PLATFORM_H__
-#include <assert.h>
-
-#if (defined(_MSC_VER) || defined(_WIN32) || defined(__WIN32__) || defined(WIN32)) && !defined(__SYMBIAN32__)
-#   ifndef H_OS_WINDOWS
-#       define H_OS_WINDOWS
-#       define WIN32_LEAN_AND_MEAN
-#       define _CRT_SECURE_NO_WARNINGS
-#   endif
-#   ifndef H_WINDOWS_API
-#       define H_WINDOWS_API
-#   endif
-#endif
-
-#define USE_PARAMETER(P) (P)
+#include <event_arch.h>
 
 #ifdef H_OS_WINDOWS
 #   define FORCEINLINE __forceinline
@@ -23,6 +10,25 @@
 #   define NOFORCEINLINE __attribute__ ((noinline))
 #endif
 
+#ifdef H_OS_WINDOWS
+#   if !defined(_DLL) && !defined(_DEBUG)
+#       pragma message("Compilation mode MT")
+#   elif !defined(_DLL) && defined(_DEBUG)
+#       pragma message("Compilation mode MTd")
+#   elif defined(_DLL) && !defined(_DEBUG)
+#       pragma message("Compilation mode MD")
+#   elif defined(_DLL) && defined(_DEBUG)
+#       pragma message("Compilation mode MDd")
+#   endif
+#endif
+
+#ifdef H_OS_WINDOWS
+#   ifdef _WIN32
+#       define H_OS_X86
+#   elif _WIN64
+#       define H_OS_X64
+#   endif
+#endif
 
 #ifdef H_OS_WINDOWS
 #   define EVPP_THREAD_YIELD SwitchToThread
@@ -30,6 +36,7 @@
 #   define EVPP_THREAD_YIELD std::this_thread::yield
 #endif
 
+#define USE_PARAMETER(P) (P)
 
 #ifdef H_OS_WINDOWS
 #pragma warning( disable: 4251 )

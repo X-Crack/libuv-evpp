@@ -74,6 +74,15 @@ namespace Evpp
     NOFORCEINLINE bool EventLoopAlive(event_loop* loop);
     void DoDispatchEvent();
 
+    struct HashBit
+    {
+#ifdef H_OS_X86
+        static constexpr const u96 Hash(const char* hash, const u96 size, u96 hash_mask = 0x90cbfa3b, u32 index = 0);
+#elif  H_OS_X64
+        static constexpr const u96 Hash(const char* hash, const u96 size, u96 hash_mask = 0xf4fea0fe1a79ec80, u32 index = 0);
+#endif
+    };
+    
     template <class _Ty>
     bool SocketStatus(_Ty* handler)
     {
