@@ -3,14 +3,49 @@
 #include <event_config.h>
 namespace Evpp
 {
+#ifdef H_OS_WINDOWS
     class EventExplicit
     {
     public:
-        explicit EventExplicit();
-        explicit EventExplicit(int argc, char* argv[]);
-        virtual ~EventExplicit();
-    public:
-    private:
-    };
+        explicit EventExplicit()
+        {
+#ifndef GOOGLE_LOGGING
+            FLAGS_log_prefix = true;
+            FLAGS_colorlogtostderr = true;
+            FLAGS_logbufsecs = 3;
+            FLAGS_max_log_size = 10;
+            FLAGS_v = 3;
+            FLAGS_logtostderr = false;
+
+            google::InitGoogleLogging("./");
+            google::SetStderrLogging(google::GLOG_INFO);
+            google::SetLogDestination(google::GLOG_INFO, "./");
+            google::InstallFailureSignalHandler();
+#endif
+        }
+
+        explicit EventExplicit(int argc, char* argv[])
+        {
+#ifndef GOOGLE_LOGGING
+            FLAGS_log_prefix = true;
+            FLAGS_colorlogtostderr = true;
+            FLAGS_logbufsecs = 3;
+            FLAGS_max_log_size = 10;
+            FLAGS_v = 3;
+            FLAGS_logtostderr = false;
+
+            google::InitGoogleLogging(argv[0]);
+            google::SetStderrLogging(google::GLOG_INFO);
+            google::SetLogDestination(google::GLOG_INFO, argv[0]);
+            google::InstallFailureSignalHandler();
+#endif
+        }
+
+        virtual ~EventExplicit()
+        {
+            system("pause");
+        }
+    } __s_onexit_pause;
+#endif
 }
 #endif // __EVENT_EXPLICIT_H__

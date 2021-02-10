@@ -67,29 +67,21 @@ namespace Evpp
         return false;
     }
 
-    bool TcpServer::DestroyServer(const bool wait)
+    bool TcpServer::DestroyServer()
     {
-        if (nullptr != event_base)
+        if (nullptr != event_base && ExistsRuning())
         {
-            if (0 == ExistsRuning())
-            {
-                return true;
-            }
-
-            // be sure to wait until the server is fully started before cleaning up
-            while (0 == ExistsRuning());
-
             if (event_base->EventThread())
             {
                 // make changes to the status immediately to prevent new sessions from joining during the cleaning process.
                 if (ChangeStatus(Status::Exec, Status::Stop))
                 {
                     EVENT_INFO("The server is stopping please be patient...");
-                    return DestroyService(wait);
+                    return DestroyService();
                 }
                 return false;
             }
-            return DestroySyncEvent(wait);
+            return RunInLoopEx(std::bind(&TcpServer::DestroyServer, this));
         }
         return false;
     }
@@ -519,7 +511,7 @@ namespace Evpp
         }
     }
 
-    bool TcpServer::DestroyService(const bool wait)
+    bool TcpServer::DestroyService()
     {
         if (nullptr == tcp_listen || nullptr == event_thread_pool)
         {
@@ -541,25 +533,6 @@ namespace Evpp
         {
             return false;
         }
-
-        if (wait)
-        {
-            event_close_flag_ex.store(0, std::memory_order_release);
-            event_close_flag_ex.notify_one();
-        }
         return true;
-    }
-
-    bool TcpServer::DestroySyncEvent(const bool wait)
-    {
-        if (RunInLoopEx(std::bind(&TcpServer::DestroyServer, this, wait)))
-        {
-            if (wait)
-            {
-                event_close_flag_ex.wait(1, std::memory_order_relaxed);
-            }
-            return true;
-        }
-        return false;
     }
 }

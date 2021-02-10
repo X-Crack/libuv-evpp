@@ -3,7 +3,9 @@
 #include <event_async.h>
 #include <event_mutex.h>
 #include <event_coroutine.h>
+#ifdef EVPP_USE_CAMERON314_CONCURRENTQUEUE
 #include <concurrentqueue.h>
+#endif
 namespace Evpp
 {
 #ifdef EVPP_USE_CAMERON314_CONCURRENTQUEUE

@@ -27,7 +27,7 @@ namespace Evpp
         bool CreaterServer(const u96 thread_size);
         // you can not use the main thread to clean up work, start a new thread to clean up
         // to ensure that the cleanup can be completed smoothly, please use blocking mode as much as possible.
-        bool DestroyServer(const bool wait = true);
+        bool DestroyServer();
         bool AddListenPort(const std::string& server_address, const u16 port);
         bool Send(const u96 index, const char* buf, u96 len, u32 nbufs = 1);
         bool Send(const u96 index, const std::string& buf, u32 nbufs = 1);
@@ -68,8 +68,7 @@ namespace Evpp
         static void OnDefaultShutdown(socket_shutdown* shutdown, int status);
         static void OnDefaultListen(event_handle* handler);
     private:
-        bool DestroyService(const bool wait = true);
-        bool DestroySyncEvent(const bool wait = true);
+        bool DestroyService();
     private:
         EventLoop*                                                              event_base;
         std::shared_ptr<EventShare>                                             event_share;
