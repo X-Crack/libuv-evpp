@@ -315,7 +315,7 @@ namespace Evpp
                     return false;
                 }
 
-                if (0 == uv_tcp_keepalive(client, 1, tcp_keepalive.load()))
+                if (1 == uv_tcp_keepalive(client, 1, tcp_keepalive.load()))
                 {
                     return InitialSession(loop, client, index);
                 }
@@ -323,6 +323,7 @@ namespace Evpp
 
             switch (errno)
             {
+            case NO_ERROR: break;
             case WSAEWOULDBLOCK:
             case WSAENOTCONN:
             {
@@ -330,7 +331,7 @@ namespace Evpp
             }
             default:
             {
-                EVENT_INFO("accept error %d %s", errno, strerror(errno));
+                EVENT_INFO("accept error code: %d error msessage: %s", errno, strerror(errno));
                 break;
             }
             }
