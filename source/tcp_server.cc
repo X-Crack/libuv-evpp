@@ -198,7 +198,7 @@ namespace Evpp
     {
         if (nullptr != event_base)
         {
-            return event_base->RunInLoopEx(function);
+            return event_base->RunInQueue(function);
         }
         return false;
     }
