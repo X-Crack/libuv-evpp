@@ -315,7 +315,7 @@ namespace Evpp
                     return false;
                 }
 
-                if (1 == uv_tcp_keepalive(client, 1, tcp_keepalive.load()))
+                if (0 == uv_tcp_keepalive(client, 1, tcp_keepalive.load()))
                 {
                     return InitialSession(loop, client, index);
                 }
