@@ -10,7 +10,9 @@
 
 // Use CXX20 coroutine to assist EventLoop operation.
 #if defined(__cpp_coroutines) && !defined(__cpp_impl_coroutine) || defined(_HAS_CXX20)
+#ifndef EVPP_USE_STL_COROUTINES
 #       define EVPP_USE_STL_COROUTINES
+#endif
 #endif
 
 // Use STL-based multi-threaded running mode (std::thread) to close this macro, and use libuv_thread to run multi-threaded
