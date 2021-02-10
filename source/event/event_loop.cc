@@ -29,10 +29,15 @@ namespace Evpp
         {
             if (0 == uv_loop_init(event_base))
             {
+                if (0 == event_thread)
+                {
+                    event_thread = EventThreadId();
+                }
+
                 if (nullptr == event_base->data)
                 {
                     event_base->data = this;
-                    event_thread = EventThreadId();
+                    
                 }
                 return event_queue->CreaterQueue();
             }

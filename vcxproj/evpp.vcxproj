@@ -100,7 +100,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>../source/include;../../../common/libuv/include;../../../common/queue/concurrent;../../../common/glog/src/windows;../../../common/glog/src/windows/glog;../../../common/curl/include;../../../common/openssl/include;../../../common/zlib;../../../common/curl/lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../source/include;../../../common/libuv/include;../../../common/queue/concurrent;../../../common/glog/src/windows;../../../common/glog/src/windows/glog;../../../common/curl/include;../../../common/openssl/include;../../../common/zlib;../../../common/curl/lib;../../../common/mimalloc/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <LanguageStandard>stdcpplatest</LanguageStandard>
@@ -124,7 +124,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>../source/include;../../../common/libuv/include;../../../common/queue/concurrent;../../../common/glog/src/windows;../../../common/glog/src/windows/glog;../../../common/curl/include;../../../common/openssl/include;../../../common/zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../source/include;../../../common/libuv/include;../../../common/queue/concurrent;../../../common/glog/src/windows;../../../common/glog/src/windows/glog;../../../common/curl/include;../../../common/openssl/include;../../../common/zlib;../../../common/curl/lib;../../../common/mimalloc/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -147,7 +147,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>../source/include;../../../common/libuv/include;../../../common/queue/concurrent;../../../common/glog/src/windows;../../../common/glog/src/windows/glog;../../../common/curl/include;../../../common/openssl/include;../../../common/zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../source/include;../../../common/libuv/include;../../../common/queue/concurrent;../../../common/glog/src/windows;../../../common/glog/src/windows/glog;../../../common/curl/include;../../../common/openssl/include;../../../common/zlib;../../../common/curl/lib;../../../common/mimalloc/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -168,7 +168,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>../source/include;../../../common/libuv/include;../../../common/queue/concurrent;../../../common/glog/src/windows;../../../common/glog/src/windows/glog;../../../common/curl/include;../../../common/openssl/include;../../../common/zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../source/include;../../../common/libuv/include;../../../common/queue/concurrent;../../../common/glog/src/windows;../../../common/glog/src/windows/glog;../../../common/curl/include;../../../common/openssl/include;../../../common/zlib;../../../common/curl/lib;../../../common/mimalloc/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>

@@ -97,7 +97,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>../source/include;../../../common/libuv/include;../../../common/queue/concurrent;../../../common/glog/src/windows;../../../common/glog/src/windows/glog;../../../common/curl/include;../../../common/openssl/include;../../../common/zlib;../../../common/curl/lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../source/include;../../../common/libuv/include;../../../common/queue/concurrent;../../../common/glog/src/windows;../../../common/glog/src/windows/glog;../../../common/curl/include;../../../common/openssl/include;../../../common/zlib;../../../common/curl/lib;../../../common/mimalloc/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -114,7 +114,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>../source/include;../../../common/libuv/include;../../../common/queue/concurrent;../../../common/glog/src/windows;../../../common/glog/src/windows/glog;../../../common/curl/include;../../../common/openssl/include;../../../common/zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../source/include;../../../common/libuv/include;../../../common/queue/concurrent;../../../common/glog/src/windows;../../../common/glog/src/windows/glog;../../../common/curl/include;../../../common/openssl/include;../../../common/zlib;../../../common/curl/lib;../../../common/mimalloc/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
@@ -132,7 +132,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>../source/include;../../../common/libuv/include;../../../common/queue/concurrent;../../../common/glog/src/windows;../../../common/glog/src/windows/glog;../../../common/curl/include;../../../common/openssl/include;../../../common/zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../source/include;../../../common/libuv/include;../../../common/queue/concurrent;../../../common/glog/src/windows;../../../common/glog/src/windows/glog;../../../common/curl/include;../../../common/openssl/include;../../../common/zlib;../../../common/curl/lib;../../../common/mimalloc/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -149,7 +149,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>../source/include;../../../common/libuv/include;../../../common/queue/concurrent;../../../common/glog/src/windows;../../../common/glog/src/windows/glog;../../../common/curl/include;../../../common/openssl/include;../../../common/zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../source/include;../../../common/libuv/include;../../../common/queue/concurrent;../../../common/glog/src/windows;../../../common/glog/src/windows/glog;../../../common/curl/include;../../../common/openssl/include;../../../common/zlib;../../../common/curl/lib;../../../common/mimalloc/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -170,6 +170,9 @@
     </ProjectReference>
     <ProjectReference Include="..\..\libuv\vsprojects\uv_a.vcxproj">
       <Project>{271f0c53-971b-3471-a1f8-1c2a3209445c}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\mimalloc\ide\vs2019\mimalloc.vcxproj">
+      <Project>{abb5eae7-b3e6-432e-b636-333449892ea6}</Project>
     </ProjectReference>
     <ProjectReference Include="..\vcxproj\evpp.vcxproj">
       <Project>{2af40e9d-5653-4eb4-94c9-d2235733ddae}</Project>

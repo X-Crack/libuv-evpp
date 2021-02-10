@@ -28,6 +28,9 @@
     <ProjectReference Include="..\..\libuv\vsprojects\uv_a.vcxproj">
       <Project>{271f0c53-971b-3471-a1f8-1c2a3209445c}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\..\mimalloc\ide\vs2019\mimalloc.vcxproj">
+      <Project>{abb5eae7-b3e6-432e-b636-333449892ea6}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\openssl\crypto\vsprojects\crypto_a.vcxproj">
       <Project>{8c1bd5e7-091e-4a2b-ac52-731516c26ccb}</Project>
     </ProjectReference>
@@ -121,7 +124,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../source/include;../../../common/libuv/include;../../../common/queue/concurrent;../../../common/glog/src/windows;../../../common/glog/src/windows/glog;../../../common/curl/include;../../../common/openssl/include;../../../common/zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../source/include;../../../common/libuv/include;../../../common/queue/concurrent;../../../common/glog/src/windows;../../../common/glog/src/windows/glog;../../../common/curl/include;../../../common/openssl/include;../../../common/zlib;../../../common/curl/lib;../../../common/mimalloc/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <LanguageStandard>stdcpplatest</LanguageStandard>
@@ -141,7 +144,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../source/include;../../../common/libuv/include;../../../common/queue/concurrent;../../../common/glog/src/windows;../../../common/glog/src/windows/glog;../../../common/curl/include;../../../common/openssl/include;../../../common/zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../source/include;../../../common/libuv/include;../../../common/queue/concurrent;../../../common/glog/src/windows;../../../common/glog/src/windows/glog;../../../common/curl/include;../../../common/openssl/include;../../../common/zlib;../../../common/curl/lib;../../../common/mimalloc/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -160,7 +163,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../source/include;../../../common/libuv/include;../../../common/queue/concurrent;../../../common/glog/src/windows;../../../common/glog/src/windows/glog;../../../common/curl/include;../../../common/openssl/include;../../../common/zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../source/include;../../../common/libuv/include;../../../common/queue/concurrent;../../../common/glog/src/windows;../../../common/glog/src/windows/glog;../../../common/curl/include;../../../common/openssl/include;../../../common/zlib;../../../common/curl/lib;../../../common/mimalloc/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -178,7 +181,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../source/include;../../../common/libuv/include;../../../common/queue/concurrent;../../../common/glog/src/windows;../../../common/glog/src/windows/glog;../../../common/curl/include;../../../common/openssl/include;../../../common/zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../source/include;../../../common/libuv/include;../../../common/queue/concurrent;../../../common/glog/src/windows;../../../common/glog/src/windows/glog;../../../common/curl/include;../../../common/openssl/include;../../../common/zlib;../../../common/curl/lib;../../../common/mimalloc/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>

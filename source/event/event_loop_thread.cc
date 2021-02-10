@@ -29,12 +29,15 @@ namespace Evpp
 
     EventLoopThread::~EventLoopThread()
     {
-        EVENT_INFO("Release Class EventLoopThreadEx");
+        if (Join())
+        {
+            EVENT_INFO("Release Class EventLoopThreadEx");
+        }
     }
 
     bool EventLoopThread::CreaterThread()
     {
-        if (ExistsNoneed() && nullptr != event_base)
+        if (nullptr != event_base && ExistsNoneed())
         {
             if (event_base->EventThread())
             {
@@ -63,7 +66,7 @@ namespace Evpp
                 }
                 return false;
             }
-            return event_base->RunInLoop(std::bind(&EventLoopThread::CreaterThread, this));
+            return event_base->RunInLoopEx(std::bind(&EventLoopThread::CreaterThread, this));
         }
         return false;
     }
@@ -77,19 +80,23 @@ namespace Evpp
 
         if (ExistsRuning())
         {
-            assert(0 == loop->EventThread());
-
-            if (EventLoopAlive(loop->EventBasic()))
+            if (event_base->EventThread())
             {
-                if (loop->StopDispatchEx())
+                assert(0 == loop->EventThread());
+
+                if (EventLoopAlive(loop->EventBasic()))
                 {
-                    if (loop_mutex->try_unlock())
+                    if (loop->StopDispatchEx())
                     {
-                        return Join();
+                        if (loop_mutex->try_unlock())
+                        {
+                            return true;
+                        }
+                        return false;
                     }
-                    return false;
                 }
             }
+            return event_base->RunInLoopEx(std::bind(&EventLoopThread::DestroyThread, this));
         }
         return false;
     }

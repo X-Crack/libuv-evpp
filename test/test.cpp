@@ -1,6 +1,8 @@
 ﻿// test.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
 //
 #include <iostream>
+// #include <mimalloc.h>
+// #include <mimalloc-new-delete.h>
 #include <event_evpp.h>
 #include <event_queue.h>
 
@@ -22,7 +24,8 @@ void printf_ex(Evpp::EventLoop* loop)
 
 int main(int argc, char* argv[])
 {
-
+    //mi_version();
+    //mi_stats_reset();
     using namespace Evpp;
 //     EventLoop ev;
 //     EventQueue queue(&ev);
@@ -32,9 +35,14 @@ int main(int argc, char* argv[])
 //     //std::thread T1(std::bind(&asdjkajsdjasd, &ev, &queue));
 //     //T1.detach();
 //     ev.ExecDispatch();
-     while (true)
+     //while (true)
      {
          EVENT_COMPUTE_DURATION(全程耗时);
+         __asm
+         {
+             mov eax,eax
+             mov eax,eax
+         }
          std::unique_ptr<TcpServerService> server = std::make_unique<TcpServerService>();
          server->AddListenPort("0.0.0.0", 5555);
          server->AddListenPort("0.0.0.0", 6666);
@@ -101,5 +109,6 @@ int main(int argc, char* argv[])
     //     _CPPS_CATCH;
     //     cpps::close(c);
     getchar();
+    //mi_collect(true);
     return 0;
 }

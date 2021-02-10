@@ -188,9 +188,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\source\include\event_curl.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\source\include\event_explicit.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\source\include\tcp_attach.h">
       <Filter>include\tcp</Filter>
     </ClInclude>
@@ -243,6 +240,9 @@
       <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\source\include\event_untlity.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\source\include\event_explicit.h">
       <Filter>core</Filter>
     </ClInclude>
   </ItemGroup>
