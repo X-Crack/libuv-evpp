@@ -34,10 +34,7 @@ namespace Evpp
         {
             if (event_base->EventThread())
             {
-                uv_close(reinterpret_cast<event_handle*>(event_queue), &EventAsync::DefaultClose);
-                {
-                    return true;
-                }
+                return SocketClose(event_queue, &EventAsync::DefaultClose);
             }
             
             if (event_base->RunInLoopEx(std::bind(&EventAsync::DestroyAsync, this)))

@@ -483,18 +483,15 @@ namespace Evpp
     {
         if (0 == status)
         {
-            if (nullptr != shutdown)
+            if (nullptr != shutdown || nullptr != shutdown->handle)
             {
-                if (nullptr != shutdown->handle)
-                {
-                    uv_close(reinterpret_cast<event_handle*>(shutdown->handle), &TcpServer::OnDefaultClose);
-                }
+                return;
+            }
 
-                if (nullptr != shutdown)
-                {
-                    delete shutdown;
-                    shutdown = nullptr;
-                }
+            if (Evpp::SocketClose(shutdown->handle, &TcpServer::OnDefaultClose))
+            {
+                delete shutdown;
+                shutdown = nullptr;
             }
         }
     }

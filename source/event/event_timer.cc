@@ -129,10 +129,7 @@ namespace Evpp
         {
             if (ChangeStatus(Status::Stop, Status::Exit))
             {
-                uv_close(reinterpret_cast<event_handle*>(event_time), &EventTimer::DefaultClose);
-                {
-                    return true;
-                }
+                return SocketClose(event_time, &EventTimer::DefaultClose);
             }
         }
         return false;

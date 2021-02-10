@@ -113,12 +113,7 @@ namespace Evpp
     {
         if (nullptr != handler)
         {
-            if (uv_is_closing(reinterpret_cast<event_handle*>(handler)))
-            {
-                return true;
-            }
-
-            if (static_cast<i32>(~0) != static_cast<i32>(handler->socket))
+            if (0 == uv_is_closing(reinterpret_cast<event_handle*>(handler)))
             {
                 uv_close(reinterpret_cast<event_handle*>(handler), callback);
                 {
