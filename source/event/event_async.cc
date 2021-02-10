@@ -5,7 +5,6 @@ namespace Evpp
     EventAsync::EventAsync(EventLoop* loop, const Handler& handler) :
         event_base(loop),
         event_queue(new event_async()),
-        event_stop_flag(1),
         event_handler(handler)
     {
         if (nullptr == event_queue->data)
@@ -36,15 +35,7 @@ namespace Evpp
             {
                 return SocketClose(event_queue, &EventAsync::DefaultClose);
             }
-            
-            if (event_base->RunInLoopEx(std::bind(&EventAsync::DestroyAsync, this)))
-            {
-                if (1 == event_stop_flag.load(std::memory_order_acquire))
-                {
-                    event_stop_flag.wait(1, std::memory_order_relaxed);
-                }
-                return true;
-            }
+            return event_base->RunInLoopEx(std::bind(&EventAsync::DestroyAsync, this));
         }
         return false;
     }
@@ -100,11 +91,6 @@ namespace Evpp
         {
             delete handler;
             handler = nullptr;
-        }
-
-        if (1 == event_stop_flag.exchange(0, std::memory_order_release))
-        {
-            event_stop_flag.notify_one();
         }
     }
 }

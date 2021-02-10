@@ -23,7 +23,6 @@ namespace Evpp
     private:
         EventLoop*                                              event_base;
         event_async*                                            event_queue;
-        std::atomic<u32>                                        event_stop_flag;
         Handler                                                 event_handler;
     };
 }
