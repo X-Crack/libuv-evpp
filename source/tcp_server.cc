@@ -340,13 +340,9 @@ namespace Evpp
             }
 #ifndef H_OS_WINDOWS
         }
-#endif
-
-#ifdef H_OS_WINDOWS
-        return false;
-
+        return loop->RunInLoopEx(std::bind<bool(TcpServer::*)(EventLoop*, socket_stream*, socket_tcp*, const u96)>(&TcpServer::DefaultAccepts, this, loop, server, client, index));
 #else
-        return loop->RunInLoopEx(std::bind((bool(TcpServer::*)(EventLoop*, socket_stream*, socket_tcp*, const u96)) & TcpServer::DefaultAccepts, this, loop, server, client, index));
+        return false;
 #endif
     }
 
