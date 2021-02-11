@@ -3,7 +3,7 @@
 
 # 主要特性
 
-1. 具有 epoll | kqueue | iocp | completionport| 功能齐全的事件循环
+1. 具有 epoll | kqueue | iocp | completionport | 功能齐全的事件循环
 1. 非阻塞纯异步的 tcp 服务端以及客户端
 1. 非阻塞纯异步的 dns 解析服务
 1. 高可用的线程池以及定时器（时钟）
