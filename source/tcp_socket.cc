@@ -13,11 +13,18 @@ namespace Evpp
 
     bool TcpSocket::AddSockInfo(socket_tcp* handler, const u96 index)
     {
-        std::unique_lock<std::recursive_mutex> lock(tcp_mutex);
-        if (tcp_info.emplace(index, std::make_shared<SocketInfoEx>()).second)
+        if (nullptr != handler)
         {
-            return InitialSockInfo(handler, GetSockInfo(index));
+            if (SocketStatus(handler))
+            {
+                std::unique_lock<std::recursive_mutex> lock(tcp_mutex);
+                if (tcp_info.emplace(index, std::make_shared<SocketInfoEx>()).second)
+                {
+                    return InitialSockInfo(handler, GetSockInfo(index));
+                }
+            }
         }
+
         return false;
     }
 
@@ -43,11 +50,19 @@ namespace Evpp
 
     bool TcpSocket::InitialSockInfo(socket_tcp* handler, const std::shared_ptr<SocketInfoEx>& socket)
     {
-        return GetSockInfo(handler, socket) && GetPeerInfo(handler, socket);
+        if (nullptr != handler)
+        {
+            return GetSockInfo(handler, socket) && GetPeerInfo(handler, socket);
+        }
+        return false;
     }
 
     bool TcpSocket::GetSockInfo(socket_tcp* handler, const std::shared_ptr<SocketInfoEx>& socket)
     {
+        if (nullptr == handler)
+        {
+            return false;
+        }
         // 获取与某个套接字关联的本地协议地址
         if (GetSockName(handler, reinterpret_cast<struct sockaddr *>(std::addressof(socket->sockname.addr_storage)), sizeof(struct sockaddr_storage)))
         {
@@ -78,6 +93,10 @@ namespace Evpp
 
     bool TcpSocket::GetPeerInfo(socket_tcp* handler, const std::shared_ptr<SocketInfoEx>& socket)
     {
+        if (nullptr == handler)
+        {
+            return false;
+        }
         // 获取与某个套接字关联的外地协议地址
         if (GetPeerName(handler, reinterpret_cast<struct sockaddr *>(std::addressof(socket->peername.addr_storage)), sizeof(struct sockaddr_storage)))
         {
@@ -110,7 +129,10 @@ namespace Evpp
     {
         if (nullptr != handler)
         {
-            return 0 == uv_tcp_getsockname(handler, addr, &size);
+            if (SocketStatus(handler))
+            {
+                return 0 == uv_tcp_getsockname(handler, addr, &size);
+            }
         }
         return false;
     }
@@ -119,7 +141,10 @@ namespace Evpp
     {
         if (nullptr != handler)
         {
-            return 0 == uv_tcp_getpeername(handler, addr, &size);
+            if (SocketStatus(handler))
+            {
+                return 0 == uv_tcp_getpeername(handler, addr, &size);
+            }
         }
         return false;
     }

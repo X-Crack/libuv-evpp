@@ -309,7 +309,7 @@ namespace Evpp
             {
                 if (0 == uv_accept(server, reinterpret_cast<socket_stream*>(client)))
                 {
-                    if (ExistsRuning())
+                    if (!ExistsRuning())
                     {
                         if (0 == uv_tcp_keepalive(client, 1, tcp_keepalive.load()))
                         {
@@ -485,6 +485,8 @@ namespace Evpp
     {
         if (nullptr != handler)
         {
+            // clear the memory first to prevent memory fragmentation from causing other asynchronous places to access the wrong pointer * TcpSocket::AddSockInfo *
+            memset(handler, 0, sizeof(event_handle));
             delete reinterpret_cast<socket_tcp*>(handler);
             handler = nullptr;
         }
@@ -501,8 +503,11 @@ namespace Evpp
 
             if (Evpp::SocketClose(shutdown->handle, &TcpServer::OnDefaultClose))
             {
-                delete shutdown;
-                shutdown = nullptr;
+                if (nullptr != shutdown)
+                {
+                    delete shutdown;
+                    shutdown = nullptr;
+                }
             }
         }
     }

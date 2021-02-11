@@ -100,12 +100,27 @@ namespace Evpp
     }
 
     template <class _Ty>
+    bool SocketShutdownImpl(socket_shutdown* shutdown, _Ty* handler, uv_shutdown_cb callback)
+    {
+        if (UV_ENOTCONN == uv_shutdown(shutdown, reinterpret_cast<socket_stream*>(handler), callback))
+        {
+            if (nullptr != shutdown)
+            {
+                delete shutdown;
+                shutdown = nullptr;
+            }
+            return false;
+        }
+        return true;
+    }
+
+    template <class _Ty>
     bool SocketShutdown(_Ty* handler, uv_shutdown_cb callback)
     {
         if (nullptr != handler)
         {
             // 不指定 .data = handler 即为默认第一个参数 如指定 .data = handler 既需要 C++2A
-            return 0 == uv_shutdown(new socket_shutdown({ handler }), reinterpret_cast<socket_stream*>(handler), callback);
+            return SocketShutdownImpl(new socket_shutdown({ handler }), reinterpret_cast<socket_stream*>(handler), callback);
         }
         return false;
     }
