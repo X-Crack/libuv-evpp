@@ -20,7 +20,7 @@ namespace Evpp
     };
 
     /// template???
-    class EventRuntimeException : public EventException
+    class EventRuntimeException final : public EventException
     {
     public:
         explicit EventRuntimeException(const std::string& msg, const Handler& handler, bool var);
