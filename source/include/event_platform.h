@@ -32,7 +32,7 @@
 
 
 #ifndef EVPP_USE_BOOST_ASSEMBLY
-#   define EVPP_USE_BOOST_ASSEMBLY
+//#   define EVPP_USE_BOOST_ASSEMBLY
 #endif
 
 // Use CXX20 coroutine to assist EventLoop operation.

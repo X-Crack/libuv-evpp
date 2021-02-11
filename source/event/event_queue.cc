@@ -200,7 +200,7 @@ namespace Evpp
                 {
                     if (evebt_queue_nolock_function_count.fetch_sub(1, std::memory_order_relaxed))
                     {
-                        SafeReleaseHandler release(std::addressof(event_queue_nolock_function));
+                        SafeReleaseHandler destroy_object(std::addressof(event_queue_nolock_function));
                         {
                             if (JoinInTask(std::bind(*event_queue_nolock_function)).get())
                             {
@@ -282,7 +282,7 @@ namespace Evpp
                 {
                     if (evebt_queue_lock_function_count.fetch_sub(1, std::memory_order_relaxed))
                     {
-                        SafeReleaseHandler release(std::addressof(event_queue_lock_function));
+                        SafeReleaseHandler destroy_object(std::addressof(event_queue_lock_function));
                         {
                             if (JoinInTask(std::bind(*event_queue_lock_function)).get())
                             {
