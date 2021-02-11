@@ -166,7 +166,6 @@ namespace Evpp
                 }
                 assert(0);
             }
-            return;
         }
         assert(0);
     }

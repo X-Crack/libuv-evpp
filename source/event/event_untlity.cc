@@ -12,7 +12,7 @@ namespace Evpp
             USE_PARAMETER(loop);
             USE_PARAMETER(session);
             USE_PARAMETER(index);
-            EVENT_INFO("DefaultAccepts:%d Thread:%d", index, loop->EventThreadId());
+            //EVENT_INFO("DefaultAccepts:%d Thread:%d", index, loop->EventThreadId());
             return true;
         }
 
@@ -20,7 +20,7 @@ namespace Evpp
         {
             USE_PARAMETER(loop);
             USE_PARAMETER(index);
-            EVENT_INFO("DefaultDiscons:%d Thread:%d", index, loop->EventThreadId());
+            //EVENT_INFO("DefaultDiscons:%d Thread:%d", index, loop->EventThreadId());
             return true;
         }
 
@@ -30,7 +30,7 @@ namespace Evpp
             USE_PARAMETER(session);
             USE_PARAMETER(buffer);
             USE_PARAMETER(index);
-            EVENT_INFO("receive client: %d message received length: %d thread: %d", index, buffer->readableBytes(), loop->EventThreadId());
+            //EVENT_INFO("receive client: %d message received length: %d thread: %d", index, buffer->readableBytes(), loop->EventThreadId());
             session->Send(send_data + std::to_string(index) + "\n" + char(10));
             buffer->retrieve(buffer->readableBytes());
             return true;
@@ -42,7 +42,7 @@ namespace Evpp
             USE_PARAMETER(session);
             USE_PARAMETER(index);
             USE_PARAMETER(status);
-            EVENT_INFO("SendMessage:%d status:%d Thread:%d\n", index, status, loop->EventThreadId());
+            //EVENT_INFO("SendMessage:%d status:%d Thread:%d\n", index, status, loop->EventThreadId());
             return true;
         }
 
