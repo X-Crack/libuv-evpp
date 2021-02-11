@@ -46,7 +46,7 @@ namespace Evpp
                 }
                 return InitialEventThreadPool(size);
             }
-            return event_base->RunInLoop(std::bind((bool(EventLoopThreadPool::*)(const u96)) & EventLoopThreadPool::CreaterEventThreadPool, this, size));
+            return event_base->RunInLoop(std::bind<bool(EventLoopThreadPool::*)(const u96)>(&EventLoopThreadPool::CreaterEventThreadPool, this, size));
         }
         return false;
     }
