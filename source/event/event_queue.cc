@@ -214,7 +214,7 @@ namespace Evpp
                     assert(0);
                 }
 #else
-                event_queue_nolock_function();
+                *event_queue_nolock_function();
 #endif
             }
         }
@@ -296,7 +296,7 @@ namespace Evpp
                     assert(0);
                 }
 #else
-                event_queue_lock_function();
+                *event_queue_lock_function();
 #endif
             }
         }
