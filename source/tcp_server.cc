@@ -18,7 +18,6 @@ namespace Evpp
         event_base(loop),
         event_share(share),
         event_close_flag(1),
-        event_close_flag_ex(1),
         event_thread_pool(std::make_shared<EventLoopThreadPool>(loop, share)),
         event_socket(std::make_unique<EventSocketPool>()),
         socket_accepts(accepts),
