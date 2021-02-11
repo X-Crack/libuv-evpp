@@ -20,17 +20,17 @@
 
 #ifdef __cplusplus
 #   if __cplusplus > 201703L
-#       define EVPP_CPLUSPLUS_VERSION(x) x##" "##"C++2A"
+#       define EVPP_CPLUSPLUS_VERSION(x) x##" "##"C++ 2A"
 #   elif __cplusplus == 201703L
-#       define EVPP_CPLUSPLUS_VERSION(x) x##" "##"C++17"
+#       define EVPP_CPLUSPLUS_VERSION(x) x##" "##"C++ 17"
 #   elif __cplusplus == 201402L
-#       define EVPP_CPLUSPLUS_VERSION(x) x##" "##"C++14"
+#       define EVPP_CPLUSPLUS_VERSION(x) x##" "##"C++ 14"
 #   elif __cplusplus == 201103L
-#       define EVPP_CPLUSPLUS_VERSION(x) x##" "##"C++11"
+#       define EVPP_CPLUSPLUS_VERSION(x) x##" "##"C++ 11"
 #   elif __cplusplus == 199711L
-#       define EVPP_CPLUSPLUS_VERSION(x) x##" "##"C++98"
+#       define EVPP_CPLUSPLUS_VERSION(x) x##" "##"C++ 98"
 #else
-#       define EVPP_CPLUSPLUS_VERSION(x) x##" "##"C++2A"
+#       define EVPP_CPLUSPLUS_VERSION(x) x##" "##"C++ 2A"
 #   endif
 #endif
 
