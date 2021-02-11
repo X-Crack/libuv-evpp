@@ -23,9 +23,9 @@
 #endif
 
 #ifdef H_OS_WINDOWS
-#   ifdef _WIN32
+#   if defined(_WIN32)
 #       define H_OS_X86
-#   elif _WIN64
+#   elif defined(_WIN64)
 #       define H_OS_X64
 #   endif
 #endif

@@ -65,7 +65,7 @@ namespace Evpp
         String                  host_address[256];
     };
 
-    struct SocketInfoEx
+    struct SocketInfoEx final
     {
         SocketInfo              sockname;
         SocketInfo              peername;
