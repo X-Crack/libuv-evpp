@@ -273,13 +273,6 @@ namespace Evpp
             }
         }
 #elif defined(EVPP_USE_BOOST_LOCKFREE_QUEUE)
-
-        if (nullptr != event_queue_lock_function)
-        {
-            delete event_queue_lock_function;
-            event_queue_lock_function = nullptr;
-        }
-
         while (event_queue_lock->pop(event_queue_lock_function))
         {
             if (nullptr != event_queue_lock_function)
