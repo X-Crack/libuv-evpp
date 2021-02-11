@@ -3,12 +3,14 @@
 #include <event_loop.h>
 #include <event_timer.h>
 #include <event_coroutine.h>
+#include <event_mutex.h>
 #include <tcp_server.h>
 namespace Evpp
 {
     TcpServerService::TcpServerService() :
         event_share(std::make_shared<EventShare>()),
         event_base(std::make_shared<EventLoop>(event_share->DefaultEventLoop())),
+        event_mutex(std::make_unique<EventMutex>()),
         tcp_server(std::make_unique<TcpServer>(event_base.get(), event_share)),
         event_stop_flag(1)
     {
@@ -56,7 +58,7 @@ namespace Evpp
                     {
                         event_stop_flag.store(0, std::memory_order_release);
                     }
-                    return true;
+                    return event_mutex->lock();
                 }
                 assert(0);
             }
@@ -116,7 +118,7 @@ namespace Evpp
                     assert(0);
                 }
             }
-            return true;
+            return event_mutex->unlock();
         }
         return false;
     }

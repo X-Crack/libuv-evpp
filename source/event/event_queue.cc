@@ -3,8 +3,10 @@
 #include <event_async.h>
 #include <event_mutex.h>
 #include <event_coroutine.h>
-#ifdef EVPP_USE_CAMERON314_CONCURRENTQUEUE
+#if defined(EVPP_USE_CAMERON314_CONCURRENTQUEUE)
 #include <concurrentqueue.h>
+#elif defined(EVPP_USE_BOOST_LOCKFREE_QUEUE)
+#include <boost/lockfree/queue.hpp>
 #endif
 namespace Evpp
 {
@@ -23,9 +25,16 @@ namespace Evpp
         , event_queue(std::make_unique<EventAsync>(base, std::bind(&EventQueue::EventNotify, this)))
         , event_queue_ex(std::make_unique<EventAsync>(base, std::bind(&EventQueue::EventNotifyEx, this)))
         , event_queue_mutex(std::make_unique<EventMutex>())
-#ifdef EVPP_USE_CAMERON314_CONCURRENTQUEUE
+#if defined(EVPP_USE_CAMERON314_CONCURRENTQUEUE)
         , event_queue_nolock(std::make_unique<moodycamel::ConcurrentQueue<Handler, EventQueueTraits>>())
         , event_queue_lock(std::make_unique<moodycamel::ConcurrentQueue<Handler, EventQueueTraits>>())
+#elif defined(EVPP_USE_BOOST_LOCKFREE_QUEUE)
+        , event_queue_nolock(std::make_unique<boost::lockfree::queue<Handler*>>(1024))
+        , event_queue_lock(std::make_unique<boost::lockfree::queue<Handler*>>(512))
+        , event_queue_nolock_function(nullptr)
+        , event_queue_lock_function(nullptr)
+        , evebt_queue_nolock_function_count(0)
+        , evebt_queue_lock_function_count(0)
 #endif
     {
 
@@ -47,14 +56,18 @@ namespace Evpp
         {
             if (event_queue->DestroyAsync() && event_queue_ex->DestroyAsync())
             {
-#ifdef EVPP_USE_CAMERON314_CONCURRENTQUEUE
-                while (event_queue_nolock->size_approx()) { EventNotify(); };
-                while (event_queue_lock->size_approx()) { EventNotifyEx(); };
+
+#if defined(EVPP_USE_CAMERON314_CONCURRENTQUEUE)
+                while (event_queue_nolock->size_approx())                                       { EventNotify();    };
+                while (event_queue_lock->size_approx())                                         { EventNotifyEx();  };
+#elif defined(EVPP_USE_BOOST_LOCKFREE_QUEUE)
+                while (evebt_queue_nolock_function_count.load(std::memory_order_acquire))       { EventNotify();    }
+                while (evebt_queue_lock_function_count.load(std::memory_order_acquire))         { EventNotifyEx();  }
 #else
                 if (event_queue_nolock.size())
                 {
                     EventNotify();
-                }
+            }
 
                 if (event_queue_lock.size())
                 {
@@ -116,6 +129,10 @@ namespace Evpp
         {
 #if defined(EVPP_USE_CAMERON314_CONCURRENTQUEUE)
             while (0 == event_queue_nolock->try_enqueue(function));
+#elif defined(EVPP_USE_BOOST_LOCKFREE_QUEUE)
+            while (0 == event_queue_nolock->push(new Handler(function)));
+
+            evebt_queue_nolock_function_count.fetch_add(1, std::memory_order_release);
 #else
             {
                 std::lock_guard<std::mutex> lock(event_queue_nolock_mutex);
@@ -133,6 +150,10 @@ namespace Evpp
         {
 #if defined(EVPP_USE_CAMERON314_CONCURRENTQUEUE)
             while (0 == event_queue_lock->try_enqueue(function));
+#elif defined(EVPP_USE_BOOST_LOCKFREE_QUEUE)
+            while (0 == event_queue_lock->push(new Handler(function)));
+
+            evebt_queue_lock_function_count.fetch_add(1, std::memory_order_release);
 #else
             {
                 std::lock_guard<std::mutex> lock(event_queue_lock_mutex);
@@ -169,8 +190,35 @@ namespace Evpp
 #endif
             }
         }
+#elif defined(EVPP_USE_BOOST_LOCKFREE_QUEUE)
+        while (event_queue_nolock->pop(event_queue_nolock_function))
+        {
+            if (nullptr != event_queue_nolock_function)
+            {
+#if defined(EVPP_USE_STL_COROUTINES)
+                try
+                {
+                    if (evebt_queue_nolock_function_count.fetch_sub(1, std::memory_order_relaxed))
+                    {
+                        SafeReleaseHandler release(std::addressof(event_queue_nolock_function));
+                        {
+                            if (JoinInTask(std::bind(*event_queue_nolock_function)).get())
+                            {
+                                continue;
+                            }
+                        }
+                    }
+                }
+                catch (...)
+                {
+                    assert(0);
+                }
 #else
-        
+                event_queue_nolock_function();
+#endif
+            }
+        }
+#else
         {
             std::vector<Handler> functors;
             {
@@ -224,8 +272,42 @@ namespace Evpp
 #endif
             }
         }
+#elif defined(EVPP_USE_BOOST_LOCKFREE_QUEUE)
+
+        if (nullptr != event_queue_lock_function)
+        {
+            delete event_queue_lock_function;
+            event_queue_lock_function = nullptr;
+        }
+
+        while (event_queue_lock->pop(event_queue_lock_function))
+        {
+            if (nullptr != event_queue_lock_function)
+            {
+#if defined(EVPP_USE_STL_COROUTINES)
+                try
+                {
+                    if (evebt_queue_lock_function_count.fetch_sub(1, std::memory_order_relaxed))
+                    {
+                        SafeReleaseHandler release(std::addressof(event_queue_lock_function));
+                        {
+                            if (JoinInTask(std::bind(*event_queue_lock_function)).get())
+                            {
+                                continue;
+                            }
+                        }
+                    }
+                }
+                catch (...)
+                {
+                    assert(0);
+                }
 #else
-        
+                event_queue_lock_function();
+#endif
+            }
+        }
+#else
         {
             std::vector<Handler> functors;
             {

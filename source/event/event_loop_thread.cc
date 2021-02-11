@@ -5,6 +5,9 @@
 #include <event_loop_thread.h>
 #include <event_coroutine.h>
 #include <future>
+#ifdef EVPP_USE_BOOST_THREAD
+#include <boost/thread/thread.hpp>
+#endif
 namespace Evpp
 {
     EventLoopThread::EventLoopThread(EventLoop* base, event_loop* loop, const u96 index) :
@@ -19,7 +22,12 @@ namespace Evpp
         event_base(base),
         event_index(index),
         loop(std::make_shared<EventLoop>(share->EventLoop(index), index)),
-#ifndef EVPP_USE_STL_THREAD
+#if defined(EVPP_USE_STL_THREAD)
+        loop_thread(std::make_unique <std::thread>()),
+
+#elif defined(EVPP_USE_BOOST_THREAD)
+        loop_thread(std::make_unique<boost::thread>()),
+#else
         loop_thread(std::make_unique<event_thread>()),
 #endif
         loop_mutex(std::make_unique<EventMutex>())
@@ -29,10 +37,7 @@ namespace Evpp
 
     EventLoopThread::~EventLoopThread()
     {
-        if (Join())
-        {
-            EVENT_INFO("Release Class EventLoopThreadEx");
-        }
+        EVENT_INFO("Release Class EventLoopThreadEx");
     }
 
     bool EventLoopThread::CreaterThread()
@@ -41,12 +46,14 @@ namespace Evpp
         {
             if (event_base->EventThread())
             {
-#ifdef EVPP_USE_STL_THREAD
-                loop_thread.reset(new std::thread(std::bind(&EventLoopThread::WatcherCoroutineInThread, this)));
+#if defined(EVPP_USE_STL_THREAD)
+               loop_thread.reset(new std::thread(std::bind(&EventLoopThread::WatcherCoroutineInThread, this)));
+#elif defined(EVPP_USE_BOOST_THREAD)
+               loop_thread.reset(new boost::thread(std::bind(&EventLoopThread::WatcherCoroutineInThread, this)));
 #else
-                if (0 == uv_thread_create(loop_thread.get(), &EventLoopThread::WatcherCoroutineInThread, this))
+               if (0 == uv_thread_create(loop_thread.get(), &EventLoopThread::WatcherCoroutineInThread, this))
 #endif
-                {
+               {
                     std::unique_lock<std::mutex> lock(cv_mutex);
                     {
                         if (ChangeStatus(Status::None, Status::Init))
@@ -90,7 +97,7 @@ namespace Evpp
                     {
                         if (loop_mutex->try_unlock())
                         {
-                            return true;
+                            return Join();
                         }
                         return false;
                     }
@@ -157,6 +164,7 @@ namespace Evpp
                 {
                     return;
                 }
+                assert(0);
             }
             return;
         }
@@ -198,7 +206,7 @@ namespace Evpp
     bool EventLoopThread::Join()
     {
         while (0 == ChangeStatus(Status::Stop, Status::Exit));
-#ifdef EVPP_USE_STL_THREAD
+#if defined(EVPP_USE_STL_THREAD) || defined(EVPP_USE_BOOST_THREAD)
         if (loop_thread && loop_thread->joinable())
         {
             loop_thread->join();

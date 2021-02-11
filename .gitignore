@@ -339,3 +339,11 @@ ASALocalRun/
 # BeatPulse healthcheck temp database
 healthchecksdb
 /socket
+/elib_static/elib_static.vcxproj
+/elib/elib.vcxproj
+/elib/test.h
+/elib/elib.vcxproj.filters
+/elib/elib.def
+/elib/dllmain.cpp
+/elib_static/elib_static.vcxproj.filters
+/.vs1

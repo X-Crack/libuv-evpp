@@ -6,6 +6,12 @@
 #include <event_logging.h>
 #include <event_untlity.h>
 #include <event_duration.h>
+
+#ifndef EVPP_USE_BOOST_ASSEMBLY
+#define EVPP_USE_BOOST_ASSEMBLY
+#undef EVPP_USE_BOOST_ASSEMBLY
+#endif
+
 // Use CXX20 coroutine to assist EventLoop operation.
 #if defined(__cpp_coroutines) && !defined(__cpp_impl_coroutine) || defined(_HAS_CXX20)
 #   ifndef EVPP_USE_STL_COROUTINES
@@ -21,6 +27,16 @@
 // Use https://github.com/cameron314/concurrentqueue
 #ifndef EVPP_USE_CAMERON314_CONCURRENTQUEUE
 #       define EVPP_USE_CAMERON314_CONCURRENTQUEUE
+#endif
+
+#ifdef EVPP_USE_BOOST_ASSEMBLY
+#   ifndef EVPP_USE_BOOST_THREAD
+#       define EVPP_USE_BOOST_THREAD
+#   endif
+
+#   ifndef EVPP_USE_BOOST_LOCKFREE_QUEUE
+#       define EVPP_USE_BOOST_LOCKFREE_QUEUE
+#   endif
 #endif
 
 #ifndef ___bswap_constant_16

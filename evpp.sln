@@ -41,6 +41,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "mimalloc", "mimalloc", "{21
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mimalloc", "..\mimalloc\ide\vs2019\mimalloc.vcxproj", "{ABB5EAE7-B3E6-432E-B636-333449892EA6}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "e", "e", "{45786BB2-B69C-44DD-893C-17CE34730BF7}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		share\share.vcxitems*{2af40e9d-5653-4eb4-94c9-d2235733ddae}*SharedItemsImports = 4

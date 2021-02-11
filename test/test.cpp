@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
 //     //std::thread T1(std::bind(&asdjkajsdjasd, &ev, &queue));
 //     //T1.detach();
 //     ev.ExecDispatch();
-     //while (true)
+     while (true)
      {
          EVENT_COMPUTE_DURATION(全程耗时);
          __asm
@@ -62,9 +62,9 @@ int main(int argc, char* argv[])
          server->SetDisconsCallback();
          server->SetMessageCallback();
          server->SetSendMsgCallback();
-         //std::thread T1(std::bind(&stop_server, server.get()));
+         std::thread T1(std::bind(&stop_server, server.get()));
          server->ExecDispatchCoroutine(printf_ex);
-         //T1.join();
+         T1.join();
          printf("exit\n");
          server.reset();
 // 

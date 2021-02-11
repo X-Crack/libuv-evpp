@@ -1,12 +1,17 @@
 ﻿#ifndef __EVENT_LOOP_THREAD_H__
 #define __EVENT_LOOP_THREAD_H__
 #include <event_config.h>
+namespace boost
+{
+    class thread;
+}
 namespace Evpp
 {
     class EventLoop;
     class EventShare;
     class EventStatus;
     class EventMutex;
+
     class EventLoopThread final : public EventStatus
     {
     public:
@@ -29,9 +34,11 @@ namespace Evpp
         EventLoop*                                      event_base;
         u96                                             event_index;
         std::shared_ptr<EventLoop>                      loop;
-#ifdef EVPP_USE_STL_THREAD
+#if defined(EVPP_USE_STL_THREAD)
         std::unique_ptr<std::thread>                    loop_thread;
 
+#elif defined(EVPP_USE_BOOST_THREAD)
+        std::unique_ptr<boost::thread>                  loop_thread;
 #else
         std::unique_ptr<event_thread>                   loop_thread;
 #endif
