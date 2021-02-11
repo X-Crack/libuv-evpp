@@ -1,10 +1,6 @@
 ﻿#ifndef __EVENT_EVPP_H__
 #define __EVENT_EVPP_H__
-#       include <event_platform.h>
-#ifdef H_OS_WINDOWS_MSVC
-#   if __cplusplus == 199711L
-#       error "Settings C/C++ -> Command Line -> Other Commands -> Add: /Zc:__cplusplus";
-#   elif __cplusplus > 201703L
+
 #       include <event_config.h>
 #       include <event_status.h>
 #       include <event_share.h>
@@ -37,9 +33,5 @@
 #       include <tcp_server.h>
 #       include <tcp_server_service.h>
 #       include <tcp_socket.h>
-#   else
-#       error "Please enable C/C++ 2a support";
-#   endif
-#endif
 
 #endif // __EVENT_EVPP_H__
