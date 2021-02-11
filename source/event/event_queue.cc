@@ -202,7 +202,7 @@ namespace Evpp
                     {
                         SafeReleaseHandler destroy_object(std::addressof(event_queue_nolock_function));
                         {
-                            if (JoinInTask(std::bind(*event_queue_nolock_function)).get())
+                            if (JoinInTask(std::bind((*event_queue_nolock_function))).get())
                             {
                                 continue;
                             }
@@ -298,7 +298,7 @@ namespace Evpp
                     {
                         SafeReleaseHandler destroy_object(std::addressof(event_queue_lock_function));
                         {
-                            if (JoinInTask(std::bind(*event_queue_lock_function)).get())
+                            if (JoinInTask(std::bind((*event_queue_lock_function))).get())
                             {
                                 continue;
                             }
