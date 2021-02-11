@@ -156,7 +156,11 @@ namespace Evpp
     {
         if (nullptr != system_discons)
         {
-            system_discons(event_base, event_index);
+            if (RunInQueue(std::bind(system_discons, event_base, event_index)))
+            {
+                return;
+            }
+            EVENT_INFO("session left into unexpected error has occurred queue");
         }
     }
 

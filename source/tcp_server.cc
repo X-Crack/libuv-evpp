@@ -279,10 +279,12 @@ namespace Evpp
                 {
                     if (CreaterSession(loop, client, index))
                     {
-                        if (tcp_socket->AddSockInfo(client, index))
+                        // asynchronous processing of two transactions will speed up time, but at the expense of memory space
+                        if(RunInQueue(std::bind(&TcpSocket::AddSockInfo, tcp_socket.get(), client, index)))
                         {
                             if (nullptr != socket_accepts)
                             {
+                                // messages cannot be sent asynchronously, because it is already asynchronous, and doing asynchronous is redundant, and it also involves the return value, whether to close the session.
                                 if (socket_accepts(loop, GetSession(index), index))
                                 {
                                     return true;
@@ -387,20 +389,12 @@ namespace Evpp
     {
         if (nullptr != loop)
         {
-            if (loop->EventThread())
+            if (nullptr != socket_discons)
             {
-                if (nullptr != socket_discons)
-                {
-                    socket_discons(loop, index);
-                }
-
-                return DeletedSession(index);
+                socket_discons(loop, index);
             }
 
-            if (!loop->RunInLoopEx(std::bind(&TcpServer::DefaultDiscons, this, loop, index)))
-            {
-                printf("DefaultDiscons RunLoop Error\n");
-            }
+            return DeletedSession(index);
         }
     }
 
