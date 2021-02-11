@@ -6,32 +6,12 @@
 #include <memory>
 #include <any>
 #include <atomic>
-#ifdef EVPP_USE_BOOST_FUNCTION
-#include <boost/function.hpp>
-#endif
 namespace Evpp
 {
     class EventLoop;
     class EventTimer;
     class EventBuffer;
     class TcpSession;
-#ifdef EVPP_USE_BOOST_FUNCTION
-    typedef boost::function<void()>                                                                                                                         Handler;
-    typedef boost::function<bool()>                                                                                                                         Functor;
-    typedef boost::function<void(EventLoop*)>                                                                                                               EventLoopHandler;
-    typedef boost::function<void(EventLoop*, const String*)>                                                                                                EventResolveHandler;
-    typedef boost::function<void(EventLoop*, const std::vector<std::string>&)>                                                                              EventResolveExHandler;
-    typedef boost::function<void(EventLoop*)>                                                                                                               CreaterWorkHandler;
-    typedef boost::function<void(EventLoop*, i32)>                                                                                                          DestroyWorkHandler;
-    typedef boost::function<void(EventLoop*, const std::shared_ptr<EventTimer>&, const u96)>                                                                EventTimerHandle;
-    typedef boost::function<bool(EventLoop*, const std::shared_ptr<TcpSession>&, const u96)>                                                                InterfaceAccepts;
-    typedef boost::function<bool(EventLoop*, const std::shared_ptr<TcpSession>&, const u96)>                                                                InterfaceConnect;
-    typedef boost::function<bool(EventLoop*, const std::shared_ptr<TcpSession>&, const u96)>                                                                InterfaceRestore;
-    typedef boost::function<bool(EventLoop*, const u96, const i32, const String*, const String*)>                                                           InterfaceFailure;
-    typedef boost::function<bool(EventLoop*, const u96)>                                                                                                    InterfaceDiscons;
-    typedef boost::function<bool(EventLoop*, const std::shared_ptr<TcpSession>&, const std::shared_ptr<EventBuffer>&, const u96)>                           InterfaceMessage;
-    typedef boost::function<bool(EventLoop*, const std::shared_ptr<TcpSession>&, const u96, const i32)>                                                     InterfaceSendMsg;
-#else
     typedef std::function<void()>                                                                                                                           Handler;
     typedef std::function<bool()>                                                                                                                           Functor;
     typedef std::function<void(EventLoop*)>                                                                                                                 EventLoopHandler;
@@ -47,8 +27,6 @@ namespace Evpp
     typedef std::function<bool(EventLoop*, const u96)>                                                                                                      InterfaceDiscons;
     typedef std::function<bool(EventLoop*, const std::shared_ptr<TcpSession>&, const std::shared_ptr<EventBuffer>&, const u96)>                             InterfaceMessage;
     typedef std::function<bool(EventLoop*, const std::shared_ptr<TcpSession>&, const u96, const i32)>                                                       InterfaceSendMsg;
-#endif
-
 
     namespace Import
     {

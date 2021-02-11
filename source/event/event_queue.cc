@@ -130,7 +130,7 @@ namespace Evpp
 #if defined(EVPP_USE_CAMERON314_CONCURRENTQUEUE)
             while (0 == event_queue_nolock->try_enqueue(function));
 #elif defined(EVPP_USE_BOOST_LOCKFREE_QUEUE)
-            while (0 == event_queue_nolock->push(new Handler(function)));
+            while (0 == event_queue_nolock->push(new Handler(std::move(function))));
 
             evebt_queue_nolock_function_count.fetch_add(1, std::memory_order_release);
 #else
@@ -151,7 +151,7 @@ namespace Evpp
 #if defined(EVPP_USE_CAMERON314_CONCURRENTQUEUE)
             while (0 == event_queue_lock->try_enqueue(function));
 #elif defined(EVPP_USE_BOOST_LOCKFREE_QUEUE)
-            while (0 == event_queue_lock->push(new Handler(function)));
+            while (0 == event_queue_lock->push(new Handler(std::move(function))));
 
             evebt_queue_lock_function_count.fetch_add(1, std::memory_order_release);
 #else
@@ -208,13 +208,27 @@ namespace Evpp
                             }
                         }
                     }
+                    else
+                    {
+                        assert(0);
+                    }
                 }
                 catch (...)
                 {
                     assert(0);
                 }
 #else
-                *event_queue_nolock_function();
+                if (evebt_queue_nolock_function_count.fetch_sub(1, std::memory_order_relaxed))
+                {
+                    SafeReleaseHandler destroy_object(std::addressof(event_queue_nolock_function));
+                    {
+                        (*event_queue_nolock_function)();
+                    }
+                }
+                else
+                {
+                    assert(0);
+                }
 #endif
             }
         }
@@ -290,13 +304,27 @@ namespace Evpp
                             }
                         }
                     }
+                    else
+                    {
+                        assert(0);
+                    }
                 }
                 catch (...)
                 {
                     assert(0);
                 }
 #else
-                *event_queue_lock_function();
+                if (evebt_queue_lock_function_count.fetch_sub(1, std::memory_order_relaxed))
+                {
+                    SafeReleaseHandler destroy_object(std::addressof(event_queue_lock_function));
+                    {
+                        (*event_queue_lock_function)();
+                    }
+                }
+                else
+                {
+                    assert(0);
+                }
 #endif
             }
         }

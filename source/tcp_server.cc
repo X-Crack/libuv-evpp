@@ -319,11 +319,14 @@ namespace Evpp
 
             if (CheckServiceAccept(server))
             {
-                if (nullptr != client)
+                if (ExistsRuning() && 0 == SocketStatus(client))
                 {
-                    delete client;
+                    if (nullptr != client)
+                    {
+                        delete client;
+                    }
+                    return false;
                 }
-                return false;
             }
 
             switch (errno)
@@ -497,7 +500,7 @@ namespace Evpp
     {
         if (0 == status)
         {
-            if (nullptr != shutdown || nullptr != shutdown->handle)
+            if (nullptr == shutdown || nullptr == shutdown->handle)
             {
                 return;
             }

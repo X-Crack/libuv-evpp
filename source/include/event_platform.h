@@ -32,13 +32,13 @@
 
 
 #ifndef EVPP_USE_BOOST_ASSEMBLY
-//#   define EVPP_USE_BOOST_ASSEMBLY
+#   define EVPP_USE_BOOST_ASSEMBLY
 #endif
 
 // Use CXX20 coroutine to assist EventLoop operation.
 #if defined(__cpp_coroutines) && !defined(__cpp_impl_coroutine) || defined(_HAS_CXX20)
 #   ifndef EVPP_USE_STL_COROUTINES
-#       define EVPP_USE_STL_COROUTINES
+//#       define EVPP_USE_STL_COROUTINES
 #   endif
 #endif
 
@@ -61,10 +61,6 @@
 
 #   ifndef EVPP_USE_BOOST_LOCKFREE_QUEUE
 #       define EVPP_USE_BOOST_LOCKFREE_QUEUE
-#   endif
-
-#   ifndef EVPP_USE_BOOST_FUNCTION
-#       define EVPP_USE_BOOST_FUNCTION
 #   endif
 #endif
 
