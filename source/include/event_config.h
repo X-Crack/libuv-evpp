@@ -43,10 +43,21 @@
 #       define ___bswap_64 ___bswap_constant_64
 #endif
 
-#define ntohl               ___bswap_32
-#define ntohs               ___bswap_16
+#ifndef htonl
 #define htonl               ___bswap_32
+#endif
+
+#ifndef htons
 #define htons               ___bswap_16
+#endif
+
+#ifndef ntohl
+#define ntohl               ___bswap_32
+#endif
+
+#ifndef ntohs
+#define ntohs               ___bswap_16
+#endif
 
 // curl 开发文档 https://blog.csdn.net/lijinqi1987/article/details/53996129
 

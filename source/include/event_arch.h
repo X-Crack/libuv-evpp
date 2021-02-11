@@ -7,8 +7,9 @@
 #   elif defined(__MINGW__) || defined(__MINGW32__) || defined(__MINGW64__)
 #       define H_OS_WINDOWS                                                                     1
 #       define H_OS_WINDOWS_MINGW                                                               1
-#   elif defined(_MSC_VER) || defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(_WIN64) || defined(_WIN64_) || defined(WIN64)
+#   elif defined(_MSC_VER) && (defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(_WIN64) || defined(_WIN64_) || defined(WIN64))
 #       define H_OS_WINDOWS                                                                     1
+#       define H_OS_WINDOWS_MSVC                                                                1
 #   ifdef _WIN32_WCE
 #       define H_OS_WINDOWS_MOBILE                                                              1
 #   elif defined(WINAPI_FAMILY)
