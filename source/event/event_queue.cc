@@ -3,6 +3,7 @@
 #include <event_async.h>
 #include <event_mutex.h>
 #include <event_coroutine.h>
+#include <event_exception.h>
 #if defined(EVPP_USE_CAMERON314_CONCURRENTQUEUE)
 #include <concurrentqueue.h>
 #elif defined(EVPP_USE_BOOST_LOCKFREE_QUEUE)
@@ -294,6 +295,8 @@ namespace Evpp
                             {
                                 continue;
                             }
+
+                            throw EventRuntimeException("an exception occurred while executing the queue callback function", *event_queue_lock_function, false);
                         }
                     }
                     else

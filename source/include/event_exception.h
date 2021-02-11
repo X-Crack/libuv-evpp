@@ -19,18 +19,20 @@ namespace Evpp
         std::string                                                             event_exception_message;
     };
 
-
+    /// template???
     class EventRuntimeException : public EventException
     {
     public:
-        explicit EventRuntimeException(const std::string& msg, bool var);
-        explicit EventRuntimeException(std::string&& msg, bool var);
-        explicit EventRuntimeException(const String* msg, bool var);
+        explicit EventRuntimeException(const std::string& msg, const Handler& handler, bool var);
+        explicit EventRuntimeException(std::string&& msg, Handler&& handler, bool var);
+        explicit EventRuntimeException(const String* msg, const Handler& handler, bool var);
         virtual ~EventRuntimeException();
     public:
         const bool value() noexcept;
         const bool value() const noexcept;
     private:
+        /// template???
+        Handler                                                                 event_exception_handler;
         bool                                                                    event_exception_value;
     };
 }
