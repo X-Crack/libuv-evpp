@@ -56,23 +56,15 @@ namespace Evpp
         {
             if (event_queue->DestroyAsync() && event_queue_ex->DestroyAsync())
             {
-
 #if defined(EVPP_USE_CAMERON314_CONCURRENTQUEUE)
                 while (event_queue_nolock->size_approx())                                       { EventNotify();    };
                 while (event_queue_lock->size_approx())                                         { EventNotifyEx();  };
 #elif defined(EVPP_USE_BOOST_LOCKFREE_QUEUE)
-                while (evebt_queue_nolock_function_count.load(std::memory_order_acquire))       { EventNotify();    }
-                while (evebt_queue_lock_function_count.load(std::memory_order_acquire))         { EventNotifyEx();  }
+                while (evebt_queue_nolock_function_count.load(std::memory_order_acquire))       { EventNotify();    };
+                while (evebt_queue_lock_function_count.load(std::memory_order_acquire))         { EventNotifyEx();  };
 #else
-                if (event_queue_nolock.size())
-                {
-                    EventNotify();
-            }
-
-                if (event_queue_lock.size())
-                {
-                    EventNotifyEx();
-                }
+                if (event_queue_nolock.size())                                                  { EventNotify();    };
+                if (event_queue_lock.size())                                                    { EventNotifyEx();  };
 #endif
                 return true;
             }
