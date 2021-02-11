@@ -90,4 +90,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\source\include\tcp_session.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\source\include\tcp_socket.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)..\README.md" />
+  </ItemGroup>
 </Project>
