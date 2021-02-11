@@ -18,6 +18,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\source\event\event_async.cc" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\source\event\event_check.cc" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\source\event\event_coroutine.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\source\event\event_exception.cc" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\source\event\event_explicit.cc" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\source\event\event_idle.cc" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\source\event\event_loop.cc" />
@@ -57,6 +58,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\source\include\event_curl.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\source\include\event_duration.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\source\include\event_evpp.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\source\include\event_exception.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\source\include\event_explicit.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\source\include\event_idle.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\source\include\event_libuv.h" />

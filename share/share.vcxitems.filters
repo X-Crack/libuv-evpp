@@ -120,6 +120,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\source\event\event_loop_thread.cc">
       <Filter>event</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\source\event\event_exception.cc">
+      <Filter>event</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\source\include\event_idle.h">
@@ -244,6 +247,9 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\source\include\event_logging.h">
       <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\source\include\event_exception.h">
+      <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
