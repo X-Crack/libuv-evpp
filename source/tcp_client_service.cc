@@ -87,7 +87,7 @@ namespace Evpp
                 try
                 {
 #if defined(EVPP_USE_STL_COROUTINES)
-                    if (JoinInTaskEx(std::bind((bool(TcpClientService::*)(const EventLoopHandler&, i32)) & TcpClientService::ExecDispatch, this, function, mode)).get())
+                    if (JoinInTaskEx(std::bind<bool(TcpClientService::*)(const EventLoopHandler&, i32)>(&TcpClientService::ExecDispatch, this, function, mode)).get())
                     {
                         continue;
                     }
