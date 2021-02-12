@@ -76,11 +76,10 @@ namespace Evpp
             {
                 if (event_base->EventThread())
                 {
-                    // make changes to the status immediately to prevent new sessions from joining during the cleaning process.
-                    if (ChangeStatus(Status::Exec, Status::Stop))
+                    EVENT_INFO("The server is stopping please be patient...");
+                    if (DestroyService())
                     {
-                        EVENT_INFO("The server is stopping please be patient...");
-                        return DestroyService();
+                        return ChangeStatus(Status::Stop, Status::Exit);
                     }
                     return false;
                 }
@@ -274,29 +273,34 @@ namespace Evpp
     {
         if (nullptr != loop && nullptr != client)
         {
-            if (loop->EventThread())
+            if (ExistsRuning())
             {
-                if (ExistsRuning())
+                if (loop->EventThread())
                 {
-                    if (CreaterSession(loop, client, index))
+                    if (ExistsRuning())
                     {
-                        if(tcp_socket->AddSockInfo(client, index))
+                        if (CreaterSession(loop, client, index))
                         {
-                            if (nullptr != socket_accepts)
+                            if (tcp_socket->AddSockInfo(client, index))
                             {
-                                // messages cannot be sent asynchronously, because it is already asynchronous, and doing asynchronous is redundant, and it also involves the return value, whether to close the session.
-                                if (socket_accepts(loop, GetSession(index), index))
+                                if (nullptr != socket_accepts)
                                 {
-                                    return true;
+                                    // messages cannot be sent asynchronously, because it is already asynchronous, and doing asynchronous is redundant, and it also involves the return value, whether to close the session.
+                                    if (socket_accepts(loop, GetSession(index), index))
+                                    {
+                                        return true;
+                                    }
                                 }
                             }
+                            return Close(index);
                         }
-                        return Close(index);
+
                     }
+                    return SocketShutdown(client);
                 }
-                return SocketShutdown(client);
+                return loop->RunInQueue(std::bind(&TcpServer::InitialSession, this, loop, client, index));
             }
-            return loop->RunInQueue(std::bind(&TcpServer::InitialSession, this, loop, client, index));
+            return SocketShutdown(client);
         }
         return false;
     }
@@ -534,21 +538,26 @@ namespace Evpp
             return false;
         }
 
-        // 销毁监听服务
-        if (0 == tcp_listen->DestroyListenService())
+        // make changes to the status immediately to prevent new sessions from joining during the cleaning process.
+        if (ChangeStatus(Status::Exec, Status::Stop))
         {
-            return false;
+            if (tcp_listen->DestroyListenService())
+            {
+                // 清理会话列表
+                if (0 == CleanedSession())
+                {
+                    return false;
+                }
+
+                // 销毁线程列表
+                if (0 == event_thread_pool->DestroyEventThreadPool())
+                {
+                    return false;
+                }
+                return true;
+            }
         }
-        // 清理会话列表
-        if (0 == CleanedSession())
-        {
-            return false;
-        }
-        // 销毁线程列表
-        if (0 == event_thread_pool->DestroyEventThreadPool())
-        {
-            return false;
-        }
-        return true;
+
+        return false;
     }
 }

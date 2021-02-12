@@ -24,6 +24,9 @@ namespace Evpp
         void RunExamples3();
         void EchoLoopCallback3(EventLoop* loop);
         void EchoSignalCallback();
+        // Examples 4
+        void RunExamples4();
+        void EchoLoopCallback4(EventLoop* loop);
     private:
         std::shared_ptr<EventLoop>              event_base;
         std::shared_ptr<EventSignal>            event_signal_;

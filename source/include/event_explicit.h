@@ -26,7 +26,7 @@ namespace Evpp
 
         virtual ~EventExplicit()
         {
-            system("pause");
+            std::system("pause");
         }
     } __s_onexit_pause;
 #endif

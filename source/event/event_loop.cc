@@ -115,6 +115,14 @@ namespace Evpp
                     return ChangeStatus(Status::Stop, Status::Exit);
                 }
 
+                if (EventThread())
+                {
+                    if (event_queue->DestroyQueue())
+                    {
+                        return ChangeStatus(Status::Stop, Status::Exit);
+                    }
+                }
+
                 if (1 == event_stop_flag.load(std::memory_order_acquire))
                 {
                     if (event_queue->DestroyQueue())
