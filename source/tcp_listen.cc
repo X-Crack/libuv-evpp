@@ -5,6 +5,7 @@
 #include <event_loop_thread_pool.h>
 #include <event_socket.h>
 #include <event_socket_pool.h>
+#include <event_exception.h>
 namespace Evpp
 {
 #ifdef H_OS_WINDOWS
@@ -132,12 +133,11 @@ namespace Evpp
                 {
                     tcp_server.emplace(tcp_server.begin() + i, std::make_unique<socket_tcp>(std::move(socket_tcp{ .data = server })));
                     {
-                        if (ExecuteListenService(event_thread_pool->GetEventLoop(i), tcp_server[i].get(), &socket->GetEventSocket(i)->GetSocketInfo()->addr, size, i))
+                        if (ExecuteListenService(event_thread_pool->GetEventLoop(i), tcp_server[i].get(), &socket->GetEventSocket(i)->GetSocketInfo()->addr))
                         {
                             EVENT_INFO("the server is starting, listening address: %s listening port: %u", socket->GetEventSocket(i)->GetSocketInfo()->host.c_str(), socket->GetEventSocket(i)->GetSocketInfo()->port);
                             continue;
                         }
-
                         return false;
                     }
                 }
@@ -159,39 +159,43 @@ namespace Evpp
         return false;
     }
 
-    bool TcpListen::ExecuteListenService(EventLoop* loop, socket_tcp* server, const sockaddr* addr, const u96 size, const u96 index)
+    bool TcpListen::ExecuteListenService(EventLoop* loop, socket_tcp* server, const sockaddr* addr)
     {
-        if (loop->EventThread())
+        if (nullptr != loop && server != nullptr && addr != nullptr)
         {
-            if (InitTcpService(loop, server))
+            if (loop->EventThread())
             {
-                if (uv_tcp_simultaneous_accepts(server, 0))
+                if (InitTcpService(loop, server))
                 {
-                    return false;
-                }
-
-                if (tcp_proble)
-                {
-                    if (uv_tcp_nodelay(server, 1))
+                    if (uv_tcp_simultaneous_accepts(server, 0))
                     {
-                        EVENT_INFO("an error occurred while setting the nodelay algorithm");
+                        return false;
                     }
-                }
 
-                if (0 == BindTcpService(server, addr))
-                {
-                    return false;
-                }
+                    if (tcp_proble)
+                    {
+                        if (uv_tcp_nodelay(server, 1))
+                        {
+                            EVENT_INFO("an error occurred while setting the nodelay algorithm");
+                        }
+                    }
 
-                if (0 == ListenTcpService(server))
-                {
-                    return false;
+                    if (0 == BindTcpService(server, addr))
+                    {
+                        return false;
+                    }
+
+                    if (0 == ListenTcpService(server))
+                    {
+                        return false;
+                    }
+                    return true;
                 }
-                return true;
+                return false;
             }
-            return false;
+            return loop->RunInLoopEx(std::bind(&TcpListen::ExecuteListenService, this, loop, server, addr));
         }
-        return loop->RunInLoopEx(std::bind(&TcpListen::ExecuteListenService, this, loop, server, addr, size, index));
+        return false;
     }
 
     bool TcpListen::InitTcpService(EventLoop* loop, socket_tcp* server)

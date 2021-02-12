@@ -174,9 +174,9 @@ namespace Evpp
                         continue;
                     }
                 }
-                catch (...)
+                catch (const EventException& ex)
                 {
-                    assert(0);
+                    EVENT_INFO("%s", ex.what());
                 }
 #else
                 event_queue_nolock_function();
@@ -206,9 +206,9 @@ namespace Evpp
                         assert(0);
                     }
                 }
-                catch (...)
+                catch (const EventException& ex)
                 {
-                    assert(0);
+                    EVENT_INFO("%s", ex.what());
                 }
 #else
                 if (evebt_queue_nolock_function_count.fetch_sub(1, std::memory_order_relaxed))
@@ -243,9 +243,9 @@ namespace Evpp
                         continue;
                     }
                 }
-                catch (...)
+                catch (const EventException& ex)
                 {
-                    assert(0);
+                    EVENT_INFO("%s", ex.what());
                 }
 #else
                 function();
@@ -270,9 +270,9 @@ namespace Evpp
                         continue;
                     }
                 }
-                catch (...)
+                catch (const EventException& ex)
                 {
-                    assert(0);
+                    EVENT_INFO("%s", ex.what());
                 }
 #else
                 event_queue_lock_function();
@@ -295,8 +295,6 @@ namespace Evpp
                             {
                                 continue;
                             }
-
-                            throw EventRuntimeException("an exception occurred while executing the queue callback function", *event_queue_lock_function, false);
                         }
                     }
                     else
@@ -304,9 +302,9 @@ namespace Evpp
                         assert(0);
                     }
                 }
-                catch (...)
+                catch (const EventException& ex)
                 {
-                    assert(0);
+                    EVENT_INFO("%s", ex.what());
                 }
 #else
                 if (evebt_queue_lock_function_count.fetch_sub(1, std::memory_order_relaxed))
@@ -341,9 +339,9 @@ namespace Evpp
                         continue;
                     }
                 }
-                catch (...)
+                catch (const EventException& ex)
                 {
-                    assert(0);
+                    EVENT_INFO("%s", ex.what());
                 }
 #else
                 function();

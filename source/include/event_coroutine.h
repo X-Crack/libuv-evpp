@@ -4,8 +4,11 @@
 #include <memory>
 #include <atomic>
 #include <functional>
+#include <event_exception.h>
+#if defined(EVPP_USE_STL_COROUTINES)
 #include <experimental/coroutine>
 #include <experimental/resumable>
+#endif
 namespace Evpp
 {
 #if defined(EVPP_USE_STL_COROUTINES)
@@ -52,10 +55,9 @@ namespace Evpp
                 return std::experimental::suspend_always{};
             }
 
-            auto return_value(bool var)
+            void return_value(bool var)
             {
                 value = var;
-                return std::experimental::suspend_always{};
             }
 
             auto yield_value(bool var)
@@ -71,7 +73,7 @@ namespace Evpp
 
             void unhandled_exception()
             {
-                throw;
+                throw EventException("unhandled_exception");
             }
         private:
             bool                                                                        value;

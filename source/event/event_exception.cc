@@ -32,33 +32,33 @@ namespace Evpp
     }
 
 
-    EventRuntimeException::EventRuntimeException(const std::string& msg, const Handler& handler, bool var) : 
-        EventException(msg), 
-        event_exception_handler(handler),
-        event_exception_value(var)
+    EventRuntimeException::EventRuntimeException(const String* msg, const Handler& handler, bool var) :
+        EventRuntimeException(std::string(msg), handler, var)
     {
 
     }
 
-    EventRuntimeException::EventRuntimeException(std::string&& msg, Handler&& handler, bool var) : 
-        EventException(std::move(msg)), 
-        event_exception_handler(std::move(handler)),
-        event_exception_value(var)
-    {
-
-    }
-
-    EventRuntimeException::EventRuntimeException(const String* msg, const Handler& handler, bool var) : 
-        EventException(msg), 
+    EventRuntimeException::EventRuntimeException(const std::string& msg, const Handler& handler, bool var) :
+        event_exception_message(msg),
         event_exception_handler(handler),
         event_exception_value(var)
     {
-
+        
     }
 
     EventRuntimeException::~EventRuntimeException()
     {
+        
+    }
 
+    const char * EventRuntimeException::what() noexcept
+    {
+        return event_exception_message.c_str();
+    }
+
+    const char* EventRuntimeException::what() const noexcept
+    {
+        return event_exception_message.c_str();
     }
 
     const bool EventRuntimeException::value() noexcept

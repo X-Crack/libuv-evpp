@@ -4,6 +4,7 @@
 #include <event_share.h>
 #include <event_loop_thread.h>
 #include <event_coroutine.h>
+#include <event_exception.h>
 #include <future>
 #ifdef EVPP_USE_BOOST_THREAD
 #include <boost/thread/thread.hpp>
@@ -147,11 +148,19 @@ namespace Evpp
                             }
                         }
                     }
-                    catch (...)
+                    catch (const EventRuntimeException& ex)
+                    {
+                        EVENT_INFO("%s %d", ex.what(), ex.value());
+                    }
+                    catch (const EventException& ex)
                     {
                         EVENT_INFO("during the operation of the coroutine there may be some problems please check carefully");
-                        break;
                     }
+                    catch (...)
+                    {
+                        EVENT_INFO("this is a exception without handling");
+                    }
+
 #else
                     if (CoroutineDispatch())
                     {

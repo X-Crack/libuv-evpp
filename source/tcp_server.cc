@@ -280,7 +280,7 @@ namespace Evpp
                     if (CreaterSession(loop, client, index))
                     {
                         // asynchronous processing of two transactions will speed up time, but at the expense of memory space
-                        if(RunInQueue(std::bind(&TcpSocket::AddSockInfo, tcp_socket.get(), client, index)))
+                        if (RunInQueue(std::bind(&TcpSocket::AddSockInfo, tcp_socket.get(), client, index)))
                         {
                             if (nullptr != socket_accepts)
                             {
@@ -345,7 +345,7 @@ namespace Evpp
                 break;
             }
             }
-            
+
             return loop->RunInQueue(std::bind(&TcpServer::SocketShutdown, this, client));
         }
         return false;
@@ -353,31 +353,20 @@ namespace Evpp
 
     bool TcpServer::DefaultAccepts(EventLoop* loop, socket_stream* server, socket_tcp* client, const u96 index)
     {
-        try
-        {
 #ifndef H_OS_WINDOWS
-            if (loop->EventThread())
-            {
+        if (loop->EventThread())
 #endif
-                if (nullptr != loop && nullptr != server && nullptr != client)
-                {
-                    return InitialAccepts(loop, server, client, index);
-                }
-#ifndef H_OS_WINDOWS
+        {
+            if (nullptr != loop && nullptr != server && nullptr != client)
+            {
+                return InitialAccepts(loop, server, client, index);
             }
-            return loop->RunInLoopEx(std::bind<bool(TcpServer::*)(EventLoop*, socket_stream*, socket_tcp*, const u96)>(&TcpServer::DefaultAccepts, this, loop, server, client, index));
+        }
+#ifndef H_OS_WINDOWS
+        return loop->RunInLoopEx(std::bind<bool(TcpServer::*)(EventLoop*, socket_stream*, socket_tcp*, const u96)>(&TcpServer::DefaultAccepts, this, loop, server, client, index));
 #else
-            return false;
-#endif
-        }
-        catch (const EventRuntimeException& e)
-        {
-            if (e.handler<bool(TcpServer::*)(EventLoop*, socket_stream*, socket_tcp*, const u96)>(std::bind<bool(TcpServer::*)(EventLoop*, socket_stream*, socket_tcp*, const u96)>(&TcpServer::DefaultAccepts, this, loop, server, client, index)))
-            {
-                EVENT_INFO("%s %d", e.what(), e.value());
-            }
-        }
         return false;
+#endif
     }
 
     bool TcpServer::DefaultAccepts(socket_stream* server, i32 status)

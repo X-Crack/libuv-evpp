@@ -31,7 +31,7 @@ namespace Evpp
     private:
         bool InitialListenService(EventSocketPool* socket, TcpServer* server, const u96 size);
         bool InitEventThreadPools(const u96 size);
-        bool ExecuteListenService(EventLoop* loop, socket_tcp* server, const sockaddr* addr, const u96 size, const u96 index);
+        bool ExecuteListenService(EventLoop* loop, socket_tcp* server, const sockaddr* addr);
     private:
         bool InitTcpService(EventLoop* loop, socket_tcp* server);
         bool BindTcpService(socket_tcp* server, const sockaddr* addr);
