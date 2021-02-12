@@ -154,7 +154,7 @@ namespace Evpp
                     }
                     catch (const EventException& ex)
                     {
-                        EVENT_INFO("during the operation of the coroutine there may be some problems please check carefully");
+                        EVENT_INFO("during the operation of the coroutine there may be some problems please check carefully : %s", ex.what());
                     }
                     catch (...)
                     {
