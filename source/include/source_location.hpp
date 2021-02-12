@@ -38,7 +38,7 @@ public:
         return functionName;
     }
 
-    constexpr uint_least32_t line() const noexcept
+    constexpr std::uint_least32_t line() const noexcept
     {
         return lineNumber;
     }
