@@ -104,7 +104,7 @@ namespace Evpp
                     }
                 }
             }
-            return event_base->RunInLoopEx(std::bind(&EventLoopThread::DestroyThread, this));
+            return event_base->RunInLoop(std::bind(&EventLoopThread::DestroyThread, this));
         }
         return false;
     }
@@ -146,6 +146,10 @@ namespace Evpp
                             {
                                 continue;
                             }
+                            else
+                            {
+                                printf("loop req exit\n");
+                            }
                         }
                     }
                     catch (const EventRuntimeException& ex)
@@ -173,7 +177,6 @@ namespace Evpp
                 {
                     return;
                 }
-                assert(0);
             }
         }
         assert(0);
@@ -205,7 +208,6 @@ namespace Evpp
                     return true;
                 }
             }
-            EVPP_THREAD_YIELD();
         }
 
         return false;

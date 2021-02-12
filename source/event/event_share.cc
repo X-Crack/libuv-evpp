@@ -32,7 +32,8 @@ namespace Evpp
             {
                 if (EventLoopAlive(event_loops[i].get()))
                 {
-                    assert(0);
+                    //assert(0);
+                    EVENT_INFO("释放不干净");
                 }
             }
 

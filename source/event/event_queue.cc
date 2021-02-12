@@ -123,9 +123,12 @@ namespace Evpp
 #if defined(EVPP_USE_CAMERON314_CONCURRENTQUEUE)
             while (0 == event_queue_nolock->try_enqueue(function));
 #elif defined(EVPP_USE_BOOST_LOCKFREE_QUEUE)
-            while (0 == event_queue_nolock->push(new Handler(function)));
 
-            evebt_queue_nolock_function_count.fetch_add(1, std::memory_order_release);
+            {
+                //std::lock_guard<std::mutex> lock(event_queue_nolock_mutex);
+                evebt_queue_nolock_function_count.fetch_add(1, std::memory_order_release);
+                while (0 == event_queue_nolock->push(new Handler(function)));
+            }
 #else
             {
                 std::lock_guard<std::mutex> lock(event_queue_nolock_mutex);
@@ -144,9 +147,12 @@ namespace Evpp
 #if defined(EVPP_USE_CAMERON314_CONCURRENTQUEUE)
             while (0 == event_queue_lock->try_enqueue(function));
 #elif defined(EVPP_USE_BOOST_LOCKFREE_QUEUE)
-            while (0 == event_queue_lock->push(new Handler(function)));
 
-            evebt_queue_lock_function_count.fetch_add(1, std::memory_order_release);
+            {
+                //std::lock_guard<std::mutex> lock(event_queue_lock_mutex);
+                evebt_queue_lock_function_count.fetch_add(1, std::memory_order_release);
+                while (0 == event_queue_lock->push(new Handler(function)));
+            }
 #else
             {
                 std::lock_guard<std::mutex> lock(event_queue_lock_mutex);
@@ -349,11 +355,15 @@ namespace Evpp
             }
         }
 #endif
+        
         if (event_base->EventThread())
         {
-            if (event_queue_mutex->unlock())
             {
-                return;
+                //std::lock_guard<std::mutex> lock(event_queue_lock_mutex);
+                if (event_queue_mutex->unlock())
+                {
+                    return;
+                }
             }
         }
     }
