@@ -35,8 +35,6 @@ namespace Evpp
     public:
         void SetEventTimerCallback(const EventTimerHandle& callback);
     private:
-        bool CheckStatus();
-    private:
         static void DefaultClose(event_handle* handler);
     private:
         static void OnNotify(event_timer* handler);

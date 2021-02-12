@@ -84,7 +84,7 @@ namespace Evpp
         {
             if (loop->EventThread())
             {
-                return Evpp::SocketClose(server, &TcpServer::OnDefaultListen);
+                return Evpp::CloseHandler(server, &TcpServer::OnDefaultListen);
             }
             return loop->RunInLoopEx(std::bind<bool(TcpListen::*)(EventLoop*, socket_tcp*)>(&TcpListen::DestroyListenService, this, loop, server));
         }

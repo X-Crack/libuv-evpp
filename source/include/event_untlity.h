@@ -86,7 +86,7 @@ namespace Evpp
     bool SocketFormatErrorString(u32 code, String* format_string);
     bool CheckServiceAccept(socket_stream* server);
     template <class _Ty>
-    bool SocketStatus(_Ty* handler)
+    bool CheckHandlerStatus(_Ty* handler)
     {
         if (nullptr != handler)
         {
@@ -126,7 +126,7 @@ namespace Evpp
     }
 
     template <class _Ty>
-    bool SocketClose(_Ty* handler, uv_close_cb callback)
+    bool CloseHandler(_Ty* handler, uv_close_cb callback)
     {
         if (nullptr != handler)
         {

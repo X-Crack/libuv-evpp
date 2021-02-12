@@ -123,7 +123,7 @@ namespace Evpp
                 return false;
             }
 
-            if (RunInLoopEx(std::bind(&EventLoop::StopDispatch, this)))
+            if (RunInLoop(std::bind(&EventLoop::StopDispatch, this)))
             {
                 return event_mutex->lock();
             }
