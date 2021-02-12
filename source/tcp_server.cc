@@ -7,6 +7,7 @@
 #include <event_socket_pool.h>
 #include <event_loop.h>
 #include <event_loop_thread_pool.h>
+#include <event_exception.h>
 namespace Evpp
 {
     TcpServer::TcpServer(EventLoop* loop, const std::shared_ptr<EventShare>& share) : TcpServer(loop, share, InterfaceAccepts(), InterfaceDiscons(), InterfaceMessage(), InterfaceSendMsg())
@@ -352,20 +353,31 @@ namespace Evpp
 
     bool TcpServer::DefaultAccepts(EventLoop* loop, socket_stream* server, socket_tcp* client, const u96 index)
     {
-#ifndef H_OS_WINDOWS
-        if (loop->EventThread())
+        try
         {
-#endif
-            if (nullptr != loop && nullptr != server && nullptr != client)
-            {
-                return InitialAccepts(loop, server, client, index);
-            }
 #ifndef H_OS_WINDOWS
-        }
-        return loop->RunInLoopEx(std::bind<bool(TcpServer::*)(EventLoop*, socket_stream*, socket_tcp*, const u96)>(&TcpServer::DefaultAccepts, this, loop, server, client, index));
-#else
-        return false;
+            if (loop->EventThread())
+            {
 #endif
+                if (nullptr != loop && nullptr != server && nullptr != client)
+                {
+                    return InitialAccepts(loop, server, client, index);
+                }
+#ifndef H_OS_WINDOWS
+            }
+            return loop->RunInLoopEx(std::bind<bool(TcpServer::*)(EventLoop*, socket_stream*, socket_tcp*, const u96)>(&TcpServer::DefaultAccepts, this, loop, server, client, index));
+#else
+            return false;
+#endif
+        }
+        catch (const EventRuntimeException& e)
+        {
+            if (e.handler<bool(TcpServer::*)(EventLoop*, socket_stream*, socket_tcp*, const u96)>(std::bind<bool(TcpServer::*)(EventLoop*, socket_stream*, socket_tcp*, const u96)>(&TcpServer::DefaultAccepts, this, loop, server, client, index)))
+            {
+                EVENT_INFO("%s %d", e.what(), e.value());
+            }
+        }
+        return false;
     }
 
     bool TcpServer::DefaultAccepts(socket_stream* server, i32 status)

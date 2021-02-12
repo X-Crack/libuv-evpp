@@ -184,4 +184,23 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <ItemGroup>
+    <ClCompile Update="F:\common\evpp\share\..\source\event\event_exception.cc">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Update="F:\common\evpp\share\..\source\event\event_exception.tpp">
+      <FileType>Document</FileType>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Update="F:\common\evpp\share\..\source\include\event_exception.h">
+      <FileType>Document</FileType>
+    </ClInclude>
+    <ClInclude Update="F:\common\evpp\share\..\source\include\event_exception.t">
+      <FileType>Document</FileType>
+    </ClInclude>
+    <ClInclude Update="F:\common\evpp\share\..\source\include\event_exception.tpp">
+      <FileType>Document</FileType>
+    </ClInclude>
+  </ItemGroup>
 </Project>

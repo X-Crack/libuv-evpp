@@ -1,6 +1,7 @@
 #ifndef __EVENT_EXCEPTION_H__
 #define __EVENT_EXCEPTION_H__
 #include <event_config.h>
+#include <functional>
 #include <exception>
 #include <string>
 namespace Evpp
@@ -30,6 +31,30 @@ namespace Evpp
     public:
         const bool value() noexcept;
         const bool value() const noexcept;
+    public:
+        template <class _Ty>
+        const _Ty* handler() noexcept
+        {
+            return event_exception_handler.target<_Ty>();
+        }
+
+        template <class _Ty>
+        const _Ty* handler() const noexcept
+        {
+            return event_exception_handler.target<_Ty>();
+        }
+
+        template <class _Ty>
+        const bool handler(const Handler& other) noexcept
+        {
+            return *event_exception_handler.target<_Ty>() == *other.target<_Ty>();
+        }
+
+        template <class _Ty>
+        const bool handler(const Handler& other) const noexcept
+        {
+            return *event_exception_handler.target<_Ty>() == *other.target<_Ty>();
+        }
     private:
         /// template???
         Handler                                                                 event_exception_handler;

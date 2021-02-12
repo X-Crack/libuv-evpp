@@ -1,5 +1,4 @@
 #include <event_exception.h>
-
 namespace Evpp
 {
     EventException::EventException(const std::string& msg) : event_exception_message(msg)
