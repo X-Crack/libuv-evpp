@@ -470,6 +470,7 @@ namespace Evpp
         {
             TcpServer* watcher = static_cast<TcpServer*>(handler->data);
             {
+
                 if (nullptr != watcher)
                 {
                     if (watcher->DefaultAccepts(handler, status))

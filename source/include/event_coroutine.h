@@ -128,8 +128,8 @@ namespace Evpp
         Functor                                                         function;
     };
 
-    EventCoroutine JoinInTask(std::function<void()>&& callback);
-    EventCoroutine JoinInTaskEx(std::function<bool()>&& callback);
+    EventCoroutine JoinInTask(Handler&& callback);
+    EventCoroutine JoinInTaskEx(Functor&& callback);
 #endif
 }
 #endif // __EVENT_COROUTINE_H__
