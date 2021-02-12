@@ -12,8 +12,7 @@ namespace Evpp
         event_refer(0),
         event_queue(std::make_unique<EventQueue>(this)),
         event_timer_pool(std::make_unique<EventTimerPool>(this)),
-        event_thread(0),
-        event_stop_flag(1)
+        event_thread(0)
     {
 
     }
@@ -108,40 +107,6 @@ namespace Evpp
         EVENT_COMPUTE_DURATION(StopDispatch);
         if (nullptr != event_base)
         {
-            if (ExistsRuning())
-            {
-                if (0 == EventLoopAlive(event_base))
-                {
-                    return ChangeStatus(Status::Stop, Status::Exit);
-                }
-
-                if (EventThread())
-                {
-                    if (event_queue->DestroyQueue())
-                    {
-                        return ChangeStatus(Status::Stop, Status::Exit);
-                    }
-                }
-
-                if (1 == event_stop_flag.load(std::memory_order_acquire))
-                {
-                    if (event_queue->DestroyQueue())
-                    {
-                        event_stop_flag.wait(1, std::memory_order_relaxed);
-                        return ChangeStatus(Status::Stop, Status::Exit);
-                    }
-                }
-                assert(0);
-            }
-        }
-        return false;
-    }
-
-    bool EventLoop::StopDispatchEx()
-    {
-        EVENT_COMPUTE_DURATION(StopDispatchEx);
-        if (nullptr != event_base)
-        {
             if (EventThread() && ExistsRuning())
             {
                 if (0 == EventLoopAlive(event_base))
@@ -149,21 +114,13 @@ namespace Evpp
                     return ChangeStatus(Status::Stop, Status::Exit);
                 }
 
-                if (1 == event_stop_flag.load(std::memory_order_acquire))
+                if (event_queue->DestroyQueue())
                 {
-                    if (event_queue->DestroyQueue())
-                    {
-                        return ChangeStatus(Status::Stop, Status::Exit);
-                    }
+                    return ChangeStatus(Status::Stop, Status::Exit);
                 }
                 return false;
             }
-
-            if (RunInLoopEx(std::bind(&EventLoop::StopDispatchEx, this)))
-            {
-                event_stop_flag.wait(1, std::memory_order_relaxed);
-            }
-            return true;
+            return RunInLoopEx(std::bind(&EventLoop::StopDispatch, this));
         }
         return false;
     }
@@ -351,16 +308,6 @@ namespace Evpp
             return false;
         }
 
-        if (0 == event_stop_flag.load(std::memory_order_acquire))
-        {
-            return false;
-        }
-
-        if (1 != event_stop_flag.exchange(0, std::memory_order_release))
-        {
-            return false;
-        }
-
         if (ChangeStatus(Status::Exec, Status::Stop))
         {
             if (0 == event_base->stop_flag || ~0 == event_base->stop_flag)
@@ -373,15 +320,10 @@ namespace Evpp
                 event_base->data = nullptr;
             }
 
-            if (0 == uv_loop_close(event_base))
-            {
-                event_stop_flag.notify_one();
-            }
-            else
+            if (uv_loop_close(event_base))
             {
                 uv_walk(event_base, &EventLoop::ObserveHandler, 0);
             }
-
             return true;
         }
         return false;

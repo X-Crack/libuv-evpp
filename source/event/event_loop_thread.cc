@@ -94,7 +94,7 @@ namespace Evpp
 
                 if (EventLoopAlive(loop->EventBasic()))
                 {
-                    if (loop->StopDispatchEx())
+                    if (loop->StopDispatch())
                     {
                         if (loop_mutex->try_unlock())
                         {

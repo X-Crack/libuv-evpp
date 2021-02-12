@@ -21,7 +21,7 @@ namespace Evpp
         bool ExecDispatch(const EventLoopHandler& function, i32 mode = UV_RUN_NOWAIT);
         bool ExecDispatchEx(const EventLoopHandler& function, i32 mode = UV_RUN_ONCE);
         bool ExecDispatchCoroutine(const EventLoopHandler& function, i32 mode = UV_RUN_ONCE);
-        bool StopDispatchEx();
+        bool StopDispatch();
     public:
         void SetResetConnectTimer(const u64 delay, const u64 timer);
         void SetResetConnect(const u32 status);

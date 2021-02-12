@@ -157,7 +157,7 @@ namespace Evpp
 
     void StopLoop::EchoLoopCallback4(EventLoop* loop)
     {
-        loop->StopDispatchEx();
+        loop->StopDispatch();
         std::cout << "Hello EventLoop: " << exit_tag << std::endl;
     }
 }

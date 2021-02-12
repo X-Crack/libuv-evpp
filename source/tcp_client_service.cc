@@ -30,7 +30,7 @@ namespace Evpp
     {
         if (nullptr != tcp_client)
         {
-            if (tcp_client->DestroyClient(wait) && StopDispatchEx())
+            if (tcp_client->DestroyClient(wait) && StopDispatch())
             {
                 if (event_stop_flag)
                 {
@@ -116,11 +116,11 @@ namespace Evpp
         return false;
     }
 
-    bool TcpClientService::StopDispatchEx()
+    bool TcpClientService::StopDispatch()
     {
         if (nullptr != event_base)
         {
-            return event_base->StopDispatchEx();
+            return event_base->StopDispatch();
         }
         return false;
     }
