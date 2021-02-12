@@ -34,7 +34,7 @@ int main(int argc, char* argv[])
 //     //std::thread T1(std::bind(&asdjkajsdjasd, &ev, &queue));
 //     //T1.detach();
 //     ev.ExecDispatch();
-     //while (true)
+     while (true)
      {
          EVENT_COMPUTE_DURATION(全程耗时);
          std::unique_ptr<TcpServerService> server = std::make_unique<TcpServerService>();

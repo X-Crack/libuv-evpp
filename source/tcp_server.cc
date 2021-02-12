@@ -8,6 +8,7 @@
 #include <event_loop.h>
 #include <event_loop_thread_pool.h>
 #include <event_exception.h>
+#include <event_coroutine.h>
 namespace Evpp
 {
     TcpServer::TcpServer(EventLoop* loop, const std::shared_ptr<EventShare>& share) : TcpServer(loop, share, InterfaceAccepts(), InterfaceDiscons(), InterfaceMessage(), InterfaceSendMsg())
@@ -279,8 +280,7 @@ namespace Evpp
                 {
                     if (CreaterSession(loop, client, index))
                     {
-                        // asynchronous processing of two transactions will speed up time, but at the expense of memory space
-                        if (RunInQueue(std::bind(&TcpSocket::AddSockInfo, tcp_socket.get(), client, index)))
+                        if(tcp_socket->AddSockInfo(client, index))
                         {
                             if (nullptr != socket_accepts)
                             {
@@ -359,7 +359,7 @@ namespace Evpp
         {
             if (nullptr != loop && nullptr != server && nullptr != client)
             {
-                return InitialAccepts(loop, server, client, index);
+                return JoinInTaskEx(std::bind(&TcpServer::InitialAccepts, this, loop, server, client, index)).get();
             }
         }
 #ifndef H_OS_WINDOWS

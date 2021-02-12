@@ -1,7 +1,7 @@
 ﻿#include <tcp_message.h>
 #include <event_loop.h>
 #include <event_buffer.h>
-
+#include <event_coroutine.h>
 namespace Evpp
 {
     TcpMessage::TcpMessage(EventLoop* loop, socket_tcp* client, const SystemDiscons& discons, const SystemMessage& message, const SystemSendMsg& sendmsg) :
@@ -261,7 +261,7 @@ namespace Evpp
                 {
                     if (nullptr != system_message)
                     {
-                        return system_message(std::weak_ptr<EventBuffer>(tcp_buffer).lock());
+                        return JoinInTaskEx(std::bind(system_message, std::weak_ptr<EventBuffer>(tcp_buffer).lock())).get();
                     }
                 }
                 return true;
