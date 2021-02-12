@@ -4,6 +4,7 @@
 #include <event_timer_pool.h>
 #include <event_mutex.h>
 #include <event_coroutine.h>
+#include <event_mutex.h>
 namespace Evpp
 {
     EventLoop::EventLoop(event_loop* loop, const u96 index) :
@@ -13,7 +14,7 @@ namespace Evpp
         event_queue(std::make_unique<EventQueue>(this)),
         event_timer_pool(std::make_unique<EventTimerPool>(this)),
         event_thread(0),
-        event_stop_flag(1)
+        event_mutex(std::make_unique<EventMutex>())
     {
 
     }
@@ -124,7 +125,7 @@ namespace Evpp
 
             if (RunInLoopEx(std::bind(&EventLoop::StopDispatch, this)))
             {
-                return event_mutex.lock();
+                return event_mutex->lock();
             }
         }
         return false;
@@ -327,7 +328,7 @@ namespace Evpp
 
             if (0 == uv_loop_close(event_base))
             {
-                return event_mutex.unlock();
+                return event_mutex->unlock();
             }
             else
             {

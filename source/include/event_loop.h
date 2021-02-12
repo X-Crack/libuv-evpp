@@ -2,7 +2,6 @@
 #define __EVENT_LOOP_H__
 #include <event_config.h>
 #include <event_status.h>
-#include <event_mutex.h>
 #include <memory>
 #include <atomic>
 #include <mutex>
@@ -61,8 +60,7 @@ namespace Evpp
         std::unique_ptr<EventTimerPool>                                     event_timer_pool;
         std::unordered_map<u96, std::unique_ptr<std::any>>                  event_context;
         u32                                                                 event_thread;
-        EventMutex                                                          event_mutex;
-        std::atomic<u32>                                                    event_stop_flag;
+        std::unique_ptr<EventMutex>                                         event_mutex;
     };
 }
 #endif // __EVENT_LOOP_H__

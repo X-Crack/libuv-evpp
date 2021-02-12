@@ -58,7 +58,7 @@ namespace Evpp
                     {
                         event_stop_flag.store(0, std::memory_order_release);
                     }
-                    return true;
+                    return event_mutex->lock();
                 }
                 assert(0);
             }
@@ -126,7 +126,7 @@ namespace Evpp
                     EVENT_INFO("this is a exception without handling");
                 }
             }
-            return true;
+            return event_mutex->unlock();
         }
         return false;
     }
