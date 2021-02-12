@@ -251,6 +251,7 @@
     <ClInclude Include="F:\common\evpp\share\..\source\include\event_exception.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\source\include\source_location.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)..\README.md" />

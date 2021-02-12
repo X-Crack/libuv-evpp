@@ -81,6 +81,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\source\include\event_timer_pool.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\source\include\event_untlity.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\source\include\event_work_queue.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\source\include\source_location.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\source\include\tcp_attach.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\source\include\tcp_client.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\source\include\tcp_client_service.h" />

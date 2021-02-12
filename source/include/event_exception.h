@@ -4,6 +4,7 @@
 #include <functional>
 #include <exception>
 #include <string>
+#include <source_location.hpp>
 namespace Evpp
 {
     class EventException : public std::exception
@@ -24,8 +25,8 @@ namespace Evpp
     class EventRuntimeException final : public std::exception
     {
     public:
-        explicit EventRuntimeException(const String* msg, const Handler& handler, bool var);
-        explicit EventRuntimeException(const std::string& msg, const Handler& handler, bool var);
+        explicit EventRuntimeException(const String* msg, const Handler& handler, bool var, const std::source_location& location = std::source_location::current());
+        explicit EventRuntimeException(const std::string& msg, const Handler& handler, bool var, const std::source_location& location);
         virtual ~EventRuntimeException();
     public:
         const char * what() noexcept;
@@ -65,16 +66,25 @@ namespace Evpp
             }
             return false;
         }
+    public:
+        constexpr const char* file_name() noexcept;
+        constexpr const char* function_name() noexcept;
+        constexpr const u32 line() noexcept;
+        constexpr const u32 column() noexcept;
+    public:
+        constexpr const char* file_name() const noexcept;
+        constexpr const char* function_name() const noexcept;
+        constexpr const u32 line() const noexcept;
+        constexpr const u32 column() const noexcept;
     private:
-        /// template???
         std::string                                                             event_exception_message;
         Handler                                                                 event_exception_handler;
         bool                                                                    event_exception_value;
+        std::source_location                                                    event_exception_location;
         // helper https://zh.cppreference.com/w/cpp/header/source_location
         // https://docs.microsoft.com/en-us/cpp/overview/visual-cpp-language-conformance?view=msvc-160
         // P1208R6 <source_location>        No
         // http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1208r6.pdf
-        // std::source_location                                                    event_exception_location;
     };
 }
 #endif // __EVENT_EXCEPTION_H__
