@@ -85,6 +85,9 @@ namespace Evpp
         // https://docs.microsoft.com/en-us/cpp/overview/visual-cpp-language-conformance?view=msvc-160
         // P1208R6 <source_location>        No
         // http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1208r6.pdf
+    private:
+        EventRuntimeException(const EventRuntimeException&) = default;
+        EventRuntimeException(EventRuntimeException&&) = default;
     };
 }
 #endif // __EVENT_EXCEPTION_H__
