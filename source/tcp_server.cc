@@ -9,6 +9,7 @@
 #include <event_loop_thread_pool.h>
 #include <event_exception.h>
 #include <event_coroutine.h>
+#include <event_mutex.h>
 namespace Evpp
 {
     TcpServer::TcpServer(EventLoop* loop, const std::shared_ptr<EventShare>& share) : TcpServer(loop, share, InterfaceAccepts(), InterfaceDiscons(), InterfaceMessage(), InterfaceSendMsg())
@@ -19,9 +20,9 @@ namespace Evpp
     TcpServer::TcpServer(EventLoop* loop, const std::shared_ptr<EventShare>& share, const InterfaceAccepts& accepts, const InterfaceDiscons& discons, const InterfaceMessage& message, const InterfaceSendMsg& sendmsg) :
         event_base(loop),
         event_share(share),
-        event_close_flag(1),
         event_thread_pool(std::make_shared<EventLoopThreadPool>(loop, share)),
         event_socket(std::make_unique<EventSocketPool>()),
+        event_mutex_clean(std::make_unique<EventMutex>()),
         socket_accepts(accepts),
         socket_discons(discons),
         socket_message(message),
@@ -47,20 +48,17 @@ namespace Evpp
     {
         if (event_socket && tcp_listen)
         {
-            if (ExistsStarts(Status::None))
+            if (ChangeStatus(Status::None, Status::Init))
             {
-                if (ChangeStatus(Status::None, Status::Init))
-                {
 #ifdef H_OS_WINDOWS
-                    if (event_thread_pool->CreaterEventThreadPool(thread_size))
+                if (event_thread_pool->CreaterEventThreadPool(thread_size))
 #else
-                    if (event_thread_pool->CreaterEventThreadPool(tcp_socket->GetSocketPoolSize()))
+                if (event_thread_pool->CreaterEventThreadPool(tcp_socket->GetSocketPoolSize()))
 #endif
+                {
+                    if (tcp_listen->CreaterListenService(event_socket.get(), this))
                     {
-                        if (tcp_listen->CreaterListenService(event_socket.get(), this))
-                        {
-                            return ChangeStatus(Status::Init, Status::Exec);
-                        }
+                        return ChangeStatus(Status::Init, Status::Exec);
                     }
                 }
             }
@@ -206,19 +204,22 @@ namespace Evpp
             {
                 if (tcp_session.find(index) != tcp_session.end())
                 {
-                    tcp_socket->DelSockInfo(index);
                     tcp_session.erase(index);
                 }
                 tcp_index_multiplexing.emplace(index);
             }
         }
 
+        if (tcp_socket->size())
+        {
+            tcp_socket->DelSockInfo(index);
+        }
+
         if (ExistsStoped())
         {
             if (tcp_session.empty())
             {
-                event_close_flag.store(0, std::memory_order_release);
-                event_close_flag.notify_one();
+                event_mutex_clean->unlock();
             }
         }
     }
@@ -227,21 +228,20 @@ namespace Evpp
     {
         if (tcp_session.size())
         {
+            std::unique_lock<std::recursive_mutex> lock(tcp_recursive_mutex);
             {
-                std::unique_lock<std::recursive_mutex> lock(tcp_recursive_mutex);
                 for (auto& [index, session] : tcp_session)
                 {
                     if (Close(index))
                     {
                         continue;
                     }
-                    return false;
+                    assert(0);
                 }
             }
-
-            event_close_flag.wait(1, std::memory_order_relaxed);
+            return event_mutex_clean->lock();
         }
-        return tcp_session.empty();
+        return true;
     }
 
     const std::shared_ptr<TcpSession>& TcpServer::GetSession(const u96 index)
@@ -273,34 +273,26 @@ namespace Evpp
     {
         if (nullptr != loop && nullptr != client)
         {
-            if (ExistsRuning())
+            if (loop->EventThread())
             {
-                if (loop->EventThread())
+                if (JoinInTaskEx(std::bind(&TcpSocket::AddSockInfo, tcp_socket.get(), client, index)).get() && ExistsRuning())
                 {
-                    if (ExistsRuning())
+                    if (CreaterSession(loop, client, index))
                     {
-                        if (CreaterSession(loop, client, index))
+                        if (nullptr != socket_accepts)
                         {
-                            if (tcp_socket->AddSockInfo(client, index))
+                            // messages cannot be sent asynchronously, because it is already asynchronous, and doing asynchronous is redundant, and it also involves the return value, whether to close the session.
+                            if (socket_accepts(loop, GetSession(index), index))
                             {
-                                if (nullptr != socket_accepts)
-                                {
-                                    // messages cannot be sent asynchronously, because it is already asynchronous, and doing asynchronous is redundant, and it also involves the return value, whether to close the session.
-                                    if (socket_accepts(loop, GetSession(index), index))
-                                    {
-                                        return true;
-                                    }
-                                }
+                                return true;
                             }
-                            return Close(index);
                         }
-
+                        return Close(index);
                     }
-                    return SocketShutdown(client);
                 }
-                return loop->RunInQueue(std::bind(&TcpServer::InitialSession, this, loop, client, index));
+                return SocketShutdown(client);
             }
-            return SocketShutdown(client);
+            return loop->RunInQueue(std::bind(&TcpServer::InitialSession, this, loop, client, index));
         }
         return false;
     }
@@ -490,8 +482,6 @@ namespace Evpp
     {
         if (nullptr != handler)
         {
-            // clear the memory first to prevent memory fragmentation from causing other asynchronous places to access the wrong pointer * TcpSocket::AddSockInfo *
-            memset(handler, 0, sizeof(event_handle));
             delete reinterpret_cast<socket_tcp*>(handler);
             handler = nullptr;
         }
@@ -543,18 +533,7 @@ namespace Evpp
         {
             if (tcp_listen->DestroyListenService())
             {
-                // 清理会话列表
-                if (0 == CleanedSession())
-                {
-                    return false;
-                }
-
-                // 销毁线程列表
-                if (0 == event_thread_pool->DestroyEventThreadPool())
-                {
-                    return false;
-                }
-                return true;
+                return CleanedSession() && event_thread_pool->DestroyEventThreadPool();
             }
         }
 

@@ -31,6 +31,7 @@ namespace Evpp
     void TcpSocket::DelSockInfo(const u96 index)
     {
         std::unique_lock<std::recursive_mutex> lock(tcp_mutex);
+
         if (tcp_info.empty())
         {
             return;

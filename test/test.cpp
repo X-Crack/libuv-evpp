@@ -8,6 +8,7 @@
 
 void stop_server(Evpp::TcpServerService* server)
 {
+    Sleep(35);
     if (server->DestroyServer())
     {
         EVENT_INFO("OK\n");
@@ -34,7 +35,7 @@ int main(int argc, char* argv[])
 //     //std::thread T1(std::bind(&asdjkajsdjasd, &ev, &queue));
 //     //T1.detach();
 //     ev.ExecDispatch();
-     //while (true)
+     while (true)
      {
          EVENT_COMPUTE_DURATION(全程耗时);
          std::unique_ptr<TcpServerService> server = std::make_unique<TcpServerService>();
@@ -52,9 +53,9 @@ int main(int argc, char* argv[])
          server->SetDisconsCallback();
          server->SetMessageCallback();
          server->SetSendMsgCallback();
-         //std::thread T1(std::bind(&stop_server, server.get()));
+         std::thread T1(std::bind(&stop_server, server.get()));
          server->ExecDispatchCoroutine(printf_ex);
-         //T1.join();
+         T1.join();
          EVENT_INFO("exit\n");
          server.reset();
 // 

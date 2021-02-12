@@ -8,10 +8,11 @@
 #include <mutex>
 namespace Evpp
 {
-    class EventLoop;
     class EventShare;
+    class EventLoop;
     class EventLoopThreadPool;
     class EventSocketPool;
+    class EventMutex;
     class TcpListen;
     class TcpSession;
     class TcpSocket;
@@ -72,9 +73,9 @@ namespace Evpp
     private:
         EventLoop*                                                              event_base;
         std::shared_ptr<EventShare>                                             event_share;
-        std::atomic<u32>                                                        event_close_flag;
         std::shared_ptr<EventLoopThreadPool>                                    event_thread_pool;
         std::unique_ptr<EventSocketPool>                                        event_socket;
+        std::unique_ptr<EventMutex>                                             event_mutex_clean;
         InterfaceAccepts                                                        socket_accepts;
         InterfaceDiscons                                                        socket_discons;
         InterfaceMessage                                                        socket_message;
