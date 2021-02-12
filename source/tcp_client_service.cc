@@ -98,9 +98,17 @@ namespace Evpp
                     }
 #endif
                 }
+                catch (const EventRuntimeException& ex)
+                {
+                    EVENT_INFO("%s %d", ex.what(), ex.value());
+                }
+                catch (const EventException& ex)
+                {
+                    EVENT_INFO("during the operation of the coroutine there may be some problems please check carefully : %s", ex.what());
+                }
                 catch (...)
                 {
-
+                    EVENT_INFO("this is a exception without handling");
                 }
             }
             return true;
