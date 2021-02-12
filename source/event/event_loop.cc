@@ -105,9 +105,9 @@ namespace Evpp
     bool EventLoop::StopDispatch()
     {
         EVENT_COMPUTE_DURATION(StopDispatch);
-        if (nullptr != event_base)
+        if (nullptr != event_base && ExistsRuning())
         {
-            if (EventThread() && ExistsRuning())
+            if (EventThread())
             {
                 if (0 == EventLoopAlive(event_base))
                 {
