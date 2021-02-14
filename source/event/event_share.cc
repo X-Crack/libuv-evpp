@@ -35,13 +35,6 @@ namespace Evpp
                     EVENT_WARN("event loop release has some problems but it is not important");
                     assert(0);
                 }
-                else
-                {
-                    if (CloseHandle(event_loops[i]->iocp))
-                    {
-                        continue;
-                    }
-                }
             }
         }
         return true;
