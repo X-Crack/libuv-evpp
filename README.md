@@ -18,6 +18,8 @@
 # 测试说明
 
 1. Windows10 1S/20000 并发 > 测试软件：ApacheJMeter（由于Windows系统原因 本地测试只能达到2W个并发，因为端口受限）
+1. 百万泄露句柄（测试期间） 亿级周期 暂未发现内存泄露 （该图是测试服务器启动及停止的稳定性 ( while( { star or stop } ) ）
+![](https://github.com/X-Crack/libuv-evpp/blob/master/images/test.png?raw=true)
 
 # 编译说明
 
