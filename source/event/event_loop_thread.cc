@@ -48,27 +48,34 @@ namespace Evpp
             {
                 if (ChangeStatus(Status::None, Status::Init))
                 {
-#if defined(EVPP_USE_STL_THREAD)
-                    loop_thread.reset(new std::thread(std::bind(&EventLoopThread::WatcherCoroutineInThread, this)));
-#elif defined(EVPP_USE_BOOST_THREAD)
-                    loop_thread.reset(new boost::thread(std::bind(&EventLoopThread::WatcherCoroutineInThread, this)));
-#else
-                    if (0 == uv_thread_create(loop_thread.get(), &EventLoopThread::WatcherCoroutineInThread, this))
-#endif
+                    try
                     {
-                        std::unique_lock<std::mutex> lock(cv_mutex);
+#if defined(EVPP_USE_STL_THREAD)
+                        loop_thread.reset(new std::thread(std::bind(&EventLoopThread::WatcherCoroutineInThread, this)));
+#elif defined(EVPP_USE_BOOST_THREAD)
+                        loop_thread.reset(new boost::thread(std::bind(&EventLoopThread::WatcherCoroutineInThread, this)));
+#else
+                        if (0 == uv_thread_create(loop_thread.get(), &EventLoopThread::WatcherCoroutineInThread, this))
+#endif
                         {
-                            // 启动线程需要慢启动，因为初始化数据过多，否则会导致RunInLoop异步安全初始化失败。
-                            if (cv_signal.wait_for(lock, std::chrono::milliseconds(0), std::bind(&EventLoopThread::AvailableEvent, this)))
+                            std::unique_lock<std::mutex> lock(cv_mutex);
                             {
-                                return true;
+                                // 启动线程需要慢启动，因为初始化数据过多，否则会导致RunInLoop异步安全初始化失败。
+                                if (cv_signal.wait_for(lock, std::chrono::milliseconds(0), std::bind(&EventLoopThread::AvailableEvent, this)))
+                                {
+                                    return true;
+                                }
+                                else
+                                {
+                                    EVENT_INFO("thread failed to start please wait a little longer");
+                                }
+                                assert(0);
                             }
-                            else
-                            {
-                                EVENT_INFO("thread failed to start please wait a little longer");
-                            }
-                            assert(0);
                         }
+                    }
+                    catch (const std::system_error &ex)
+                    {
+                        EVENT_ERROR("createrthread error coe: %d error message: %s", ex.code().value(), ex.what());
                     }
                 }
                 return false;
@@ -196,14 +203,19 @@ namespace Evpp
     bool EventLoopThread::Join()
     {
 #if defined(EVPP_USE_STL_THREAD) || defined(EVPP_USE_BOOST_THREAD)
-        if (loop_thread && loop_thread->joinable())
+        try
         {
-            loop_thread->join();
-            loop_thread.reset();
-
-            return ChangeStatus(Status::Stop, Status::Exit);
+            if (loop_thread && loop_thread->joinable())
+            {
+                loop_thread->join();
+                loop_thread.reset();
+                return ChangeStatus(Status::Stop, Status::Exit);
+            }
         }
-
+        catch (const std::system_error &ex)
+        {
+            EVENT_ERROR("destroythread error coe: %d error message: %s", ex.code().value(), ex.what());
+        }
 #else
         if (0 == uv_thread_join(loop_thread.get()))
         {

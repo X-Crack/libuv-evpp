@@ -291,7 +291,7 @@ namespace Evpp
         {
             if (event_semaphore->StopWaiting())
             {
-                return true;
+                return ChangeStatus(Status::Stop, Status::Exit);
             }
             assert(0);
         }
@@ -299,7 +299,7 @@ namespace Evpp
         {
             uv_walk(event_base, &EventLoop::ObserveHandler, 0);
         }
-        return ChangeStatus(Status::Stop, Status::Exit);
+        return false;
     }
 
     void EventLoop::ObserveHandler(event_handle* handler, void* arg)

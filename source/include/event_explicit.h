@@ -28,7 +28,7 @@ namespace Evpp
         {
             std::system("pause");
         }
-    } __s_onexit_pause;
+    } /*__s_onexit_pause*/;
 #endif
 }
 #endif // __EVENT_EXPLICIT_H__
