@@ -198,7 +198,21 @@ namespace Evpp
 
     bool TcpListen::ListenTcpService(socket_tcp* server)
     {
-        return 0 == uv_listen(reinterpret_cast<socket_stream*>(server), SOMAXCONN, &TcpServer::OnDefaultAccepts);
+        return ListenTcpServiceImpl(uv_listen(reinterpret_cast<socket_stream*>(server), SOMAXCONN, &TcpServer::OnDefaultAccepts));
+    }
+
+    bool TcpListen::ListenTcpServiceImpl(const i32 status)
+    {
+        if (0 == status)
+        {
+            return true;
+        }
+
+        String error_name[96];
+        String error_msgs[96];
+        EVENT_WARN("listen failed error code: %d error name:%s error message: %s", status, uv_err_name_r(status, error_name, std::size(error_name)), uv_strerror_r(status, error_msgs, std::size(error_msgs)));
+        return false;
+
     }
 
     void TcpListen::OnClose()

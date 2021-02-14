@@ -37,6 +37,7 @@ namespace Evpp
         bool InitTcpService(EventLoop* loop, socket_tcp* server);
         bool BindTcpService(socket_tcp* server, const sockaddr* addr);
         bool ListenTcpService(socket_tcp* server);
+        bool ListenTcpServiceImpl(const i32 status);
     private:
         void OnClose();
     private:
