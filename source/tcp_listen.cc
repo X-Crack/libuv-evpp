@@ -208,8 +208,8 @@ namespace Evpp
             return true;
         }
 
-        String error_name[96];
-        String error_msgs[96];
+        String error_name[256];
+        String error_msgs[256];
         EVENT_WARN("listen failed error code: %d error name:%s error message: %s", status, uv_err_name_r(status, error_name, std::size(error_name)), uv_strerror_r(status, error_msgs, std::size(error_msgs)));
         return false;
 
