@@ -11,11 +11,11 @@
 1. CPU 多核友好和绝对的线程安全
 1. TCP4 协议 / TCP6 协议
 1. index 复用机制不会浪费系统资源
-1. 高可用移植性强超低的耦合度 非常安全且平静的停止服务端
+1. 高可用移植性强超低的耦合度 非常安全且平静的停止服务端（while 0 error）
 
 # 测试说明
 
-1. Windows10 1S/20000 并发 > 测试软件：ApacheJMeter（由于WIndows系统原因 本地测试只能达到2W个并发，因为端口受限）
+1. Windows10 1S/20000 并发 > 测试软件：ApacheJMeter（由于Windows系统原因 本地测试只能达到2W个并发，因为端口受限）
 
 # 编译说明
 
@@ -23,7 +23,7 @@
 1. 请前往 [glog](https://github.com/google/glog) 非必须
 1. 请前往 [concurrentqueue](https://github.com/cameron314/concurrentqueue) 非必须
 1. 请前往 [boost](https://www.boost.org/) 非必须
-1. 配置好依赖库即可编译，最低要求`C++2a`进行编译否则会有未知的错误。
+1. 配置好依赖库即可编译，最低要求`C++2a`进行编译否则会有未知的错误（后续会降低C++版本）。
 
 # libuv libevent 开发者交流群
 1. QQ群: 730777001
