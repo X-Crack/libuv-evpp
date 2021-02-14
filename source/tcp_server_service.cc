@@ -10,9 +10,8 @@ namespace Evpp
     TcpServerService::TcpServerService() :
         event_share(std::make_shared<EventShare>()),
         event_base(std::make_shared<EventLoop>(event_share->DefaultEventLoop())),
-        event_mutex(std::make_unique<EventMutex>()),
         tcp_server(std::make_unique<TcpServer>(event_base.get(), event_share)),
-        event_stop_flag(1)
+        event_semaphore(std::make_unique<EventSemaphore>())
     {
 
     }
@@ -54,14 +53,11 @@ namespace Evpp
             {
                 if (event_base->StopDispatch())
                 {
-                    if (event_stop_flag)
-                    {
-                        event_stop_flag.store(0, std::memory_order_release);
-                    }
-                    return event_mutex->lock();
+                    return event_semaphore->StarWaiting();
                 }
                 assert(0);
             }
+            return false;
         }
         return false;
     }
@@ -97,7 +93,7 @@ namespace Evpp
     {
         if (nullptr != event_base)
         {
-            for (; event_stop_flag.load(std::memory_order_acquire);)
+            for (; EventLoopAlive(event_base->EventBasic());)
             {
                 try
                 {
@@ -126,7 +122,7 @@ namespace Evpp
                     EVENT_INFO("this is a exception without handling");
                 }
             }
-            return event_mutex->unlock();
+            return event_semaphore->StopWaiting();
         }
         return false;
     }

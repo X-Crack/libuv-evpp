@@ -10,6 +10,7 @@ namespace Evpp
     class EventLoop;
     class EventLoopThreadPool;
     class EventSocketPool;
+    class EventSemaphore;
     class TcpServer;
     class TcpListen final : public EventStatus
     {
@@ -31,7 +32,7 @@ namespace Evpp
     private:
         bool InitialListenService(EventSocketPool* socket, TcpServer* server, const u96 size);
         bool InitEventThreadPools(const u96 size);
-        bool ExecuteListenService(EventLoop* loop, socket_tcp* server, const sockaddr* addr);
+        bool ExecuteListenService(EventLoop* loop, socket_tcp* server, const sockaddr* addr, const u96 index);
     private:
         bool InitTcpService(EventLoop* loop, socket_tcp* server);
         bool BindTcpService(socket_tcp* server, const sockaddr* addr);
@@ -40,8 +41,7 @@ namespace Evpp
         void OnClose();
     private:
         EventLoop*                                                      event_base;
-        std::atomic<u32>                                                event_close_flag;
-        std::atomic<u32>                                                event_close_flag_ex;
+        std::unique_ptr<EventSemaphore>                                 event_stop_listen_semaphore;
 #ifdef H_OS_WINDOWS
         std::shared_ptr<EventShare>                                     event_share;
 #endif

@@ -136,7 +136,7 @@ namespace Evpp
     {
         if (nullptr != handler)
         {
-            if (0 == CheckHandlerStatus(handler))
+            if (0 == SocketStatus(handler))
             {
                 return false;
             }
@@ -150,14 +150,14 @@ namespace Evpp
     {
         if (nullptr != handler)
         {
-            if (0 == CheckHandlerStatus(handler))
+            if (0 == SocketStatus(handler))
             {
                 return false;
             }
 
             if (0 == uv_read_stop(reinterpret_cast<socket_stream*>(handler)))
             {
-                return Evpp::CloseHandler(handler, &TcpMessage::DefaultClose);
+                return Evpp::SocketClose(handler, &TcpMessage::DefaultClose);
             }
         }
         return false;

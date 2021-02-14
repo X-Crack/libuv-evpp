@@ -3,30 +3,22 @@
 #include <event_config.h>
 #include <atomic>
 #include <semaphore>
+#include <chrono>
+#include <mutex>
 namespace Evpp
 {
-    class EventMutex
-    {
-    public:
-        explicit EventMutex();
-    public:
-        bool try_lock() noexcept;
-        bool try_unlock() noexcept;
-        bool lock(u96 original = 1, const u96 other = 0) noexcept;
-        bool unlock() noexcept;
-    private:
-        std::atomic<u96>                                                counter;
-    };
-
     class EventSemaphore
     {
     public:
         explicit EventSemaphore();
+        virtual ~EventSemaphore();
     public:
-        void lock() noexcept;
-        void unlock() noexcept;
+        bool StarWaiting(const std::chrono::milliseconds& delay = std::chrono::milliseconds(3000));
+        bool StopWaiting();
     private:
-        std::binary_semaphore                                           semaphore;
+        std::atomic<u96>                                                                    event_cv_pending;
+        std::binary_semaphore                                                               event_sem;
+        std::mutex                                                                          event_sem_mutex;
     };
 }
 #endif // __event_mutex_H__

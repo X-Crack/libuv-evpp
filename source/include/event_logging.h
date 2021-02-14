@@ -32,7 +32,7 @@
 #else
 #           define GOOGLE_LOG(severity)                       if(0) LOG(severity)
 #           define                                                  DebugMsg(severity, ...) { String debugMsg[1024]; _snprintf_s(debugMsg, std::size(debugMsg), _TRUNCATE, ##__VA_ARGS__); google::LogMessage(__FILE__, __LINE__, google::GLOG_##severity).stream() << debugMsg; };
-#           define GOOGLE_LOG_DEBUG_MSG(severity, fmt)        if(0) DebugMsg(severity, fmt)
+#           define GOOGLE_LOG_DEBUG_MSG(severity, fmt)        DebugMsg(severity, fmt)
 #endif
 
 #ifndef GOOGLE_LOGGING

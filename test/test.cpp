@@ -8,10 +8,9 @@
 
 void stop_server(Evpp::TcpServerService* server)
 {
-    Sleep(35);
     if (server->DestroyServer())
     {
-        EVENT_INFO("OK\n");
+       // EVENT_INFO("OK\n");
         return;
     }
     assert(0);
@@ -19,7 +18,7 @@ void stop_server(Evpp::TcpServerService* server)
 
 void printf_ex(Evpp::EventLoop* loop)
 {
-    EVENT_INFO("%d", loop->GetEventIndex());
+    //EVENT_INFO("%d", loop->GetEventIndex());
 }
 
 int main(int argc, char* argv[])
@@ -37,27 +36,32 @@ int main(int argc, char* argv[])
 //     ev.ExecDispatch();
      while (true)
      {
-         EVENT_COMPUTE_DURATION(全程耗时);
-         std::unique_ptr<TcpServerService> server = std::make_unique<TcpServerService>();
-         server->AddListenPort("0.0.0.0", 5555);
-         server->AddListenPort("0.0.0.0", 6666);
-         server->AddListenPort("0.0.0.0", 7777);
-         server->AddListenPort("::1", 5555);
-         server->AddListenPort("::1", 6666);
-         server->AddListenPort("::1", 7777);
-         if (0 == server->CreaterServer(64))
          {
-             assert(0);
+             //EVENT_COMPUTE_DURATION(全程耗时);
+             std::unique_ptr<TcpServerService> server = std::make_unique<TcpServerService>();
+             server->AddListenPort("0.0.0.0", 5555);
+             server->AddListenPort("0.0.0.0", 6666);
+             server->AddListenPort("0.0.0.0", 7777);
+             server->AddListenPort("::1", 5555);
+             server->AddListenPort("::1", 6666);
+             server->AddListenPort("::1", 7777);
+             server->SetAcceptsCallback();
+             server->SetDisconsCallback();
+             server->SetMessageCallback();
+             server->SetSendMsgCallback();
+             if (0 == server->CreaterServer(8))
+             {
+                 printf("创建服务器失败\n");
+                 Sleep(999999);
+             }
+             std::thread T1(std::bind(&stop_server, server.get()));
+             server->ExecDispatchCoroutine(printf_ex);
+             T1.join();
+             //EVENT_INFO("exit\n");
+             server.reset();
          }
-         server->SetAcceptsCallback();
-         server->SetDisconsCallback();
-         server->SetMessageCallback();
-         server->SetSendMsgCallback();
-         std::thread T1(std::bind(&stop_server, server.get()));
-         server->ExecDispatchCoroutine(printf_ex);
-         T1.join();
-         EVENT_INFO("exit\n");
-         server.reset();
+
+         //Sleep(1000);
 // 
      }
 

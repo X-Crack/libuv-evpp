@@ -33,7 +33,7 @@ namespace Evpp
         {
             if (event_base->EventThread())
             {
-                return Evpp::CloseHandler(event_queue, &EventAsync::DefaultClose);
+                return SocketClose(event_queue, &EventAsync::DefaultClose);
             }
             return event_base->RunInLoopEx(std::bind(&EventAsync::DestroyAsync, this));
         }
@@ -44,7 +44,10 @@ namespace Evpp
     {
         if (nullptr != event_queue && nullptr != event_queue->data)
         {
-            return 0 == uv_async_send(event_queue);
+            if (SocketStatus(event_queue))
+            {
+                return 0 == uv_async_send(event_queue);
+            }
         }
         return false;
     }

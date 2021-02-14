@@ -7,7 +7,8 @@ namespace Evpp
     class EventShare;
     class EventLoop;
     class EventTimer;
-    class EventMutex;
+    class EventSynchronize;
+    class EventSemaphore;
     class TcpServer;
     class TcpServerService
     {
@@ -35,9 +36,8 @@ namespace Evpp
     private:
         std::shared_ptr<EventShare>                                     event_share;
         std::shared_ptr<EventLoop>                                      event_base;
-        std::unique_ptr<EventMutex>                                     event_mutex;
         std::unique_ptr<TcpServer>                                      tcp_server;
-        std::atomic<u32>                                                event_stop_flag;
+        std::unique_ptr<EventSemaphore>                                 event_semaphore;
     };
 }
 #endif // __TCP_SERVER_SERVICE_H__

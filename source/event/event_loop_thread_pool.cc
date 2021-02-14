@@ -56,15 +56,17 @@ namespace Evpp
     {
         std::unique_lock<std::recursive_mutex> lock(event_pool_lock);
         {
-            for (const auto & [index, var] : event_pool)
+            for (const auto & [index, thread] : event_pool)
             {
-                if (var->DestroyThread())
+                if (thread->DestroyThread())
                 {
                     continue;
                 }
+                else
+                {
+                    EVENT_INFO("an unexpected error occurred while stopping the eventloop thread");
+                }
             }
-
-            event_pool.clear();
         }
         return true;
     }

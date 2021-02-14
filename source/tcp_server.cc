@@ -9,7 +9,6 @@
 #include <event_loop_thread_pool.h>
 #include <event_exception.h>
 #include <event_coroutine.h>
-#include <event_mutex.h>
 namespace Evpp
 {
     TcpServer::TcpServer(EventLoop* loop, const std::shared_ptr<EventShare>& share) : TcpServer(loop, share, InterfaceAccepts(), InterfaceDiscons(), InterfaceMessage(), InterfaceSendMsg())
@@ -20,9 +19,9 @@ namespace Evpp
     TcpServer::TcpServer(EventLoop* loop, const std::shared_ptr<EventShare>& share, const InterfaceAccepts& accepts, const InterfaceDiscons& discons, const InterfaceMessage& message, const InterfaceSendMsg& sendmsg) :
         event_base(loop),
         event_share(share),
+        event_close_flag(1),
         event_thread_pool(std::make_shared<EventLoopThreadPool>(loop, share)),
         event_socket(std::make_unique<EventSocketPool>()),
-        event_mutex_clean(std::make_unique<EventMutex>()),
         socket_accepts(accepts),
         socket_discons(discons),
         socket_message(message),
@@ -48,17 +47,20 @@ namespace Evpp
     {
         if (event_socket && tcp_listen)
         {
-            if (ChangeStatus(Status::None, Status::Init))
+            if (ExistsStarts(Status::None))
             {
-#ifdef H_OS_WINDOWS
-                if (event_thread_pool->CreaterEventThreadPool(thread_size))
-#else
-                if (event_thread_pool->CreaterEventThreadPool(tcp_socket->GetSocketPoolSize()))
-#endif
+                if (ChangeStatus(Status::None, Status::Init))
                 {
-                    if (tcp_listen->CreaterListenService(event_socket.get(), this))
+#ifdef H_OS_WINDOWS
+                    if (event_thread_pool->CreaterEventThreadPool(thread_size))
+#else
+                    if (event_thread_pool->CreaterEventThreadPool(tcp_socket->GetSocketPoolSize()))
+#endif
                     {
-                        return ChangeStatus(Status::Init, Status::Exec);
+                        if (tcp_listen->CreaterListenService(event_socket.get(), this))
+                        {
+                            return ChangeStatus(Status::Init, Status::Exec);
+                        }
                     }
                 }
             }
@@ -74,15 +76,19 @@ namespace Evpp
             {
                 if (event_base->EventThread())
                 {
-                    EVENT_INFO("The server is stopping please be patient...");
                     if (DestroyService())
                     {
                         return ChangeStatus(Status::Stop, Status::Exit);
+                    }
+                    else
+                    {
+                        EVENT_INFO("an error occurred while destroying the server");
                     }
                     return false;
                 }
                 return RunInLoopEx(std::bind(&TcpServer::DestroyServer, this));
             }
+            EVENT_INFO("server has stopped");
         }
         return false;
     }
@@ -204,22 +210,19 @@ namespace Evpp
             {
                 if (tcp_session.find(index) != tcp_session.end())
                 {
+                    tcp_socket->DelSockInfo(index);
                     tcp_session.erase(index);
                 }
                 tcp_index_multiplexing.emplace(index);
             }
         }
 
-        if (tcp_socket->size())
-        {
-            tcp_socket->DelSockInfo(index);
-        }
-
         if (ExistsStoped())
         {
             if (tcp_session.empty())
             {
-                event_mutex_clean->unlock();
+                event_close_flag.store(0, std::memory_order_release);
+                event_close_flag.notify_one();
             }
         }
     }
@@ -228,18 +231,19 @@ namespace Evpp
     {
         if (tcp_session.size())
         {
-            std::unique_lock<std::recursive_mutex> lock(tcp_recursive_mutex);
             {
+                std::unique_lock<std::recursive_mutex> lock(tcp_recursive_mutex);
                 for (auto& [index, session] : tcp_session)
                 {
                     if (Close(index))
                     {
                         continue;
                     }
-                    assert(0);
+                    return false;
                 }
             }
-            return event_mutex_clean->lock();
+
+            event_close_flag.wait(1, std::memory_order_relaxed);
         }
         return true;
     }
@@ -273,26 +277,34 @@ namespace Evpp
     {
         if (nullptr != loop && nullptr != client)
         {
-            if (loop->EventThread())
+            if (ExistsRuning())
             {
-                if (JoinInTaskEx(std::bind(&TcpSocket::AddSockInfo, tcp_socket.get(), client, index)).get() && ExistsRuning())
+                if (loop->EventThread())
                 {
-                    if (CreaterSession(loop, client, index))
+                    if (ExistsRuning())
                     {
-                        if (nullptr != socket_accepts)
+                        if (CreaterSession(loop, client, index))
                         {
-                            // messages cannot be sent asynchronously, because it is already asynchronous, and doing asynchronous is redundant, and it also involves the return value, whether to close the session.
-                            if (socket_accepts(loop, GetSession(index), index))
+                            if (tcp_socket->AddSockInfo(client, index))
                             {
-                                return true;
+                                if (nullptr != socket_accepts)
+                                {
+                                    // messages cannot be sent asynchronously, because it is already asynchronous, and doing asynchronous is redundant, and it also involves the return value, whether to close the session.
+                                    if (socket_accepts(loop, GetSession(index), index))
+                                    {
+                                        return true;
+                                    }
+                                }
                             }
+                            return Close(index);
                         }
-                        return Close(index);
+
                     }
+                    return SocketShutdown(client);
                 }
-                return SocketShutdown(client);
+                return loop->RunInQueue(std::bind(&TcpServer::InitialSession, this, loop, client, index));
             }
-            return loop->RunInQueue(std::bind(&TcpServer::InitialSession, this, loop, client, index));
+            return SocketShutdown(client);
         }
         return false;
     }
@@ -317,7 +329,7 @@ namespace Evpp
 
             if (CheckServiceAccept(server))
             {
-                if (ExistsRuning() && 0 == CheckHandlerStatus(client))
+                if (ExistsRuning() && 0 == SocketStatus(client))
                 {
                     if (nullptr != client)
                     {
@@ -416,11 +428,11 @@ namespace Evpp
     {
         if (nullptr != handler)
         {
-            if (0 == CheckHandlerStatus(handler))
+            if (0 == SocketStatus(handler))
             {
                 return false;
             }
-            return Evpp::CloseHandler(handler, &TcpServer::OnDefaultClose);
+            return Evpp::SocketClose(handler, &TcpServer::OnDefaultClose);
         }
         return false;
     }
@@ -429,7 +441,7 @@ namespace Evpp
     {
         if (nullptr != handler)
         {
-            if (0 == CheckHandlerStatus(handler))
+            if (0 == SocketStatus(handler))
             {
                 return false;
             }
@@ -496,7 +508,7 @@ namespace Evpp
                 return;
             }
 
-            if (Evpp::CloseHandler(shutdown->handle, &TcpServer::OnDefaultClose))
+            if (Evpp::SocketClose(shutdown->handle, &TcpServer::OnDefaultClose))
             {
                 if (nullptr != shutdown)
                 {
@@ -528,15 +540,24 @@ namespace Evpp
             return false;
         }
 
-        // make changes to the status immediately to prevent new sessions from joining during the cleaning process.
-        if (ChangeStatus(Status::Exec, Status::Stop))
+        while (ChangeStatus(Status::Exec, Status::Stop))
         {
             if (tcp_listen->DestroyListenService())
             {
-                return CleanedSession() && event_thread_pool->DestroyEventThreadPool();
+                // clean up the conversation list
+                if (0 == CleanedSession())
+                {
+                    return false;
+                }
+
+                // destroy the thread pool
+                if (0 == event_thread_pool->DestroyEventThreadPool())
+                {
+                    return false;
+                }
+                return true;
             }
         }
-
         return false;
     }
 }

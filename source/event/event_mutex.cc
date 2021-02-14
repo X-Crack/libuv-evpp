@@ -1,68 +1,40 @@
 ﻿#include <event_mutex.h>
-
 namespace Evpp
 {
-    EventMutex::EventMutex() : counter(1)
+    EventSemaphore::EventSemaphore() : event_cv_pending(1), event_sem(1)
     {
 
     }
 
-    bool EventMutex::try_lock() noexcept
+    EventSemaphore::~EventSemaphore()
     {
-        return 1 == counter.load(std::memory_order_relaxed);
+
     }
 
-    bool EventMutex::try_unlock() noexcept
+    bool EventSemaphore::StarWaiting(const std::chrono::milliseconds& delay)
     {
-        return 1 == counter.exchange(0, std::memory_order_release);
-    }
-
-    bool EventMutex::lock(u96 original, const u96 other) noexcept
-    {
-        while (0 == counter.compare_exchange_weak(original, other, std::memory_order_acquire));
-
-        if (other != counter.load(std::memory_order_acquire))
+        event_sem.acquire();
+        return true;
+        for (auto time = std::chrono::steady_clock::now(); std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - time).count() < delay.count();)
         {
-            return false;
-        }
-        else
-        {
-            counter.wait(original, std::memory_order_relaxed);
+            if (1 == event_cv_pending.exchange(0))
+            {
+                return true;
+            }
+            else
+            {
+                event_cv_pending.wait(0, std::memory_order_relaxed);
+            }
         }
         return true;
     }
 
-    bool EventMutex::unlock() noexcept
+    bool EventSemaphore::StopWaiting()
     {
-        if (1 == counter.load(std::memory_order_acquire))
-        {
-            return false;
-        }
-
-        if (0 != counter.exchange(1, std::memory_order_release))
-        {
-            return false;
-        }
-        else
-        {
-            counter.notify_one();
-        }
+        event_sem.release();
         return true;
-    }
-
-
-    EventSemaphore::EventSemaphore() : semaphore(0)
-    {
-
-    }
-
-    void EventSemaphore::lock() noexcept
-    {
-        semaphore.acquire();
-    }
-
-    void EventSemaphore::unlock() noexcept
-    {
-        semaphore.release();
+        event_cv_pending.store(1);
+        event_cv_pending.notify_one();
+        return true;
     }
 }

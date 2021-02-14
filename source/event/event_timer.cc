@@ -93,18 +93,14 @@ namespace Evpp
     {
         if (nullptr != event_base && nullptr != event_time)
         {
-            if (event_base->EventThread())
+            if (ExistsInited() || ExistsStoped())
             {
-                if (ExistsInited() || ExistsStoped())
+                if (uv_is_active(reinterpret_cast<event_handle*>(event_time)) || uv_timer_start(event_time, &EventTimer::OnNotify, delay, repeat))
                 {
-                    if (uv_is_active(reinterpret_cast<event_handle*>(event_time)) || uv_timer_start(event_time, &EventTimer::OnNotify, delay, repeat))
-                    {
-                        return false;
-                    }
-                    return ChangeStatus(Status::Exec);
+                    return false;
                 }
+                return ChangeStatus(Status::Exec);
             }
-            return event_base->RunInQueue(std::bind<bool(EventTimer::*)(const u64, const u64)>(&EventTimer::AssignTimer, this, delay, repeat));
         }
         return false;
     }
@@ -113,40 +109,28 @@ namespace Evpp
     {
         if (nullptr != event_base && nullptr != event_time)
         {
-            if (event_base->EventThread())
+            if (ExistsRuning())
             {
-                if (ExistsRuning())
+                if (CheckStatus())
                 {
-                    if (CheckHandlerStatus(event_time))
+                    if (0 == uv_timer_stop(event_time))
                     {
-                        if (0 == uv_timer_stop(event_time))
-                        {
-                            return ChangeStatus(Status::Stop);
-                        }
+                        return ChangeStatus(Status::Stop);
                     }
                 }
             }
-            return event_base->RunInQueue(std::bind(&EventTimer::StopedTimer, this));
         }
         return false;
     }
 
     bool EventTimer::KilledTimer()
     {
-        if (nullptr != event_base && nullptr != event_time)
+        if (ExistsStoped())
         {
-            if (event_base->EventThread())
+            if (ChangeStatus(Status::Stop, Status::Exit))
             {
-                if (ExistsStoped())
-                {
-                    if (ChangeStatus(Status::Stop, Status::Exit))
-                    {
-                        return Evpp::CloseHandler(event_time, &EventTimer::DefaultClose);
-                    }
-                }
-                return false;
+                return SocketClose(event_time, &EventTimer::DefaultClose);
             }
-            return event_base->RunInQueue(std::bind(&EventTimer::KilledTimer, this));
         }
         return false;
     }
@@ -160,15 +144,10 @@ namespace Evpp
     {
         if (nullptr != event_base && nullptr != event_time)
         {
-            if (event_base->EventThread())
+            if (ExistsRuning() || ExistsStoped())
             {
-                if (ExistsRuning() || ExistsStoped())
-                {
-                    return 0 == uv_timer_again(event_time);
-                }
-                return false;
+                return 0 == uv_timer_again(event_time);
             }
-            return event_base->RunInQueue(std::bind(&EventTimer::ReStarTimer, this));
         }
         return false;
     }
@@ -199,6 +178,22 @@ namespace Evpp
         {
             event_callback = callback;
         }
+    }
+
+    bool EventTimer::CheckStatus()
+    {
+        if (nullptr != event_base && nullptr != event_time)
+        {
+            if (uv_is_active(reinterpret_cast<event_handle*>(event_time)))
+            {
+                if (uv_is_closing(reinterpret_cast<event_handle*>(event_time)))
+                {
+                    return true;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     void EventTimer::DefaultClose(event_handle* handler)

@@ -6,13 +6,13 @@
 #include <event_socket.h>
 #include <event_socket_pool.h>
 #include <event_exception.h>
+#include <event_mutex.h>
 namespace Evpp
 {
 #ifdef H_OS_WINDOWS
     TcpListen::TcpListen(EventLoop* loop, const bool proble) :
         event_base(loop),
-        event_close_flag(1),
-        event_close_flag_ex(1),
+        event_stop_listen_semaphore(std::make_unique<EventSemaphore>()),
         tcp_proble(proble),
         event_share(std::make_shared<EventShare>()),
         event_thread_pool(std::make_shared<EventLoopThreadPool>(loop, event_share))
@@ -54,39 +54,36 @@ namespace Evpp
 
     bool TcpListen::DestroyListenService()
     {
-        if (event_base->EventThread())
+        if (ExistsStoped() || ExistsNoneed() || ExistsInited())
         {
-            if (ExistsStoped() || ExistsNoneed() || ExistsInited())
-            {
-                return true;
-            }
-
-            if (ExistsRuning())
-            {
-                if (0 == DeletedListenService())
-                {
-                    return false;
-                }
-
-                if (ChangeStatus(Status::Exec, Status::Stop))
-                {
-                    return event_thread_pool->DestroyEventThreadPool();
-                }
-            }
             return true;
         }
-        return event_base->RunInLoopEx(std::bind<bool(TcpListen::*)(void)>(&TcpListen::DestroyListenService, this));
+
+        if (ExistsRuning())
+        {
+            if (0 == DeletedListenService())
+            {
+                EVENT_ERROR("an error occurred when stopping the monitoring service");
+                return false;
+            }
+
+            if (ChangeStatus(Status::Exec, Status::Stop))
+            {
+                return event_thread_pool->DestroyEventThreadPool();
+            }
+        }
+        return false;
     }
 
     bool TcpListen::DestroyListenService(EventLoop* loop, socket_tcp* server)
     {
-        if (nullptr != loop && nullptr != server && loop->EventBasic() == server->loop)
+        if (nullptr != loop && nullptr != server)
         {
             if (loop->EventThread())
             {
-                return Evpp::CloseHandler(server, &TcpServer::OnDefaultListen);
+                return Evpp::SocketClose(server, &TcpServer::OnDefaultListen);
             }
-            return loop->RunInLoopEx(std::bind<bool(TcpListen::*)(EventLoop*, socket_tcp*)>(&TcpListen::DestroyListenService, this, loop, server));
+            return loop->RunInLoopEx(std::bind<bool(TcpListen::*)(EventLoop*, socket_tcp*)>(&TcpListen::DestroyListenService, this, loop, server)) && event_stop_listen_semaphore->StarWaiting();
         }
         return false;
     }
@@ -101,20 +98,7 @@ namespace Evpp
             }
             return false;
         }
-
-        if (event_close_flag_ex)
-        {
-            event_close_flag_ex.wait(1, std::memory_order_relaxed);
-            {
-                if (tcp_server.size())
-                {
-                    tcp_server.clear();
-                    tcp_server.shrink_to_fit();
-                }
-            }
-            return true;
-        }
-        return false;
+        return true;
     }
 
     bool TcpListen::InitialListenService(EventSocketPool* socket, TcpServer* server, const u96 size)
@@ -131,14 +115,16 @@ namespace Evpp
             {
                 for (u96 i = 0; i < size; ++i)
                 {
-                    tcp_server.emplace(tcp_server.begin() + i, std::make_unique<socket_tcp>(std::move(socket_tcp{ .data = server })));
+                    tcp_server.emplace(tcp_server.begin() + i, std::make_unique<socket_tcp>(server));
                     {
-                        if (ExecuteListenService(event_thread_pool->GetEventLoop(i), tcp_server[i].get(), &socket->GetEventSocket(i)->GetSocketInfo()->addr))
+                        if (ExecuteListenService(event_thread_pool->GetEventLoop(i), tcp_server[i].get(), &socket->GetEventSocket(i)->GetSocketInfo()->addr, i))
                         {
-                            EVENT_INFO("the server is starting, listening address: %s listening port: %u", socket->GetEventSocket(i)->GetSocketInfo()->host.c_str(), socket->GetEventSocket(i)->GetSocketInfo()->port);
-                            continue;
+                            //EVENT_INFO("the server is starting, listening address: %s listening port: %u", socket->GetEventSocket(i)->GetSocketInfo()->host.c_str(), socket->GetEventSocket(i)->GetSocketInfo()->port);
                         }
-                        return false;
+                        else
+                        {
+                            EVENT_ERROR("an error occurred while creating the server");
+                        }
                     }
                 }
                 return ChangeStatus(Status::Init, Status::Exec);
@@ -159,7 +145,7 @@ namespace Evpp
         return false;
     }
 
-    bool TcpListen::ExecuteListenService(EventLoop* loop, socket_tcp* server, const sockaddr* addr)
+    bool TcpListen::ExecuteListenService(EventLoop* loop, socket_tcp* server, const sockaddr* addr, const u96 index)
     {
         if (nullptr != loop && server != nullptr && addr != nullptr)
         {
@@ -176,24 +162,26 @@ namespace Evpp
                     {
                         if (uv_tcp_nodelay(server, 1))
                         {
-                            EVENT_INFO("an error occurred while setting the nodelay algorithm");
+                            EVENT_FATAL("an error occurred while setting the nodelay algorithm");
                         }
                     }
 
                     if (0 == BindTcpService(server, addr))
                     {
+                        EVENT_WARN("bind server port error");
                         return false;
                     }
 
                     if (0 == ListenTcpService(server))
                     {
+                        EVENT_WARN("start listening error");
                         return false;
                     }
                     return true;
                 }
                 return false;
             }
-            return loop->RunInLoopEx(std::bind(&TcpListen::ExecuteListenService, this, loop, server, addr));
+            return loop->RunInLoopEx(std::bind(&TcpListen::ExecuteListenService, this, loop, server, addr, index));
         }
         return false;
     }
@@ -215,15 +203,6 @@ namespace Evpp
 
     void TcpListen::OnClose()
     {
-        if (event_close_flag.fetch_add(1, std::memory_order_release) == tcp_server.size())
-        {
-            if (1 == event_close_flag_ex.exchange(0, std::memory_order_release))
-            {
-                event_close_flag_ex.notify_one();
-                {
-                    EVENT_INFO("the listening port has been closed");
-                }
-            }
-        }
+        event_stop_listen_semaphore->StopWaiting();
     }
 }

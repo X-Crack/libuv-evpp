@@ -10,8 +10,7 @@ namespace Evpp
     class EventLoop;
     class EventShare;
     class EventStatus;
-    class EventMutex;
-
+    class EventSemaphore;
     class EventLoopThread final : public EventStatus
     {
     public:
@@ -33,6 +32,7 @@ namespace Evpp
     private:
         EventLoop*                                      event_base;
         u96                                             event_index;
+        std::unique_ptr<EventSemaphore>                 event_semaphore;
         std::shared_ptr<EventLoop>                      loop;
 #if defined(EVPP_USE_STL_THREAD)
         std::unique_ptr<std::thread>                    loop_thread;
@@ -42,7 +42,6 @@ namespace Evpp
 #else
         std::unique_ptr<event_thread>                   loop_thread;
 #endif
-        std::unique_ptr<EventMutex>                     loop_mutex;
         std::condition_variable                         cv_signal;
         std::mutex                                      cv_mutex;
     };

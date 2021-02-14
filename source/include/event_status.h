@@ -2,8 +2,10 @@
 #define __EVENT_STATUS_H__
 #include <event_config.h>
 #include <atomic>
+#include <mutex>
 namespace Evpp
 {
+    // 
     class EventStatus
     {
     public:
@@ -19,17 +21,18 @@ namespace Evpp
         explicit EventStatus();
         virtual ~EventStatus();
     public:
-        NOFORCEINLINE bool ChangeStatus(Status original, const Status other);
-        NOFORCEINLINE bool ChangeStatus(const Status other);
-        NOFORCEINLINE bool ExistsStarts(const Status other);
+        bool ChangeStatus(Status original, const Status other);
+        bool ChangeStatus(const Status other);
+        bool ExistsStarts(const Status other);
     public:
-        NOFORCEINLINE bool ExistsNoneed();
-        NOFORCEINLINE bool ExistsInited();
-        NOFORCEINLINE bool ExistsRuning();
-        NOFORCEINLINE bool ExistsStoped();
-        NOFORCEINLINE bool ExistsExited();
+        bool ExistsNoneed();
+        bool ExistsInited();
+        bool ExistsRuning();
+        bool ExistsStoped();
+        bool ExistsExited();
     protected:
-        std::atomic<Status>                                      status;
+        std::atomic<Status>                                         status;
+        std::mutex                                                  status_mutex;
     };
 }
 #endif // __event_status_H__

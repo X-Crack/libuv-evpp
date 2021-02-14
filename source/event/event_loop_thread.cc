@@ -1,10 +1,10 @@
 ﻿#include <event_status.h>
-#include <event_mutex.h>
 #include <event_loop.h>
 #include <event_share.h>
 #include <event_loop_thread.h>
 #include <event_coroutine.h>
 #include <event_exception.h>
+#include <event_mutex.h>
 #include <future>
 #ifdef EVPP_USE_BOOST_THREAD
 #include <boost/thread/thread.hpp>
@@ -22,23 +22,22 @@ namespace Evpp
     EventLoopThread::EventLoopThread(EventLoop* base, const std::shared_ptr<EventShare>& share, const u96 index) :
         event_base(base),
         event_index(index),
+        event_semaphore(std::make_unique<EventSemaphore>()),
         loop(std::make_shared<EventLoop>(share->EventLoop(index), index)),
 #if defined(EVPP_USE_STL_THREAD)
-        loop_thread(std::make_unique <std::thread>()),
-
+        loop_thread(std::make_unique <std::thread>())
 #elif defined(EVPP_USE_BOOST_THREAD)
         loop_thread(std::make_unique<boost::thread>()),
 #else
-        loop_thread(std::make_unique<event_thread>()),
+        loop_thread(std::make_unique<event_thread>())
 #endif
-        loop_mutex(std::make_unique<EventMutex>())
     {
 
     }
 
     EventLoopThread::~EventLoopThread()
     {
-        EVENT_INFO("Release Class EventLoopThreadEx");
+
     }
 
     bool EventLoopThread::CreaterThread()
@@ -47,17 +46,17 @@ namespace Evpp
         {
             if (event_base->EventThread())
             {
+                if (ChangeStatus(Status::None, Status::Init))
+                {
 #if defined(EVPP_USE_STL_THREAD)
-               loop_thread.reset(new std::thread(std::bind(&EventLoopThread::WatcherCoroutineInThread, this)));
+                    loop_thread.reset(new std::thread(std::bind(&EventLoopThread::WatcherCoroutineInThread, this)));
 #elif defined(EVPP_USE_BOOST_THREAD)
-               loop_thread.reset(new boost::thread(std::bind(&EventLoopThread::WatcherCoroutineInThread, this)));
+                    loop_thread.reset(new boost::thread(std::bind(&EventLoopThread::WatcherCoroutineInThread, this)));
 #else
-               if (0 == uv_thread_create(loop_thread.get(), &EventLoopThread::WatcherCoroutineInThread, this))
+                    if (0 == uv_thread_create(loop_thread.get(), &EventLoopThread::WatcherCoroutineInThread, this))
 #endif
-               {
-                    std::unique_lock<std::mutex> lock(cv_mutex);
                     {
-                        if (ChangeStatus(Status::None, Status::Init))
+                        std::unique_lock<std::mutex> lock(cv_mutex);
                         {
                             // 启动线程需要慢启动，因为初始化数据过多，否则会导致RunInLoop异步安全初始化失败。
                             if (cv_signal.wait_for(lock, std::chrono::milliseconds(0), std::bind(&EventLoopThread::AvailableEvent, this)))
@@ -68,8 +67,8 @@ namespace Evpp
                             {
                                 EVENT_INFO("thread failed to start please wait a little longer");
                             }
+                            assert(0);
                         }
-                        assert(0);
                     }
                 }
                 return false;
@@ -88,23 +87,11 @@ namespace Evpp
 
         if (ExistsRuning())
         {
-            if (event_base->EventThread())
+            if (loop->StopDispatch())
             {
-                assert(0 == loop->EventThread());
-
-                if (EventLoopAlive(loop->EventBasic()))
-                {
-                    if (loop->StopDispatch())
-                    {
-                        if (loop_mutex->try_unlock())
-                        {
-                            return Join();
-                        }
-                        return false;
-                    }
-                }
+                return Join();
             }
-            return event_base->RunInLoop(std::bind(&EventLoopThread::DestroyThread, this));
+            return false;
         }
         return false;
     }
@@ -135,21 +122,14 @@ namespace Evpp
         {
             if (loop->InitialEvent())
             {
-                for (; loop_mutex->try_lock();)
+                for (; EventLoopAlive(loop->EventBasic());)
                 {
 #ifdef EVPP_USE_STL_COROUTINES
                     try
                     {
                         if (JoinInTaskEx(std::bind(&EventLoopThread::CoroutineDispatch, this)).get())
                         {
-                            if (0 == EventLoopAlive(loop->EventBasic()))
-                            {
-                                continue;
-                            }
-                            else
-                            {
-                                printf("loop req exit\n");
-                            }
+                            continue;
                         }
                     }
                     catch (const EventRuntimeException& ex)
@@ -202,7 +182,7 @@ namespace Evpp
         {
             if (ExistsRuning())
             {
-                if (EventLoopAlive(loop->EventBasic()))
+                if (EventLoopAlive(loop->EventBasic()) && loop->ExistsRuning())
                 {
                     cv_signal.notify_one();
                     return true;
@@ -215,17 +195,22 @@ namespace Evpp
 
     bool EventLoopThread::Join()
     {
-        while (0 == ChangeStatus(Status::Stop, Status::Exit));
 #if defined(EVPP_USE_STL_THREAD) || defined(EVPP_USE_BOOST_THREAD)
         if (loop_thread && loop_thread->joinable())
         {
             loop_thread->join();
-            return true;
+            loop_thread.reset();
+
+            return ChangeStatus(Status::Stop, Status::Exit);
         }
-        return false;
+
 #else
-        return 0 == uv_thread_join(loop_thread.get());
+        if (0 == uv_thread_join(loop_thread.get()))
+        {
+            return 0 == uv_thread_join(loop_thread.get());
+        }
 #endif
+        return false;
     }
 
     void EventLoopThread::WatcherCoroutineInThread(void* handler)

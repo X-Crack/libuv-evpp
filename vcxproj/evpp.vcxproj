@@ -102,7 +102,7 @@
       </PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>../source/include;../../../common/libuv/include;../../../common/queue/concurrent;../../../common/glog/src/windows;../../../common/glog/src/windows/glog;../../../common/curl/include;../../../common/openssl/include;../../../common/zlib;../../../common/curl/lib;../../../common/mimalloc/include;../../../common/boost/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <AdditionalOptions>/await %(AdditionalOptions)</AdditionalOptions>
@@ -117,7 +117,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
@@ -127,8 +127,9 @@
       <AdditionalIncludeDirectories>../source/include;../../../common/libuv/include;../../../common/queue/concurrent;../../../common/glog/src/windows;../../../common/glog/src/windows/glog;../../../common/curl/include;../../../common/openssl/include;../../../common/zlib;../../../common/curl/lib;../../../common/mimalloc/include;../../../common/boost/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <AdditionalOptions>/await %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>MaxSpeed</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>

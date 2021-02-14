@@ -32,12 +32,10 @@ namespace Evpp
             {
                 if (EventLoopAlive(event_loops[i].get()))
                 {
-                    //assert(0);
-                    EVENT_INFO("释放不干净");
+                    EVENT_WARN("event loop release has some problems but it is not important");
+                    assert(0);
                 }
             }
-
-            event_loops.clear();
         }
         return true;
     }

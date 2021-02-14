@@ -15,7 +15,6 @@ namespace Evpp
         bool AddSockInfo(socket_tcp* handler, const u96 index);
         void DelSockInfo(const u96 index);
         const std::shared_ptr<SocketInfoEx>& GetSockInfo(const u96 index);
-        const u96 size() { return tcp_info.size(); };
     private:
         bool InitialSockInfo(socket_tcp* handler, const std::shared_ptr<SocketInfoEx>& socket);
     private:

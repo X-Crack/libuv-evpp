@@ -14,7 +14,7 @@ namespace Evpp
         event_queue(std::make_unique<EventQueue>(this)),
         event_timer_pool(std::make_unique<EventTimerPool>(this)),
         event_thread(0),
-        event_mutex(std::make_unique<EventMutex>())
+        event_semaphore(std::make_unique<EventSemaphore>())
     {
 
     }
@@ -38,7 +38,6 @@ namespace Evpp
                 if (nullptr == event_base->data)
                 {
                     event_base->data = this;
-
                 }
                 return event_queue->CreaterQueue();
             }
@@ -66,12 +65,15 @@ namespace Evpp
         {
             if (ExecDispatchEvent(mode))
             {
-                if (nullptr != function)
+                if (SwitchDispatch())
                 {
-                    function(this);
+                    if (nullptr != function)
+                    {
+                        function(this);
+                    }
                 }
+                return true;
             }
-            return SwitchDispatch();
         }
         return false;
     }
@@ -106,26 +108,20 @@ namespace Evpp
 
     bool EventLoop::StopDispatch()
     {
-        EVENT_COMPUTE_DURATION(StopDispatchEx);
         if (nullptr != event_base)
         {
-            if (EventThread() && ExistsRuning())
+            if (EventThread())
             {
-                if (0 == EventLoopAlive(event_base))
-                {
-                    return ChangeStatus(Status::Stop, Status::Exit);
-                }
-
                 if (event_queue->DestroyQueue())
                 {
-                    return ChangeStatus(Status::Stop, Status::Exit);
+                    return ChangeStatus(Status::Exec, Status::Stop);
                 }
                 return false;
             }
 
             if (RunInLoopEx(std::bind(&EventLoop::StopDispatch, this)))
             {
-                return event_mutex->lock();
+                return event_semaphore->StarWaiting();
             }
         }
         return false;
@@ -135,7 +131,7 @@ namespace Evpp
     {
         if (nullptr != event_queue)
         {
-            if (ExistsRuning() || ExistsInited())
+            if (ExistsRuning())
             {
                 return event_queue->RunInLoop(function);
             }
@@ -147,10 +143,7 @@ namespace Evpp
     {
         if (nullptr != event_queue)
         {
-            if (ExistsRuning() || ExistsInited())
-            {
-                return event_queue->RunInLoopEx(function);
-            }
+            return event_queue->RunInLoopEx(function);
         }
         return false;
     }
@@ -159,10 +152,7 @@ namespace Evpp
     {
         if (nullptr != event_queue)
         {
-            if (ExistsRuning() || ExistsInited())
-            {
-                return event_queue->RunInQueue(function);
-            }
+            return event_queue->RunInQueue(function);
         }
         return false;
     }
@@ -195,10 +185,7 @@ namespace Evpp
     {
         if (nullptr != event_timer_pool)
         {
-            if (ExistsRuning() || ExistsInited())
-            {
-                return event_timer_pool->KilledTimer(index);
-            }
+            return event_timer_pool->KilledTimer(index);
         }
         return false;
     }
@@ -207,10 +194,7 @@ namespace Evpp
     {
         if (nullptr != event_timer_pool)
         {
-            if (ExistsRuning() || ExistsInited())
-            {
-                return event_timer_pool->ModiyRepeat(index, repeat);
-            }
+            return event_timer_pool->ModiyRepeat(index, repeat);
         }
         return;
     }
@@ -219,10 +203,7 @@ namespace Evpp
     {
         if (nullptr != event_timer_pool)
         {
-            if (ExistsRuning() || ExistsInited())
-            {
-                return event_timer_pool->ReStarTimer(index);
-            }
+            return event_timer_pool->ReStarTimer(index);
         }
         return false;
     }
@@ -231,10 +212,7 @@ namespace Evpp
     {
         if (nullptr != event_timer_pool)
         {
-            if (ExistsRuning() || ExistsInited())
-            {
-                return event_timer_pool->ReStarTimerEx(index, delay, repeat);
-            }
+            return event_timer_pool->ReStarTimerEx(index, delay, repeat);
         }
         return false;
     }
@@ -288,11 +266,6 @@ namespace Evpp
                 ChangeStatus(Status::Exec);
             }
 
-            if (ExistsStoped() || ExistsExited())
-            {
-                return true;
-            }
-
             if (EventLoopAlive(event_base))
             {
                 return 0 == uv_run(event_base, static_cast<uv_run_mode>(mode));
@@ -304,47 +277,36 @@ namespace Evpp
 
     bool EventLoop::SwitchDispatch()
     {
-        if (ExistsStoped() || ExistsExited())
+        if (ExistsRuning() || ExistsExited())
         {
             return true;
         }
 
-        if (EventLoopAlive(event_base))
+        if (0 == event_base->stop_flag || static_cast<i32>(~0) == event_base->stop_flag)
         {
-            return false;
+            uv_stop(event_base);
         }
 
-        if (ChangeStatus(Status::Exec, Status::Stop))
+        if (0 == uv_loop_close(event_base))
         {
-            if (0 == event_base->stop_flag || ~0 == event_base->stop_flag)
+            if (event_semaphore->StopWaiting())
             {
-                uv_stop(event_base);
+                return true;
             }
-
-            if (nullptr != event_base->data)
-            {
-                event_base->data = nullptr;
-            }
-
-            if (0 == uv_loop_close(event_base))
-            {
-                return event_mutex->unlock();
-            }
-            else
-            {
-                uv_walk(event_base, &EventLoop::ObserveHandler, 0);
-            }
-            return true;
+            assert(0);
         }
-
-        return false;
+        else
+        {
+            uv_walk(event_base, &EventLoop::ObserveHandler, 0);
+        }
+        return ChangeStatus(Status::Stop, Status::Exit);
     }
 
     void EventLoop::ObserveHandler(event_handle* handler, void* arg)
     {
         if (nullptr != handler)
         {
-            EVENT_INFO("%s not closed check your code", uv_handle_type_name(handler->type));
+            EVENT_ERROR("%s not closed check your code", uv_handle_type_name(handler->type));
             assert(0);
         }
     }
