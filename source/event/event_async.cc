@@ -44,10 +44,7 @@ namespace Evpp
     {
         if (nullptr != event_queue && nullptr != event_queue->data)
         {
-            if (SocketStatus(event_queue))
-            {
-                return 0 == uv_async_send(event_queue);
-            }
+            return 0 == uv_async_send(event_queue);
         }
         return false;
     }
