@@ -29,7 +29,7 @@ namespace Evpp
         if (ChangeStatus(Status::None, Status::Init))
         {
 #if !defined(EVENT_DEBUG_MODE)
-            if (event_base != uv_default_loop())
+            if (event_base != EVENT_UV_GLOBAL)
 #endif
             {
                 if (0 != uv_loop_init(event_base))
