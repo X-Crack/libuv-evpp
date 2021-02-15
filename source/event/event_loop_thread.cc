@@ -163,7 +163,7 @@ namespace Evpp
 #else
                     if (CoroutineDispatch())
                     {
-                        break;
+                        continue;
                     }
 #endif
                 }
