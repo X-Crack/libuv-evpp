@@ -5,8 +5,7 @@
 #include <mutex>
 namespace Evpp
 {
-    // 
-    class EventStatus
+    class EVPP_EXPORT EventStatus
     {
     public:
         enum class Status : u32

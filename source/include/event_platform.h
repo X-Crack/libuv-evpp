@@ -2,6 +2,10 @@
 #define __EVENT_PLATFORM_H__
 #include <event_arch.h>
 
+#ifndef EVENT_STATIC
+#   define EVENT_STATIC
+#endif
+
 #ifdef H_OS_WINDOWS
 #   define FORCEINLINE __forceinline
 #   define NOFORCEINLINE __declspec (noinline)
@@ -27,18 +31,39 @@
 #endif
 
 #ifdef H_OS_WINDOWS
-#   define EVPP_DEV_OUTPUT_LOG            EVPP_CPLUSPLUS_VERSION
+#   if !defined(EVPP_DEV_OUTPUT_LOG)
+#       define EVPP_DEV_OUTPUT_LOG            EVPP_CPLUSPLUS_VERSION
+#   endif
 #   if !defined(_DLL) && !defined(_DEBUG)
+#       ifndef EVENT_STATIC
+#           ifndef EVPP_EXPORT_STATIC
+#               define EVPP_EXPORT_STATIC
+#           endif
+#       endif
 #       pragma message(EVPP_DEV_OUTPUT_LOG("Compilation mode MT"))
 #   elif !defined(_DLL) && defined(_DEBUG)
+#       ifndef EVENT_STATIC
+#           ifndef EVPP_EXPORT_STATIC
+#               define EVPP_EXPORT_STATIC
+#           endif
+#       endif
 #       pragma message(EVPP_DEV_OUTPUT_LOG("Compilation mode MTd"))
 #   elif defined(_DLL) && !defined(_DEBUG)
+#       ifndef EVENT_STATIC
+#           ifdef EVPP_EXPORT_STATIC
+#               undef EVPP_EXPORT_STATIC
+#           endif
+#       endif
 #       pragma message(EVPP_DEV_OUTPUT_LOG("Compilation mode MD"))
 #   elif defined(_DLL) && defined(_DEBUG)
+#       ifndef EVENT_STATIC
+#           ifdef EVPP_EXPORT_STATIC
+#               undef EVPP_EXPORT_STATIC
+#           endif
+#       endif
 #       pragma message(EVPP_DEV_OUTPUT_LOG("Compilation mode MDd"))
 #   endif
 #endif
-
 #ifdef H_OS_WINDOWS
 #   if defined(_WIN32)
 #       define H_OS_X86
@@ -74,6 +99,14 @@
 #       define EVPP_USE_STL_THREAD
 #   endif
 
+#if defined(H_OS_WINDOWS)
+#       define EVPP_DECL_EXPORT __declspec(dllexport)
+#       define EVPP_DECL_IMPORT __declspec(dllimport)
+#else
+#       define EVPP_DECL_EXPORT
+#       define EVPP_DECL_IMPORT
+#endif
+
 // Use https://github.com/cameron314/concurrentqueue
 #   ifndef EVPP_USE_CAMERON314_CONCURRENTQUEUE
 //#       define EVPP_USE_CAMERON314_CONCURRENTQUEUE
@@ -82,6 +115,16 @@
 
 #if (defined(_DEBUG) || defined(DEBUG) || defined(_DEBUG_))
 #   define EVENT_DEBUG_MODE
+#endif
+
+#ifndef EVENT_STATIC
+#   if defined(EVPP_EXPORT_STATIC)
+#       define EVPP_EXPORT EVPP_DECL_EXPORT
+#   else
+#       define EVPP_EXPORT EVPP_DECL_IMPORT
+#   endif
+#else
+#       define EVPP_EXPORT
 #endif
 
 #ifdef H_OS_WINDOWS

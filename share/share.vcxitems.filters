@@ -121,6 +121,9 @@
       <Filter>event</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\source\event\event_exception.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\source\event\event_buffer.cc">
+      <Filter>event</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\source\include\event_idle.h">

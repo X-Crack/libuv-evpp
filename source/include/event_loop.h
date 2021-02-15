@@ -13,7 +13,7 @@ namespace Evpp
     class EventWatcher;
     class EventTimerPool;
     class EventSemaphore;
-    class EventLoop : public EventStatus, public std::enable_shared_from_this<EventLoop>
+    class EVPP_EXPORT EventLoop : public EventStatus, public std::enable_shared_from_this<EventLoop>
     {
     public:
         explicit EventLoop(event_loop* loop = uv_default_loop(), const u96 index = 0);

@@ -15,7 +15,7 @@ namespace Evpp
     class TcpListen;
     class TcpSession;
     class TcpSocket;
-    class TcpServer : public EventStatus
+    class EVPP_EXPORT TcpServer : public EventStatus
     {
     public:
         explicit TcpServer(EventLoop* loop, const std::shared_ptr<EventShare>& share);

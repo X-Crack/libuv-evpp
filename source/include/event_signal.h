@@ -4,7 +4,7 @@
 namespace Evpp
 {
     class EventLoop;
-    class EventSignal
+    class EVPP_EXPORT EventSignal
     {
     public:
         explicit EventSignal(EventLoop* loop, const Handler& function = Handler());

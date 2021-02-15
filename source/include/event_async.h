@@ -5,7 +5,7 @@
 namespace Evpp
 {
     class EventLoop;
-    class EventAsync
+    class EVPP_EXPORT EventAsync
     {
     public:
         explicit EventAsync(EventLoop* loop, const Handler& handler);

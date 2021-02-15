@@ -33,7 +33,7 @@ namespace Evpp
     class EventMutex;
     class EventSemaphore;
     class EventQueueTraits;
-    class EventQueue
+    class EVPP_EXPORT EventQueue
     {
     public:
         explicit EventQueue(EventLoop* base);

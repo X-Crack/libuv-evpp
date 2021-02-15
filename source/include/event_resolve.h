@@ -5,7 +5,7 @@
 namespace Evpp
 {
     class EventLoop;
-    class EventResolve
+    class EVPP_EXPORT EventResolve
     {
     public:
         explicit EventResolve(EventLoop* loop);

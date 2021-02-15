@@ -5,7 +5,7 @@
 #include <chrono>
 namespace Evpp
 {
-    class EventSemaphore
+    class EVPP_EXPORT EventSemaphore
     {
     public:
         explicit EventSemaphore();

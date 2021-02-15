@@ -5,7 +5,7 @@
 namespace Evpp
 {
     class EventLoop;
-    class EventCheck
+    class EVPP_EXPORT EventCheck
     {
     public:
         explicit EventCheck(EventLoop* loop);

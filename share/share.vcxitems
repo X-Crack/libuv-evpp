@@ -16,6 +16,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\source\event\event_async.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\source\event\event_buffer.cc" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\source\event\event_check.cc" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\source\event\event_coroutine.cc" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\source\event\event_exception.cc" />

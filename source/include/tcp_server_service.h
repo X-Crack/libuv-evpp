@@ -10,7 +10,7 @@ namespace Evpp
     class EventSynchronize;
     class EventSemaphore;
     class TcpServer;
-    class TcpServerService
+    class EVPP_EXPORT TcpServerService
     {
     public:
         explicit TcpServerService();

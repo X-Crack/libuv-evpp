@@ -11,7 +11,7 @@ namespace Evpp
     class EventShare;
     class EventStatus;
     class EventSemaphore;
-    class EventLoopThread final : public EventStatus
+    class EVPP_EXPORT EventLoopThread final : public EventStatus
     {
     public:
         explicit EventLoopThread(EventLoop* base, event_loop* loop, const u96 index);

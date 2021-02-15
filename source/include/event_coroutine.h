@@ -12,7 +12,7 @@
 namespace Evpp
 {
 #if defined(EVPP_USE_STL_COROUTINES)
-    struct EventCoroutine
+    struct EVPP_EXPORT EventCoroutine
     {
     public:
         struct promise_type;
@@ -82,7 +82,7 @@ namespace Evpp
         handle_type                                                                     handler;
     };
 
-    struct EventCoroutineTask
+    struct EVPP_EXPORT EventCoroutineTask
     {
     public:
         explicit EventCoroutineTask(Handler&& callback) : function(std::move(callback)) { }
@@ -105,7 +105,7 @@ namespace Evpp
         Handler                                                         function;
     };
 
-    struct EventCoroutineTaskEx
+    struct EVPP_EXPORT EventCoroutineTaskEx
     {
     public:
         explicit EventCoroutineTaskEx(Functor&& callback) : function(std::move(callback)) { }
@@ -128,8 +128,8 @@ namespace Evpp
         Functor                                                         function;
     };
 
-    EventCoroutine JoinInTask(Handler&& callback);
-    EventCoroutine JoinInTaskEx(Functor&& callback);
+    EventCoroutine EVPP_EXPORT JoinInTask(Handler&& callback);
+    EventCoroutine EVPP_EXPORT JoinInTaskEx(Functor&& callback);
 #endif
 }
 #endif // __EVENT_COROUTINE_H__

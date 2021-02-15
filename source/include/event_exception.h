@@ -7,7 +7,7 @@
 #include <source_location.hpp>
 namespace Evpp
 {
-    class EventException : public std::exception
+    class EVPP_EXPORT EventException 
     {
     public:
         explicit EventException(const std::string& msg);
@@ -16,13 +16,13 @@ namespace Evpp
         virtual ~EventException();
     public:
         const char * what() noexcept;
-        virtual const char* what() const noexcept override;
+        virtual const char* what() const noexcept;
     private:
         std::string                                                             event_exception_message;
     };
 
     /// template???
-    class EventRuntimeException final : public std::exception
+    class EVPP_EXPORT EventRuntimeException final
     {
     public:
         explicit EventRuntimeException(const String* msg, const Handler& handler, bool var, const std::source_location& location = std::source_location::current());
@@ -30,7 +30,7 @@ namespace Evpp
         virtual ~EventRuntimeException();
     public:
         const char * what() noexcept;
-        virtual const char* what() const noexcept override;
+        virtual const char* what() const noexcept;
     public:
         const bool value() noexcept;
         const bool value() const noexcept;

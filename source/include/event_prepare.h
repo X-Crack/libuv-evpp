@@ -4,7 +4,7 @@
 namespace Evpp
 {
     class EventLoop;
-    class EventPrepare
+    class EVPP_EXPORT EventPrepare
     {
     public:
         explicit EventPrepare(EventLoop* loop);

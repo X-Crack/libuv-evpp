@@ -4,7 +4,7 @@
 namespace Evpp
 {
     class EventLoop;
-    class EventIdle
+    class EVPP_EXPORT EventIdle
     {
     public:
         explicit EventIdle(EventLoop* loop);

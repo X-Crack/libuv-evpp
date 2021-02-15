@@ -6,7 +6,7 @@ namespace Evpp
 {
     class EventLoop;
     class TcpClient;
-    class TcpClientService
+    class EVPP_EXPORT TcpClientService
     {
     public:
         explicit TcpClientService(const u96 index = 1);

@@ -7,7 +7,7 @@ namespace Evpp
 {
     class EventLoop;
     class EventTimer;
-    class EventTimerPool final
+    class EVPP_EXPORT EventTimerPool final
     {
     public:
         explicit EventTimerPool(EventLoop* loop);

@@ -6,7 +6,7 @@
 #include <mutex>
 namespace Evpp
 {
-    class TcpSocket final
+    class EVPP_EXPORT TcpSocket final
     {
     public:
         explicit TcpSocket();

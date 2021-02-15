@@ -5,7 +5,7 @@
 #include <mutex>
 namespace Evpp
 {
-    class EventShare
+    class EVPP_EXPORT EventShare
     {
     public:
         explicit EventShare();

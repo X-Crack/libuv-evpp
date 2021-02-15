@@ -9,7 +9,7 @@ namespace Evpp
     class EventLoop;
     class EventTimer;
     class TcpClient;
-    class TcpAttach : public EventStatus
+    class EVPP_EXPORT TcpAttach : public EventStatus
     {
     public:
         explicit TcpAttach(EventLoop* loop, TcpClient* client);

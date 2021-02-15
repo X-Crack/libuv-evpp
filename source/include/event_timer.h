@@ -4,7 +4,7 @@
 namespace Evpp
 {
     class EventLoop;
-    class EventTimer : public EventStatus, public std::enable_shared_from_this<EventTimer>
+    class EVPP_EXPORT EventTimer : public EventStatus, public std::enable_shared_from_this<EventTimer>
     {
     public:
         explicit EventTimer(EventLoop* loop, const u96 index = 0);

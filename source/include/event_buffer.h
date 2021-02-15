@@ -26,16 +26,18 @@ namespace Evpp
     /// |                   |                  |                  |
     /// 0      <=      readerIndex   <=   writerIndex    <=     size
     /// @endcode
-    class EventBuffer
+    /// ;
+    class EVPP_EXPORT EventBuffer
     {
     public:
         static const size_t kCheapPrepend = 8;
         static const size_t kInitialSize = 1024;
-
+        
         explicit EventBuffer(size_t initialSize = kInitialSize)
             : buffer_(kCheapPrepend + initialSize),
             readerIndex_(kCheapPrepend),
-            writerIndex_(kCheapPrepend)
+            writerIndex_(kCheapPrepend),
+            kCRLF("\r\n")
         {
             assert(readableBytes() == 0);
             assert(writableBytes() == initialSize);
@@ -75,7 +77,7 @@ namespace Evpp
         const char* findCRLF() const
         {
             // FIXME: replace with memmem()?
-            const char* crlf = std::search(peek(), beginWrite(), kCRLF, kCRLF + 2);
+            const char* crlf = std::search(peek(), beginWrite(), kCRLF.c_str(), kCRLF.data() + 2);
             return crlf == beginWrite() ? NULL : crlf;
         }
 
@@ -84,7 +86,7 @@ namespace Evpp
             assert(peek() <= start);
             assert(start <= beginWrite());
             // FIXME: replace with memmem()?
-            const char* crlf = std::search(start, beginWrite(), kCRLF, kCRLF + 2);
+            const char* crlf = std::search(start, beginWrite(), kCRLF.c_str(), kCRLF.data() + 2);
             return crlf == beginWrite() ? NULL : crlf;
         }
 
@@ -392,11 +394,10 @@ namespace Evpp
         }
 
     private:
-        std::vector<char> buffer_;
-        size_t readerIndex_;
-        size_t writerIndex_;
-
-        static const char kCRLF[];
+        std::vector<char>                   buffer_;
+        size_t                              readerIndex_;
+        size_t                              writerIndex_;
+        std::string                         kCRLF;
     };
 }
 #endif // __SOCKET_BUFFER_H__

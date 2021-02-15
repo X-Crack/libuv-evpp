@@ -7,7 +7,7 @@ namespace Evpp
     class EventLoop;
     class EventSocket;
     class TcpClient;
-    class TcpConnect
+    class EVPP_EXPORT TcpConnect
     {
     public:
         explicit TcpConnect(EventLoop* loop, socket_tcp* handler, TcpClient* client);

@@ -12,7 +12,7 @@ namespace Evpp
     class EventSocketPool;
     class EventSemaphore;
     class TcpServer;
-    class TcpListen final : public EventStatus
+    class EVPP_EXPORT TcpListen final : public EventStatus
     {
     public:
 #ifdef H_OS_WINDOWS

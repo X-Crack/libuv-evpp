@@ -8,7 +8,7 @@ namespace Evpp
     * 默认线程池大小为4 如需更多请通过 系统环境变量 来增加线程数量（最大容量1024）
     */
     class EventLoop;
-    class EventWorkQueue
+    class EVPP_EXPORT EventWorkQueue
     {
     public:
         explicit EventWorkQueue(EventLoop* loop = nullptr);

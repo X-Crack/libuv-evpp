@@ -8,7 +8,7 @@ namespace Evpp
     class EventLoop;
     class EventTimerPool;
     class TcpMessage;
-    class TcpSession : public std::enable_shared_from_this<TcpSession>
+    class EVPP_EXPORT TcpSession : public std::enable_shared_from_this<TcpSession>
     {
     public:
         typedef std::function<void(EventLoop*, const u96)>                                                                          SystemDiscons;

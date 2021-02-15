@@ -31,26 +31,26 @@ namespace Evpp
     namespace Import
     {
         // 接受连接
-        NOFORCEINLINE bool DefaultAccepts(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const u96 index);
+        EVPP_EXPORT NOFORCEINLINE bool DefaultAccepts(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const u96 index);
         // 断开连接
-        NOFORCEINLINE bool DefaultDiscons(EventLoop* loop, const u96 index);
+        EVPP_EXPORT NOFORCEINLINE bool DefaultDiscons(EventLoop* loop, const u96 index);
         // 接收消息
-        NOFORCEINLINE bool DefaultMessage(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const std::shared_ptr<EventBuffer>& buffer, const u96 index);
+        EVPP_EXPORT NOFORCEINLINE bool DefaultMessage(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const std::shared_ptr<EventBuffer>& buffer, const u96 index);
         // 发送消息
-        NOFORCEINLINE bool DefaultSendMsg(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const u96 index, const i32 status);
+        EVPP_EXPORT NOFORCEINLINE bool DefaultSendMsg(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const u96 index, const i32 status);
 
         // 客户端 -> 连接成功
-        NOFORCEINLINE bool DefaultConnect(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const u96 index);
+        EVPP_EXPORT NOFORCEINLINE bool DefaultConnect(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const u96 index);
         // 客户端 -> 断线重连
-        NOFORCEINLINE bool DefaultRestore(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const u96 index);
+        EVPP_EXPORT NOFORCEINLINE bool DefaultRestore(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const u96 index);
         // 客户端 -> 连接失败
-        NOFORCEINLINE bool DefaultFailure(EventLoop* loop, const u96 index, const i32 status, const String* name, const String* msgs);
+        EVPP_EXPORT NOFORCEINLINE bool DefaultFailure(EventLoop* loop, const u96 index, const i32 status, const String* name, const String* msgs);
 
         // 客户端拥有 DefaultConnect DefaultDiscons DefaultMessage DefaultSendMsg DefaultRestore DefaultFailure
         // 服务端拥有 DefaultAccepts DefaultDiscons DefaultMessage DefaultSendMsg
     };
 
-    struct SocketInfo final
+    struct EVPP_EXPORT SocketInfo final
     {
         union
         {
@@ -65,16 +65,16 @@ namespace Evpp
         String                  host_address[256];
     };
 
-    struct SocketInfoEx final
+    struct EVPP_EXPORT SocketInfoEx final
     {
         SocketInfo              sockname;
         SocketInfo              peername;
     };
 
-    NOFORCEINLINE bool EventLoopAlive(event_loop* loop);
-    void DoDispatchEvent();
+    EVPP_EXPORT NOFORCEINLINE bool EventLoopAlive(event_loop* loop);
+    EVPP_EXPORT void DoDispatchEvent();
 
-    struct HashBit
+    struct EVPP_EXPORT HashBit
     {
 #ifdef H_OS_X86
         static constexpr const u96 Hash(const char* hash, const u96 size, u96 hash_mask = 0x90cbfa3b, u32 index = 0);
@@ -83,10 +83,10 @@ namespace Evpp
 #endif
     };
     // uv_default_loop()
-    bool SocketFormatErrorString(u32 code, String* format_string);
-    bool CheckServiceAccept(socket_stream* server);
+    EVPP_EXPORT bool SocketFormatErrorString(u32 code, String* format_string);
+    EVPP_EXPORT bool CheckServiceAccept(socket_stream* server);
     template <class _Ty>
-    bool SocketStatus(_Ty* handler)
+    EVPP_EXPORT bool SocketStatus(_Ty* handler)
     {
         if (nullptr != handler)
         {
@@ -100,7 +100,7 @@ namespace Evpp
     }
 
     template <class _Ty>
-    bool SocketShutdownImpl(socket_shutdown* shutdown, _Ty* handler, uv_shutdown_cb callback)
+    EVPP_EXPORT bool SocketShutdownImpl(socket_shutdown* shutdown, _Ty* handler, uv_shutdown_cb callback)
     {
         if (UV_ENOTCONN == uv_shutdown(shutdown, reinterpret_cast<socket_stream*>(handler), callback))
         {
@@ -115,7 +115,7 @@ namespace Evpp
     }
 
     template <class _Ty>
-    bool SocketShutdown(_Ty* handler, uv_shutdown_cb callback)
+    EVPP_EXPORT bool SocketShutdown(_Ty* handler, uv_shutdown_cb callback)
     {
         if (nullptr != handler)
         {
@@ -126,7 +126,7 @@ namespace Evpp
     }
 
     template <class _Ty>
-    bool SocketClose(_Ty* handler, uv_close_cb callback)
+    EVPP_EXPORT bool SocketClose(_Ty* handler, uv_close_cb callback)
     {
         if (nullptr != handler)
         {

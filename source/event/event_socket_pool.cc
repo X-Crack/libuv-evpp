@@ -16,7 +16,7 @@ namespace Evpp
     {
         if (CheckElements(server_address, port))
         {
-            socket_bulder.push_back(std::make_unique<EventSocket>());
+            socket_bulder.push_back(std::make_shared<EventSocket>());
             {
                 return socket_bulder.back()->CreaterSocket(server_address, port);
             }
@@ -24,7 +24,7 @@ namespace Evpp
         return false;
     }
 
-    const std::unique_ptr<EventSocket>& EventSocketPool::GetEventSocket(const u96 index)
+    const std::shared_ptr<EventSocket>& EventSocketPool::GetEventSocket(const u96 index)
     {
         return socket_bulder[index];
     }

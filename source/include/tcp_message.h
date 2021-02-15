@@ -6,7 +6,7 @@ namespace Evpp
 {
     class EventLoop;
     class EventBuffer;
-    class TcpMessage
+    class EVPP_EXPORT TcpMessage
     {
     public:
         typedef std::function<void()>                                           SystemDiscons;

@@ -5,7 +5,7 @@
 #include <memory>
 namespace Evpp
 {
-    class EventSocket final
+    class EVPP_EXPORT EventSocket final
     {
     public:
         explicit EventSocket();
