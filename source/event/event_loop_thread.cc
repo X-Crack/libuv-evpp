@@ -72,7 +72,7 @@ namespace Evpp
                                 assert(0);
                             }
                         }
-#if !defined(EVPP_USE_STL_THREAD) || !defined(EVPP_USE_BOOST_THREAD)
+#if !defined(EVPP_USE_STL_THREAD) && !defined(EVPP_USE_BOOST_THREAD)
                         switch (errno)
                         {
                         case UV_EAGAIN:

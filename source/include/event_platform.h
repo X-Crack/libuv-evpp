@@ -68,11 +68,12 @@
 #   ifndef EVPP_USE_BOOST_LOCKFREE_QUEUE
 #       define EVPP_USE_BOOST_LOCKFREE_QUEUE
 #   endif
+#else
 // Use STL-based multi-threaded running mode (std::thread) to close this macro, and use libuv_thread to run multi-threaded
 #   ifndef EVPP_USE_STL_THREAD
 #       define EVPP_USE_STL_THREAD
 #   endif
-#else
+
 // Use https://github.com/cameron314/concurrentqueue
 #   ifndef EVPP_USE_CAMERON314_CONCURRENTQUEUE
 #       define EVPP_USE_CAMERON314_CONCURRENTQUEUE
