@@ -55,7 +55,7 @@ namespace Evpp
 #elif defined(EVPP_USE_BOOST_THREAD)
                         loop_thread.reset(new boost::thread(std::bind(&EventLoopThread::WatcherCoroutineInThread, this)));
 #else
-                        if (0 == uv_thread_create(loop_thread.get(), &EventLoopThread::WatcherCoroutineInThread, this))
+                        if (0 == _set_errno(uv_thread_create(loop_thread.get(), &EventLoopThread::WatcherCoroutineInThread, this)))
 #endif
                         {
                             std::unique_lock<std::mutex> lock(cv_mutex);
@@ -72,6 +72,15 @@ namespace Evpp
                                 assert(0);
                             }
                         }
+#if !defined(EVPP_USE_STL_THREAD) || !defined(EVPP_USE_BOOST_THREAD)
+                        switch (errno)
+                        {
+                        case UV_EAGAIN:
+                        case UV_EINVAL:
+                        case UV_EIO:  String error_name[256]; String error_msgs[256]; EVENT_ERROR("an error occurred while creating the thread error code: %d error name: %s error message: %s", errno, uv_err_name_r(errno, error_name, std::size(error_name)), uv_strerror_r(errno, error_msgs, std::size(error_msgs))); break;
+                        default:        EVENT_ERROR(std::strerror(errno)); break;
+                        }
+#endif
                     }
                     catch (const std::system_error &ex)
                     {
@@ -219,7 +228,7 @@ namespace Evpp
 #else
         if (0 == uv_thread_join(loop_thread.get()))
         {
-            return 0 == uv_thread_join(loop_thread.get());
+            return ChangeStatus(Status::Stop, Status::Exit);
         }
 #endif
         return false;
