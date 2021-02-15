@@ -28,21 +28,27 @@ namespace Evpp
     {
         if (ChangeStatus(Status::None, Status::Init))
         {
-            if (0 == uv_loop_init(event_base))
+#if !defined(EVENT_DEBUG_MODE)
+            if (event_base != uv_default_loop())
+#endif
             {
-                if (0 == event_thread)
+                if (0 != uv_loop_init(event_base))
                 {
-                    event_thread = EventThreadId();
+                    EVENT_INFO("an error occurred during the initialization loop this: %p", this);
+                    return false;
                 }
-
-                if (nullptr == event_base->data)
-                {
-                    event_base->data = this;
-                }
-                return event_queue->CreaterQueue();
             }
 
-            EVENT_INFO("an error occurred during the initialization loop this: %p", this);
+            if (0 == event_thread)
+            {
+                event_thread = EventThreadId();
+            }
+
+            if (nullptr == event_base->data)
+            {
+                event_base->data = this;
+            }
+            return event_queue->CreaterQueue();
         }
         return false;
     }

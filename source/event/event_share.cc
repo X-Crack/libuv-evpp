@@ -2,14 +2,23 @@
 #include <event_loop.h>
 namespace Evpp
 {
-    EventShare::EventShare() : event_base(uv_default_loop())
+    EventShare::EventShare() : event_base(EVENT_UV_GLOBAL == nullptr ? uv_default_loop() : EVENT_UV_GLOBAL.load())
     {
-
+        if (EVENT_UV_GLOBAL == nullptr)
+        {
+            EVENT_UV_GLOBAL = event_base;
+        }
     }
 
     EventShare::~EventShare()
     {
+        if (nullptr != EVENT_UV_GLOBAL)
+        {
+            EVENT_UV_GLOBAL = nullptr;
+        }
+#if defined(EVENT_DEBUG_MODE)
         this->DestroyLoops();
+#endif
     }
 
     bool EventShare::CreaterLoops(const u96 size)

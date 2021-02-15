@@ -27,7 +27,7 @@ namespace Evpp
         bool CreaterListenService(EventSocketPool* socket, TcpServer* server);
         bool DestroyListenService();
     private:
-        bool DestroyListenService(EventLoop* loop, socket_tcp* server);
+        bool DestroyListenService(EventLoop* loop, socket_tcp* server, const u96 index);
         bool DeletedListenService();
     private:
         bool InitialListenService(EventSocketPool* socket, TcpServer* server, const u96 size);
@@ -40,6 +40,7 @@ namespace Evpp
         bool ListenTcpServiceImpl(const i32 status);
     private:
         void OnClose();
+        void OnShutdown(socket_shutdown* shutdown, int status);
     private:
         EventLoop*                                                      event_base;
         std::unique_ptr<EventSemaphore>                                 event_stop_listen_semaphore;

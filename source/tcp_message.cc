@@ -261,7 +261,11 @@ namespace Evpp
                 {
                     if (nullptr != system_message)
                     {
+#if defined(EVPP_USE_STL_COROUTINES)
                         return JoinInTaskEx(std::bind(system_message, std::weak_ptr<EventBuffer>(tcp_buffer).lock())).get();
+#else
+                        return system_message(std::weak_ptr<EventBuffer>(tcp_buffer).lock());
+#endif
                     }
                 }
                 return true;

@@ -75,7 +75,7 @@ namespace Evpp
         return false;
     }
 
-    bool TcpListen::DestroyListenService(EventLoop* loop, socket_tcp* server)
+    bool TcpListen::DestroyListenService(EventLoop* loop, socket_tcp* server, const u96 index)
     {
         if (nullptr != loop && nullptr != server)
         {
@@ -83,7 +83,7 @@ namespace Evpp
             {
                 return Evpp::SocketClose(server, &TcpServer::OnDefaultListen);
             }
-            return loop->RunInLoopEx(std::bind<bool(TcpListen::*)(EventLoop*, socket_tcp*)>(&TcpListen::DestroyListenService, this, loop, server)) && event_stop_listen_semaphore->StarWaiting();
+            return loop->RunInLoop(std::bind<bool(TcpListen::*)(EventLoop*, socket_tcp*, const u96)>(&TcpListen::DestroyListenService, this, loop, server, index)) && event_stop_listen_semaphore->StarWaiting();
         }
         return false;
     }
@@ -92,7 +92,7 @@ namespace Evpp
     {
         for (u96 i = 0; i < tcp_server.size(); ++i)
         {
-            if (DestroyListenService(event_thread_pool->GetEventLoop(i), tcp_server[i].get()))
+            if (DestroyListenService(event_thread_pool->GetEventLoop(i), tcp_server[i].get(), i))
             {
                 continue;
             }
@@ -218,5 +218,10 @@ namespace Evpp
     void TcpListen::OnClose()
     {
         event_stop_listen_semaphore->StopWaiting();
+    }
+
+    void TcpListen::OnShutdown(socket_shutdown* shutdown, int status)
+    {
+        Evpp::SocketClose(shutdown->handle, &TcpServer::OnDefaultListen);
     }
 }

@@ -76,8 +76,12 @@
 
 // Use https://github.com/cameron314/concurrentqueue
 #   ifndef EVPP_USE_CAMERON314_CONCURRENTQUEUE
-#       define EVPP_USE_CAMERON314_CONCURRENTQUEUE
+//#       define EVPP_USE_CAMERON314_CONCURRENTQUEUE
 #   endif
+#endif
+
+#if (defined(_DEBUG) || defined(DEBUG) || defined(_DEBUG_))
+#   define EVENT_DEBUG_MODE
 #endif
 
 #ifdef H_OS_WINDOWS

@@ -82,7 +82,7 @@ namespace Evpp
         static constexpr const u96 Hash(const char* hash, const u96 size, u96 hash_mask = 0xf4fea0fe1a79ec80, u32 index = 0);
 #endif
     };
-
+    // uv_default_loop()
     bool SocketFormatErrorString(u32 code, String* format_string);
     bool CheckServiceAccept(socket_stream* server);
     template <class _Ty>
@@ -130,12 +130,9 @@ namespace Evpp
     {
         if (nullptr != handler)
         {
-            if (0 == uv_is_closing(reinterpret_cast<event_handle*>(handler)))
+            uv_close(reinterpret_cast<event_handle*>(handler), callback);
             {
-                uv_close(reinterpret_cast<event_handle*>(handler), callback);
-                {
-                    return true;
-                }
+                return true;
             }
         }
         return false;

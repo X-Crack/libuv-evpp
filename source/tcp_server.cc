@@ -367,7 +367,11 @@ namespace Evpp
         {
             if (nullptr != loop && nullptr != server && nullptr != client)
             {
+#if defined(EVPP_USE_STL_COROUTINES)
                 return JoinInTaskEx(std::bind(&TcpServer::InitialAccepts, this, loop, server, client, index)).get();
+#else
+                return InitialAccepts(loop, server, client, index);
+#endif
             }
         }
 #ifndef H_OS_WINDOWS
@@ -528,6 +532,20 @@ namespace Evpp
                 if (nullptr != watcher)
                 {
                     watcher->tcp_listen->OnClose();
+                }
+            }
+        }
+    }
+
+    void TcpServer::OnDefaultListenShutdown(socket_shutdown* shutdown, int status)
+    {
+        if (nullptr != shutdown)
+        {
+            TcpServer* watcher = static_cast<TcpServer*>(shutdown->data);
+            {
+                if (nullptr != watcher)
+                {
+                    watcher->tcp_listen->OnShutdown(shutdown, status);
                 }
             }
         }

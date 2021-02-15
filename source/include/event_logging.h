@@ -19,7 +19,7 @@
 #       define EVENT_SYSTEM_LOGGING 1
 #endif // GOOGLE_LOGGING
 
-#if (defined(_DEBUG) || defined(DEBUG) || defined(_DEBUG_))
+#if defined(EVENT_DEBUG_MODE)
 #       ifndef GOOGLE_LOGGING
 #           define GOOGLE_LOG(severity)                             LOG(severity) 
 #           define                                                  DebugMsg(severity, ...) { String debugMsg[1024]; _snprintf_s(debugMsg, std::size(debugMsg), _TRUNCATE, ##__VA_ARGS__); google::LogMessage(__FILE__, __LINE__, google::GLOG_##severity).stream() << debugMsg; };
