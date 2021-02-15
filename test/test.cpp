@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
      while (true)
      {
          {
-             //EVENT_COMPUTE_DURATION(全程耗时);
+             EVENT_COMPUTE_DURATION(全程耗时);
              std::unique_ptr<TcpServerService> server = std::make_unique<TcpServerService>();
              server->AddListenPort("0.0.0.0", 5555);
              server->AddListenPort("0.0.0.0", 6666);
