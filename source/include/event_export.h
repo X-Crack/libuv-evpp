@@ -18,7 +18,7 @@
 #   elif __cplusplus == 199711L
 #       define EVPP_CPLUSPLUS_VERSION(x) x##" "##"C++ 98"
 #else
-#       define EVPP_CPLUSPLUS_VERSION(x) x##" "##"C++ 2A"
+#       define EVPP_CPLUSPLUS_VERSION(x) x##" "##"C++ Unknown"
 #   endif
 #endif
 
