@@ -61,6 +61,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\source\include\event_evpp.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\source\include\event_exception.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\source\include\event_explicit.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\source\include\event_export.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\source\include\event_idle.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\source\include\event_libuv.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\source\include\event_logging.h" />

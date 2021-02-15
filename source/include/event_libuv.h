@@ -26,4 +26,4 @@ namespace Evpp
     using socket_udp = uv_udp_t;
     using socket_getaddrinfo = uv_getaddrinfo_t;
 }
-#endif // __event_libuv_H__
+#endif // __EVENT_LIBUV_H__
