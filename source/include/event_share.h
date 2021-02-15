@@ -17,9 +17,8 @@ namespace Evpp
         u32  GetLoopsSize() { return event_loops.size(); };
     public:
         event_loop* EventLoop(const u96 index = 0);
-        event_loop* DefaultEventLoop();
+        static event_loop* DefaultEventLoop();
     private:
-        event_loop*                                                                 event_base;
         std::unordered_map<u96, std::unique_ptr<event_loop>>                        event_loops;
         std::mutex                                                                  event_mutex;
     };

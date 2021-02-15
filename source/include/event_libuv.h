@@ -25,7 +25,5 @@ namespace Evpp
     using socket_connect = uv_connect_t;
     using socket_udp = uv_udp_t;
     using socket_getaddrinfo = uv_getaddrinfo_t;
-
-    static std::atomic<event_loop*> EVENT_UV_GLOBAL = nullptr;
 }
 #endif // __event_libuv_H__

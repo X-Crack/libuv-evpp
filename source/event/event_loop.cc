@@ -5,6 +5,7 @@
 #include <event_mutex.h>
 #include <event_coroutine.h>
 #include <event_mutex.h>
+#include <event_share.h>
 namespace Evpp
 {
     EventLoop::EventLoop(event_loop* loop, const u96 index) :
@@ -28,9 +29,7 @@ namespace Evpp
     {
         if (ChangeStatus(Status::None, Status::Init))
         {
-#if !defined(EVENT_DEBUG_MODE)
-            if (event_base != EVENT_UV_GLOBAL)
-#endif
+            if (event_base != EventShare::DefaultEventLoop())
             {
                 if (0 != uv_loop_init(event_base))
                 {
@@ -43,8 +42,8 @@ namespace Evpp
             {
                 event_thread = EventThreadId();
             }
-
-            if (nullptr == event_base->data)
+            // remove msvc 6011 warning
+            if (nullptr == std::ref(event_base->data))
             {
                 event_base->data = this;
             }
