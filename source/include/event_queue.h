@@ -57,7 +57,7 @@ namespace Evpp
         std::unique_ptr<EventSemaphore>                                                     event_semaphore;
 #if defined(EVPP_USE_CAMERON314_CONCURRENTQUEUE)
         std::unique_ptr<moodycamel::ConcurrentQueue<Handler, EventQueueTraits>>             event_queue_nolock;
-        std::unique_ptr<moodycamel::ConcurrentQueue<Handler, EventQueueTraits>>     event_queue_lock;
+        std::unique_ptr<moodycamel::ConcurrentQueue<Handler, EventQueueTraits>>             event_queue_lock;
         Handler                                                                             event_queue_nolock_function;
         Handler                                                                             event_queue_lock_function;
 #elif defined(EVPP_USE_BOOST_LOCKFREE_QUEUE)
@@ -65,14 +65,14 @@ namespace Evpp
         std::unique_ptr<boost::lockfree::queue<Handler*>>                                   event_queue_lock;
         Handler*                                                                            event_queue_nolock_function;
         Handler*                                                                            event_queue_lock_function;
-        std::atomic<u32>                                                                    evebt_queue_nolock_function_count;
-        std::atomic<u32>                                                                    evebt_queue_lock_function_count;
 #else
         std::vector<Handler>                                                                event_queue_nolock;
         std::vector<Handler>                                                                event_queue_lock;
         std::mutex                                                                          event_queue_nolock_mutex;
         std::mutex                                                                          event_queue_lock_mutex;
 #endif
+        std::atomic<u32>                                                                    evebt_queue_nolock_function_count;
+        std::atomic<u32>                                                                    evebt_queue_lock_function_count;
 #ifdef EVPP_USE_BOOST_LOCKFREE_QUEUE
     private:
         class SafeReleaseHandler

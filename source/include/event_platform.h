@@ -47,9 +47,9 @@
 #   endif
 #endif
 
+// Use Boost Assembly
 #ifndef EVPP_USE_BOOST_ASSEMBLY
-#   define EVPP_USE_BOOST_ASSEMBLY
-#undef EVPP_USE_BOOST_ASSEMBLY
+
 #endif
 
 // Use CXX20 coroutine to assist EventLoop operation.
@@ -59,17 +59,7 @@
 #   endif
 #endif
 
-#ifndef EVPP_USE_BOOST_ASSEMBLY
-// Use STL-based multi-threaded running mode (std::thread) to close this macro, and use libuv_thread to run multi-threaded
-#   ifndef EVPP_USE_STL_THREAD
-#       define EVPP_USE_STL_THREAD
-#   endif
-
-// Use https://github.com/cameron314/concurrentqueue
-#   ifndef EVPP_USE_CAMERON314_CONCURRENTQUEUE
-#       define EVPP_USE_CAMERON314_CONCURRENTQUEUE
-#   endif
-#else
+#ifdef EVPP_USE_BOOST_ASSEMBLY
 // b2 install --prefix="f:\common\boost\lib\x86" --toolset=msvc-14.2 --build-type=complete link=static runtime-link=static threading=multi debug release
 #   ifndef EVPP_USE_BOOST_THREAD
 #       define EVPP_USE_BOOST_THREAD
@@ -77,6 +67,15 @@
 
 #   ifndef EVPP_USE_BOOST_LOCKFREE_QUEUE
 #       define EVPP_USE_BOOST_LOCKFREE_QUEUE
+#   endif
+// Use STL-based multi-threaded running mode (std::thread) to close this macro, and use libuv_thread to run multi-threaded
+#   ifndef EVPP_USE_STL_THREAD
+#       define EVPP_USE_STL_THREAD
+#   endif
+#else
+// Use https://github.com/cameron314/concurrentqueue
+#   ifndef EVPP_USE_CAMERON314_CONCURRENTQUEUE
+#       define EVPP_USE_CAMERON314_CONCURRENTQUEUE
 #   endif
 #endif
 

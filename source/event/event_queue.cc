@@ -35,9 +35,9 @@ namespace Evpp
         , event_queue_lock(std::make_unique<boost::lockfree::queue<Handler*>>(512))
         , event_queue_nolock_function(nullptr)
         , event_queue_lock_function(nullptr)
+#endif
         , evebt_queue_nolock_function_count(0)
         , evebt_queue_lock_function_count(0)
-#endif
     {
 
     }
@@ -143,6 +143,7 @@ namespace Evpp
             evebt_queue_lock_function_count.fetch_add(1, std::memory_order_release);
             while (0 == event_queue_lock->push(new Handler(function)));
 #else
+            evebt_queue_lock_function_count.fetch_add(1, std::memory_order_release);
             {
                 std::lock_guard<std::mutex> lock(event_queue_lock_mutex);
                 event_queue_lock.emplace_back(function);
@@ -160,39 +161,36 @@ namespace Evpp
         {
             if (nullptr != event_queue_nolock_function)
             {
-#if defined(EVPP_USE_STL_COROUTINES)
                 try
                 {
-                    if (JoinInTask(std::bind(event_queue_nolock_function)).get())
-                    {
-                        continue;
-                    }
+#if defined(EVPP_USE_STL_COROUTINES)
+                    JoinInTask(std::bind(event_queue_nolock_function)).get();
+#else
+                    event_queue_nolock_function();
+#endif
                 }
                 catch (const EventException& ex)
                 {
                     EVENT_INFO("%s", ex.what());
                 }
-#else
-                event_queue_nolock_function();
-#endif
             }
         }
 #elif defined(EVPP_USE_BOOST_LOCKFREE_QUEUE)
         while (event_queue_nolock->pop(event_queue_nolock_function))
         {
-            if (nullptr != event_queue_nolock_function)
+            if (nullptr != event_queue_nolock_function && nullptr != *event_queue_nolock_function)
             {
-#if defined(EVPP_USE_STL_COROUTINES)
                 try
                 {
                     if (evebt_queue_nolock_function_count.fetch_sub(1, std::memory_order_relaxed))
                     {
                         SafeReleaseHandler destroy_object(std::addressof(event_queue_nolock_function));
                         {
-                            if (JoinInTask(std::bind((*event_queue_nolock_function))).get())
-                            {
-                                continue;
-                            }
+#if defined(EVPP_USE_STL_COROUTINES)
+                            JoinInTask(std::bind((*event_queue_nolock_function))).get();
+#else
+                            (*event_queue_nolock_function)();
+#endif
                         }
                     }
                     else
@@ -204,46 +202,28 @@ namespace Evpp
                 {
                     EVENT_INFO("%s", ex.what());
                 }
-#else
-                if (evebt_queue_nolock_function_count.fetch_sub(1, std::memory_order_relaxed))
-                {
-                    SafeReleaseHandler destroy_object(std::addressof(event_queue_nolock_function));
-                    {
-                        (*event_queue_nolock_function)();
-                    }
-                }
-                else
-                {
-                    assert(0);
-                }
-#endif
             }
         }
 #else
+        std::vector<Handler> functors;
         {
-            std::vector<Handler> functors;
-            {
-                std::lock_guard<std::mutex> lock(event_queue_nolock_mutex);
-                functors.swap(event_queue_nolock);
-            }
+            std::lock_guard<std::mutex> lock(event_queue_nolock_mutex);
+            functors.swap(event_queue_nolock);
+        }
 
-            for (const auto& function : functors)
+        for (const auto& function : functors)
+        {
+            try
             {
 #if defined(EVPP_USE_STL_COROUTINES)
-                try
-                {
-                    if (JoinInTask(std::bind(function)).get())
-                    {
-                        continue;
-                    }
-                }
-                catch (const EventException& ex)
-                {
-                    EVENT_INFO("%s", ex.what());
-                }
+                JoinInTask(std::bind(function)).get();
 #else
                 function();
 #endif
+            }
+            catch (const EventException& ex)
+            {
+                EVENT_INFO("%s", ex.what());
             }
         }
 #endif
@@ -273,21 +253,21 @@ namespace Evpp
             }
         }
 #elif defined(EVPP_USE_BOOST_LOCKFREE_QUEUE)
-        while (event_queue_lock->pop(event_queue_lock_function) && event_semaphore->StopWaiting())
+        while (event_queue_lock->pop(event_queue_lock_function))
         {
             if (nullptr != event_queue_lock_function)
             {
-#if defined(EVPP_USE_STL_COROUTINES)
                 try
                 {
                     if (evebt_queue_lock_function_count.fetch_sub(1, std::memory_order_relaxed))
                     {
                         SafeReleaseHandler destroy_object(std::addressof(event_queue_lock_function));
                         {
-                            if (JoinInTask(std::bind((*event_queue_lock_function))).get())
-                            {
-                                continue;
-                            }
+#if defined(EVPP_USE_STL_COROUTINES)
+                            JoinInTask(std::bind((*event_queue_lock_function))).get();
+#else
+                            (*event_queue_lock_function)();
+#endif
                         }
                     }
                     else
@@ -299,49 +279,45 @@ namespace Evpp
                 {
                     EVENT_INFO("%s", ex.what());
                 }
-#else
-                if (evebt_queue_lock_function_count.fetch_sub(1, std::memory_order_relaxed))
+
+                if (event_semaphore->StopWaiting())
                 {
-                    SafeReleaseHandler destroy_object(std::addressof(event_queue_lock_function));
-                    {
-                        (*event_queue_lock_function)();
-                    }
+                    continue;
                 }
-                else
-                {
-                    assert(0);
-                }
-#endif
             }
         }
 #else
+        std::vector<Handler> functors;
         {
-            if (event_semaphore->StopWaiting())
-            {
-                std::vector<Handler> functors;
-                {
-                    std::lock_guard<std::mutex> lock(event_queue_lock_mutex);
-                    functors.swap(event_queue_lock);
-                }
+            std::lock_guard<std::mutex> lock(event_queue_lock_mutex);
+            functors.swap(event_queue_lock);
+        }
 
-                for (const auto& function : functors)
+        for (const auto& function : functors)
+        {
+            if (evebt_queue_lock_function_count.fetch_sub(1, std::memory_order_relaxed))
+            {
+                try
                 {
 #if defined(EVPP_USE_STL_COROUTINES)
-                    try
-                    {
-                        if (JoinInTask(std::bind(function)).get())
-                        {
-                            continue;
-                        }
-                    }
-                    catch (const EventException& ex)
-                    {
-                        EVENT_INFO("%s", ex.what());
-                    }
+                    JoinInTask(std::bind(function)).get();
 #else
                     function();
 #endif
                 }
+                catch (const EventException& ex)
+                {
+                    EVENT_INFO("%s", ex.what());
+                }
+
+                if (event_semaphore->StopWaiting())
+                {
+                    continue;
+                }
+            }
+            else
+            {
+                assert(0);
             }
         }
 #endif

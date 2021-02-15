@@ -27,7 +27,7 @@ namespace Evpp
 #if defined(EVPP_USE_STL_THREAD)
         loop_thread(std::make_unique <std::thread>())
 #elif defined(EVPP_USE_BOOST_THREAD)
-        loop_thread(std::make_unique<boost::thread>()),
+        loop_thread(std::make_unique<boost::thread>())
 #else
         loop_thread(std::make_unique<event_thread>())
 #endif

@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
      while (true)
      {
          {
-             //EVENT_COMPUTE_DURATION(全程耗时);
+             EVENT_COMPUTE_DURATION(全程耗时);
              std::unique_ptr<TcpServerService> server = std::make_unique<TcpServerService>();
              server->AddListenPort("0.0.0.0", 5555);
              server->AddListenPort("0.0.0.0", 6666);
@@ -49,7 +49,7 @@ int main(int argc, char* argv[])
              server->SetDisconsCallback();
              server->SetMessageCallback();
              server->SetSendMsgCallback();
-             if (0 == server->CreaterServer(8))
+             if (0 == server->CreaterServer(EventShare::GetHardwareThreads()))
              {
                  printf("创建服务器失败\n");
                  Sleep(999999);
