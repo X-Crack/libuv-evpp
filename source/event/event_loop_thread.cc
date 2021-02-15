@@ -160,7 +160,6 @@ namespace Evpp
                     {
                         EVENT_INFO("this is a exception without handling");
                     }
-
 #else
                     if (CoroutineDispatch())
                     {
