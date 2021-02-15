@@ -29,5 +29,9 @@
 1. 请前往 [boost](https://www.boost.org/) 非必须
 1. 配置好依赖库即可编译，最低要求`C++2a`进行编译否则会有未知的错误（后续会降低C++版本）。
 
+# 其他说明
+1. 队列中含有3种储存容器，快慢依次排序 [std::vector] -> [ConcurrentQueue] -> [boost::lockfree::queue]
+1. 安全说明 [ConcurrentQueue] / [boost::lockfree::queue] 绝对的多线程安全 [std::vector] 未经详细测试 
+
 # libuv libevent 开发者交流群
 1. QQ群: 730777001
