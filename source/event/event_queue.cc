@@ -77,7 +77,6 @@ namespace Evpp
 
     bool EventQueue::RunInLoop(const Handler& function)
     {
-        EventMutex lock(&event_base->EventBasic()->wq_mutex);
         if (nullptr != event_base && nullptr != event_queue)
         {
             if (event_base->EventThread())
@@ -95,7 +94,6 @@ namespace Evpp
 
     bool EventQueue::RunInLoopEx(const Handler& function)
     {
-        EventMutex lock(&event_base->EventBasic()->wq_mutex);
         if (nullptr != event_base && nullptr != event_queue_ex)
         {
             if (EmplaceQueueEx(function))
@@ -108,7 +106,6 @@ namespace Evpp
 
     bool EventQueue::RunInQueue(const Handler& function)
     {
-        EventMutex lock(&event_base->EventBasic()->wq_mutex);
         if (nullptr != event_base && nullptr != event_queue)
         {
             return EmplaceQueue(function);
