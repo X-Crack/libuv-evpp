@@ -5,6 +5,15 @@
 #include <chrono>
 namespace Evpp
 {
+
+    class EVPP_EXPORT EventMutex
+    {
+    public:
+        explicit EventMutex(event_mutex* lock);
+        virtual ~EventMutex();
+    private:
+        event_mutex*                                    event_lock_mutex;
+    };
     class EVPP_EXPORT EventSemaphore
     {
     public:

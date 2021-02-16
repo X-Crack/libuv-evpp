@@ -16,6 +16,7 @@ namespace Evpp
     using event_idle = uv_idle_t;
     using event_prepare = uv_prepare_t;
     using event_check = uv_check_t;
+    using event_mutex = uv_mutex_t;
     using socket_tcp = uv_tcp_t;
     using socket_accept = uv_tcp_accept_t;
     using socket_stream = uv_stream_t;

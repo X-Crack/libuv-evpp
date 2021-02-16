@@ -34,4 +34,4 @@ namespace Evpp
         std::mutex                                                  status_mutex;
     };
 }
-#endif // __event_status_H__
+#endif // __EVENT_STATUS_H__
