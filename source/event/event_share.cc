@@ -16,6 +16,10 @@ namespace Evpp
 #if defined(EVENT_DEBUG_MODE)
         this->DestroyLoops();
 #endif
+        if (nullptr != event_base)
+        {
+            event_base = nullptr;
+        }
     }
 
     bool EventShare::CreaterLoops(const u96 size)
