@@ -59,24 +59,16 @@ namespace Evpp
 
     void EventSignal::OnNotify(event_signal* handler, int signum)
     {
-        __try
+        if (nullptr != handler && signum > 0)
         {
-            if (nullptr != handler && signum > 0)
+            EventSignal* watcher = static_cast<EventSignal*>(handler->data);
             {
-                EventSignal* watcher = static_cast<EventSignal*>(handler->data);
+                if (nullptr != watcher)
                 {
-                    if (nullptr != watcher)
-                    {
-                        watcher->OnNotify();
-                    }
+                    watcher->OnNotify();
                 }
             }
         }
-        __except (1)
-        {
-
-        }
-
     }
 
     void EventSignal::OnNotify()

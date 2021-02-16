@@ -34,7 +34,7 @@ int main(int argc, char* argv[])
 //     //std::thread T1(std::bind(&asdjkajsdjasd, &ev, &queue));
 //     //T1.detach();
 //     ev.ExecDispatch();
-     while (true)
+     //while (true)
      {
          {
              EVENT_COMPUTE_DURATION(全程耗时);
@@ -54,9 +54,9 @@ int main(int argc, char* argv[])
                  printf("创建服务器失败\n");
                  Sleep(999999);
              }
-             std::thread T1(std::bind(&stop_server, server.get()));
+             //std::thread T1(std::bind(&stop_server, server.get()));
              server->ExecDispatchCoroutine(printf_ex);
-             T1.join();
+             //T1.join();
              //EVENT_INFO("exit\n");
              server.reset();
          }

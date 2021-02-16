@@ -27,7 +27,7 @@
       </ThreadGroup>
       <hashTree>
         <TCPSampler guiclass="TCPSamplerGui" testclass="TCPSampler" testname="TCP取样器" enabled="true">
-          <stringProp name="TCPSampler.server">192.168.117.132</stringProp>
+          <stringProp name="TCPSampler.server">127.0.0.1</stringProp>
           <boolProp name="TCPSampler.reUseConnection">true</boolProp>
           <stringProp name="TCPSampler.port">5555</stringProp>
           <boolProp name="TCPSampler.nodelay">true</boolProp>
@@ -35,6 +35,7 @@
           <stringProp name="TCPSampler.ctimeout">10000</stringProp>
           <stringProp name="TCPSampler.request">111</stringProp>
           <boolProp name="TCPSampler.closeConnection">false</boolProp>
+          <stringProp name="TCPSampler.soLinger">1</stringProp>
           <stringProp name="TCPSampler.EolByte">10</stringProp>
           <stringProp name="ConfigTestElement.username"></stringProp>
           <stringProp name="ConfigTestElement.password"></stringProp>
