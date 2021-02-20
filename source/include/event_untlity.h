@@ -87,15 +87,14 @@ namespace Evpp
     EVPP_EXPORT bool CheckServiceAccept(socket_stream* server);
 
     template <class _Ty>
-    EVPP_EXPORT bool SocketStatus(_Ty* handler)
+    EVPP_EXPORT bool HandlerStatus(_Ty* handler)
     {
         if (nullptr != handler)
         {
-            if (uv_is_active(reinterpret_cast<event_handle*>(handler)))
+            if (0 == uv_is_closing(reinterpret_cast<event_handle*>(handler)))
             {
-                return 0 == uv_is_closing(reinterpret_cast<event_handle*>(handler));
+                return 1 == uv_is_active(reinterpret_cast<event_handle*>(handler));
             }
-            return true;
         }
         return false;
     }
@@ -127,14 +126,18 @@ namespace Evpp
     }
 
     template <class _Ty>
-    EVPP_EXPORT bool SocketClose(_Ty* handler, uv_close_cb callback)
+    EVPP_EXPORT bool CloseHandler(_Ty* handler, uv_close_cb callback)
     {
         if (nullptr != handler)
         {
-            uv_close(reinterpret_cast<event_handle*>(handler), callback);
+            if (0 == uv_is_closing(reinterpret_cast<event_handle*>(handler)))
             {
-                return true;
+                uv_close(reinterpret_cast<event_handle*>(handler), callback);
+                {
+                    return true;
+                }
             }
+            return true;
         }
         return false;
     }

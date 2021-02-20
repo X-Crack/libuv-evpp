@@ -33,7 +33,7 @@ namespace Evpp
         {
             if (event_base->EventThread())
             {
-                return SocketClose(event_queue, &EventAsync::DefaultClose);
+                return CloseHandler(event_queue, &EventAsync::DefaultClose);
             }
             return event_base->RunInLoopEx(std::bind(&EventAsync::DestroyAsync, this));
         }

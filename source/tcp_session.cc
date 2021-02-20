@@ -16,7 +16,7 @@ namespace Evpp
         tcp_message(std::make_unique<TcpMessage>(loop, client, std::bind(&TcpSession::OnSystemDiscons, this), std::bind(&TcpSession::OnSystemMessage, this, std::placeholders::_1), std::bind(&TcpSession::OnSystemSendMsg, this, std::placeholders::_1))),
         event_timer_pool(std::make_unique<EventTimerPool>(loop))
     {
-
+        event_timer_pool->AssignTimer(1, 1000, 1000);
     }
 
     TcpSession::~TcpSession()

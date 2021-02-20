@@ -81,7 +81,7 @@ namespace Evpp
         {
             if (loop->EventThread())
             {
-                return Evpp::SocketClose(server, &TcpServer::OnDefaultListen);
+                return CloseHandler(server, &TcpServer::OnDefaultListen);
             }
             return loop->RunInLoop(std::bind<bool(TcpListen::*)(EventLoop*, socket_tcp*, const u96)>(&TcpListen::DestroyListenService, this, loop, server, index)) && event_stop_listen_semaphore->StarWaiting();
         }
@@ -222,6 +222,6 @@ namespace Evpp
 
     void TcpListen::OnShutdown(socket_shutdown* shutdown, int status)
     {
-        Evpp::SocketClose(shutdown->handle, &TcpServer::OnDefaultListen);
+        CloseHandler(shutdown->handle, &TcpServer::OnDefaultListen);
     }
 }

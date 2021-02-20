@@ -16,7 +16,7 @@ namespace Evpp
     {
         if (nullptr != handler)
         {
-            if (SocketStatus(handler))
+            if (HandlerStatus(handler))
             {
                 std::unique_lock<std::recursive_mutex> lock(tcp_mutex);
                 if (tcp_info.emplace(index, std::make_shared<SocketInfoEx>()).second)
@@ -130,7 +130,7 @@ namespace Evpp
     {
         if (nullptr != handler)
         {
-            if (SocketStatus(handler))
+            if (HandlerStatus(handler))
             {
                 return 0 == uv_tcp_getsockname(handler, addr, &size);
             }
@@ -142,7 +142,7 @@ namespace Evpp
     {
         if (nullptr != handler)
         {
-            if (SocketStatus(handler))
+            if (HandlerStatus(handler))
             {
                 return 0 == uv_tcp_getpeername(handler, addr, &size);
             }

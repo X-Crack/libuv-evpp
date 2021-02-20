@@ -8,6 +8,7 @@
 
 void stop_server(Evpp::TcpServerService* server)
 {
+    Sleep(5000);
     if (server->DestroyServer())
     {
        // EVENT_INFO("OK\n");

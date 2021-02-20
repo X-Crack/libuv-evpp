@@ -125,13 +125,19 @@ namespace Evpp
 
     bool EventTimer::KilledTimer()
     {
-        if (ExistsStoped())
+        if (ExistsRuning())
         {
-            if (ChangeStatus(Status::Stop, Status::Exit))
+            if (StopedTimer())
             {
-                return SocketClose(event_time, &EventTimer::DefaultClose);
+                return CloseHandler(event_time, &EventTimer::DefaultClose);
             }
         }
+
+        if (ExistsStoped())
+        {
+            return CloseHandler(event_time, &EventTimer::DefaultClose);
+        }
+
         return false;
     }
 

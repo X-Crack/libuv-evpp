@@ -2,6 +2,7 @@
 #define __EVENT_PLATFORM_H__
 #include <event_arch.h>
 #include <event_export.h>
+
 #ifdef H_OS_WINDOWS
 #   define FORCEINLINE __forceinline
 #   define NOFORCEINLINE __declspec (noinline)

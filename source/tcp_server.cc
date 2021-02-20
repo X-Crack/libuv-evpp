@@ -329,7 +329,7 @@ namespace Evpp
 
             if (CheckServiceAccept(server))
             {
-                if (ExistsRuning() && 0 == SocketStatus(client))
+                if (ExistsRuning() && 0 == HandlerStatus(client))
                 {
                     if (nullptr != client)
                     {
@@ -432,11 +432,11 @@ namespace Evpp
     {
         if (nullptr != handler)
         {
-            if (0 == SocketStatus(handler))
+            if (0 == HandlerStatus(handler))
             {
                 return false;
             }
-            return Evpp::SocketClose(handler, &TcpServer::OnDefaultClose);
+            return CloseHandler(handler, &TcpServer::OnDefaultClose);
         }
         return false;
     }
@@ -445,7 +445,7 @@ namespace Evpp
     {
         if (nullptr != handler)
         {
-            if (0 == SocketStatus(handler))
+            if (0 == HandlerStatus(handler))
             {
                 return false;
             }
@@ -512,7 +512,7 @@ namespace Evpp
                 return;
             }
 
-            if (Evpp::SocketClose(shutdown->handle, &TcpServer::OnDefaultClose))
+            if (CloseHandler(shutdown->handle, &TcpServer::OnDefaultClose))
             {
                 if (nullptr != shutdown)
                 {
