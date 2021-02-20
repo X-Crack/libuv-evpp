@@ -18,11 +18,6 @@
 #   endif
 #endif
 
-// Use Boost Assembly
-#ifndef EVPP_USE_BOOST_ASSEMBLY
-#define EVPP_USE_BOOST_ASSEMBLY
-#endif
-
 // Use CXX20 coroutine to assist EventLoop operation.
 #if defined(__cpp_coroutines) && !defined(__cpp_impl_coroutine) || defined(_HAS_CXX20)
 #   ifndef EVPP_USE_STL_COROUTINES
@@ -30,6 +25,7 @@
 #   endif
 #endif
 
+// Use Boost Assembly
 #ifdef EVPP_USE_BOOST_ASSEMBLY
 // b2 install --prefix="f:\common\boost\lib\x86" --toolset=msvc-14.2 --build-type=complete link=static runtime-link=static threading=multi debug release
 #   ifndef EVPP_USE_BOOST_THREAD
