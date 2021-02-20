@@ -93,13 +93,13 @@ namespace Evpp
         return false;
     }
 
-    bool TcpServer::AddListenPort(const std::string& server_address, const u16 port)
+    bool TcpServer::AddListenPort(const std::string& address, const u16 port)
     {
         if (ExistsStarts(Status::None))
         {
             if (nullptr != event_socket)
             {
-                return event_socket->AddListenPort(server_address, port);
+                return event_socket->AddListenPort(address, port);
             }
         }
         return false;

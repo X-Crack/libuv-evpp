@@ -21,11 +21,38 @@ namespace Evpp
 
     }
 
-    bool TcpServerService::AddListenPort(const std::string& server_address, const u16 port)
+    bool TcpServerService::AddListenPort(const std::string& address, const u16 port)
     {
         if (nullptr != tcp_server)
         {
-            return tcp_server->AddListenPort(server_address, port);
+            return tcp_server->AddListenPort(address, port);
+        }
+        return false;
+    }
+
+    bool TcpServerService::RunInLoop(const Handler& function)
+    {
+        if (nullptr != event_base)
+        {
+            return event_base->RunInLoop(function);
+        }
+        return false;
+    }
+
+    bool TcpServerService::RunInLoopEx(const Handler& function)
+    {
+        if (nullptr != event_base)
+        {
+            return event_base->RunInLoopEx(function);
+        }
+        return false;
+    }
+
+    bool TcpServerService::RunInQueue(const Handler& function)
+    {
+        if (nullptr != event_base)
+        {
+            return event_base->RunInQueue(function);
         }
         return false;
     }

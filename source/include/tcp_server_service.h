@@ -16,7 +16,11 @@ namespace Evpp
         explicit TcpServerService();
         virtual ~TcpServerService();
     public:
-        bool AddListenPort(const std::string& server_address, const u16 port);
+        bool AddListenPort(const std::string& address, const u16 port);
+    public:
+        bool RunInLoop(const Handler& function);
+        bool RunInLoopEx(const Handler& function);
+        bool RunInQueue(const Handler& function);
     public:
         bool CreaterServer(const u96 thread_size);
         bool DestroyServer();

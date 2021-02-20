@@ -28,7 +28,7 @@ namespace Evpp
         // you can not use the main thread to clean up work, start a new thread to clean up
         // to ensure that the cleanup can be completed smoothly, please use blocking mode as much as possible.
         bool DestroyServer();
-        bool AddListenPort(const std::string& server_address, const u16 port);
+        bool AddListenPort(const std::string& address, const u16 port);
         bool Send(const u96 index, const char* buf, u96 len, u32 nbufs = 1);
         bool Send(const u96 index, const std::string& buf, u32 nbufs = 1);
         bool Close(const u96 index);

@@ -12,13 +12,13 @@ namespace Evpp
 
     }
 
-    bool EventSocketPool::AddListenPort(const std::string& server_address, const u16 port)
+    bool EventSocketPool::AddListenPort(const std::string& address, const u16 port)
     {
-        if (CheckElements(server_address, port))
+        if (CheckElements(address, port))
         {
             socket_bulder.push_back(std::make_shared<EventSocket>());
             {
-                return socket_bulder.back()->CreaterSocket(server_address, port);
+                return socket_bulder.back()->CreaterSocket(address, port);
             }
         }
         return false;

@@ -12,7 +12,7 @@ namespace Evpp
         explicit EventSocketPool();
         virtual ~EventSocketPool();
     public:
-        bool AddListenPort(const std::string& server_address, const u16 port);
+        bool AddListenPort(const std::string& address, const u16 port);
         const std::shared_ptr<EventSocket>& GetEventSocket(const u96 index);
         const u96 GetSocketPoolSize();
     private:
