@@ -2,8 +2,8 @@
 #define __EVENT_EXPORT_H__
 #include <event_arch.h>
 
-#ifndef EVENT_STATIC
-#   define EVENT_STATIC
+#ifndef EVPP_STATIC
+#   define EVPP_STATIC
 #endif
 
 #ifdef __cplusplus
@@ -27,28 +27,28 @@
 #       define EVPP_DEV_OUTPUT_LOG            EVPP_CPLUSPLUS_VERSION
 #   endif
 #   if !defined(_DLL) && !defined(_DEBUG)
-#       ifndef EVENT_STATIC
+#       ifndef EVPP_STATIC
 #           ifndef EVPP_EXPORT_STATIC
 #               define EVPP_EXPORT_STATIC
 #           endif
 #       endif
 #       pragma message(EVPP_DEV_OUTPUT_LOG("Compilation mode MT"))
 #   elif !defined(_DLL) && defined(_DEBUG)
-#       ifndef EVENT_STATIC
+#       ifndef EVPP_STATIC
 #           ifndef EVPP_EXPORT_STATIC
 #               define EVPP_EXPORT_STATIC
 #           endif
 #       endif
 #       pragma message(EVPP_DEV_OUTPUT_LOG("Compilation mode MTd"))
 #   elif defined(_DLL) && !defined(_DEBUG)
-#       ifndef EVENT_STATIC
+#       ifndef EVPP_STATIC
 #           ifdef EVPP_EXPORT_STATIC
 #               undef EVPP_EXPORT_STATIC
 #           endif
 #       endif
 #       pragma message(EVPP_DEV_OUTPUT_LOG("Compilation mode MD"))
 #   elif defined(_DLL) && defined(_DEBUG)
-#       ifndef EVENT_STATIC
+#       ifndef EVPP_STATIC
 #           ifdef EVPP_EXPORT_STATIC
 #               undef EVPP_EXPORT_STATIC
 #           endif
@@ -65,7 +65,7 @@
 #       define EVPP_DECL_IMPORT
 #endif
 
-#ifndef EVENT_STATIC
+#ifndef EVPP_STATIC
 #   if defined(EVPP_EXPORT_STATIC)
 #       define EVPP_EXPORT EVPP_DECL_EXPORT
 #   else

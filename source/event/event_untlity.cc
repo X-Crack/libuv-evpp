@@ -111,7 +111,7 @@ namespace Evpp
     {
         if (index != size)
         {
-            return HashBit::Hash(++hash, size, ~hash_mask ^ (!(index & 1) ? ((hash_mask << 7) ^ (*hash) * (hash_mask >> 3)) : (~((hash_mask << 11) + ((*hash) ^ (hash_mask >> 5))))), ++index);
+            return Hash(++hash, size, ~hash_mask ^ (!(index & 1) ? ((hash_mask << 7) ^ (*hash) * (hash_mask >> 3)) : (~((hash_mask << 11) + ((*hash) ^ (hash_mask >> 5))))), ++index);
         }
         return hash_mask ^ 0x7ffffff;
     }

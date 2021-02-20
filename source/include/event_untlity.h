@@ -82,9 +82,10 @@ namespace Evpp
         static constexpr const u96 Hash(const char* hash, const u96 size, u96 hash_mask = 0xf4fea0fe1a79ec80, u32 index = 0);
 #endif
     };
-    // uv_default_loop()
+
     EVPP_EXPORT bool SocketFormatErrorString(u32 code, String* format_string);
     EVPP_EXPORT bool CheckServiceAccept(socket_stream* server);
+
     template <class _Ty>
     EVPP_EXPORT bool SocketStatus(_Ty* handler)
     {
