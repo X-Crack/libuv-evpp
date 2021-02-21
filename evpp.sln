@@ -41,6 +41,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mimalloc", "..\mimalloc\ide
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "e", "e", "{45786BB2-B69C-44DD-893C-17CE34730BF7}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test", "test\test.vcxproj", "{1E3DC267-98F0-45EA-BC60-FAD4EC543893}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		share\share.vcxitems*{2af40e9d-5653-4eb4-94c9-d2235733ddae}*SharedItemsImports = 4
@@ -129,6 +131,14 @@ Global
 		{ABB5EAE7-B3E6-432E-B636-333449892EA6}.Release|x64.Build.0 = Release|x64
 		{ABB5EAE7-B3E6-432E-B636-333449892EA6}.Release|x86.ActiveCfg = Release|Win32
 		{ABB5EAE7-B3E6-432E-B636-333449892EA6}.Release|x86.Build.0 = Release|Win32
+		{1E3DC267-98F0-45EA-BC60-FAD4EC543893}.Debug|x64.ActiveCfg = Debug|x64
+		{1E3DC267-98F0-45EA-BC60-FAD4EC543893}.Debug|x64.Build.0 = Debug|x64
+		{1E3DC267-98F0-45EA-BC60-FAD4EC543893}.Debug|x86.ActiveCfg = Debug|Win32
+		{1E3DC267-98F0-45EA-BC60-FAD4EC543893}.Debug|x86.Build.0 = Debug|Win32
+		{1E3DC267-98F0-45EA-BC60-FAD4EC543893}.Release|x64.ActiveCfg = Release|x64
+		{1E3DC267-98F0-45EA-BC60-FAD4EC543893}.Release|x64.Build.0 = Release|x64
+		{1E3DC267-98F0-45EA-BC60-FAD4EC543893}.Release|x86.ActiveCfg = Release|Win32
+		{1E3DC267-98F0-45EA-BC60-FAD4EC543893}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
