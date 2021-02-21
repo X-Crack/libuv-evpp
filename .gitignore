@@ -349,3 +349,9 @@ healthchecksdb
 /.vs1
 *.exe
 *.jmx
+
+/test/test.vcxproj
+/test/test.vcxproj.filters
+/test/test.vcxproj.user
+/test/test.cpp
+/test/cotest.cpp
