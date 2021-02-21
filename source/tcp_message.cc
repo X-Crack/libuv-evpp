@@ -25,7 +25,7 @@ namespace Evpp
 
         if (uv_read_start(reinterpret_cast<socket_stream*>(client), &TcpMessage::DefaultMakesram, &TcpMessage::DefaultMessages))
         {
-            printf("init read error\n");
+            EVENT_ERROR("init read error");
         }
     }
 
@@ -125,7 +125,7 @@ namespace Evpp
 
     bool TcpMessage::DefaultSend(const socket_data bufs, u32 nbufs)
     {
-        if (uv_is_active(reinterpret_cast<event_handle*>(tcp_socket)) && 0 == uv_is_closing(reinterpret_cast<event_handle*>(tcp_socket)))
+        if (HandlerStatus(tcp_socket))
         {
             return 0 == uv_write(event_write.get(), reinterpret_cast<socket_stream*>(tcp_socket), std::addressof(bufs), nbufs, &TcpMessage::DefaultSend);
         }
@@ -150,11 +150,6 @@ namespace Evpp
     {
         if (nullptr != handler)
         {
-            if (0 == HandlerStatus(handler))
-            {
-                return false;
-            }
-
             if (0 == uv_read_stop(reinterpret_cast<socket_stream*>(handler)))
             {
                 return CloseHandler(handler, &TcpMessage::DefaultClose);
@@ -195,15 +190,9 @@ namespace Evpp
                 tcp_socket->data = nullptr;
             }
 
-            if (nullptr != tcp_socket)
-            {
-                delete tcp_socket;
-                tcp_socket = nullptr;
-            }
-
             if (nullptr != system_discons)
             {
-                return RunInQueue(std::bind(system_discons));
+                return RunInQueue(std::bind(system_discons, tcp_socket));
             }
         }
     }
@@ -235,7 +224,7 @@ namespace Evpp
     {
         if (nullptr != handler)
         {
-            if (uv_is_active(handler))
+            if (HandlerStatus(handler))
             {
                 if (event_data.capacity() != suggested_size)
                 {

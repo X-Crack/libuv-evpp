@@ -48,14 +48,9 @@ namespace Evpp
     {
         if (nullptr != event_timer)
         {
-            if (ExistsRuning() || ExistsInited())
+            if (ExistsInited() || ExistsRuning() || ExistsStoped())
             {
-                return ChangeStatus(Status::Exit) && event_timer->StopedTimer();
-            }
-
-            if (ExistsStoped())
-            {
-                return ChangeStatus(Status::Exit);
+                return ChangeStatus(Status::Exit) && event_timer->StopedTimer() && event_timer->KilledTimer();
             }
         }
         return false;
@@ -79,6 +74,15 @@ namespace Evpp
         return false;
     }
 
+    bool TcpAttach::RunInQueue(const Handler& function)
+    {
+        if (nullptr != event_base)
+        {
+            return event_base->RunInQueue(function);
+        }
+        return false;
+    }
+
     void TcpAttach::OnTimer(EventLoop* loop, const std::shared_ptr<EventTimer>& timer, const u96 index)
     {
         if (nullptr != loop && nullptr != timer && 0 >= index && nullptr != socket_client)
@@ -87,7 +91,7 @@ namespace Evpp
             {
                 if (socket_client->ExistsInited())
                 {
-                    if (RunInLoopEx(std::bind(&TcpClient::ConnectService, socket_client)))
+                    if (RunInLoop(std::bind(&TcpClient::ConnectService, socket_client)))
                     {
                         if (timer->StopedTimer())
                         {

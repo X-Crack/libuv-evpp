@@ -23,6 +23,7 @@ namespace Evpp
     public:
         bool RunInLoop(const Functor& function);
         bool RunInLoopEx(const Handler& function);
+        bool RunInQueue(const Handler& function);
     private:
         void OnTimer(EventLoop* loop, const std::shared_ptr<EventTimer>& timer, const u96 index);
     private:

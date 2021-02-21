@@ -11,7 +11,7 @@ namespace Evpp
     class EVPP_EXPORT TcpSession : public std::enable_shared_from_this<TcpSession>
     {
     public:
-        typedef std::function<void(EventLoop*, const u96)>                                                                          SystemDiscons;
+        typedef std::function<void(EventLoop*, socket_tcp*, const u96)>                                                             SystemDiscons;
         typedef std::function<bool(EventLoop*, const std::shared_ptr<TcpSession>&, const std::shared_ptr<EventBuffer>&, const u96)> SystemMessage;
         typedef std::function<bool(EventLoop*, const std::shared_ptr<TcpSession>&, const u96, const i32)>                           SystemSendMsg;
     public:
@@ -37,7 +37,7 @@ namespace Evpp
         bool ReStarTimerEx(const u96 index, const u64 delay, const u64 repeat);
         u96  GetSelfIndex() { return event_index; };
     private:
-        void OnSystemDiscons();
+        void OnSystemDiscons(socket_tcp* socket);
         bool OnSystemMessage(const std::shared_ptr<EventBuffer>& Buffer);
         bool OnSystemSendMsg(const i32 status);
     private:

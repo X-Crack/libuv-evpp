@@ -6,6 +6,7 @@ namespace Evpp
 {
     class EventLoop;
     class EventSocket;
+    class EventSemaphore;
     class TcpClient;
     class EVPP_EXPORT TcpConnect
     {
@@ -13,12 +14,16 @@ namespace Evpp
         explicit TcpConnect(EventLoop* loop, socket_tcp* handler, TcpClient* client);
         virtual ~TcpConnect();
     public:
+        friend TcpClient;
+    public:
         bool ConnectService(const std::unique_ptr<EventSocket>& socket);
+        bool DestroyConnect();
     private:
         bool InitTcpService();
         bool CreaterConnect(const sockaddr* addr);
     private:
         EventLoop*                                                      event_base;
+        std::unique_ptr<EventSemaphore>                                 event_stop_semaphore;
         socket_tcp*                                                     tcp_handler;
         std::unique_ptr<socket_connect>                                 tcp_connect;
     };

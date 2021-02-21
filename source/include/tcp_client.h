@@ -6,10 +6,11 @@
 #include <atomic>
 namespace Evpp
 {
+    class EventStatus;
     class EventLoop;
     class EventTimer;
     class EventSocket;
-    class EventStatus;
+    class EventSemaphore;
     class TcpConnect;
     class TcpSession;
     class TcpAttach;
@@ -18,11 +19,12 @@ namespace Evpp
     public:
         explicit TcpClient(EventLoop* loop, const u96 index = 1);
         virtual ~TcpClient();
+    public:
         friend TcpConnect;
         friend TcpAttach;
     public:
         bool CreaterClient();
-        bool DestroyClient(const bool wait = true);
+        bool DestroyClient();
         bool AddServerPort(const std::string& host, const u16 port);
         void SetResetConnectTimer(const u64 delay, const u64 timer);
         void SetResetConnect(const u32 status);
@@ -49,11 +51,11 @@ namespace Evpp
     private:
         bool DefaultConnect();
         void DefaultFailure(int status);
-        void DefaultDiscons(EventLoop* loop, const u96 index);
+        void DefaultDiscons(EventLoop* loop, socket_tcp* socket, const u96 index);
         bool DefaultMessage(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const std::shared_ptr<EventBuffer>& buffer, const u96 index);
         bool DefaultSendMsg(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const u96 index, const i32 status);
     private:
-        static void DefaultConnect(socket_connect* hanlder, int status);
+        static void DefaultConnect(socket_connect* handler, int status);
     private:
         EventLoop*                                                      event_base;
         u96                                                             event_index;
@@ -70,8 +72,7 @@ namespace Evpp
         std::unique_ptr<TcpAttach>                                      tcp_attach;
         std::atomic<u32>                                                tcp_retry;
         std::atomic<u32>                                                tcp_retry_connection;
-        std::atomic<u32>                                                event_close_flag;
-        std::atomic<u32>                                                event_close_flag_ex;
+        std::unique_ptr<EventSemaphore>                                 event_stop_semaphore;
     };
 }
 #endif // __TCP_CLIENT_H__

@@ -2,10 +2,12 @@
 #include <tcp_client.h>
 #include <event_socket.h>
 #include <event_loop.h>
+#include <event_mutex.h>
 namespace Evpp
 {
     TcpConnect::TcpConnect(EventLoop* loop, socket_tcp* handler, TcpClient* client) :
         event_base(loop),
+        event_stop_semaphore(std::make_unique<EventSemaphore>()),
         tcp_handler(handler),
         tcp_connect(std::make_unique<socket_connect>())
     {
@@ -45,5 +47,14 @@ namespace Evpp
     bool TcpConnect::CreaterConnect(const sockaddr* addr)
     {
         return 0 == uv_tcp_connect(tcp_connect.get(), tcp_handler, addr, &TcpClient::DefaultConnect);
+    }
+
+    bool TcpConnect::DestroyConnect()
+    {
+        if (event_base->EventThread())
+        {
+            return CloseHandler(tcp_handler, 0);
+        }
+        return event_base->RunInLoopEx(std::bind(&TcpConnect::DestroyConnect, this));
     }
 }

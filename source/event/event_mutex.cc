@@ -12,7 +12,7 @@ namespace Evpp
         uv_mutex_unlock(event_lock_mutex);
     }
 
-    EventSemaphore::EventSemaphore() : event_cv_pending(1)
+    EventSemaphore::EventSemaphore() : event_cv_pending(0)
     {
 
     }

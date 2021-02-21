@@ -266,7 +266,7 @@ namespace Evpp
                 loop,
                 client,
                 index,
-                std::bind(&TcpServer::DefaultDiscons, this, std::placeholders::_1, std::placeholders::_2),
+                std::bind(&TcpServer::DefaultDiscons, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3),
                 std::bind(&TcpServer::DefaultMessage, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4),
                 std::bind(&TcpServer::DefaultSendMsg, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4)
                 )
@@ -397,10 +397,16 @@ namespace Evpp
         return false;
     }
 
-    void TcpServer::DefaultDiscons(EventLoop* loop, const u96 index)
+    void TcpServer::DefaultDiscons(EventLoop* loop, socket_tcp* socket, const u96 index)
     {
         if (nullptr != loop)
         {
+            if (nullptr != socket)
+            {
+                delete socket;
+                socket = nullptr;
+            }
+
             if (nullptr != socket_discons)
             {
                 socket_discons(loop, index);

@@ -26,11 +26,11 @@ namespace Evpp
         return false;
     }
 
-    bool TcpClientService::DestroyClient(const bool wait)
+    bool TcpClientService::DestroyClient()
     {
         if (nullptr != tcp_client)
         {
-            if (tcp_client->DestroyClient(wait) && StopDispatch())
+            if (tcp_client->DestroyClient() && StopDispatch())
             {
                 if (event_stop_flag)
                 {
@@ -47,6 +47,33 @@ namespace Evpp
         if (nullptr != tcp_client)
         {
             return tcp_client->AddServerPort(host, port);
+        }
+        return false;
+    }
+
+    bool TcpClientService::RunInLoop(const Handler& function)
+    {
+        if (nullptr != event_base)
+        {
+            return event_base->RunInLoop(function);
+        }
+        return false;
+    }
+
+    bool TcpClientService::RunInLoopEx(const Handler& function)
+    {
+        if (nullptr != event_base)
+        {
+            return event_base->RunInLoopEx(function);
+        }
+        return false;
+    }
+
+    bool TcpClientService::RunInQueue(const Handler& function)
+    {
+        if (nullptr != event_base)
+        {
+            return event_base->RunInQueue(function);
         }
         return false;
     }
@@ -164,24 +191,6 @@ namespace Evpp
         if (nullptr != tcp_client)
         {
             return tcp_client->Close();
-        }
-        return false;
-    }
-
-    bool TcpClientService::RunInLoop(const Functor& function)
-    {
-        if (nullptr != tcp_client)
-        {
-            return tcp_client->RunInLoop(function);
-        }
-        return false;
-    }
-
-    bool TcpClientService::RunInLoopEx(const Handler& function)
-    {
-        if (nullptr != tcp_client)
-        {
-            return tcp_client->RunInLoopEx(function);
         }
         return false;
     }

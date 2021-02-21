@@ -16,8 +16,7 @@ namespace Evpp
         tcp_attach(std::make_unique<TcpAttach>(loop, this)),
         tcp_retry(0),
         tcp_retry_connection(1),
-        event_close_flag(0),
-        event_close_flag_ex(0)
+        event_stop_semaphore(std::make_unique<EventSemaphore>())
     {
 
     }
@@ -44,7 +43,7 @@ namespace Evpp
         return false;
     }
 
-    bool TcpClient::DestroyClient(const bool wait)
+    bool TcpClient::DestroyClient()
     {
         if (nullptr != tcp_socket)
         {
@@ -57,23 +56,14 @@ namespace Evpp
             {
                 if (tcp_retry_connection)
                 {
-                    // 关闭断线重连
                     tcp_retry_connection.store(0);
                 }
 
-                if (wait)
+                if (event_base->EventThread())
                 {
-                    if (RunInLoopEx(std::bind(&TcpClient::Close, this)))
-                    {
-                        if (ChangeStatus(Status::Exec, Status::Exit))
-                        {
-                            std::atomic_wait_explicit(&event_close_flag, 0, std::memory_order_relaxed);
-                        }
-                    }
-                    return true;
+                    return Close() && tcp_connect->DestroyConnect() && ChangeStatus(Status::Exec, Status::Exit);
                 }
-
-                return Close();
+                return RunInLoopEx(std::bind(&TcpClient::DestroyClient, this)) && event_stop_semaphore->StarWaiting();
             }
 
             if (ExistsInited())
@@ -84,10 +74,14 @@ namespace Evpp
                     tcp_retry_connection.store(0);
                 }
 
-                if (tcp_attach->DestroyConnect())
+                if (event_base->EventThread())
                 {
-                    return ChangeStatus(Status::Exit);
+                    if (tcp_attach->DestroyConnect() && tcp_connect->DestroyConnect())
+                    {
+                        return ChangeStatus(Status::Exit);
+                    }
                 }
+                return RunInLoopEx(std::bind(&TcpClient::DestroyClient, this));
             }
         }
         return false;
@@ -215,7 +209,7 @@ namespace Evpp
                     loop,
                     client,
                     index,
-                    std::bind(&TcpClient::DefaultDiscons, this, std::placeholders::_1, std::placeholders::_2),
+                    std::bind(&TcpClient::DefaultDiscons, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3),
                     std::bind(&TcpClient::DefaultMessage, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4),
                     std::bind(&TcpClient::DefaultSendMsg, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4)
                 ));
@@ -232,22 +226,25 @@ namespace Evpp
             // 已经存在连接对象，并且是正常被断开的状态。
             if (ChangeStatus(Status::Stop, Status::Init))
             {
-                tcp_session.reset();
+                if (nullptr != tcp_session)
                 {
-                    if (tcp_retry_connection)
-                    {
-                        return tcp_attach->CreaterConnect();
-                    }
+                    tcp_session.reset();
+                }
+
+                if (tcp_retry_connection)
+                {
+                    return tcp_attach->CreaterConnect();
                 }
             }
 
             // 已经存在连接对象，并且客户端主动销毁的状态。
             if (ExistsStarts(Status::Exit))
             {
-                tcp_session.reset();
-                event_close_flag.store(1, std::memory_order_release);
-                std::atomic_notify_one(&event_close_flag);
-                return true;
+                if (nullptr != tcp_session)
+                {
+                    tcp_session.reset();
+                }
+                return event_stop_semaphore->StopWaiting();
             }
             return false;
         }
@@ -329,7 +326,7 @@ namespace Evpp
         }
     }
 
-    void TcpClient::DefaultDiscons(EventLoop* loop, const u96 index)
+    void TcpClient::DefaultDiscons(EventLoop* loop, socket_tcp* socket, const u96 index)
     {
         if (nullptr != socket_discons)
         {
@@ -364,11 +361,11 @@ namespace Evpp
         return false;
     }
 
-    void TcpClient::DefaultConnect(socket_connect* hanlder, int status)
+    void TcpClient::DefaultConnect(socket_connect* handler, int status)
     {
-        if (nullptr != hanlder)
+        if (nullptr != handler)
         {
-            TcpClient* watcher = static_cast<TcpClient*>(hanlder->data);
+            TcpClient* watcher = static_cast<TcpClient*>(handler->data);
             {
                 if (nullptr != watcher)
                 {
@@ -388,7 +385,7 @@ namespace Evpp
                         return;
                     }
 
-                    printf("Close Client Error\n");
+                    EVENT_ERROR("Close Client Error");
                 }
             }
         }

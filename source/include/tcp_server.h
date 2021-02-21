@@ -54,7 +54,7 @@ namespace Evpp
         bool DefaultAccepts(EventLoop* loop, socket_stream* server, socket_tcp* client, const u96 index);
         bool DefaultAccepts(socket_stream* server, i32 status);
     private:
-        void DefaultDiscons(EventLoop* loop, const u96 index);
+        void DefaultDiscons(EventLoop* loop, socket_tcp* socket, const u96 index);
         bool DefaultMessage(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const std::shared_ptr<EventBuffer>& buffer, const u96 index);
         bool DefaultSendMsg(EventLoop* loop, const std::shared_ptr<TcpSession>& session, const u96 index, const i32 status);
     private:

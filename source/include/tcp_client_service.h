@@ -13,8 +13,12 @@ namespace Evpp
         virtual ~TcpClientService();
     public:
         bool CreaterClient();
-        bool DestroyClient(const bool wait = true);
+        bool DestroyClient();
         bool AddServerPort(const std::string& host, const u16 port);
+    public:
+        bool RunInLoop(const Handler& function);
+        bool RunInLoopEx(const Handler& function);
+        bool RunInQueue(const Handler& function);
     public:
         bool ExecDispatch(i32 mode = UV_RUN_DEFAULT);
         // 回调用于客户端界面消息刷新防止窗口假死
@@ -30,9 +34,6 @@ namespace Evpp
         bool Send(const std::string& buf, u32 nbufs = 1);
     public:
         bool Close();
-    public:
-        bool RunInLoop(const Functor& function);
-        bool RunInLoopEx(const Handler& function);
     public:
         void SetConnectCallback(const InterfaceConnect& connect = &Evpp::Import::DefaultConnect);
         void SetRestoreCallback(const InterfaceRestore& restore = &Evpp::Import::DefaultRestore);

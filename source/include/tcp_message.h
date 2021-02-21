@@ -9,7 +9,7 @@ namespace Evpp
     class EVPP_EXPORT TcpMessage
     {
     public:
-        typedef std::function<void()>                                           SystemDiscons;
+        typedef std::function<void(socket_tcp*)>                                SystemDiscons;
         typedef std::function<bool(const std::shared_ptr<EventBuffer>&)>        SystemMessage;
         typedef std::function<bool(const i32)>                                  SystemSendMsg;
     public:

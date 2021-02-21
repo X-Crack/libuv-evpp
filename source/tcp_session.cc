@@ -13,7 +13,7 @@ namespace Evpp
         system_message(message),
         system_sendmsg(sendmsg),
         tcp_socket(client),
-        tcp_message(std::make_unique<TcpMessage>(loop, client, std::bind(&TcpSession::OnSystemDiscons, this), std::bind(&TcpSession::OnSystemMessage, this, std::placeholders::_1), std::bind(&TcpSession::OnSystemSendMsg, this, std::placeholders::_1))),
+        tcp_message(std::make_unique<TcpMessage>(loop, client, std::bind(&TcpSession::OnSystemDiscons, this, std::placeholders::_1), std::bind(&TcpSession::OnSystemMessage, this, std::placeholders::_1), std::bind(&TcpSession::OnSystemSendMsg, this, std::placeholders::_1))),
         event_timer_pool(std::make_unique<EventTimerPool>(loop))
     {
         event_timer_pool->AssignTimer(1, 1000, 1000);
@@ -152,11 +152,11 @@ namespace Evpp
         return RunInLoop(std::bind(&TcpSession::ReStarTimerEx, this, index, delay, repeat));
     }
 
-    void TcpSession::OnSystemDiscons()
+    void TcpSession::OnSystemDiscons(socket_tcp* socket)
     {
         if (nullptr != system_discons)
         {
-            if (RunInQueue(std::bind(system_discons, event_base, event_index)))
+            if (RunInQueue(std::bind(system_discons, event_base, socket, event_index)))
             {
                 return;
             }

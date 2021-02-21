@@ -298,7 +298,6 @@ namespace Evpp
             {
                 return ChangeStatus(Status::Stop, Status::Exit);
             }
-            assert(0);
         }
         else
         {
