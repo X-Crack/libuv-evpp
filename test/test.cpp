@@ -38,22 +38,22 @@ int main(int argc, char* argv[])
     //mi_stats_reset();
     using namespace Evpp;
 
-    {
-        EVENT_COMPUTE_DURATION(全程耗时);
-        std::unique_ptr<TcpClientService> client = std::make_unique<TcpClientService>();
-        client->AddServerPort("127.0.0.1", 5555);
-        client->SetConnectCallback();
-        client->SetDisconsCallback();
-        client->SetFailureCallback();
-        client->SetMessageCallback();
-        client->SetRestoreCallback();
-        client->SetSendMsgCallback();
-        client->CreaterClient();
-        std::thread T1(std::bind(&stop_client, client.get()));
-        client->ExecDispatchCoroutine(printf_ex);
-        T1.join();
-        client.reset();
-    }
+//     {
+//         EVENT_COMPUTE_DURATION(全程耗时);
+//         std::unique_ptr<TcpClientService> client = std::make_unique<TcpClientService>();
+//         client->AddServerPort("127.0.0.1", 5555);
+//         client->SetConnectCallback();
+//         client->SetDisconsCallback();
+//         client->SetFailureCallback();
+//         client->SetMessageCallback();
+//         client->SetRestoreCallback();
+//         client->SetSendMsgCallback();
+//         client->CreaterClient();
+//         std::thread T1(std::bind(&stop_client, client.get()));
+//         client->ExecDispatchCoroutine(printf_ex);
+//         T1.join();
+//         client.reset();
+//     }
 //     EventLoop ev;
 //     EventQueue queue(&ev);
 //     ev.InitialEvent();
@@ -62,33 +62,33 @@ int main(int argc, char* argv[])
 //     //std::thread T1(std::bind(&asdjkajsdjasd, &ev, &queue));
 //     //T1.detach();
 //     ev.ExecDispatch();
-//      while (true)
-//      {
-//          {
-//              EVENT_COMPUTE_DURATION(全程耗时);
-//              std::unique_ptr<TcpServerService> server = std::make_unique<TcpServerService>();
-//              server->AddListenPort("0.0.0.0", 5555);
-//              server->AddListenPort("0.0.0.0", 6666);
-//              server->AddListenPort("0.0.0.0", 7777);
-//              server->AddListenPort("::", 5555);
-//              server->AddListenPort("::", 6666);
-//              server->AddListenPort("::", 7777);
-//              server->SetAcceptsCallback();
-//              server->SetDisconsCallback();
-//              server->SetMessageCallback();
-//              server->SetSendMsgCallback();
-//              if (0 == server->CreaterServer(EventShare::GetHardwareThreads()))
-//              {
-//                  printf("创建服务器失败\n");
-//                  Sleep(999999);
-//              }
-//              std::thread T1(std::bind(&stop_server, server.get()));
-//              server->ExecDispatchCoroutine(printf_ex);
-//              T1.join();
-//              //EVENT_INFO("exit\n");
-//              server.reset();
-//          }
-//      }
+     //while (true)
+     {
+         {
+             EVENT_COMPUTE_DURATION(全程耗时);
+             std::unique_ptr<TcpServerService> server = std::make_unique<TcpServerService>();
+             server->AddListenPort("0.0.0.0", 5555);
+             server->AddListenPort("0.0.0.0", 6666);
+             server->AddListenPort("0.0.0.0", 7777);
+             server->AddListenPort("::", 5555);
+             server->AddListenPort("::", 6666);
+             server->AddListenPort("::", 7777);
+             server->SetAcceptsCallback();
+             server->SetDisconsCallback();
+             server->SetMessageCallback();
+             server->SetSendMsgCallback();
+             if (0 == server->CreaterServer(EventShare::GetHardwareThreads()))
+             {
+                 printf("创建服务器失败\n");
+                 Sleep(999999);
+             }
+             //std::thread T1(std::bind(&stop_server, server.get()));
+             server->ExecDispatchCoroutine(printf_ex);
+             //T1.join();
+             //EVENT_INFO("exit\n");
+             server.reset();
+         }
+     }
 
     getchar();
     //     EventLoop ev;

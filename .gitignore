@@ -347,3 +347,5 @@ healthchecksdb
 /elib/dllmain.cpp
 /elib_static/elib_static.vcxproj.filters
 /.vs1
+*.exe
+*.jmx
