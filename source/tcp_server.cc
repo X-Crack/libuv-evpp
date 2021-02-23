@@ -542,20 +542,6 @@ namespace Evpp
         }
     }
 
-    void TcpServer::OnDefaultListenShutdown(socket_shutdown* shutdown, int status)
-    {
-        if (nullptr != shutdown)
-        {
-            TcpServer* watcher = static_cast<TcpServer*>(shutdown->data);
-            {
-                if (nullptr != watcher)
-                {
-                    watcher->tcp_listen->OnShutdown(shutdown, status);
-                }
-            }
-        }
-    }
-
     bool TcpServer::DestroyService()
     {
         if (nullptr == tcp_listen || nullptr == event_thread_pool)

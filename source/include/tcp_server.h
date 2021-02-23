@@ -67,7 +67,6 @@ namespace Evpp
         static void OnDefaultClose(event_handle* handler);
         static void OnDefaultShutdown(socket_shutdown* shutdown, int status);
         static void OnDefaultListen(event_handle* handler);
-        static void OnDefaultListenShutdown(socket_shutdown* shutdown, int status);
     private:
         bool DestroyService();
     private:

@@ -119,7 +119,7 @@ namespace Evpp
                     {
                         if (ExecuteListenService(event_thread_pool->GetEventLoop(i), tcp_server[i].get(), &socket->GetEventSocket(i)->GetSocketInfo()->addr, i))
                         {
-                            //EVENT_INFO("the server is starting, listening address: %s listening port: %u", socket->GetEventSocket(i)->GetSocketInfo()->host.c_str(), socket->GetEventSocket(i)->GetSocketInfo()->port);
+                            EVENT_INFO("the server is starting, listening address: %s listening port: %u", socket->GetEventSocket(i)->GetSocketInfo()->host.c_str(), socket->GetEventSocket(i)->GetSocketInfo()->port);
                         }
                         else
                         {
@@ -218,10 +218,5 @@ namespace Evpp
     void TcpListen::OnClose()
     {
         event_stop_listen_semaphore->StopWaiting();
-    }
-
-    void TcpListen::OnShutdown(socket_shutdown* shutdown, int status)
-    {
-        CloseHandler(shutdown->handle, &TcpServer::OnDefaultListen);
     }
 }
