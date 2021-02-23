@@ -1,17 +1,15 @@
 ﻿#include <tcp_server_service.h>
+#include <tcp_server.h>
 #include <event_share.h>
 #include <event_loop.h>
 #include <event_timer.h>
 #include <event_coroutine.h>
-#include <event_mutex.h>
-#include <tcp_server.h>
 namespace Evpp
 {
     TcpServerService::TcpServerService() :
         event_share(std::make_shared<EventShare>()),
         event_base(std::make_shared<EventLoop>(event_share->DefaultEventLoop())),
-        tcp_server(std::make_unique<TcpServer>(event_base.get(), event_share)),
-        event_semaphore(std::make_unique<EventSemaphore>())
+        tcp_server(std::make_unique<TcpServer>(event_base.get(), event_share))
     {
 
     }
@@ -78,10 +76,10 @@ namespace Evpp
         {
             if (tcp_server->DestroyServer())
             {
-                if (event_base->StopDispatch())
-                {
-                    return event_semaphore->StarWaiting();
-                }
+                return event_base->StopDispatch();
+            }
+            else
+            {
                 assert(0);
             }
             return false;
@@ -149,7 +147,7 @@ namespace Evpp
                     EVENT_INFO("this is a exception without handling");
                 }
             }
-            return event_semaphore->StopWaiting();
+            return true;
         }
         return false;
     }

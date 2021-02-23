@@ -70,14 +70,12 @@ namespace Evpp
         {
             if (ExecDispatchEvent(mode))
             {
-                if (SwitchDispatch())
-                {
-                    if (nullptr != function)
-                    {
-                        function(this);
-                    }
-                }
-                return true;
+                return SwitchDispatch();
+            }
+
+            if (nullptr != function)
+            {
+                function(this);
             }
         }
         return false;
@@ -87,24 +85,20 @@ namespace Evpp
     {
         if (nullptr != event_base)
         {
-            for (; 0 == SwitchDispatch();)
+            for (; EventLoopAlive(event_base);)
             {
 #if defined(EVPP_USE_STL_COROUTINES)
-                if (JoinInTaskEx(std::bind(&EventLoop::ExecDispatchEvent, this, mode)).get())
+                if (JoinInTaskEx(std::bind<bool(EventLoop::*)(const EventLoopHandler&, i32)>(&EventLoop::ExecDispatch, this, function, mode)).get())
                 {
                     EVENT_INFO("cyclic event stop running this: %p", this);
                     continue; // uv_run 的生命结束 因为没有handlers存活
                 }
 #else
-                if (ExecDispatchEvent(mode))
+                if (ExecDispatch(function, mode))
                 {
                     continue;
                 }
 #endif
-                if (nullptr != function)
-                {
-                    function(this);
-                }
             }
             return true;
         }
@@ -282,7 +276,12 @@ namespace Evpp
 
     bool EventLoop::SwitchDispatch()
     {
-        if (ExistsRuning() || ExistsExited())
+        if (ExistsExited())
+        {
+            return false;
+        }
+
+        if (ExistsInited() || ExistsRuning())
         {
             return true;
         }

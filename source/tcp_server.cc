@@ -298,7 +298,6 @@ namespace Evpp
                             }
                             return Close(index);
                         }
-
                     }
                     return SocketShutdown(client);
                 }

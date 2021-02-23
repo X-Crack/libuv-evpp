@@ -106,7 +106,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <AdditionalOptions>/await %(AdditionalOptions)</AdditionalOptions>
-      <BrowseInformation>true</BrowseInformation>
+      <BrowseInformation>false</BrowseInformation>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -207,13 +207,5 @@
     <ClInclude Update="F:\common\evpp\share\..\source\include\event_exception.tpp">
       <FileType>Document</FileType>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\glog\vsprojects\glog.vcxproj">
-      <Project>{90f986d2-3f78-3b7f-a88b-7283b79e08ef}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\libuv\vsprojects\uv_a.vcxproj">
-      <Project>{271f0c53-971b-3471-a1f8-1c2a3209445c}</Project>
-    </ProjectReference>
   </ItemGroup>
 </Project>

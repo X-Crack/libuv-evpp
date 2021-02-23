@@ -7,8 +7,6 @@ namespace Evpp
     class EventShare;
     class EventLoop;
     class EventTimer;
-    class EventSynchronize;
-    class EventSemaphore;
     class TcpServer;
     class EVPP_EXPORT TcpServerService
     {
@@ -41,7 +39,6 @@ namespace Evpp
         std::shared_ptr<EventShare>                                     event_share;
         std::shared_ptr<EventLoop>                                      event_base;
         std::unique_ptr<TcpServer>                                      tcp_server;
-        std::unique_ptr<EventSemaphore>                                 event_semaphore;
     };
 }
 #endif // __TCP_SERVER_SERVICE_H__
