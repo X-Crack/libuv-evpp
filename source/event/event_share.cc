@@ -2,11 +2,14 @@
 #include <event_loop.h>
 namespace Evpp
 {
-    static event_loop* const event_base = uv_default_loop();
+    static event_loop* event_base;
 
     EventShare::EventShare()
     {
-
+        if (uv_default_loop() != event_base)
+        {
+            event_base = uv_default_loop();
+        }
     }
 
     EventShare::~EventShare()
