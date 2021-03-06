@@ -18,13 +18,8 @@ namespace Evpp
         virtual ~EventLoopThreadPool();
     public:
         bool CreaterEventThreadPool();
-#ifdef H_OS_WINDOWS 
         bool CreaterEventThreadPool(const u96 size);
         bool DestroyEventThreadPool();
-#else 
-        bool CreaterEventThreadPool(const u96 size);
-#endif
-
         bool CreaterEventThread(const u96 index);
         bool DestroyEventThread(const u96 index);
         bool InitialEventThread(const u96 index);

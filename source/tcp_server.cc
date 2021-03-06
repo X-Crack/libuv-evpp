@@ -221,8 +221,8 @@ namespace Evpp
         {
             if (tcp_session.empty())
             {
-                event_close_flag.store(0, std::memory_order_release);
-                event_close_flag.notify_one();
+                //event_close_flag.store(0, std::memory_order_release);
+               // event_close_flag.notify_one();
             }
         }
     }
@@ -243,7 +243,7 @@ namespace Evpp
                 }
             }
 
-            event_close_flag.wait(1, std::memory_order_relaxed);
+            //event_close_flag.wait(1, std::memory_order_relaxed);
         }
         return true;
     }
@@ -326,32 +326,29 @@ namespace Evpp
                 }
             }
 
-            if (CheckServiceAccept(server))
-            {
-                if (ExistsRuning() && 0 == HandlerStatus(client))
-                {
-                    if (nullptr != client)
-                    {
-                        delete client;
-                    }
-                    return false;
-                }
-            }
-
-            switch (errno)
-            {
-            case NO_ERROR: break;
-            case WSAEWOULDBLOCK:    // A non-blocking socket operation could not be completed immediately.
-            case WSAENOTCONN:       // A request to send or receive data was disallowed because the socket is not connected and (when sending on a datagram socket using a sendto call) no address was supplied.
-            {
-                return false;
-            }
-            default:
-            {
-                EVENT_INFO("accept error code: %d error msessage: %s", errno, strerror(errno));
-                break;
-            }
-            }
+//             if (ExistsRuning() && 0 == HandlerStatus(client))
+//             {
+//                 if (nullptr != client)
+//                 {
+//                     delete client;
+//                 }
+//                 return false;
+//             }
+// 
+//             switch (errno)
+//             {
+//             case NO_ERROR: break;
+//             case WSAEWOULDBLOCK:    // A non-blocking socket operation could not be completed immediately.
+//             case WSAENOTCONN:       // A request to send or receive data was disallowed because the socket is not connected and (when sending on a datagram socket using a sendto call) no address was supplied.
+//             {
+//                 return false;
+//             }
+//             default:
+//             {
+//                 EVENT_INFO("accept error code: %d error msessage: %s", errno, strerror(errno));
+//                 break;
+//             }
+//             }
 
             return loop->RunInQueue(std::bind(&TcpServer::SocketShutdown, this, client));
         }

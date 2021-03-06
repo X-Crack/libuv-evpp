@@ -77,12 +77,12 @@ namespace Evpp
 
     bool EventLoopAlive(event_loop* loop)
     {
-        if (loop->active_handles == ~0U && loop->active_reqs.count == ~0U && loop->endgame_handles == reinterpret_cast<event_handle*>(~0))
+        if (loop->active_handles == ~0U && loop->active_reqs.count == ~0U)
         {
             return false;
         }
 
-        if (loop->active_handles > 0 || loop->active_reqs.count > 0 || loop->endgame_handles != nullptr)
+        if (loop->active_handles > 0 || loop->active_reqs.count > 0)
         {
             return true;
         }
@@ -124,16 +124,4 @@ namespace Evpp
         return FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, code, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), format_string, sizeof(*format_string), NULL);
     }
 #endif
-
-    bool CheckServiceAccept(socket_stream* server)
-    {
-        if (nullptr != server)
-        {
-            if (nullptr != reinterpret_cast<socket_tcp*>(server)->tcp.serv.pending_accepts)
-            {
-                return INVALID_SOCKET == reinterpret_cast<socket_accept*>(reinterpret_cast<socket_tcp*>(server)->tcp.serv.pending_accepts)->accept_socket;
-            }
-        }
-        return true;
-    }
 }

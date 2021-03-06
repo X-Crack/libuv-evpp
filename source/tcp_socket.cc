@@ -37,7 +37,7 @@ namespace Evpp
             return;
         }
 
-        if (tcp_info.find(index) != tcp_info.end(index))
+        if (tcp_info.find(index) != tcp_info.end())
         {
             tcp_info.erase(index);
         }
