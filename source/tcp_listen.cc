@@ -21,8 +21,6 @@ namespace Evpp
 #else
     TcpListen::TcpListen(EventLoop* loop, const std::shared_ptr<EventLoopThreadPool>& thread_pool, const bool proble) :
         event_base(loop),
-        event_close_flag(0),
-        event_close_flag_ex(0),
         tcp_proble(proble),
         event_thread_pool(thread_pool)
     {
@@ -131,7 +129,7 @@ namespace Evpp
         }
         return false;
     }
-
+#ifdef H_OS_WINDOWS
     bool TcpListen::InitEventThreadPools(const u96 size)
     {
         if (nullptr != event_share && nullptr != event_thread_pool)
@@ -143,6 +141,7 @@ namespace Evpp
         }
         return false;
     }
+#endif
 
     bool TcpListen::ExecuteListenService(EventLoop* loop, socket_tcp* server, const sockaddr* addr, const u96 index)
     {

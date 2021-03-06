@@ -54,7 +54,7 @@ namespace Evpp
 #ifdef H_OS_WINDOWS
                     if (event_thread_pool->CreaterEventThreadPool(thread_size))
 #else
-                    if (event_thread_pool->CreaterEventThreadPool(tcp_socket->GetSocketPoolSize()))
+                    if (event_thread_pool->CreaterEventThreadPool(event_socket->GetSocketPoolSize()))
 #endif
                     {
                         if (tcp_listen->CreaterListenService(event_socket.get(), this))

@@ -31,7 +31,9 @@ namespace Evpp
         bool DeletedListenService();
     private:
         bool InitialListenService(EventSocketPool* socket, TcpServer* server, const u96 size);
+#ifdef H_OS_WINDOWS
         bool InitEventThreadPools(const u96 size);
+#endif
         bool ExecuteListenService(EventLoop* loop, socket_tcp* server, const sockaddr* addr, const u96 index);
     private:
         bool InitTcpService(EventLoop* loop, socket_tcp* server);
