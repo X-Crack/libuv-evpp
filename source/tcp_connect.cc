@@ -7,7 +7,6 @@ namespace Evpp
 {
     TcpConnect::TcpConnect(EventLoop* loop, socket_tcp* handler, TcpClient* client) :
         event_base(loop),
-        event_stop_semaphore(std::make_unique<EventSemaphore>()),
         tcp_handler(handler),
         tcp_connect(std::make_unique<socket_connect>())
     {

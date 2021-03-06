@@ -12,7 +12,6 @@ namespace Evpp
 #ifdef H_OS_WINDOWS
     TcpListen::TcpListen(EventLoop* loop, const bool proble) :
         event_base(loop),
-        event_stop_listen_semaphore(std::make_unique<EventSemaphore>()),
         tcp_proble(proble),
         event_share(std::make_shared<EventShare>()),
         event_thread_pool(std::make_shared<EventLoopThreadPool>(loop, event_share))
@@ -83,7 +82,7 @@ namespace Evpp
             {
                 return CloseHandler(server, &TcpServer::OnDefaultListen);
             }
-            return loop->RunInLoop(std::bind<bool(TcpListen::*)(EventLoop*, socket_tcp*, const u96)>(&TcpListen::DestroyListenService, this, loop, server, index)) && event_stop_listen_semaphore->StarWaiting();
+            return loop->RunInLoopEx(std::bind<bool(TcpListen::*)(EventLoop*, socket_tcp*, const u96)>(&TcpListen::DestroyListenService, this, loop, server, index));
         }
         return false;
     }
@@ -217,6 +216,6 @@ namespace Evpp
 
     void TcpListen::OnClose()
     {
-        event_stop_listen_semaphore->StopWaiting();
+       // event_stop_listen_semaphore->StopWaiting();
     }
 }

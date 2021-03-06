@@ -15,8 +15,7 @@ namespace Evpp
         tcp_connect(std::make_unique<TcpConnect>(loop, socket_handler, this)),
         tcp_attach(std::make_unique<TcpAttach>(loop, this)),
         tcp_retry(0),
-        tcp_retry_connection(1),
-        event_stop_semaphore(std::make_unique<EventSemaphore>())
+        tcp_retry_connection(1)
     {
 
     }
@@ -63,7 +62,7 @@ namespace Evpp
                 {
                     return Close() && tcp_connect->DestroyConnect() && ChangeStatus(Status::Exec, Status::Exit);
                 }
-                return RunInLoopEx(std::bind(&TcpClient::DestroyClient, this)) && event_stop_semaphore->StarWaiting();
+                return RunInLoopEx(std::bind(&TcpClient::DestroyClient, this));
             }
 
             if (ExistsInited())
@@ -244,7 +243,7 @@ namespace Evpp
                 {
                     tcp_session.reset();
                 }
-                return event_stop_semaphore->StopWaiting();
+                return true;
             }
             return false;
         }

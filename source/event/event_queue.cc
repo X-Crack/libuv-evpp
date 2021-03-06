@@ -26,10 +26,9 @@ namespace Evpp
         : event_base(base)
         , event_queue(std::make_unique<EventAsync>(base, std::bind(&EventQueue::EventNotify, this)))
         , event_queue_ex(std::make_unique<EventAsync>(base, std::bind(&EventQueue::EventNotifyEx, this)))
-        , event_semaphore(std::make_unique<EventSemaphore>())
 #if defined(EVPP_USE_CAMERON314_CONCURRENTQUEUE)
         , event_queue_nolock(std::make_unique<moodycamel::ConcurrentQueue<Handler, EventQueueTraits>>())
-        , event_queue_lock(std::make_unique<moodycamel::ConcurrentQueue<Handler, EventQueueTraits>>())
+        , event_queue_lock(std::make_unique<moodycamel::BlockingConcurrentQueue<Handler, EventQueueTraits>>())
 #elif defined(EVPP_USE_BOOST_LOCKFREE_QUEUE)
         , event_queue_nolock(std::make_unique<boost::lockfree::queue<Handler*>>(1024))
         , event_queue_lock(std::make_unique<boost::lockfree::queue<Handler*>>(512))
@@ -59,8 +58,14 @@ namespace Evpp
             if (event_queue->DestroyAsync() && event_queue_ex->DestroyAsync())
             {
 #if defined(EVPP_USE_CAMERON314_CONCURRENTQUEUE)
-                while (event_queue_nolock->size_approx()) { EventNotify(); };
-                while (event_queue_lock->size_approx()) { EventNotifyEx(); };
+                while (event_queue_nolock->size_approx())
+                {
+                    EventNotify(); 
+                };
+                while (event_queue_lock->size_approx()) 
+                { 
+                    EventNotifyEx(); 
+                };
 #elif defined(EVPP_USE_BOOST_LOCKFREE_QUEUE)
                 while (evebt_queue_nolock_function_count.load(std::memory_order_acquire)) { EventNotify(); };
                 while (evebt_queue_lock_function_count.load(std::memory_order_acquire)) { EventNotifyEx(); };
@@ -149,7 +154,7 @@ namespace Evpp
                 event_queue_lock.emplace_back(function);
             }
 #endif
-            return event_queue_ex->ExecNotify() && event_semaphore->StarWaiting();
+            return event_queue_ex->ExecNotify()/* && event_semaphore->StarWaiting()*/;
         }
         return false;
     }
@@ -247,10 +252,10 @@ namespace Evpp
                 EVENT_INFO("%s", ex.what());
             }
 
-            if (event_semaphore->StopWaiting())
-            {
-                continue;
-            }
+//             if (event_semaphore->StopWaiting())
+//             {
+//                 continue;
+//             }
         }
 #elif defined(EVPP_USE_BOOST_LOCKFREE_QUEUE)
         while (event_queue_lock->pop(event_queue_lock_function))

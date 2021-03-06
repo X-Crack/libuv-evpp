@@ -10,7 +10,6 @@ namespace Evpp
     class EventLoop;
     class EventTimer;
     class EventSocket;
-    class EventSemaphore;
     class TcpConnect;
     class TcpSession;
     class TcpAttach;
@@ -72,7 +71,6 @@ namespace Evpp
         std::unique_ptr<TcpAttach>                                      tcp_attach;
         std::atomic<u32>                                                tcp_retry;
         std::atomic<u32>                                                tcp_retry_connection;
-        std::unique_ptr<EventSemaphore>                                 event_stop_semaphore;
     };
 }
 #endif // __TCP_CLIENT_H__

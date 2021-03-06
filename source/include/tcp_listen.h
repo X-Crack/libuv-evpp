@@ -42,7 +42,6 @@ namespace Evpp
         void OnClose();
     private:
         EventLoop*                                                      event_base;
-        std::unique_ptr<EventSemaphore>                                 event_stop_listen_semaphore;
 #ifdef H_OS_WINDOWS
         std::shared_ptr<EventShare>                                     event_share;
 #endif

@@ -14,8 +14,7 @@ namespace Evpp
         event_refer(0),
         event_queue(std::make_unique<EventQueue>(this)),
         event_timer_pool(std::make_unique<EventTimerPool>(this)),
-        event_thread(0),
-        event_semaphore(std::make_unique<EventSemaphore>())
+        event_thread(0)
     {
 
     }
@@ -118,10 +117,7 @@ namespace Evpp
                 return false;
             }
 
-            if (RunInLoopEx(std::bind(&EventLoop::StopDispatch, this)))
-            {
-                return event_semaphore->StarWaiting();
-            }
+            return RunInLoopEx(std::bind(&EventLoop::StopDispatch, this));
         }
         return false;
     }
@@ -293,10 +289,7 @@ namespace Evpp
 
         if (0 == uv_loop_close(event_base))
         {
-            if (event_semaphore->StopWaiting())
-            {
-                return ChangeStatus(Status::Stop, Status::Exit);
-            }
+            return ChangeStatus(Status::Stop, Status::Exit);
         }
         else
         {

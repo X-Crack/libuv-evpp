@@ -22,7 +22,6 @@ namespace Evpp
     EventLoopThread::EventLoopThread(EventLoop* base, const std::shared_ptr<EventShare>& share, const u96 index) :
         event_base(base),
         event_index(index),
-        event_semaphore(std::make_unique<EventSemaphore>()),
         loop(std::make_shared<EventLoop>(share->EventLoop(index), index)),
 #if defined(EVPP_USE_STL_THREAD)
         loop_thread(std::make_unique <std::thread>())

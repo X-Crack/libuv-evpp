@@ -12,7 +12,6 @@ namespace Evpp
     class EventQueue;
     class EventWatcher;
     class EventTimerPool;
-    class EventSemaphore;
     class EVPP_EXPORT EventLoop : public EventStatus, public std::enable_shared_from_this<EventLoop>
     {
     public:
@@ -61,7 +60,6 @@ namespace Evpp
         std::unique_ptr<EventTimerPool>                                     event_timer_pool;
         std::unordered_map<u96, std::unique_ptr<std::any>>                  event_context;
         u32                                                                 event_thread;
-        std::unique_ptr<EventSemaphore>                                     event_semaphore;
     };
 }
 #endif // __EVENT_LOOP_H__

@@ -10,7 +10,6 @@ namespace Evpp
     class EventLoop;
     class EventShare;
     class EventStatus;
-    class EventSemaphore;
     class EVPP_EXPORT EventLoopThread final : public EventStatus
     {
     public:
@@ -32,7 +31,6 @@ namespace Evpp
     private:
         EventLoop*                                      event_base;
         u96                                             event_index;
-        std::unique_ptr<EventSemaphore>                 event_semaphore;
         std::shared_ptr<EventLoop>                      loop;
 #if defined(EVPP_USE_STL_THREAD)
         std::unique_ptr<std::thread>                    loop_thread;

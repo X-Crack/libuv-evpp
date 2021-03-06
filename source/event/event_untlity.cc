@@ -107,6 +107,7 @@ namespace Evpp
     }
 #endif
 
+#ifdef H_OS_WINDOWS
     constexpr const u96 HashBit::Hash(const char* hash, const u96 size, u96 hash_mask, u32 index)
     {
         if (index != size)
@@ -115,6 +116,8 @@ namespace Evpp
         }
         return hash_mask ^ 0x7ffffff;
     }
+#endif
+
 #ifdef H_OS_WINDOWS
     bool SocketFormatErrorString(u32 code, String* format_string)
     {

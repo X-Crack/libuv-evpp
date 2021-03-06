@@ -6,7 +6,6 @@ namespace Evpp
 {
     class EventLoop;
     class EventSocket;
-    class EventSemaphore;
     class TcpClient;
     class EVPP_EXPORT TcpConnect
     {
@@ -23,7 +22,6 @@ namespace Evpp
         bool CreaterConnect(const sockaddr* addr);
     private:
         EventLoop*                                                      event_base;
-        std::unique_ptr<EventSemaphore>                                 event_stop_semaphore;
         socket_tcp*                                                     tcp_handler;
         std::unique_ptr<socket_connect>                                 tcp_connect;
     };

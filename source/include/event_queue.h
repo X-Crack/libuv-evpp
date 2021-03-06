@@ -31,7 +31,6 @@ namespace Evpp
     class EventLoop;
     class EventAsync;
     class EventMutex;
-    class EventSemaphore;
     class EventQueueTraits;
     class EVPP_EXPORT EventQueue
     {
@@ -54,10 +53,9 @@ namespace Evpp
         EventLoop*                                                                          event_base;
         std::unique_ptr<EventAsync>                                                         event_queue;         // 异步
         std::unique_ptr<EventAsync>                                                         event_queue_ex;      // 同步
-        std::unique_ptr<EventSemaphore>                                                     event_semaphore;
 #if defined(EVPP_USE_CAMERON314_CONCURRENTQUEUE)
         std::unique_ptr<moodycamel::ConcurrentQueue<Handler, EventQueueTraits>>             event_queue_nolock;
-        std::unique_ptr<moodycamel::ConcurrentQueue<Handler, EventQueueTraits>>             event_queue_lock;
+        std::unique_ptr<moodycamel::BlockingConcurrentQueue<Handler, EventQueueTraits>>             event_queue_lock;
         Handler                                                                             event_queue_nolock_function;
         Handler                                                                             event_queue_lock_function;
 #elif defined(EVPP_USE_BOOST_LOCKFREE_QUEUE)
