@@ -12,7 +12,7 @@
 #       define GLOG_NO_ABBREVIATED_SEVERITIES
 #   endif
 
-#include <logging.h>
+#include <glog/logging.h>
 
 #ifdef GOOGLE_LOGGING
 #       define EVENT_CANCEL_LOGGING 1
