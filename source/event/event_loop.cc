@@ -117,7 +117,7 @@ namespace Evpp
                 return false;
             }
 
-            return RunInQueue(std::bind(&EventLoop::StopDispatch, this)) && event_locking.dowait();
+            return RunInLoopEx(std::bind(&EventLoop::StopDispatch, this)) && event_locking.dowait();
         }
         return false;
     }

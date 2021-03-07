@@ -333,7 +333,7 @@ namespace Evpp
                  return false;
              }
 
-            return loop->RunInLoopEx(std::bind(&TcpServer::SocketShutdown, this, client));
+            return loop->RunInQueue(std::bind(&TcpServer::SocketShutdown, this, client));
         }
         return false;
     }
@@ -352,7 +352,7 @@ namespace Evpp
 #endif
             }
         }
-        return loop->RunInLoopEx(std::bind<bool(TcpServer::*)(EventLoop*, socket_stream*, socket_tcp*, const u96)>(&TcpServer::DefaultAccepts, this, loop, server, client, index));
+        return loop->RunInQueue(std::bind<bool(TcpServer::*)(EventLoop*, socket_stream*, socket_tcp*, const u96)>(&TcpServer::DefaultAccepts, this, loop, server, client, index));
 #else
         return loop->RunInQueue(std::bind(&TcpServer::InitialAccepts, this, loop, server, client, index));
 #endif
