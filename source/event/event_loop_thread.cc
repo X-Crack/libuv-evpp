@@ -36,7 +36,7 @@ namespace Evpp
 
     EventLoopThread::~EventLoopThread()
     {
-
+        
     }
 
     bool EventLoopThread::CreaterThread()
@@ -216,6 +216,7 @@ namespace Evpp
             {
                 loop_thread->join();
                 loop_thread.reset();
+                EVENT_ERROR("EventLoopThread Exit");
                 return ChangeStatus(Status::Stop, Status::Exit);
             }
         }

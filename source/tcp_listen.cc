@@ -80,7 +80,7 @@ namespace Evpp
             {
                 return CloseHandler(server, &TcpServer::OnDefaultListen);
             }
-            return loop->RunInLoopEx(std::bind<bool(TcpListen::*)(EventLoop*, socket_tcp*, const u96)>(&TcpListen::DestroyListenService, this, loop, server, index));
+            return loop->RunInQueue(std::bind<bool(TcpListen::*)(EventLoop*, socket_tcp*, const u96)>(&TcpListen::DestroyListenService, this, loop, server, index)) && event_locking.dowait();
         }
         return false;
     }
@@ -179,7 +179,7 @@ namespace Evpp
                 }
                 return false;
             }
-            return loop->RunInLoopEx(std::bind(&TcpListen::ExecuteListenService, this, loop, server, addr, index));
+            return loop->RunInLoop(std::bind(&TcpListen::ExecuteListenService, this, loop, server, addr, index));
         }
         return false;
     }
@@ -215,6 +215,6 @@ namespace Evpp
 
     void TcpListen::OnClose()
     {
-       // event_stop_listen_semaphore->StopWaiting();
+        event_locking.notify();
     }
 }

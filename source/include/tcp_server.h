@@ -2,6 +2,7 @@
 #define __TCP_SERVER_H__
 #include <event_config.h>
 #include <event_status.h>
+#include <event_mutex.h>
 #include <atomic>
 #include <memory>
 #include <queue>
@@ -75,6 +76,7 @@ namespace Evpp
         std::atomic<u32>                                                        event_close_flag;
         std::shared_ptr<EventLoopThreadPool>                                    event_thread_pool;
         std::unique_ptr<EventSocketPool>                                        event_socket;
+        EventLocking                                                            event_locking;
         InterfaceAccepts                                                        socket_accepts;
         InterfaceDiscons                                                        socket_discons;
         InterfaceMessage                                                        socket_message;

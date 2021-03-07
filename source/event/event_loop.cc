@@ -117,7 +117,7 @@ namespace Evpp
                 return false;
             }
 
-            return RunInLoopEx(std::bind(&EventLoop::StopDispatch, this));
+            return RunInQueue(std::bind(&EventLoop::StopDispatch, this)) && event_locking.dowait();
         }
         return false;
     }
@@ -289,7 +289,7 @@ namespace Evpp
 
         if (0 == uv_loop_close(event_base))
         {
-            return ChangeStatus(Status::Stop, Status::Exit);
+            return ChangeStatus(Status::Stop, Status::Exit) && event_locking.notify();
         }
         else
         {
@@ -303,7 +303,6 @@ namespace Evpp
         if (nullptr != handler)
         {
             EVENT_ERROR("%s not closed check your code", uv_handle_type_name(handler->type));
-            assert(0);
         }
     }
 }

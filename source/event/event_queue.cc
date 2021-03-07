@@ -28,14 +28,14 @@ namespace Evpp
         , event_queue_ex(std::make_unique<EventAsync>(base, std::bind(&EventQueue::EventNotifyEx, this)))
 #if defined(EVPP_USE_CAMERON314_CONCURRENTQUEUE)
         , event_queue_nolock(std::make_unique<moodycamel::ConcurrentQueue<Handler, EventQueueTraits>>())
-        , event_queue_lock(std::make_unique<moodycamel::BlockingConcurrentQueue<Handler, EventQueueTraits>>())
+        , event_queue_lock(std::make_unique<moodycamel::ConcurrentQueue<Handler, EventQueueTraits>>())
 #elif defined(EVPP_USE_BOOST_LOCKFREE_QUEUE)
         , event_queue_nolock(std::make_unique<boost::lockfree::queue<Handler*>>(1024))
         , event_queue_lock(std::make_unique<boost::lockfree::queue<Handler*>>(512))
         , event_queue_nolock_function(nullptr)
         , event_queue_lock_function(nullptr)
 #endif
-        , evebt_queue_nolock_function_count(0)
+        , event_queue_nolock_function_count(0)
         , evebt_queue_lock_function_count(0)
     {
 
@@ -67,7 +67,7 @@ namespace Evpp
                     EventNotifyEx(); 
                 };
 #elif defined(EVPP_USE_BOOST_LOCKFREE_QUEUE)
-                while (evebt_queue_nolock_function_count.load(std::memory_order_acquire)) { EventNotify(); };
+                while (event_queue_nolock_function_count.load(std::memory_order_acquire)) { EventNotify(); };
                 while (evebt_queue_lock_function_count.load(std::memory_order_acquire)) { EventNotifyEx(); };
 #else
                 if (event_queue_nolock.size()) { EventNotify(); };
@@ -125,7 +125,7 @@ namespace Evpp
 #if defined(EVPP_USE_CAMERON314_CONCURRENTQUEUE)
             while (0 == event_queue_nolock->try_enqueue(function));
 #elif defined(EVPP_USE_BOOST_LOCKFREE_QUEUE)
-            evebt_queue_nolock_function_count.fetch_add(1, std::memory_order_release);
+            event_queue_nolock_function_count.fetch_add(1, std::memory_order_release);
             while (0 == event_queue_nolock->push(new Handler(function)));
 #else
             {
@@ -154,7 +154,7 @@ namespace Evpp
                 event_queue_lock.emplace_back(function);
             }
 #endif
-            return event_queue_ex->ExecNotify()/* && event_semaphore->StarWaiting()*/;
+            return event_queue_ex->ExecNotify() && event_locking.dowait();
         }
         return false;
     }
@@ -187,7 +187,7 @@ namespace Evpp
             {
                 try
                 {
-                    if (evebt_queue_nolock_function_count.fetch_sub(1, std::memory_order_relaxed))
+                    if (event_queue_nolock_function_count.fetch_sub(1, std::memory_order_relaxed))
                     {
                         SafeReleaseHandler destroy_object(std::addressof(event_queue_nolock_function));
                         {
@@ -252,10 +252,10 @@ namespace Evpp
                 EVENT_INFO("%s", ex.what());
             }
 
-//             if (event_semaphore->StopWaiting())
-//             {
-//                 continue;
-//             }
+            if (event_locking.notify())
+            {
+                continue;
+            }
         }
 #elif defined(EVPP_USE_BOOST_LOCKFREE_QUEUE)
         while (event_queue_lock->pop(event_queue_lock_function))

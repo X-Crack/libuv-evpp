@@ -2,6 +2,7 @@
 #define __TCP_LISTEN_H__
 #include <event_config.h>
 #include <event_status.h>
+#include <event_mutex.h>
 #include <string>
 #include <memory>
 namespace Evpp
@@ -48,6 +49,7 @@ namespace Evpp
         std::shared_ptr<EventShare>                                     event_share;
 #endif
         std::shared_ptr<EventLoopThreadPool>                            event_thread_pool;
+        EventLocking                                                    event_locking;
         bool                                                            tcp_proble;
         std::vector<std::unique_ptr<socket_tcp>>                        tcp_server;
     };

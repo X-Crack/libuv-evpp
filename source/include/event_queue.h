@@ -1,6 +1,7 @@
 ﻿#ifndef __EVENT_QUEUE_H__
 #define __EVENT_QUEUE_H__
 #include <event_config.h>
+#include <event_mutex.h>
 #include <memory>
 #include <atomic>
 #include <mutex>
@@ -55,7 +56,7 @@ namespace Evpp
         std::unique_ptr<EventAsync>                                                         event_queue_ex;      // 同步
 #if defined(EVPP_USE_CAMERON314_CONCURRENTQUEUE)
         std::unique_ptr<moodycamel::ConcurrentQueue<Handler, EventQueueTraits>>             event_queue_nolock;
-        std::unique_ptr<moodycamel::BlockingConcurrentQueue<Handler, EventQueueTraits>>             event_queue_lock;
+        std::unique_ptr<moodycamel::ConcurrentQueue<Handler, EventQueueTraits>>             event_queue_lock;
         Handler                                                                             event_queue_nolock_function;
         Handler                                                                             event_queue_lock_function;
 #elif defined(EVPP_USE_BOOST_LOCKFREE_QUEUE)
@@ -69,8 +70,9 @@ namespace Evpp
         std::mutex                                                                          event_queue_nolock_mutex;
         std::mutex                                                                          event_queue_lock_mutex;
 #endif
-        std::atomic<u32>                                                                    evebt_queue_nolock_function_count;
+        std::atomic<u32>                                                                    event_queue_nolock_function_count;
         std::atomic<u32>                                                                    evebt_queue_lock_function_count;
+        EventLocking                                                                        event_locking;
 #ifdef EVPP_USE_BOOST_LOCKFREE_QUEUE
     private:
         class SafeReleaseHandler

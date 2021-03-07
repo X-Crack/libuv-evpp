@@ -60,6 +60,7 @@ namespace Evpp
         std::unique_ptr<EventTimerPool>                                     event_timer_pool;
         std::unordered_map<u96, std::unique_ptr<std::any>>                  event_context;
         u32                                                                 event_thread;
+        EventLocking                                                        event_locking;
     };
 }
 #endif // __EVENT_LOOP_H__

@@ -76,7 +76,10 @@ namespace Evpp
         {
             if (tcp_server->DestroyServer())
             {
-                return event_base->StopDispatch();
+                if (event_base->StopDispatch())
+                {
+                    return event_locking.dowait();
+                }
             }
             else
             {
@@ -91,7 +94,7 @@ namespace Evpp
     {
         if (nullptr != event_base)
         {
-            return event_base->ExecDispatch(mode);
+            return event_base->ExecDispatch(mode) && event_locking.notify();
         }
         return false;
     }
@@ -100,7 +103,7 @@ namespace Evpp
     {
         if (nullptr != event_base)
         {
-            return event_base->ExecDispatch(function, mode);
+            return event_base->ExecDispatch(function, mode) && event_locking.notify();
         }
         return false;
     }
@@ -109,7 +112,7 @@ namespace Evpp
     {
         if (nullptr != event_base)
         {
-            return event_base->ExecDispatchEx(function, mode);
+            return event_base->ExecDispatchEx(function, mode) && event_locking.notify();
         }
         return false;
     }
@@ -147,7 +150,7 @@ namespace Evpp
                     EVENT_INFO("this is a exception without handling");
                 }
             }
-            return true;
+            return event_locking.notify();
         }
         return false;
     }

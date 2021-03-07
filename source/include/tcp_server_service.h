@@ -1,6 +1,7 @@
 ﻿#ifndef __TCP_SERVER_SERVICE_H__
 #define __TCP_SERVER_SERVICE_H__
 #include <event_config.h>
+#include <event_mutex.h>
 #include <memory>
 namespace Evpp
 {
@@ -38,6 +39,7 @@ namespace Evpp
     private:
         std::shared_ptr<EventShare>                                     event_share;
         std::shared_ptr<EventLoop>                                      event_base;
+        EventLocking                                                    event_locking;
         std::unique_ptr<TcpServer>                                      tcp_server;
     };
 }
