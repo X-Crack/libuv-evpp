@@ -1,6 +1,7 @@
 ﻿#ifndef __EVENT_LOOP_THREAD_H__
 #define __EVENT_LOOP_THREAD_H__
 #include <event_config.h>
+#include <event_mutex.h>
 namespace boost
 {
     class thread;
@@ -40,8 +41,7 @@ namespace Evpp
 #else
         std::unique_ptr<event_thread>                   loop_thread;
 #endif
-        std::condition_variable                         cv_signal;
-        std::mutex                                      cv_mutex;
+        EventLocking                                    event_locking;
     };
 }
 #endif // __EVENT_LOOP_THREAD_H__

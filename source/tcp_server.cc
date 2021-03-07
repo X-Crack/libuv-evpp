@@ -221,9 +221,9 @@ namespace Evpp
 
     void TcpServer::DeletedSession(const u96 index)
     {
-        if (tcp_session.size())
         {
             std::unique_lock<std::recursive_mutex> lock(tcp_recursive_mutex);
+            if (tcp_session.size())
             {
                 if (tcp_session.find(index) != tcp_session.end())
                 {
@@ -238,7 +238,10 @@ namespace Evpp
         {
             if (tcp_session.empty())
             {
-                event_locking.notify();
+                if (event_locking.notify())
+                {
+                    return;
+                }
             }
         }
     }
@@ -257,7 +260,6 @@ namespace Evpp
                     }
                 }
             }
-
             return event_locking.dowait();
         }
         return true;
@@ -296,33 +298,29 @@ namespace Evpp
     {
         if (nullptr != loop && nullptr != client)
         {
-            if (ExistsRuning())
+            if (loop->EventThread())
             {
-                if (loop->EventThread())
+                if (ExistsRuning())
                 {
-                    if (ExistsRuning())
+                    if (CreaterSession(loop, client, index))
                     {
-                        if (CreaterSession(loop, client, index))
+                        if (tcp_socket->AddSockInfo(client, index))
                         {
-                            if (tcp_socket->AddSockInfo(client, index))
+                            if (nullptr != socket_accepts)
                             {
-                                if (nullptr != socket_accepts)
+                                // messages cannot be sent asynchronously, because it is already asynchronous, and doing asynchronous is redundant, and it also involves the return value, whether to close the session.
+                                if (socket_accepts(loop, tcp_session[index], index))
                                 {
-                                    // messages cannot be sent asynchronously, because it is already asynchronous, and doing asynchronous is redundant, and it also involves the return value, whether to close the session.
-                                    if (socket_accepts(loop, tcp_session[index], index))
-                                    {
-                                        return true;
-                                    }
+                                    return true;
                                 }
                             }
-                            return Close(index);
                         }
+                        return Close(index);
                     }
-                    return SocketShutdown(client);
                 }
-                return loop->RunInQueue(std::bind(&TcpServer::InitialSession, this, loop, client, index));
+                return SocketShutdown(client);
             }
-            return SocketShutdown(client);
+            return loop->RunInQueue(std::bind(&TcpServer::InitialSession, this, loop, client, index));
         }
         return false;
     }
@@ -373,15 +371,14 @@ namespace Evpp
 #endif
             }
         }
-        return loop->RunInLoop(std::bind<bool(TcpServer::*)(EventLoop*, socket_stream*, socket_tcp*, const u96)>(&TcpServer::DefaultAccepts, this, loop, server, client, index));
-#else
+        return loop->RunInLoopEx(std::bind<bool(TcpServer::*)(EventLoop*, socket_stream*, socket_tcp*, const u96)>(&TcpServer::DefaultAccepts, this, loop, server, client, index));
+#elif H_OS_LINUX
         return loop->RunInQueue(std::bind(&TcpServer::InitialAccepts, this, loop, server, client, index));
 #endif
     }
 
     bool TcpServer::DefaultAccepts(socket_stream* server, i32 status)
     {
-        EVENT_INFO("DefaultAccepts Thread Id: %d", EventLoop::EventThreadId());
         if (0 == status && nullptr != server)
         {
             u96 index = GetPlexingIndex();
@@ -479,7 +476,6 @@ namespace Evpp
         {
             TcpServer* watcher = static_cast<TcpServer*>(handler->data);
             {
-
                 if (nullptr != watcher)
                 {
                     if (watcher->DefaultAccepts(handler, status))
@@ -541,7 +537,7 @@ namespace Evpp
             return false;
         }
 
-        while (ChangeStatus(Status::Exec, Status::Stop))
+        if (ChangeStatus(Status::Exec, Status::Stop))
         {
             if (tcp_listen->DestroyListenService())
             {

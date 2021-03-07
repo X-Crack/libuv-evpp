@@ -57,19 +57,15 @@ namespace Evpp
                         if (0 == _set_errno(uv_thread_create(loop_thread.get(), &EventLoopThread::WatcherCoroutineInThread, this)))
 #endif
                         {
-                            std::unique_lock<std::mutex> lock(cv_mutex);
+                            if (event_locking.dowait())
                             {
-                                // 启动线程需要慢启动，因为初始化数据过多，否则会导致RunInLoop异步安全初始化失败。
-                                if (cv_signal.wait_for(lock, std::chrono::milliseconds(0), std::bind(&EventLoopThread::AvailableEvent, this)))
-                                {
-                                    return true;
-                                }
-                                else
-                                {
-                                    EVENT_INFO("thread failed to start please wait a little longer");
-                                }
-                                assert(0);
+                                return true;
                             }
+                            else
+                            {
+                                EVENT_INFO("thread failed to start please wait a little longer");
+                            }
+                            assert(0);
                         }
 #if !defined(EVPP_USE_STL_THREAD) && !defined(EVPP_USE_BOOST_THREAD)
                         switch (errno)
@@ -135,7 +131,7 @@ namespace Evpp
 
         if (ChangeStatus(Status::Init, Status::Exec))
         {
-            if (loop->InitialEvent())
+            if (loop->InitialEvent() && event_locking.notify())
             {
                 for (; EventLoopAlive(loop->EventBasic());)
                 {
@@ -192,18 +188,14 @@ namespace Evpp
             return false;
         }
 
-        while (1)
+        if (ExistsRuning())
         {
-            if (ExistsRuning())
+            if (EventLoopAlive(loop->EventBasic()) && loop->ExistsRuning())
             {
-                if (EventLoopAlive(loop->EventBasic()) && loop->ExistsRuning())
-                {
-                    cv_signal.notify_one();
-                    return true;
-                }
+                return true;
             }
         }
-
+        
         return false;
     }
 
@@ -216,7 +208,6 @@ namespace Evpp
             {
                 loop_thread->join();
                 loop_thread.reset();
-                EVENT_ERROR("EventLoopThread Exit");
                 return ChangeStatus(Status::Stop, Status::Exit);
             }
         }

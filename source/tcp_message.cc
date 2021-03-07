@@ -31,7 +31,7 @@ namespace Evpp
 
     TcpMessage::~TcpMessage()
     {
-
+        EVENT_ERROR("TcpMessage Exit");
     }
 
     bool TcpMessage::RunInLoop(const Handler& function)
@@ -63,6 +63,12 @@ namespace Evpp
 
     bool TcpMessage::Close()
     {
+#ifdef EVENT_DEBUG_MODE
+        if (reinterpret_cast<EventLoop*>(0xDDDDDDDD) == event_base)
+        {
+            return true;
+        }
+#endif
         if (nullptr != event_base)
         {
             if (event_base->EventThread())
@@ -73,7 +79,7 @@ namespace Evpp
                 }
                 return false;
             }
-            return RunInLoop(std::bind(&TcpMessage::Close, this));
+            return RunInLoopEx(std::bind(&TcpMessage::Close, this));
         }
         return false;
     }
@@ -136,11 +142,6 @@ namespace Evpp
     {
         if (nullptr != handler)
         {
-            if (0 == HandlerStatus(handler))
-            {
-                return false;
-            }
-
             return Evpp::SocketShutdown(handler, &TcpMessage::DefaultShutdown);
         }
         return false;
@@ -192,7 +193,7 @@ namespace Evpp
 
             if (nullptr != system_discons)
             {
-                return RunInQueue(std::bind(system_discons, tcp_socket));
+                return RunInLoopEx(std::bind(system_discons, tcp_socket));
             }
         }
     }

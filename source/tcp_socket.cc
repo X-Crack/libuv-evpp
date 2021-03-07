@@ -73,7 +73,7 @@ namespace Evpp
                 {
                     socket->sockname.host = std::move(socket->sockname.host_address);
                     socket->sockname.port = ntohs(socket->sockname.addr4.sin_port);
-                    EVENT_INFO("new client enters localhost address: %s localhost port: %u", socket->sockname.host.c_str(), socket->sockname.port);
+                    //EVENT_INFO("new client enters localhost address: %s localhost port: %u", socket->sockname.host.c_str(), socket->sockname.port);
                 }
             }
 
@@ -83,7 +83,7 @@ namespace Evpp
                 {
                     socket->sockname.host = std::move(socket->sockname.host_address);
                     socket->sockname.port = ntohs(socket->sockname.addr6.sin6_port);
-                    EVENT_INFO("new client enters localhost address: %s localhost port: %u", socket->sockname.host.c_str(), socket->sockname.port);
+                    //EVENT_INFO("new client enters localhost address: %s localhost port: %u", socket->sockname.host.c_str(), socket->sockname.port);
                 }
             }
 
@@ -107,7 +107,7 @@ namespace Evpp
                 {
                     socket->peername.host = std::move(socket->peername.host_address);
                     socket->peername.port = ntohs(socket->peername.addr4.sin_port);
-                    EVENT_INFO("new client enters remote address: %s remote port: %u", socket->peername.host.c_str(), socket->peername.port);
+                   /// EVENT_INFO("new client enters remote address: %s remote port: %u", socket->peername.host.c_str(), socket->peername.port);
                 }
             }
 
@@ -117,7 +117,7 @@ namespace Evpp
                 {
                     socket->peername.host = std::move(socket->peername.host_address);
                     socket->peername.port = ntohs(socket->peername.addr6.sin6_port);
-                    EVENT_INFO("new client enters remote address: %s remote port: %u", socket->peername.host.c_str(), socket->peername.port);
+                   // EVENT_INFO("new client enters remote address: %s remote port: %u", socket->peername.host.c_str(), socket->peername.port);
                 }
             }
 
