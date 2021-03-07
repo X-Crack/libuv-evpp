@@ -54,7 +54,7 @@ set(CXX_FLAGS
         -fms-extensions
         -Wfloat-equal
         -Wextra
-        -std=c++20)
+        -std=c++2a)
 
 link_directories(. /usr/local/lib)
 include_directories(/usr/local/include)
