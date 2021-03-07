@@ -32,7 +32,9 @@ namespace Evpp
         bool AddListenPort(const std::string& address, const u16 port);
         bool Send(const u96 index, const char* buf, u96 len, u32 nbufs = 1);
         bool Send(const u96 index, const std::string& buf, u32 nbufs = 1);
+        bool Send(TcpSession* session, const char* buf, u96 len, u32 nbufs = 1);
         bool Close(const u96 index);
+        bool Close(TcpSession* session);
         void SetKeepaLive(const u32 time);
         u32  GetHardwareThreads();
     public:
@@ -50,7 +52,7 @@ namespace Evpp
         bool InitialAccepts(EventLoop* loop, socket_stream* server, socket_tcp* client, const u96 index);
         void DeletedSession(const u96 index);
         bool CleanedSession();
-        const std::shared_ptr<TcpSession>& GetSession(const u96 index);
+        TcpSession* GetSession(const u96 index);
     private:
         bool DefaultAccepts(EventLoop* loop, socket_stream* server, socket_tcp* client, const u96 index);
         bool DefaultAccepts(socket_stream* server, i32 status);

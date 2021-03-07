@@ -28,7 +28,7 @@ namespace Evpp
         , event_queue_ex(std::make_unique<EventAsync>(base, std::bind(&EventQueue::EventNotifyEx, this)))
 #if defined(EVPP_USE_CAMERON314_CONCURRENTQUEUE)
         , event_queue_nolock(std::make_unique<moodycamel::ConcurrentQueue<Handler, EventQueueTraits>>())
-        , event_queue_lock(std::make_unique<moodycamel::ConcurrentQueue<Handler, EventQueueTraits>>())
+        , event_queue_lock(std::make_unique<moodycamel::BlockingConcurrentQueue<Handler, EventQueueTraits>>())
 #elif defined(EVPP_USE_BOOST_LOCKFREE_QUEUE)
         , event_queue_nolock(std::make_unique<boost::lockfree::queue<Handler*>>(1024))
         , event_queue_lock(std::make_unique<boost::lockfree::queue<Handler*>>(512))

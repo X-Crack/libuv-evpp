@@ -110,7 +110,7 @@ namespace Evpp
         {
             return false;
         }
-        return GetSession(index)->Send(buf, len, nbufs);
+        return Send(GetSession(index), buf, len, nbufs);
     }
 
     bool TcpServer::Send(const u96 index, const std::string& buf, u32 nbufs)
@@ -119,7 +119,16 @@ namespace Evpp
         {
             return false;
         }
-        return GetSession(index)->Send(buf, nbufs);
+        return Send(GetSession(index), buf.c_str(), buf.size(), nbufs);
+    }
+
+    bool TcpServer::Send(TcpSession* session, const char* buf, u96 len, u32 nbufs)
+    {
+        if (nullptr != session)
+        {
+            return session->Send(buf, len, nbufs);
+        }
+        return false;
     }
 
     bool TcpServer::Close(const u96 index)
@@ -129,7 +138,16 @@ namespace Evpp
             return false;
         }
 
-        return GetSession(index)->Close();
+        return Close(GetSession(index));
+    }
+
+    bool TcpServer::Close(TcpSession* session)
+    {
+        if (nullptr == session)
+        {
+            return false;
+        }
+        return session->Close();
     }
 
     void TcpServer::SetKeepaLive(const u32 time)
@@ -233,11 +251,10 @@ namespace Evpp
                 std::unique_lock<std::recursive_mutex> lock(tcp_recursive_mutex);
                 for (auto& [index, session] : tcp_session)
                 {
-                    if (Close(index))
+                    if (session->Close())
                     {
                         continue;
                     }
-                    return false;
                 }
             }
 
@@ -246,10 +263,14 @@ namespace Evpp
         return true;
     }
 
-    const std::shared_ptr<TcpSession>& TcpServer::GetSession(const u96 index)
+    TcpSession* TcpServer::GetSession(const u96 index)
     {
         std::unique_lock<std::recursive_mutex> lock(tcp_recursive_mutex);
-        return std::cref(tcp_session[index]);
+        if (tcp_session.find(index) != tcp_session.end())
+        {
+            return tcp_session[index].get();
+        }
+        return nullptr;
     }
 
     bool TcpServer::CreaterSession(EventLoop* loop, socket_tcp* client, const u96 index)
@@ -288,7 +309,7 @@ namespace Evpp
                                 if (nullptr != socket_accepts)
                                 {
                                     // messages cannot be sent asynchronously, because it is already asynchronous, and doing asynchronous is redundant, and it also involves the return value, whether to close the session.
-                                    if (socket_accepts(loop, GetSession(index), index))
+                                    if (socket_accepts(loop, tcp_session[index], index))
                                     {
                                         return true;
                                     }
@@ -310,11 +331,11 @@ namespace Evpp
     {
         if (nullptr != loop && nullptr != server && nullptr != client)
         {
-            if (0 == uv_tcp_init(loop->EventBasic(), client))
+            if (ExistsRuning())
             {
-                if (0 == uv_accept(server, reinterpret_cast<socket_stream*>(client)))
+                if (0 == uv_tcp_init(loop->EventBasic(), client))
                 {
-                    if (ExistsRuning())
+                    if (0 == uv_accept(server, reinterpret_cast<socket_stream*>(client)))
                     {
                         if (0 == uv_tcp_keepalive(client, 1, tcp_keepalive.load()))
                         {
@@ -324,7 +345,7 @@ namespace Evpp
                 }
             }
 
-             if (ExistsRuning() && 0 == HandlerStatus(client))
+             if (0 == HandlerStatus(client))
              {
                  if (nullptr != client)
                  {
@@ -352,7 +373,7 @@ namespace Evpp
 #endif
             }
         }
-        return loop->RunInQueue(std::bind<bool(TcpServer::*)(EventLoop*, socket_stream*, socket_tcp*, const u96)>(&TcpServer::DefaultAccepts, this, loop, server, client, index));
+        return loop->RunInLoop(std::bind<bool(TcpServer::*)(EventLoop*, socket_stream*, socket_tcp*, const u96)>(&TcpServer::DefaultAccepts, this, loop, server, client, index));
 #else
         return loop->RunInQueue(std::bind(&TcpServer::InitialAccepts, this, loop, server, client, index));
 #endif

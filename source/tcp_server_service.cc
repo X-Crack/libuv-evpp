@@ -76,10 +76,7 @@ namespace Evpp
         {
             if (tcp_server->DestroyServer())
             {
-                if (event_base->StopDispatch())
-                {
-                    return event_locking.dowait();
-                }
+                return event_base->StopDispatch() && event_locking.dowait();
             }
             else
             {

@@ -185,7 +185,7 @@ namespace Evpp
                 }
                 return false;
             }
-            return loop->RunInLoop(std::bind(&TcpListen::ExecuteListenService, this, loop, server, addr, index));
+            return loop->RunInLoopEx(std::bind(&TcpListen::ExecuteListenService, this, loop, server, addr, index));
         }
         return false;
     }

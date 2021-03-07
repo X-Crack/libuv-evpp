@@ -56,7 +56,7 @@ namespace Evpp
         std::unique_ptr<EventAsync>                                                         event_queue_ex;      // 同步
 #if defined(EVPP_USE_CAMERON314_CONCURRENTQUEUE)
         std::unique_ptr<moodycamel::ConcurrentQueue<Handler, EventQueueTraits>>             event_queue_nolock;
-        std::unique_ptr<moodycamel::ConcurrentQueue<Handler, EventQueueTraits>>             event_queue_lock;
+        std::unique_ptr<moodycamel::BlockingConcurrentQueue<Handler, EventQueueTraits>>     event_queue_lock;
         Handler                                                                             event_queue_nolock_function;
         Handler                                                                             event_queue_lock_function;
 #elif defined(EVPP_USE_BOOST_LOCKFREE_QUEUE)
