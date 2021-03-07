@@ -22,7 +22,7 @@ namespace Evpp
         explicit EventLocking();
         virtual ~EventLocking();
     public:
-        bool dowait(const std::chrono::milliseconds& delay = std::chrono::milliseconds(30000000));
+        bool dowait(const std::chrono::milliseconds& delay = std::chrono::milliseconds(UINT32_MAX));
         bool notify();
     private:
         bool advise();

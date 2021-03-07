@@ -19,9 +19,8 @@ namespace Evpp
     TcpServer::TcpServer(EventLoop* loop, const std::shared_ptr<EventShare>& share, const InterfaceAccepts& accepts, const InterfaceDiscons& discons, const InterfaceMessage& message, const InterfaceSendMsg& sendmsg) :
         event_base(loop),
         event_share(share),
-        event_close_flag(1),
-        event_thread_pool(std::make_shared<EventLoopThreadPool>(loop, share)),
         event_socket(std::make_unique<EventSocketPool>()),
+        event_thread_pool(std::make_shared<EventLoopThreadPool>(loop, share)),
         socket_accepts(accepts),
         socket_discons(discons),
         socket_message(message),
@@ -341,9 +340,8 @@ namespace Evpp
 
     bool TcpServer::DefaultAccepts(EventLoop* loop, socket_stream* server, socket_tcp* client, const u96 index)
     {
-#ifndef H_OS_WINDOWS
+#ifdef H_OS_WINDOWS
         if (loop->EventThread())
-#endif
         {
             if (nullptr != loop && nullptr != server && nullptr != client)
             {
@@ -354,15 +352,15 @@ namespace Evpp
 #endif
             }
         }
-#ifndef H_OS_WINDOWS
         return loop->RunInLoopEx(std::bind<bool(TcpServer::*)(EventLoop*, socket_stream*, socket_tcp*, const u96)>(&TcpServer::DefaultAccepts, this, loop, server, client, index));
 #else
-        return false;
+        return loop->RunInQueue(std::bind(&TcpServer::InitialAccepts, this, loop, server, client, index));
 #endif
     }
 
     bool TcpServer::DefaultAccepts(socket_stream* server, i32 status)
     {
+        EVENT_INFO("DefaultAccepts Thread Id: %d", EventLoop::EventThreadId());
         if (0 == status && nullptr != server)
         {
             u96 index = GetPlexingIndex();

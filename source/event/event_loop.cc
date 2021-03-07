@@ -232,7 +232,7 @@ namespace Evpp
 #ifdef H_OS_WINDOWS
         return GetCurrentThreadId();
 #else
-        return static_cast<u32>(uv_thread_self());
+        return static_cast<u32>(pthread_self());
 #endif
     }
 
@@ -282,7 +282,7 @@ namespace Evpp
             return true;
         }
 
-        if (0 == event_base->stop_flag || static_cast<i32>(~0) == event_base->stop_flag)
+        if (0 == event_base->stop_flag || static_cast<u32>(~0) == event_base->stop_flag)
         {
             uv_stop(event_base);
         }

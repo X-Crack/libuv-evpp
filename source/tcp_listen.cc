@@ -63,11 +63,14 @@ namespace Evpp
                 EVENT_ERROR("an error occurred when stopping the monitoring service");
                 return false;
             }
-
+#ifdef H_OS_WINDOWS
             if (ChangeStatus(Status::Exec, Status::Stop))
             {
                 return event_thread_pool->DestroyEventThreadPool();
             }
+#else
+            return ChangeStatus(Status::Exec, Status::Stop);
+#endif
         }
         return false;
     }
@@ -112,7 +115,7 @@ namespace Evpp
             {
                 for (u96 i = 0; i < size; ++i)
                 {
-                    tcp_server.emplace(tcp_server.begin() + i, std::make_unique<socket_tcp>(server));
+                    tcp_server.emplace(tcp_server.begin() + i, std::make_unique<socket_tcp>(socket_tcp {server}));
                     {
                         if (ExecuteListenService(event_thread_pool->GetEventLoop(i), tcp_server[i].get(), &socket->GetEventSocket(i)->GetSocketInfo()->addr, i))
                         {
@@ -175,6 +178,9 @@ namespace Evpp
                         EVENT_WARN("start listening error");
                         return false;
                     }
+
+                    EVENT_INFO("Listen Thread Id: %d", loop->EventThreadId());
+
                     return true;
                 }
                 return false;

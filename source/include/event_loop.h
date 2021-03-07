@@ -41,7 +41,7 @@ namespace Evpp
         const std::unique_ptr<std::any>& GetContext(const u96 index = 0);
     public:
         bool EventThread();
-        u32  EventThreadId();
+        static u32  EventThreadId();
         u32  EventThreadSelf();
     public:
         event_loop* EventBasic();

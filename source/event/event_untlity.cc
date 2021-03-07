@@ -30,7 +30,7 @@ namespace Evpp
             USE_PARAMETER(session);
             USE_PARAMETER(buffer);
             USE_PARAMETER(index);
-            //EVENT_INFO("receive client: %d message received length: %d thread: %d", index, buffer->readableBytes(), loop->EventThreadId());
+            EVENT_INFO("receive client: %d message received length: %d thread: %d", index, buffer->readableBytes(), loop->EventThreadId());
             session->Send(send_data + std::to_string(index) + "\n" + char(10));
             buffer->retrieve(buffer->readableBytes());
             return true;
